@@ -10,6 +10,10 @@ spring:
   jpa:
     database: mysql
     #    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+  mvc:
+    view:
+      prefix: /templates/
+      suffix: .mustache
 
     hibernate:
       ddl-auto: update
@@ -18,4 +22,13 @@ spring:
       hibernate:
         format_sql: true
 
-
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 242213484131-ld9ggephsgb78b0mhq7f3ciar5rmqrf1.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - email
+              - profile
