@@ -1,10 +1,11 @@
 package com.mogun.backend.domain.user;
 
-import com.mogun.backend.domain.userDetail.UserDetail;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
-
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -12,23 +13,22 @@ import javax.persistence.*;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // id 값을 null로 하면 DB에서 AUTO_INCREMENT
-    @Column(name = "user_id")
-    private int id;
+    @Column(name = "user_key")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int userKey;
 
-    @OneToOne
-    @JoinColumn(name = "detail_id")
-    private UserDetail userDetail;
+    @Column
+    private String id;
 
-    private String email;
+    @Column
     private String password;
-    private String nickname;
 
-    @Builder
-    public User (UserDetail userDetail, String email, String password, String nickname) {
-        this.userDetail = userDetail;
-        this.email = email;
-        this.password = password;
-        this.nickname = nickname;
-    }
+    @Column
+    private char gender;
+
+    @Column(name = "is_leaved")
+    private char isLeaved;
+
+    @Column(name = "join_time")
+    private LocalDateTime joinTime;
 }

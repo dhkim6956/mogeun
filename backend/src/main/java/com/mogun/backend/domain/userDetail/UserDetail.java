@@ -1,39 +1,35 @@
 package com.mogun.backend.domain.userDetail;
 
-import com.mogun.backend.domain.gender.Gender;
-import lombok.AccessLevel;
-import lombok.Builder;
+import com.mogun.backend.domain.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class UserDetail {
 
     @Id
-    @Column(name = "detail_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @Column(name = "user_key")
+    private int userKey;
 
-    private int gender;
-    private int age;
+    @Column
     private float weight;
+
+    @Column
     private float height;
 
-    @CreatedDate
-    private LocalDateTime createdDate;
+    @Column(name = "muscle_mass")
+    private float muscleMass;
 
-    @Builder
-    public UserDetail(int gender, int age, float weight, float height) {
-        this.gender = gender;
-        this.age = age;
-        this.weight = weight;
-        this.height = height;
-        this.createdDate = LocalDateTime.now();
-    }
+    @Column(name = "body_fat")
+    private float bodyFat;
+
+    @OneToOne
+    @MapsId // @Id로 지정한 컬럼을 @OneToOne 혹은 @ManyToOne 관계를 매핑
+    @JoinColumn(name = "user_key")
+    private User user;
+
 }
