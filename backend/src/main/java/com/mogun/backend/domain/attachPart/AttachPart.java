@@ -16,12 +16,12 @@ import java.io.Serializable;
 public class AttachPart implements Serializable {
 
     @Id
-    @Column(name = "exec_key", columnDefinition = "TINYINT")
-    private int execKey;
+    @Column(name = "part_key")
+    private int partKey;
 
     @Id
-    @Column(name = "part_key", columnDefinition = "TINYINT")
-    private int partKey;
+    @Column(name = "exec_key", columnDefinition = "TINYINT")
+    private int execKey;
 
     @Column(name = "attach_direction")
     private char attachDirection;
