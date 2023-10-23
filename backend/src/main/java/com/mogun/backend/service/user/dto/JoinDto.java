@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 public class JoinDto {
 
     // 회원 기본 정보
+    private int userKey;
     private String email;
     private String password;
     private String name;
@@ -53,6 +54,5 @@ public class JoinDto {
                 .muscleMass(muscleMass)
                 .bodyFat(bodyFat)
                 .build();
-
     }
 }

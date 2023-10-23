@@ -18,27 +18,35 @@ public class UserService {
     private final UserDetailRepository userDetailRepository;
 
     // GET Request 는 Dto 객체로 전달
-    // POST, PUT, PATCH, DELETE Request 는 Result String 으로 반환
+    // POST, PUT, PATCH, DELETE Request 는 Result String 으로 반환 -> 성공 시 SUCCESS, 이외엔 실패 사유
 
     public String joinUser(JoinDto dto) {
-        User user = null;
 
-        // Id 중복 검사
-        boolean flag = userRepository.existsByEmail(dto.getEmail());
-        if(flag) {
-            user = userRepository.findByEmail(dto.getEmail());
-        }
-        if(flag && user.getIsLeaved() == 'J')
-            return "이미 등록된 회원 이메일";
-        if(flag && user.getIsLeaved() == 'E')
+        if(isJoined(dto.getEmail()) == 'J')
+            return "이미 등록된 이메일";
+        if(isJoined(dto.getEmail()) == 'E')
             return "탈퇴한 회원";
 
-        if(dto.getGender() != 'm' || dto.getGender() != 'f')
-            return "지원 가능한 성별이 아님";
+        if(!(dto.getGender() == 'm' || dto.getGender() == 'f'))
+            return "지원 가능한 성별이 아님(m 혹은 f)";
 
         User savedUser = userRepository.save(dto.toEntity());
+        System.out.println("userKey: " + savedUser.getUserKey());
         UserDetail savedDetail = userDetailRepository.save(dto.toDetailedEntity(savedUser));
 
         return "SUCCESS";
+    }
+
+    public char isJoined(String email) {
+        User user = null;
+
+        boolean flag = userRepository.existsByEmail(email);
+        if(flag) {
+            user = userRepository.findByEmail(email);
+
+            return user.getIsLeaved();
+        }
+
+        return 'N';
     }
 }

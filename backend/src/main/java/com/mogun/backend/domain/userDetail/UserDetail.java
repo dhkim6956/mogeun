@@ -28,8 +28,8 @@ public class UserDetail {
     @Column(name = "body_fat")
     private float bodyFat;
 
-    @OneToOne
     @MapsId // @Id로 지정한 컬럼을 @OneToOne 혹은 @ManyToOne 관계를 매핑
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_key")
     private User user;
 
