@@ -1,5 +1,6 @@
 package com.mogun.backend.domain.user;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +19,13 @@ public class User {
     private int userKey;
 
     @Column
-    private String id;
+    private String email;
 
     @Column
     private String password;
+
+    @Column
+    private String name;
 
     @Column
     private char gender;
@@ -31,4 +35,14 @@ public class User {
 
     @Column(name = "join_time")
     private LocalDateTime joinTime;
+
+    @Builder
+    public User(String email, String password, String name, char gender) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.gender = gender;
+        this.isLeaved = 'J';
+        this.joinTime = LocalDateTime.now();
+    }
 }

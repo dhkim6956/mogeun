@@ -1,6 +1,7 @@
 package com.mogun.backend.domain.userDetail;
 
 import com.mogun.backend.domain.user.User;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -32,4 +33,14 @@ public class UserDetail {
     @JoinColumn(name = "user_key")
     private User user;
 
+    @Builder
+    public UserDetail(User user, float weight, float height, float muscleMass, float bodyFat) {
+        this.userKey = user.getUserKey();
+        this.user = user;
+        this.weight = weight;
+        this.height = height;
+        this.muscleMass = muscleMass;
+        this.bodyFat = bodyFat;
+
+    }
 }
