@@ -28,7 +28,7 @@ pipeline {
                 sh '''
                     docker stop back-server
                     docker rm back-server
-                    docker run -d --name back-server --restart=always -p 8085:8080 --add-host host.docker.internal:host-gateway --volume /etc/letsencrypt/:/etc/letsencrypt ${docker_repo}:back-0.1
+                    docker run -d --name back-server --restart=always -p 8085:8081 --add-host host.docker.internal:host-gateway --volume /etc/letsencrypt/:/etc/letsencrypt ${docker_repo}:back-0.1
                 '''
             }
         }
