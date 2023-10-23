@@ -17,7 +17,7 @@ public class MusclePart {
 
     @Id
     @GeneratedValue
-    @Column(name = "part_key", columnDefinition = "TINYINT")
+    @Column(name = "part_key")
     private int partKey;
 
     @Column(name = "part_name")
