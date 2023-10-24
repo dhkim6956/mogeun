@@ -17,16 +17,16 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userKey;
 
-    @Column
+    @Column(unique = true, nullable = false)
     private String email;
 
-    @Column
+    @Column(nullable = false)
     private String password;
 
-    @Column
+    @Column(nullable = false)
     private String name;
 
-    @Column
+    @Column(nullable = false)
     private char gender;
 
     @Column(name = "is_leaved")
@@ -36,7 +36,8 @@ public class User {
     private LocalDateTime joinTime;
 
     @Builder
-    public User(String email, String password, String name, char gender) {
+    public User(int userKey, String email, String password, String name, char gender) {
+        this.userKey = userKey;
         this.email = email;
         this.password = password;
         this.name = name;
@@ -47,5 +48,9 @@ public class User {
 
     public void setIsLeaved(char state) {
         this.isLeaved = state;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

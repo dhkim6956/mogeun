@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 @Data
 @RequiredArgsConstructor
-public class JoinDto {
+public class UserDto {
 
     // 회원 기본 정보
     private int userKey;
@@ -25,7 +25,7 @@ public class JoinDto {
     private float bodyFat;
 
     @Builder
-    public JoinDto(String email, String password, String name, char gender, float weight, float height, float muscleMass, float bodyFat) {
+    public UserDto(String email, String password, String name, char gender, float weight, float height, float muscleMass, float bodyFat) {
 
         this.email = email;
         this.password = password;

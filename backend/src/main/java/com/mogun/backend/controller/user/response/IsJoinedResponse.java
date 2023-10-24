@@ -10,6 +10,12 @@ public class IsJoinedResponse {
     @JsonProperty(value = "is_joined")
     private boolean isJoined;
 
+    @JsonProperty(value = "join_state")
+    private String joinState;
+
     @Builder
-    public IsJoinedResponse(boolean isJoined) { this.isJoined = isJoined; }
+    public IsJoinedResponse(boolean isJoined, String joinState) {
+        this.isJoined = isJoined;
+        this.joinState = joinState;
+    }
 }

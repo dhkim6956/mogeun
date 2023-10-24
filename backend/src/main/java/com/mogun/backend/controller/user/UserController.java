@@ -1,9 +1,11 @@
 package com.mogun.backend.controller.user;
 
 import com.mogun.backend.ApiResponse;
+import com.mogun.backend.controller.user.request.ChangePasswordRequest;
 import com.mogun.backend.controller.user.request.ExitRequest;
+import com.mogun.backend.controller.user.response.UserDetailResponse;
 import com.mogun.backend.service.user.UserService;
-import com.mogun.backend.service.user.dto.JoinDto;
+import com.mogun.backend.service.user.dto.UserDto;
 import com.mogun.backend.controller.user.request.UserJoinRequest;
 import com.mogun.backend.controller.user.response.IsJoinedResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,18 +23,29 @@ public class UserController {
 
     @GetMapping("/isJoined")
     public ApiResponse<IsJoinedResponse> isJoined(@RequestParam String email) {
-        boolean res = false;
+        boolean res = true;
 
-        if(userService.isJoined(email) != 'N')
-            res = true;
-
-
-        return ApiResponse.ok(IsJoinedResponse.builder().isJoined(res).build());
+        char joinState = userService.isJoined(email);
+        if(joinState == 'J')
+            return ApiResponse.ok(IsJoinedResponse.builder()
+                    .isJoined(true)
+                    .joinState("가입된 회원")
+                    .build());
+        else if(joinState == 'E')
+            return ApiResponse.ok(IsJoinedResponse.builder()
+                    .isJoined(false)
+                    .joinState("탈퇴한 회원")
+                    .build());
+        else
+            return ApiResponse.ok(IsJoinedResponse.builder()
+                    .isJoined(false)
+                    .joinState("가입하지 않은 회원")
+                    .build());
     }
 
     @PostMapping("/Enroll")
     public ApiResponse enrollUser(@RequestBody UserJoinRequest userJoinRequest) {
-        String result = userService.joinUser(JoinDto.builder()
+        String result = userService.joinUser(UserDto.builder()
                 .email(userJoinRequest.getUserEmail())
                 .password(userJoinRequest.getUserPassword())
                 .name(userJoinRequest.getUserName())
@@ -61,4 +74,26 @@ public class UserController {
             return ApiResponse.of(HttpStatus.ACCEPTED, result, null);
     }
 
+    @PostMapping("/Change/Password")
+    public ApiResponse changePassword(@RequestBody ChangePasswordRequest pwdReq) {
+
+        String result = userService.changePassword(pwdReq.getEmail(), pwdReq.getOldPassword(), pwdReq.getNewPassword());
+        if(result != "SUCCESS")
+            return ApiResponse.badRequest(result);
+        else
+            return ApiResponse.of(HttpStatus.ACCEPTED, result, null);
+    }
+
+    @GetMapping("/Detail")
+    public ApiResponse getUserDetail(@RequestParam String email) {
+
+        UserDto result = userService.getUserDetail(email);
+
+        return ApiResponse.ok(UserDetailResponse.builder()
+                .height(result.getHeight())
+                .weight(result.getWeight())
+                .muscleMass(result.getMuscleMass())
+                .bodyFat(result.getBodyFat())
+                .build());
+    }
 }
