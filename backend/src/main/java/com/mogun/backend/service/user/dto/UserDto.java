@@ -2,6 +2,7 @@ package com.mogun.backend.service.user.dto;
 
 import com.mogun.backend.domain.user.User;
 import com.mogun.backend.domain.userDetail.UserDetail;
+import com.mogun.backend.domain.userLog.userWeightLog.UserWeightLog;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

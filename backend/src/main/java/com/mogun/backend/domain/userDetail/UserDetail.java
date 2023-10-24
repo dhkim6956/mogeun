@@ -1,15 +1,18 @@
 package com.mogun.backend.domain.userDetail;
 
 import com.mogun.backend.domain.user.User;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@DynamicUpdate
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserDetail {
 
     @Id
@@ -41,6 +44,21 @@ public class UserDetail {
         this.height = height;
         this.muscleMass = muscleMass;
         this.bodyFat = bodyFat;
+    }
 
+    public void setHeight(float height) {
+        this.height = height;
+    }
+
+    public void setWeight(float weight) {
+        this.weight = weight;
+    }
+
+    public void setMuscleMass(float muscleMass) {
+        this.muscleMass = muscleMass;
+    }
+
+    public void setBodyFat(float bodyFat) {
+        this.bodyFat = bodyFat;
     }
 }
