@@ -1,6 +1,7 @@
 package com.mogun.backend.domain.userLog.userMuscleMassLog;
 
 import com.mogun.backend.domain.user.User;
+import lombok.Builder;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 public class UserMuscleMassLog {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "log_key")
     private Long logKey;
 
@@ -24,4 +26,13 @@ public class UserMuscleMassLog {
 
     @Column(name = "changed_time")
     private LocalDateTime changedTime;
+
+    @Builder
+    public UserMuscleMassLog(Long logKey, User user, float muscleMassBefore, float muscleMassAfter) {
+        this.logKey = logKey;
+        this.user = user;
+        this.muscleMassBefore = muscleMassBefore;
+        this.muscleMassAfter = muscleMassAfter;
+        this.changedTime = LocalDateTime.now();
+    }
 }
