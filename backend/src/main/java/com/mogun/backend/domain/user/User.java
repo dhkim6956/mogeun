@@ -1,16 +1,15 @@
 package com.mogun.backend.domain.user;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@DynamicUpdate
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
 
     @Id
@@ -44,5 +43,9 @@ public class User {
         this.gender = gender;
         this.isLeaved = 'J';
         this.joinTime = LocalDateTime.now();
+    }
+
+    public void setIsLeaved(char state) {
+        this.isLeaved = state;
     }
 }

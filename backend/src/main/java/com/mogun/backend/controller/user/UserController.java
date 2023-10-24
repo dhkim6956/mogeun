@@ -1,11 +1,11 @@
 package com.mogun.backend.controller.user;
 
 import com.mogun.backend.ApiResponse;
+import com.mogun.backend.controller.user.request.ExitRequest;
 import com.mogun.backend.service.user.UserService;
 import com.mogun.backend.service.user.dto.JoinDto;
-import com.mogun.backend.service.user.request.UserJoinRequest;
-import com.mogun.backend.service.user.response.IsJoinedResponse;
-import lombok.Data;
+import com.mogun.backend.controller.user.request.UserJoinRequest;
+import com.mogun.backend.controller.user.response.IsJoinedResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -49,4 +49,16 @@ public class UserController {
         else
             return ApiResponse.badRequest(result);
     }
+
+    @PostMapping("/Exit")
+    public ApiResponse exitUser(@RequestBody ExitRequest exitRequest) {
+
+        String result = userService.exitUser(exitRequest.getUserId(), exitRequest.getUserPassword());
+
+        if(result != "SUCCESS")
+            return ApiResponse.badRequest(result);
+        else
+            return ApiResponse.of(HttpStatus.ACCEPTED, result, null);
+    }
+
 }

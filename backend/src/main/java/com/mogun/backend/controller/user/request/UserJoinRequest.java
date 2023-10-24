@@ -1,4 +1,4 @@
-package com.mogun.backend.service.user.request;
+package com.mogun.backend.controller.user.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
