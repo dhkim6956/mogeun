@@ -1,6 +1,7 @@
 package com.mogun.backend.domain.userLog.userWeightLog;
 
 import com.mogun.backend.domain.user.User;
+import lombok.Builder;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 public class UserWeightLog {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "log_key")
     private Long logKey;
 
@@ -24,4 +26,13 @@ public class UserWeightLog {
 
     @Column(name = "changed_time")
     private LocalDateTime changedTime;
+
+    @Builder
+    public UserWeightLog(Long logKey, User user, float weightBefore, float weightAfter) {
+        this.logKey = logKey;
+        this.user = user;
+        this.weightBefore = weightBefore;
+        this.weightAfter = weightAfter;
+        this.changedTime = LocalDateTime.now();
+    }
 }
