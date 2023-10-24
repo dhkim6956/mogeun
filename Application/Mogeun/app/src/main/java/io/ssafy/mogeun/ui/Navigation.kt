@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -33,28 +34,16 @@ import io.ssafy.mogeun.ui.screens.routine.RoutineScreen
 import io.ssafy.mogeun.ui.screens.setting.SettingScreen
 import io.ssafy.mogeun.ui.screens.summary.SummaryScreen
 
-data class Destination(
+sealed class Screen(
     val route: String,
     val title: String,
     val vectorId: Int,
-    val component: @Composable () -> Unit
-)
-
-
-val Destinations: Array<Destination> = arrayOf(
-    Destination("routine", "루틴", R.drawable.icon_routine) { RoutineScreen() },
-    Destination("record", "기록", R.drawable.icon_record) { RecordScreen()},
-    Destination("summary", "요약", R.drawable.icon_summary) { SummaryScreen()},
-    Destination("setting", "설정", R.drawable.icon_setting) { SettingScreen()}
-)
-
-val RootDestinations: Array<Destination> = arrayOf(
-    Destinations[0],
-    Destinations[1],
-    Destinations[2],
-    Destinations[3],
-)
-
+) {
+    object Routine : Screen("routine", "루틴", R.drawable.icon_routine)
+    object Record : Screen("record", "기록", R.drawable.icon_record)
+    object Summary : Screen("summary", "요약", R.drawable.icon_summary)
+    object Setting : Screen("setting", "설정", R.drawable.icon_setting)
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,7 +64,7 @@ fun Navigation() {
             )
         },
         bottomBar = {
-            bottomBar(navController, false)
+            bottomBar(navController)
         }
     ) {innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
@@ -86,34 +75,36 @@ fun Navigation() {
 
 @Composable
 fun NavigationGraph(navController: NavHostController) {
-    NavHost(navController, startDestination = "record") {
-        Destinations.map { dest ->
-            composable(dest.route) { dest.component() }
-        }
+    NavHost(navController, startDestination = Screen.Routine.route) {
+        composable(Screen.Routine.route) { RoutineScreen() }
+        composable(Screen.Record.route) { RecordScreen(navController = navController) }
+        composable(Screen.Summary.route) { SummaryScreen() }
+        composable(Screen.Setting.route) { SettingScreen() }
+
     }
 }
 
 @Composable
-fun bottomBar(navController: NavHostController, visible: Boolean) {
+fun bottomBar(navController: NavHostController) {
 
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
 
-    if(visible) {
-        NavigationBar {
-            RootDestinations.forEach { screen ->
-                NavigationBarItem(
-                    selected = currentRoute == screen.route,
-                    onClick = {
-                        navController.navigate(screen.route) {
-                            popUpTo(navController.graph.startDestinationId)
-                            launchSingleTop = true
-                        }
-                    },
-                    icon = { Image(imageVector = ImageVector.vectorResource(id = screen.vectorId), contentDescription = screen.route) },
-                    label = { Text(screen.title) }
-                )
-            }
+    val rootScreen = arrayOf(Screen.Routine, Screen.Record, Screen.Summary, Screen.Setting)
+
+    NavigationBar {
+        rootScreen.forEach { screen ->
+            NavigationBarItem(
+                selected = currentRoute == screen.route,
+                onClick = {
+                    navController.navigate(screen.route) {
+                        popUpTo(navController.graph.startDestinationId)
+                        launchSingleTop = true
+                    }
+                },
+                icon = { Image(imageVector = ImageVector.vectorResource(id = screen.vectorId), contentDescription = screen.route) },
+                label = { Text(screen.title) }
+            )
         }
     }
 }
