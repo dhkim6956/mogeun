@@ -32,6 +32,17 @@ public class UserRoutineService {
         return "SUCCESS";
     }
 
+    public String renameRoutine(RoutineDto dto) {
+
+        Optional<UserRoutine> routine = routineRepository.findById(dto.getRoutineKey());
+
+        if(routine.isEmpty() || routine.get().getIsDeleted() == 'Y')
+            return "요청 오류: 등록된 루틴이 아님";
+
+        routine.get().setRoutineName(dto.getRoutineName());
+        return "SUCCESS";
+    }
+
     public String deleteRoutine(RoutineDto dto) {
 
         Optional<UserRoutine> routine = routineRepository.findById(dto.getRoutineKey());

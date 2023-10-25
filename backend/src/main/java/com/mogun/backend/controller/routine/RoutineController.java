@@ -8,7 +8,6 @@ import com.mogun.backend.service.routine.dto.RoutineDto;
 import com.mogun.backend.service.routine.userRoutine.UserRoutineService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -37,6 +36,17 @@ public class RoutineController {
 
         String result = routineService.deleteRoutine(RoutineDto.builder()
                 .routineKey(request.getRoutineKey())
+                .build());
+
+        return ApiResponse.postAndPutResponse(result, request);
+    }
+
+    @PutMapping("/Rename")
+    public ApiResponse renameRoutine(@RequestBody CommonRoutineRequest request) {
+
+        String result = routineService.renameRoutine(RoutineDto.builder()
+                .routineKey(request.getRoutineKey())
+                .routineName(request.getRoutineName())
                 .build());
 
         return ApiResponse.postAndPutResponse(result, request);

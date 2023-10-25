@@ -38,4 +38,8 @@ public class UserRoutine {
     public void setIsDeleted(char isDeleted) {
         this.isDeleted = isDeleted;
     }
+
+    public void setRoutineName(String routineName) {
+        this.routineName = routineName;
+    }
 }
