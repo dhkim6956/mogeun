@@ -3,6 +3,7 @@ package com.mogun.backend.controller.user;
 import com.mogun.backend.ApiResponse;
 import com.mogun.backend.controller.user.request.ChangePasswordRequest;
 import com.mogun.backend.controller.user.request.ExitRequest;
+import com.mogun.backend.controller.user.request.SignInRequest;
 import com.mogun.backend.controller.user.response.UserDetailResponse;
 import com.mogun.backend.service.user.UserService;
 import com.mogun.backend.service.user.dto.UserDto;
@@ -95,5 +96,16 @@ public class UserController {
                 .muscleMass(result.getMuscleMass())
                 .bodyFat(result.getBodyFat())
                 .build());
+    }
+
+    @PostMapping("/SignIn")
+    public ApiResponse signIn(@RequestBody SignInRequest request) {
+
+        String result = userService.signIn(request.getUserEmail(), request.getUserPassword());
+
+        if(result != "SUCCESS")
+            return ApiResponse.badRequest(result);
+
+        return ApiResponse.of(HttpStatus.ACCEPTED, result, null);
     }
 }

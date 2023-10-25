@@ -87,4 +87,12 @@ public class UserService {
         user.get().setPassword(newPassword);
         return "SUCCESS";
     }
+
+    public String signIn(String email, String password) {
+
+        if(!userRepository.existsByEmailAndPassword(email, password))
+            return "요청 오류: 잘못된 회원 정보";
+
+        return "SUCCESS";
+    }
 }

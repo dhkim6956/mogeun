@@ -75,5 +75,4 @@ public class UserLogController {
 
         return ApiResponse.of(HttpStatus.ACCEPTED, result, null);
     }
-
 }
