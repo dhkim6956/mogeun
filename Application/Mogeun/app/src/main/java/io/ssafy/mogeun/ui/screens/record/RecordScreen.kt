@@ -26,7 +26,7 @@ fun RecordScreen(navController: NavHostController) {
         Text(text = "Record Screen")
 
         Button(
-            onClick = { navController.navigate("setting")},
+            onClick = { navController.navigate("login")},
 
         ) {
             Text(text = "test")
