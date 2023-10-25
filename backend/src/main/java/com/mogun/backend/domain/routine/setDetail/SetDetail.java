@@ -4,6 +4,7 @@ import com.mogun.backend.domain.routine.userRoutine.UserRoutine;
 import com.mogun.backend.domain.routine.userRoutinePlan.UserRoutinePlan;
 import com.mogun.backend.domain.user.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.io.Serializable;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class SetDetail implements Serializable {
@@ -34,8 +36,8 @@ public class SetDetail implements Serializable {
     @Column
     private int weight;
 
-    @Column
-    private int target_repeat;
+    @Column(name = "target_repeat")
+    private int targetRepeat;
 
     @MapsId
     @ManyToOne

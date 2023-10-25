@@ -4,6 +4,7 @@ import com.mogun.backend.domain.exercise.Exercise;
 import com.mogun.backend.domain.routine.userRoutine.UserRoutine;
 import com.mogun.backend.domain.user.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import javax.persistence.*;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserRoutinePlan {

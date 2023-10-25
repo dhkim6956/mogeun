@@ -5,11 +5,14 @@ import com.mogun.backend.domain.userLog.userBodyFatLog.UserBodyFatLog;
 import com.mogun.backend.domain.userLog.userHeightLog.UserHeightLog;
 import com.mogun.backend.domain.userLog.userMuscleMassLog.UserMuscleMassLog;
 import com.mogun.backend.domain.userLog.userWeightLog.UserWeightLog;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 @Data
+@Builder
+@AllArgsConstructor
 @RequiredArgsConstructor
 public class UserLogDto {
 
@@ -26,22 +29,22 @@ public class UserLogDto {
     private float muscleMassAfter;
     private float bodyFatAfter;
 
-    @Builder
-    public UserLogDto(int userKey, String email, float heightBefore, float weightBefore, float muscleMassBefore, float bodyFatBefore, float heightAfter, float weightAfter, float muscleMassAfter, float bodyFatAfter) {
-
-        this.userKey = userKey;
-        this.email = email;
-
-        this.heightBefore = heightBefore;
-        this.weightBefore = weightBefore;
-        this.muscleMassBefore = muscleMassBefore;
-        this.bodyFatBefore = bodyFatBefore;
-
-        this.heightAfter = heightAfter;
-        this.weightAfter = weightAfter;
-        this.muscleMassAfter = muscleMassAfter;
-        this.bodyFatAfter = bodyFatAfter;
-    }
+//    @Builder
+//    public UserLogDto(int userKey, String email, float heightBefore, float weightBefore, float muscleMassBefore, float bodyFatBefore, float heightAfter, float weightAfter, float muscleMassAfter, float bodyFatAfter) {
+//
+//        this.userKey = userKey;
+//        this.email = email;
+//
+//        this.heightBefore = heightBefore;
+//        this.weightBefore = weightBefore;
+//        this.muscleMassBefore = muscleMassBefore;
+//        this.bodyFatBefore = bodyFatBefore;
+//
+//        this.heightAfter = heightAfter;
+//        this.weightAfter = weightAfter;
+//        this.muscleMassAfter = muscleMassAfter;
+//        this.bodyFatAfter = bodyFatAfter;
+//    }
 
     public UserHeightLog toHeightLogEntity(User user) {
         return UserHeightLog.builder()
