@@ -2,13 +2,17 @@ package com.mogun.backend.domain.routine.userRoutine;
 
 import com.mogun.backend.domain.user.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
+@Builder
+@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserRoutine {
@@ -30,4 +34,8 @@ public class UserRoutine {
 
     @Column(name = "is_deleted")
     private char isDeleted;
+
+    public void setIsDeleted(char isDeleted) {
+        this.isDeleted = isDeleted;
+    }
 }
