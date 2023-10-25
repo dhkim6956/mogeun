@@ -34,6 +34,7 @@ import io.ssafy.mogeun.ui.screens.routine.RoutineScreen
 import io.ssafy.mogeun.ui.screens.setting.SettingScreen
 import io.ssafy.mogeun.ui.screens.summary.SummaryScreen
 import io.ssafy.mogeun.ui.screens.login.LoginScreen
+import io.ssafy.mogeun.ui.screens.signup.SignupScreen
 
 sealed class Screen(
     val route: String,
@@ -45,6 +46,7 @@ sealed class Screen(
     object Summary : Screen("summary", "요약", R.drawable.icon_summary)
     object Setting : Screen("setting", "설정", R.drawable.icon_setting)
     object Login : Screen("login", "로그인", R.drawable.icon_setting)
+    object Signup : Screen("signup", "회원가입", R.drawable.icon_setting)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,6 +85,7 @@ fun NavigationGraph(navController: NavHostController) {
         composable(Screen.Summary.route) { SummaryScreen() }
         composable(Screen.Setting.route) { SettingScreen() }
         composable(Screen.Login.route) { LoginScreen(navController = navController)}
+        composable(Screen.Signup.route) { SignupScreen(navController = navController)}
     }
 }
 

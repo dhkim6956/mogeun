@@ -90,7 +90,7 @@ fun LoginScreen(navController: NavHostController) {
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = { /*TODO*/ },
+                onClick = {navController.navigate("signup")},
                 modifier = Modifier.fillMaxWidth().height(52.dp)
             ) {
                 Text(text = "회원가입")
