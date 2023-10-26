@@ -63,3 +63,7 @@ expanded.value = !expanded.value
 var expanded = rememberSaveable { mutableStateOf(false) }
 expanded = !expanded
 ```
+
+## Docs
+
+[Compose 예시 어플리케이션](https://github.com/android/compose-samples)
