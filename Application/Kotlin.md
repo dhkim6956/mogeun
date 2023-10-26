@@ -28,4 +28,38 @@ val expanded = mutableStateOf(false)
 
 ### remember
 
-- 여러 리컴포지션 간에 상태를 유지하려면 remember를 사용하여 변경 가능한 상태를 기억해야 한다.
+- 여러 리컴포지션 간에 상태를 유지하려면 `remember`를 사용하여 변경 가능한 상태를 기억해야 한다.
+- `remember`는 리컴포지션을 방지하는데 사용되므로 상태가 재설정되지 않는다.
+
+``` kotlin
+val expanded = remember { mutableStateOf(false) }
+```
+
+### rememberSaveable
+
+- `remember` 함수는 Composable이 Composition에 유지되는 동안에만 작동한다.
+- 기기를 회전하면 전체 활동이 다시 시작되므로 모든 상태가 손실된다.
+- 구성이 변경되거나 프로세스가 중단될 때에도 모든 상태가 손실된다.
+
+
+``` kotlin
+val expanded = rememberSaveable { mutableStateOf(false) }
+```
+
+### 변수 사용
+
+- mutableState로 선언된 변수는 `.value`로 변수의 값에 접근하고 수정할 수 있다.
+
+``` kotlin
+val expanded = rememberSaveable { mutableStateOf(false) }
+expanded.value = !expanded.value
+```
+
+### by 키워드
+
+- 매번 `.value`를 입력할 필요가 없도록 해주는 속성 위임
+
+``` kotlin
+var expanded = rememberSaveable { mutableStateOf(false) }
+expanded = !expanded
+```
