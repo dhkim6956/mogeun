@@ -58,7 +58,6 @@ sealed class Screen(
 data class TopBarState(
     val visibility: Boolean,
     val title: String,
-    val backBtn
 )
 
 @Composable
