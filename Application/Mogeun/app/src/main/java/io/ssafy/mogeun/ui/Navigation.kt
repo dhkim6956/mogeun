@@ -8,7 +8,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,36 +33,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import io.ssafy.mogeun.R
-import io.ssafy.mogeun.ui.screens.addroutine.AddRoutineScreen
+import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineScreen
 import io.ssafy.mogeun.ui.screens.record.RecordScreen
 import io.ssafy.mogeun.ui.screens.routine.RoutineScreen
 import io.ssafy.mogeun.ui.screens.routine.execution.ExecutionScreen
 import io.ssafy.mogeun.ui.screens.setting.SettingScreen
 import io.ssafy.mogeun.ui.screens.summary.SummaryScreen
 import io.ssafy.mogeun.ui.screens.login.LoginScreen
-import io.ssafy.mogeun.ui.screens.record.RecordDetailScreen
 import io.ssafy.mogeun.ui.screens.signup.SignupScreen
 
-sealed class Screen(
-    val route: String,
-    val title: String,
-    val vectorId: Int? = null
-) {
-    object Routine : Screen("routine", "루틴", R.drawable.icon_routine)
-    object Execution : Screen("execution", "운동 진행")
-    object Record : Screen("record", "기록", R.drawable.icon_record)
-    object RecordDetail : Screen("recorddetail", "루틴 기록 상세")
-    object Summary : Screen("summary", "요약", R.drawable.icon_summary)
-    object Setting : Screen("setting", "설정", R.drawable.icon_setting)
-    object Login : Screen("login", "로그인", R.drawable.icon_setting)
-    object Signup : Screen("signup", "회원가입", R.drawable.icon_setting)
-    object AddRoutine : Screen("addroutine", "루틴추가", R.drawable.icon_setting)
-}
 
-data class TopBarState(
-    val visibility: Boolean,
-    val title: String
-)
 
 @Composable
 fun Navigation() {
@@ -71,60 +51,44 @@ fun Navigation() {
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
 
+    val currentScreen = screens.find { it.route == currentRoute } ?: Screen.Login
+
     val topBarState = rememberSaveable { (mutableStateOf(true))}
     val bottomBarState = rememberSaveable { (mutableStateOf(true))}
 
-    when (currentRoute) {
-        "execution" -> {
-            bottomBarState.value = false
-            topBarState.value = false
-        }
-    }
-
     Scaffold (
         topBar = {
-            TopBar(navController, topBarState)
+            TopBar(navController, currentScreen)
         },
         bottomBar = {
-            BottomBar(navController, bottomBarState, currentRoute)
+            BottomBar(navController, currentScreen)
         }
     ) {innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-            NavigationGraph(navController = navController)
+            MogeunNavHost(navController = navController)
         }
     }
 }
 
-@Composable
-fun NavigationGraph(navController: NavHostController) {
-    NavHost(navController, startDestination = Screen.Routine.route) {
-        composable(Screen.Routine.route) { RoutineScreen(navController = navController) }
-        composable(Screen.Execution.route) { ExecutionScreen() }
-        composable(Screen.Record.route) { RecordScreen(navController = navController) }
-        composable(Screen.RecordDetail.route) { RecordDetailScreen(navController = navController) }
-        composable(Screen.Summary.route) { SummaryScreen() }
-        composable(Screen.Setting.route) { SettingScreen() }
-        composable(Screen.Login.route) { LoginScreen(navController = navController)}
-        composable(Screen.Signup.route) { SignupScreen(navController = navController)}
-        composable(Screen.AddRoutine.route) { AddRoutineScreen(navController = navController)}
-    }
-}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(navController: NavHostController, topBarState: MutableState<Boolean>) {
+fun TopBar(navController: NavHostController, currentScreen: Screen) {
     AnimatedVisibility(
-        visible = topBarState.value,
+        visible = currentScreen.topBarState.visibility,
         enter = slideInVertically(initialOffsetY = { it }),
         exit = slideOutVertically(targetOffsetY = { it })
     ) {
         TopAppBar(
-            title = { Text("test") },
+            title = { Text(currentScreen.title) },
             navigationIcon = {
-                IconButton(
-                    onClick = { }
-                ) {
-                    Icon(Icons.Filled.Menu, contentDescription = "")
+                if (currentScreen.topBarState.backBtnVisibility) {
+                    IconButton(
+                        onClick = { navController.navigateUp() }
+                    ) {
+                        Icon(Icons.Filled.ArrowBack, contentDescription = "")
+                    }
                 }
             }
         )
@@ -132,28 +96,24 @@ fun TopBar(navController: NavHostController, topBarState: MutableState<Boolean>)
 }
 
 @Composable
-fun BottomBar(navController: NavHostController, bottomBarState: MutableState<Boolean>, currentRoute: String?) {
-
-    val rootScreen = arrayOf(Screen.Routine, Screen.Record, Screen.Summary, Screen.Setting)
-
-
+fun BottomBar(navController: NavHostController, currentScreen: Screen) {
 
     AnimatedVisibility(
-        visible = bottomBarState.value,
+        visible = currentScreen.bottomBarState.visibility,
         enter = slideInVertically(initialOffsetY = { it }),
         exit = slideOutVertically(targetOffsetY = { it })
     ) {
         NavigationBar {
             rootScreen.forEach { screen ->
                 NavigationBarItem(
-                    selected = currentRoute == screen.route,
+                    selected = currentScreen.bottomBarState.originRoute == screen.route,
                     onClick = {
                         navController.navigate(screen.route) {
                             popUpTo(navController.graph.startDestinationId)
                             launchSingleTop = true
                         }
                     },
-                    icon = { Image(imageVector = ImageVector.vectorResource(id = screen.vectorId!!), contentDescription = screen.route) },
+                    icon = { Image(imageVector = ImageVector.vectorResource(id = screen.bottomBarState.vectorId!!), contentDescription = screen.route) },
                     label = { Text(screen.title) }
                 )
             }
