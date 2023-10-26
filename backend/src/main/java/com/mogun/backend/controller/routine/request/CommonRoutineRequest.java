@@ -24,6 +24,4 @@ public class CommonRoutineRequest {
 
     @JsonProperty("total_sets")
     public int sets;
-
-
 }

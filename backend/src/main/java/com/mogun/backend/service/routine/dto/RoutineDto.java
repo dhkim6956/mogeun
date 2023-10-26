@@ -22,12 +22,10 @@ public class RoutineDto {
 
     // 단일 운동 계획 정보
     private int planKey;
-    private UserRoutine routine;
-    private Exercise exec;
+    private int execKey;
     private int setAmount;
 
     // 계획 내 세트별 세부 사항
-    private UserRoutinePlan plan;
     private int setNumber;
     private int weight;
     private int targetRep;
@@ -41,7 +39,7 @@ public class RoutineDto {
                 .build();
     }
 
-    public UserRoutinePlan toRoutinePlanEntity(UserRoutine routine) {
+    public UserRoutinePlan toRoutinePlanEntity(UserRoutine routine, Exercise exec) {
         return UserRoutinePlan.builder()
                 .userRoutine(routine)
                 .user(routine.getUser())
