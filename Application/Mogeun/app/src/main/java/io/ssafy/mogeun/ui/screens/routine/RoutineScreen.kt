@@ -62,7 +62,7 @@ fun RoutineScreen(navController: NavHostController) {
                     )
                 }
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = { navController.navigate("login") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
                 ) {
                     Image(
