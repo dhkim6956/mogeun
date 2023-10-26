@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "mogun-401904",
+  "private_key_id": "c5ff64dda8a4323b361156ca2ad30733ecb40ca8",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDJB+1+8QEsGpMZ\n7rJjbi41JwROfgAPLRvjqAQ261sCnjCPM+5DkewcMccmjOG1KvYggMeOLPAV+1cB\n/8Z3Fj5InxvF4T/7yC7RSjd6ZqZFKX4sY8ArggkxgK++zy6i/uhQQV7cL0FJnCWJ\nn7K5GYEPn0jJml7OrMQ7D7TRR/lUvs+TvEiufvi7d36I3YX7MtaU5XeG/JlnzAId\nueqQDgKSq8rmbshol4WBPDi49WDmkFMlRWrYahPYmXv55fp4u+p6PYU5dc3q89ky\nyqoKzSmUh6MlPjhbsmJyJbDfmcxL+sYMss2qYoM2lcxr/FOIvNTRjKyDr7lG2UM5\nRT/NvnIzAgMBAAECggEAK8ChdGDQoAAyptC4G4LV5LSWr9yld6gaK0ycijVkC+hQ\n6kHjp+og6Kv+y4ma8BqnEcDlbbCjGi2nLKS11aJOMPEMEt+o1MwnQF62P1oK8v+K\nWe/l2bJF/POkjFM8M7Zl6l2n3yUbwQEOfGr482c1GyjQJyyFWNbqKG6NLIVNIx+3\nKO1b5NWbJdULJW82LjjtULpnyMHGOP2fNPLjcsrWBq3i18tcBkpWgB5Lyb32rspr\nMJhx3Y7xMHpcUNabr5fUWOcbwflMeDBMa7tcWloNDKTSo4hgUboVqFsEHF7UY+ms\nS6v2S8rnG3Dl7XBFqQ9/MaaAb0TGV/3p48y6EDPvnQKBgQD2aJhdZEQBgZXn/Mm7\nIo5j1SnkYiI8UG/lReg+NdIKlAv99YR5PW1Yii0bCjmF7tmddBw5KnVFkh8/Xk18\nD0KyfOlENjNdubQjFkj2g9iDE0sTC1DuDr7oo/4gY9xcyHflClPjf8rrG1sUK4Am\ndZOM47HuP090x+uH/9a0NzcJ7wKBgQDQ2ye1lhrpPJ+xVbc0vXehsqmlBGSkx4fC\nKPNqy2QF0r4/sBMnKPf2DeIqxl3fWfDX5obPoUnbQMl/mESIdY+nmC85e2t1jxyT\njVcQgu/jE1W4hcaPsb+N+IkRJ2mtUCAQIBQyuabAwtzdDphjbt9LjUzYdQwJN9LI\n4P3MiKVv/QKBgDnCNsTdddtshrkEVj0ZUoswMkuofSHqMPBrPI8oin2USmNTI6RP\ns8vnR79o3Cb63+O6jcsQmsCeCdkOv9butNGl2f/1PIEhwIng9WVjbmL7KMPkCSpk\nJnfdyPnKrqLJEuGLVDKlh+koVmcZ80YQlW+XB+Qyzusu2ZTdcXR45NvdAoGADRG5\nsWY8Nt4hTBKGDVnR059/eCEHPzxxJVg0qzkhADBI0WluOWQZ6B7ESVLyatiQ9qGp\nS/LW0U6DjWV03Gkm3SDry5gKiGe1LRKKITFgW4BJO+u7GiDQUMz9nsItnbfG2dt4\nCBiP87393iNcq9QzSuIDrgPdBfKlUQarOxJN7+0CgYAJ7igBym4D0WS45LlDvIRK\nh6Y2CcPdnn57bxd3lbq2exMyXaCV5gV9mmj/aKuDlWh25Ztmxku1j4L3HjDmJqYb\nEb+oqiwjF7/guRzaGnJW4cjZ+onlszj94oBfXV9JtHSJIFaPHvelg0MR3QLJTIGe\nCnFC8US+RXsLlem/o2EA5A==\n-----END PRIVATE KEY-----\n",
+  "client_email": "mogeun-admin@mogun-401904.iam.gserviceaccount.com",
+  "client_id": "107296999422253820006",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/mogeun-admin%40mogun-401904.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

@@ -34,6 +34,7 @@ android {
         }
         debug {
             firebaseAppDistribution {
+                serviceCredentialsFile = "app/mogun-admin-key.json"
                 appId = "1:596345237666:android:6cb898c69a6d7db9a027fb"
                 artifactType = "APK"
                 releaseNotes = "Debug Version"
