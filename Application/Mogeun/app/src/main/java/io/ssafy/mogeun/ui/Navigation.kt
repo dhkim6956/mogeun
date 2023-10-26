@@ -60,7 +60,6 @@ sealed class Screen(
 data class TopBarState(
     val visibility: Boolean,
     val title: String,
-    val backBtn
 )
 
 @Composable
@@ -97,7 +96,7 @@ fun Navigation() {
 @Composable
 fun NavigationGraph(navController: NavHostController) {
     NavHost(navController, startDestination = Screen.Routine.route) {
-        composable(Screen.Routine.route) { RoutineScreen(navController = navController) }
+        composable(Screen.Routine.route) { RoutineScreen() }
         composable(Screen.Execution.route) { ExecutionScreen() }
         composable(Screen.Record.route) { RecordScreen(navController = navController) }
         composable(Screen.Summary.route) { SummaryScreen() }
