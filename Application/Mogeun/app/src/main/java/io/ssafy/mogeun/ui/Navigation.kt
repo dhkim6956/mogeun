@@ -40,6 +40,7 @@ import io.ssafy.mogeun.ui.screens.routine.execution.ExecutionScreen
 import io.ssafy.mogeun.ui.screens.setting.SettingScreen
 import io.ssafy.mogeun.ui.screens.summary.SummaryScreen
 import io.ssafy.mogeun.ui.screens.login.LoginScreen
+import io.ssafy.mogeun.ui.screens.record.RecordDetailScreen
 import io.ssafy.mogeun.ui.screens.signup.SignupScreen
 
 sealed class Screen(
@@ -50,6 +51,7 @@ sealed class Screen(
     object Routine : Screen("routine", "루틴", R.drawable.icon_routine)
     object Execution : Screen("execution", "운동 진행")
     object Record : Screen("record", "기록", R.drawable.icon_record)
+    object RecordDetail : Screen("recorddetail", "루틴 기록 상세")
     object Summary : Screen("summary", "요약", R.drawable.icon_summary)
     object Setting : Screen("setting", "설정", R.drawable.icon_setting)
     object Login : Screen("login", "로그인", R.drawable.icon_setting)
@@ -59,8 +61,7 @@ sealed class Screen(
 
 data class TopBarState(
     val visibility: Boolean,
-    val title: String,
-    val backBtn
+    val title: String
 )
 
 @Composable
@@ -100,6 +101,7 @@ fun NavigationGraph(navController: NavHostController) {
         composable(Screen.Routine.route) { RoutineScreen(navController = navController) }
         composable(Screen.Execution.route) { ExecutionScreen() }
         composable(Screen.Record.route) { RecordScreen(navController = navController) }
+        composable(Screen.RecordDetail.route) { RecordDetailScreen(navController = navController) }
         composable(Screen.Summary.route) { SummaryScreen() }
         composable(Screen.Setting.route) { SettingScreen() }
         composable(Screen.Login.route) { LoginScreen(navController = navController)}
