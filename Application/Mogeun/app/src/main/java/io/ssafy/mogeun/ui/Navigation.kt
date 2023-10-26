@@ -1,6 +1,9 @@
 package io.ssafy.mogeun.ui
 
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -15,6 +18,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,40 +35,51 @@ import androidx.navigation.compose.rememberNavController
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.ui.screens.record.RecordScreen
 import io.ssafy.mogeun.ui.screens.routine.RoutineScreen
+import io.ssafy.mogeun.ui.screens.routine.execution.ExecutionScreen
 import io.ssafy.mogeun.ui.screens.setting.SettingScreen
 import io.ssafy.mogeun.ui.screens.summary.SummaryScreen
 
 sealed class Screen(
     val route: String,
     val title: String,
-    val vectorId: Int,
+    val vectorId: Int? = null
 ) {
     object Routine : Screen("routine", "루틴", R.drawable.icon_routine)
+    object Execution : Screen("execution", "운동 진행")
     object Record : Screen("record", "기록", R.drawable.icon_record)
     object Summary : Screen("summary", "요약", R.drawable.icon_summary)
     object Setting : Screen("setting", "설정", R.drawable.icon_setting)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+data class TopBarState(
+    val visibility: Boolean,
+    val title: String,
+    val backBtn
+)
+
 @Composable
 fun Navigation() {
     val navController: NavHostController = rememberNavController()
 
+    val navBackStackEntry = navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry.value?.destination?.route
+
+    val topBarState = rememberSaveable { (mutableStateOf(true))}
+    val bottomBarState = rememberSaveable { (mutableStateOf(true))}
+
+    when (currentRoute) {
+        "execution" -> {
+            bottomBarState.value = false
+            topBarState.value = false
+        }
+    }
+
     Scaffold (
         topBar = {
-            TopAppBar(
-                title = { Text("test") },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { }
-                    ) {
-                        Icon(Icons.Filled.Menu, contentDescription = "")
-                    }
-                }
-            )
+            TopBar(navController, topBarState)
         },
         bottomBar = {
-            bottomBar(navController)
+            BottomBar(navController, bottomBarState, currentRoute)
         }
     ) {innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
@@ -76,7 +91,8 @@ fun Navigation() {
 @Composable
 fun NavigationGraph(navController: NavHostController) {
     NavHost(navController, startDestination = Screen.Routine.route) {
-        composable(Screen.Routine.route) { RoutineScreen() }
+        composable(Screen.Routine.route) { RoutineScreen(navController = navController) }
+        composable(Screen.Execution.route) { ExecutionScreen() }
         composable(Screen.Record.route) { RecordScreen(navController = navController) }
         composable(Screen.Summary.route) { SummaryScreen() }
         composable(Screen.Setting.route) { SettingScreen() }
@@ -84,27 +100,53 @@ fun NavigationGraph(navController: NavHostController) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun bottomBar(navController: NavHostController) {
+fun TopBar(navController: NavHostController, topBarState: MutableState<Boolean>) {
+    AnimatedVisibility(
+        visible = topBarState.value,
+        enter = slideInVertically(initialOffsetY = { it }),
+        exit = slideOutVertically(targetOffsetY = { it })
+    ) {
+        TopAppBar(
+            title = { Text("test") },
+            navigationIcon = {
+                IconButton(
+                    onClick = { }
+                ) {
+                    Icon(Icons.Filled.Menu, contentDescription = "")
+                }
+            }
+        )
+    }
+}
 
-    val navBackStackEntry = navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry.value?.destination?.route
+@Composable
+fun BottomBar(navController: NavHostController, bottomBarState: MutableState<Boolean>, currentRoute: String?) {
 
     val rootScreen = arrayOf(Screen.Routine, Screen.Record, Screen.Summary, Screen.Setting)
 
-    NavigationBar {
-        rootScreen.forEach { screen ->
-            NavigationBarItem(
-                selected = currentRoute == screen.route,
-                onClick = {
-                    navController.navigate(screen.route) {
-                        popUpTo(navController.graph.startDestinationId)
-                        launchSingleTop = true
-                    }
-                },
-                icon = { Image(imageVector = ImageVector.vectorResource(id = screen.vectorId), contentDescription = screen.route) },
-                label = { Text(screen.title) }
-            )
+
+
+    AnimatedVisibility(
+        visible = bottomBarState.value,
+        enter = slideInVertically(initialOffsetY = { it }),
+        exit = slideOutVertically(targetOffsetY = { it })
+    ) {
+        NavigationBar {
+            rootScreen.forEach { screen ->
+                NavigationBarItem(
+                    selected = currentRoute == screen.route,
+                    onClick = {
+                        navController.navigate(screen.route) {
+                            popUpTo(navController.graph.startDestinationId)
+                            launchSingleTop = true
+                        }
+                    },
+                    icon = { Image(imageVector = ImageVector.vectorResource(id = screen.vectorId!!), contentDescription = screen.route) },
+                    label = { Text(screen.title) }
+                )
+            }
         }
     }
 }
