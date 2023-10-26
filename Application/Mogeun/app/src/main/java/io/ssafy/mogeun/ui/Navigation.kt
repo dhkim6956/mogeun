@@ -33,6 +33,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.ui.screens.addroutine.AddRoutineScreen
 import io.ssafy.mogeun.ui.screens.record.RecordScreen
 import io.ssafy.mogeun.ui.screens.routine.RoutineScreen
 import io.ssafy.mogeun.ui.screens.routine.execution.ExecutionScreen
@@ -53,6 +54,7 @@ sealed class Screen(
     object Setting : Screen("setting", "설정", R.drawable.icon_setting)
     object Login : Screen("login", "로그인", R.drawable.icon_setting)
     object Signup : Screen("signup", "회원가입", R.drawable.icon_setting)
+    object AddRoutine : Screen("addroutine", "루틴추가", R.drawable.icon_setting)
 }
 
 data class TopBarState(
@@ -94,13 +96,14 @@ fun Navigation() {
 @Composable
 fun NavigationGraph(navController: NavHostController) {
     NavHost(navController, startDestination = Screen.Routine.route) {
-        composable(Screen.Routine.route) { RoutineScreen(navController = navController) }
+        composable(Screen.Routine.route) { RoutineScreen() }
         composable(Screen.Execution.route) { ExecutionScreen() }
         composable(Screen.Record.route) { RecordScreen(navController = navController) }
         composable(Screen.Summary.route) { SummaryScreen() }
         composable(Screen.Setting.route) { SettingScreen() }
         composable(Screen.Login.route) { LoginScreen(navController = navController)}
         composable(Screen.Signup.route) { SignupScreen(navController = navController)}
+        composable(Screen.AddRoutine.route) { AddRoutineScreen(navController = navController)}
     }
 }
 
