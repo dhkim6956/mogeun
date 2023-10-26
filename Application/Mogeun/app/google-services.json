@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:596345237666:android:6debddd43ad18986a027fb",
+        "mobilesdk_app_id": "1:596345237666:android:6cb898c69a6d7db9a027fb",
         "android_client_info": {
-          "package_name": "io.ssafy.moguen"
+          "package_name": "io.ssafy.mogeun"
         }
       },
       "oauth_client": [],
