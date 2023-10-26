@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "io.ssafy.mogeun"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
@@ -63,6 +63,8 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.navigation)
 
+    implementation("androidx.compose.foundation:foundation-android:1.5.4")
+    implementation("com.kizitonwose.calendar:compose:2.4.0")
 
     implementation(platform("com.google.firebase:firebase-bom:32.4.0"))
     implementation("com.google.firebase:firebase-analytics-ktx")
