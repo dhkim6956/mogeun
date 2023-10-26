@@ -23,6 +23,7 @@ public class RoutineDto {
     // 단일 운동 계획 정보
     private int planKey;
     private int execKey;
+    private Exercise exec;
     private int setAmount;
 
     // 계획 내 세트별 세부 사항

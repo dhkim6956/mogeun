@@ -21,6 +21,18 @@ public class UserRoutineService {
     private final UserRepository userRepository;
     private final UserRoutineRepository routineRepository;
 
+    public RoutineDto getRoutine(int routineKey) {
+
+        Optional<UserRoutine> routine = routineRepository.findById(routineKey);
+        if(routine.isEmpty())
+            return null;
+
+        return RoutineDto.builder()
+                .routineKey(routine.get().getRoutineKey())
+                .routineName(routine.get().getRoutineName())
+                .build();
+    }
+
     public String createRoutine(RoutineDto dto, String email) {
 
         Optional<User> user = userRepository.findByEmail(email);

@@ -4,12 +4,15 @@ import com.mogun.backend.domain.exercise.Exercise;
 import com.mogun.backend.domain.exercise.repository.ExerciseRepository;
 import com.mogun.backend.domain.routine.userRoutine.UserRoutine;
 import com.mogun.backend.domain.routine.userRoutine.repository.UserRoutineRepository;
+import com.mogun.backend.domain.routine.userRoutinePlan.UserRoutinePlan;
 import com.mogun.backend.domain.routine.userRoutinePlan.repository.UserRoutinePlanRepository;
 import com.mogun.backend.service.routine.dto.RoutineDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -34,5 +37,21 @@ public class UserRoutinePlanService {
         planRepository.save(dto.toRoutinePlanEntity(routine.get(), exec.get()));
 
         return "SUCCESS";
+    }
+
+    public List<RoutineDto> getAllPlan(RoutineDto dto) {
+
+        List<RoutineDto> result = new ArrayList<>();
+        Optional<UserRoutine> routine = routineRepository.findById(dto.getRoutineKey());
+        List<UserRoutinePlan> planList = planRepository.findAllByUserRoutine(routine.get());
+
+        for(UserRoutinePlan plan: planList) {
+            result.add(RoutineDto.builder()
+                    .planKey(plan.getRoutinePlanKey())
+                    .exec(plan.getExercise())
+                    .build());
+        }
+
+        return result;
     }
 }
