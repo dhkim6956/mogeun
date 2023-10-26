@@ -19,7 +19,7 @@ pipeline {
             steps {
                 sh '''
                     cd ./Application/Mogeun
-                    chmod 777. ./gradlew
+                    chmod 777 ./gradlew
                     ./gradlew appDistributionUploadDebug
                 '''
             }
