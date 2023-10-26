@@ -37,6 +37,13 @@ sealed class Screen(
         topBarState = TopBarState(visibility = true, backBtnVisibility = false),
         bottomBarState = BottomBarState(true, R.drawable.icon_record, "record")
     )
+
+    object RecordDetail : Screen(
+        route = "recorddetail",
+        title = "루틴 상세 정보",
+        topBarState = TopBarState(visibility = true, backBtnVisibility = false),
+        bottomBarState = BottomBarState(true, R.drawable.icon_record, "recorddetail")
+    )
     object Summary : Screen(
         route = "summary",
         title = "요약",
