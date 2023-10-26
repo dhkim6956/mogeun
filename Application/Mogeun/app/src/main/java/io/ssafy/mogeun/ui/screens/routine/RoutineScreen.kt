@@ -32,10 +32,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import io.ssafy.mogeun.R
 
 @Composable
-fun RoutineScreen() {
+fun RoutineScreen(navController: NavHostController) {
 //    val context = LocalContext.current
 //    val test = LocalContext.current.resources.getIdentifier("chest", "string", context.packageName)
     Column(modifier = Modifier.padding(10.dp)) {
@@ -184,7 +185,7 @@ fun RoutineScreen() {
         .fillMaxSize()
         .padding(end = 30.dp, bottom = 30.dp), contentAlignment = Alignment.BottomEnd) {
         Button(
-            onClick = { /*TODO*/ },
+            onClick = { navController.navigate("addroutine") },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
             shape = RoundedCornerShape(10.dp)
         ) {

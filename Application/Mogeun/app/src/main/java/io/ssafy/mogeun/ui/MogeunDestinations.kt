@@ -67,6 +67,12 @@ sealed class Screen(
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
         bottomBarState = BottomBarState(true, R.drawable.icon_setting)
     )
+    object AddExercise : Screen(
+        route = "addexercise",
+        title = "운동 추가",
+        topBarState = TopBarState(visibility = true, backBtnVisibility = true),
+        bottomBarState = BottomBarState(true, R.drawable.icon_setting)
+    )
 }
 
 val rootScreen = arrayOf(Screen.Routine, Screen.Record, Screen.Summary, Screen.Setting)
