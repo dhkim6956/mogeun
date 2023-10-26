@@ -16,27 +16,21 @@ import java.io.Serializable;
 public class AttachPart implements Serializable {
 
     @Id
-    @Column(name = "part_key")
-    private int partKey;
+    @Column(name = "attach_part_key")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int attachPartKey;
 
-    @Id
-    @Column(name = "exec_key", columnDefinition = "TINYINT")
-    private int execKey;
+    @ManyToOne
+    @JoinColumn(name = "exec_key")
+    private Exercise exercise;
+
+    @ManyToOne
+    @JoinColumn(name = "part_key")
+    private MusclePart musclePart;
 
     @Column(name = "attach_direction")
     private char attachDirection;
 
     @Column(name = "muscle_category")
     private char muscleCategory;
-
-    @MapsId
-    @ManyToOne
-    @JoinColumn(name = "exec_key")
-    private Exercise exercise;
-
-    @MapsId
-    @ManyToOne
-    @JoinColumn(name = "part_key")
-    private MusclePart musclePart;
-
 }
