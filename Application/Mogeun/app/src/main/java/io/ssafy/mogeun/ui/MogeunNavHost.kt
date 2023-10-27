@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineScreen
 import io.ssafy.mogeun.ui.screens.login.LoginScreen
+import io.ssafy.mogeun.ui.screens.record.RecordDetailScreen
 import io.ssafy.mogeun.ui.screens.record.RecordScreen
 import io.ssafy.mogeun.ui.screens.routine.RoutineScreen
 import io.ssafy.mogeun.ui.screens.routine.execution.ExecutionScreen
@@ -20,6 +21,7 @@ fun MogeunNavHost(navController: NavHostController) {
         composable(Screen.Routine.route) { RoutineScreen(navController = navController) }
         composable(Screen.Execution.route) { ExecutionScreen() }
         composable(Screen.Record.route) { RecordScreen(navController = navController) }
+        composable(Screen.RecordDetail.route) { RecordDetailScreen(navController = navController) }
         composable(Screen.Summary.route) { SummaryScreen() }
         composable(Screen.Setting.route) { SettingScreen() }
         composable(Screen.Login.route) { LoginScreen(navController = navController) }
