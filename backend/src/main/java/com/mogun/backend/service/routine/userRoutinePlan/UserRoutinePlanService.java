@@ -39,6 +39,24 @@ public class UserRoutinePlanService {
         return "SUCCESS";
     }
 
+    public String removePlan(RoutineDto dto) {
+
+        Optional<UserRoutine> routine = routineRepository.findById(dto.getRoutineKey());
+        Optional<Exercise> exercise = exerciseRepository.findById(dto.getExecKey());
+
+        if(routine.isEmpty())
+            return  "요청 오류: 등록된 루틴이 아님";
+        if(exercise.isEmpty())
+            return "요청 오류: 목록에 없는 운동";
+
+        Optional<UserRoutinePlan> plan = planRepository.findByUserRoutineAndExercise(routine.get(), exercise.get());
+        if(plan.isEmpty())
+            return "요청 오류: 적합한 운동 계획이 없음";
+        planRepository.delete(plan.get());
+
+        return "SUCCESS";
+    }
+
     public List<RoutineDto> getAllPlan(RoutineDto dto) {
 
         List<RoutineDto> result = new ArrayList<>();

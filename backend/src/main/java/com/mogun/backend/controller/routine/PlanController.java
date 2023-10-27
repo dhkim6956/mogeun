@@ -37,6 +37,17 @@ public class PlanController {
         return ApiResponse.postAndPutResponse(result, request);
     }
 
+    @DeleteMapping("/Remove")
+    public ApiResponse removePlan(@RequestParam("routine_key") int routineKey, @RequestParam("exec_key") int execKey) {
+
+        String result = planService.removePlan(RoutineDto.builder()
+                .routineKey(routineKey)
+                .execKey(execKey)
+                .build());
+
+        return ApiResponse.postAndPutResponse(result, null);
+    }
+
     @GetMapping("/ListAll")
     public ApiResponse getAllPlan(@RequestParam("routine_key") int routineKey) {
 

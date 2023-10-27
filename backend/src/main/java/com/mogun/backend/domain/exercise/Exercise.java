@@ -2,6 +2,7 @@ package com.mogun.backend.domain.exercise;
 
 import com.mogun.backend.domain.musclePart.MusclePart;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import java.io.Serializable;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Exercise {

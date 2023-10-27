@@ -1,7 +1,6 @@
 package com.mogun.backend.controller.routine.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.mogun.backend.domain.exercise.Exercise;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
