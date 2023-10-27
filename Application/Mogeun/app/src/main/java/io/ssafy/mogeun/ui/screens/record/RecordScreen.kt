@@ -1,13 +1,13 @@
 package io.ssafy.mogeun.ui.screens.record
 
 import android.util.Log
+import android.widget.CalendarView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -17,16 +17,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -46,10 +40,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.kizitonwose.calendar.compose.CalendarLayoutInfo
 import com.kizitonwose.calendar.compose.CalendarState
@@ -73,62 +65,20 @@ fun RecordScreen(navController: NavHostController) {
         modifier = Modifier
             .fillMaxSize()
             .padding(
-                horizontal = 30.dp,
-                vertical = 10.dp
-            )
-            .background(color = MaterialTheme.colorScheme.background),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        CalenderUI()
-        Text("운동기록", fontSize=24.sp, fontWeight = FontWeight.Bold)
-        LazyColumn (
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
-        ) {
-            itemsIndexed(
-                listOf(1, 2, 3, 4, 5)
-            ) {index, item ->
-                RoutineRecord("23년 10월 6일, 09:10 ~ 10:21", "내가 만든 루틴") {}
-            }
-        }
-    }
-}
-
-@Preview
-@Composable
-fun RecordUIPreview() {
-    Column (
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(
                 horizontal = 30.dp
             )
             .background(color = MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        CalenderUI()
-        Text("운동기록", fontSize=24.sp, fontWeight = FontWeight.Bold)
-        LazyColumn (
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
-        ) {
-            itemsIndexed(
-                listOf(1, 2, 3)
-            ) {index, item ->
-                RoutineRecord("23년 10월 6일, 09:10 ~ 10:21", "내가 만든 루틴") {}
-            }
-        }
+        CalenderUI(500, navController)
     }
 }
 
 @Composable
-fun CalenderUI(adjacentMonths: Long = 500) {
+fun CalenderUI(
+    adjacentMonths: Long = 500,
+    navController: NavHostController
+) {
     val currentMonth = remember { YearMonth.now() }
     val startMonth = remember { currentMonth.minusMonths(adjacentMonths) }
     val endMonth = remember { currentMonth.plusMonths(adjacentMonths) }
@@ -181,6 +131,20 @@ fun CalenderUI(adjacentMonths: Long = 500) {
                 MonthHeader(daysOfWeek = daysOfWeek)
             },
         )
+    }
+    Text("운동기록", fontSize=24.sp, fontWeight = FontWeight.Bold)
+    LazyColumn (
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(20.dp)
+    ) {
+        itemsIndexed(
+            listOf(1, 2, 3, 4, 5)
+        ) {index, item ->
+            RoutineRecord(navController,"23년 10월 6일, 09:10 ~ 10:21", "내가 만든 루틴")
+        }
     }
 }
 
@@ -314,9 +278,9 @@ private fun CalendarLayoutInfo.firstMostVisibleMonth(viewportPercent: Float = 50
 
 @Composable
 fun RoutineRecord(
+    navController: NavHostController,
     routineTime: String,
-    routineName: String,
-    onClick: () -> Unit
+    routineName: String
 ) {
     Box (
         modifier = Modifier
@@ -345,7 +309,7 @@ fun RoutineRecord(
                 Text(routineTime, fontWeight = FontWeight.Bold)
                 Text(routineName)
             }
-            TextButton(onClick = { onClick() }) {
+            TextButton(onClick = { navController.navigate("recorddetail") }) {
                 Text(text = "자세히 보기", color = MaterialTheme.colorScheme.secondary)
             }
         }
