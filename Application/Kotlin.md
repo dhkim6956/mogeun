@@ -66,4 +66,5 @@ expanded = !expanded
 
 ## Docs
 
-[Compose 예시 어플리케이션](https://github.com/android/compose-samples)
+[Compose 예시 어플리케이션1](https://github.com/android/compose-samples)
+[Compose 예시 어플리케이션2](https://developer.android.com/jetpack/compose/samples)
