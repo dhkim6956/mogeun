@@ -30,6 +30,7 @@ public class RoutineDto {
     private int setAmount;
 
     // 계획 내 세트별 세부 사항
+    private int setKey;
     private User user;
     private UserRoutine routine;
     private UserRoutinePlan plan;

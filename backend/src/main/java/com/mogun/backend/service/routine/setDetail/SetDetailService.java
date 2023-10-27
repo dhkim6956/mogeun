@@ -64,4 +64,22 @@ public class SetDetailService {
 
         return setDetailRepository.findAllByUserRoutinePlan(plan.get());
     }
+
+    public String deleteOneSet(RoutineDto dto) {
+
+        setDetailRepository.deleteById(dto.getSetKey());
+
+        return "SUCCESS";
+    }
+
+    public String deleteAllSet(RoutineDto dto) {
+
+        Optional<UserRoutinePlan> plan = planRepository.findById(dto.getPlanKey());
+        if(plan.isEmpty())
+            return "요청 오류: 등록된 운동이 아님";
+
+        setDetailRepository.deleteAllByUserRoutinePlan(plan.get());
+
+        return "SUCCESS";
+    }
 }

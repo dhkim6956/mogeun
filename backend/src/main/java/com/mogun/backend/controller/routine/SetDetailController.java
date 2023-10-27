@@ -2,6 +2,7 @@ package com.mogun.backend.controller.routine;
 
 
 import com.mogun.backend.ApiResponse;
+import com.mogun.backend.controller.routine.request.CommonRoutineRequest;
 import com.mogun.backend.controller.routine.request.SetInfo;
 import com.mogun.backend.controller.routine.request.SetRequest;
 import com.mogun.backend.controller.routine.request.SetRequestList;
@@ -80,5 +81,21 @@ public class SetDetailController {
                 .execName(execName)
                 .setInfoList(infoList)
                 .build());
+    }
+
+    @DeleteMapping("/Delete")
+    public ApiResponse deleteOneSet(@RequestBody CommonRoutineRequest request) {
+
+        String result = setDetailService.deleteOneSet(RoutineDto.builder().setKey(request.getSetKey()).build());
+
+        return ApiResponse.postAndPutResponse(result, request);
+    }
+
+    @DeleteMapping("/DeleteAll")
+    public ApiResponse deleteAll(@RequestBody CommonRoutineRequest request) {
+
+        String result = setDetailService.deleteAllSet(RoutineDto.builder().planKey(request.getPlanKey()).build());
+
+        return ApiResponse.postAndPutResponse(result, request);
     }
 }

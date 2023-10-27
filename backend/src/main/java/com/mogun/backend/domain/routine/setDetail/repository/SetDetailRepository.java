@@ -15,4 +15,5 @@ public interface SetDetailRepository extends JpaRepository<SetDetail, Integer> {
 
     Optional<SetDetail> findByUserAndUserRoutineAndUserRoutinePlan(User user, UserRoutine routine, UserRoutinePlan plan);
     List<SetDetail> findAllByUserRoutinePlan(UserRoutinePlan plan);
+    void deleteAllByUserRoutinePlan(UserRoutinePlan plan);
 }
