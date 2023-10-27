@@ -6,37 +6,36 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import io.ssafy.mogeun.R
-import io.ssafy.mogeun.ui.Screen
 
 data class routineInfo(
     val title: String,
@@ -49,9 +48,9 @@ fun RecordDetailScreen(navController: NavHostController) {
         modifier = Modifier
             .fillMaxSize()
             .padding(
-                horizontal = 30.dp
-            )
-            .background(color = MaterialTheme.colorScheme.background),
+                horizontal = 30.dp,
+                vertical = 10.dp
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         RoutineInfoCard()
@@ -75,8 +74,7 @@ fun RecordDetailScreenPreview() {
             .fillMaxSize()
             .padding(
                 horizontal = 30.dp
-            )
-            .background(color = MaterialTheme.colorScheme.background),
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         RoutineInfoCard()
@@ -94,7 +92,7 @@ fun RecordDetailScreenPreview() {
 
 @Composable
 fun RoutineInfoCard() {
-    var routineInfoList: List<routineInfo> = listOf(routineInfo("소모 칼로리", "72kcal"), routineInfo("수행한 세트", "22set"), routineInfo("운동한 시간", "71분"))
+    var routineInfoList: List<routineInfo> = listOf(routineInfo("운동일자", "2023년 10월 6일"), routineInfo("소모 칼로리", "72kcal"), routineInfo("수행한 세트", "22set"), routineInfo("운동한 시간", "71분"))
     Card (
         modifier = Modifier
             .fillMaxWidth()
@@ -121,7 +119,7 @@ fun RoutineInfoCard() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = MaterialTheme.colorScheme.primaryContainer,
+                        color = MaterialTheme.colorScheme.background,
                         shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
                     )
             ) {
@@ -166,24 +164,62 @@ fun RoutineInfo(
     }
 }
 
+@Preview
 @Composable
 fun RoutineGraphIconCard() {
-    Card (
+    Box (
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.background
-            )
             .padding(
                 vertical = 20.dp
             )
+            .background(color = MaterialTheme.colorScheme.background)
     ) {
-        Row () {
-
+        Row (
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            GraphCard()
+            IconCard()
         }
     }
 }
 
+@Composable
+fun GraphCard() {
+    Box (modifier = Modifier
+        .fillMaxWidth(0.5f)
+    ) {
+        Image(
+            modifier = Modifier.fillMaxWidth(),
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = "logo",
+        )
+    }
+}
+
+@Composable
+fun IconCard() {
+    Box (
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column {
+            Text("사용근육")
+            NonlazyGrid(
+                columns = 2,
+                itemCount = 3,
+                modifier = Modifier
+                    .padding(start = 7.5.dp, end = 7.5.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = "logo",
+                )
+            }
+        }
+    }
+}
+
+@Preview
 @Composable
 fun RoutineExerciseCard() {
     Box (
@@ -204,32 +240,84 @@ fun RoutineExerciseCard() {
             ),
         contentAlignment = Alignment.Center
     ) {
-        Row (
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column () {
-                Image(
-                    painter = painterResource(id = R.drawable.logo),
-                    contentDescription = "logo",
-                )
-                Text("test")
-            }
-            Column () {
-                Surface () {
-
+        Column (modifier = Modifier.fillMaxWidth()) {
+            Row (
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column () {
+                    Image(
+                        painter = painterResource(id = R.drawable.logo),
+                        contentDescription = "logo",
+                    )
+                    Text("test")
                 }
-                Text(text = "자세히 보기", color = MaterialTheme.colorScheme.secondary)
-//            TextButton(onClick = { navController.navigate("recorddetail") }) {
-//                Text(text = "자세히 보기", color = MaterialTheme.colorScheme.secondary)
-//            }
+                NonlazyGrid(
+                    columns = 5,
+                    itemCount = 9,
+                    modifier = Modifier
+                        .padding(start = 7.5.dp, end = 7.5.dp)
+                ) {
+                    SetWeightIcon()
+                }
             }
+            ClickableText(
+                modifier = Modifier.align(Alignment.End),
+                text = AnnotatedString("자세히 보기"),
+                onClick = { },
+                style = TextStyle(color = MaterialTheme.colorScheme.secondary)
+            )
         }
     }
 }
 
 @Composable
 fun SetWeightIcon() {
+    Box(
+        modifier = Modifier
+            .aspectRatio(1f) // This is important for square-sizing!
+            .padding(6.dp)
+            .clip(CircleShape)
+            .background(color = MaterialTheme.colorScheme.primaryContainer),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "100",
+            color = MaterialTheme.colorScheme.onBackground,
+            fontSize = 14.sp,
+        )
+    }
+}
 
+@Composable
+fun NonlazyGrid(
+    columns: Int,
+    itemCount: Int,
+    modifier: Modifier = Modifier,
+    content: @Composable() (Int) -> Unit
+) {
+    Column(modifier = modifier) {
+        var rows = (itemCount / columns)
+        if (itemCount.mod(columns) > 0) {
+            rows += 1
+        }
+
+        for (rowId in 0 until rows) {
+            val firstIndex = rowId * columns
+
+            Row {
+                for (columnId in 0 until columns) {
+                    val index = firstIndex + columnId
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    ) {
+                        if (index < itemCount) {
+                            content(index)
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

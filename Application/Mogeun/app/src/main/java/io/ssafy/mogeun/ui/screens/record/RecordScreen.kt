@@ -1,7 +1,5 @@
 package io.ssafy.mogeun.ui.screens.record
 
-import android.util.Log
-import android.widget.CalendarView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,10 +17,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
@@ -38,8 +36,11 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -61,7 +62,7 @@ import java.time.YearMonth
 
 @Composable
 fun RecordScreen(navController: NavHostController) {
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(
@@ -309,9 +310,126 @@ fun RoutineRecord(
                 Text(routineTime, fontWeight = FontWeight.Bold)
                 Text(routineName)
             }
-            TextButton(onClick = { navController.navigate("recorddetail") }) {
-                Text(text = "자세히 보기", color = MaterialTheme.colorScheme.secondary)
+            ClickableText(
+                text = AnnotatedString("자세히 보기") ,
+                onClick = { navController.navigate("recorddetail") },
+                style = TextStyle(color = MaterialTheme.colorScheme.secondary)
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun CalenderUIPreview(
+    adjacentMonths: Long = 500
+) {
+    val currentMonth = remember { YearMonth.now() }
+    val startMonth = remember { currentMonth.minusMonths(adjacentMonths) }
+    val endMonth = remember { currentMonth.plusMonths(adjacentMonths) }
+    val selections = remember { mutableStateListOf<CalendarDay>() }
+    val daysOfWeek = remember { daysOfWeek() }
+    val testList: MutableList<Boolean> = mutableListOf(true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true)
+//    for (i in 0 until 31) {
+//        testList[i] = false
+//    }
+    Column() {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    vertical = 10.dp
+                )
+                .background(
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = RoundedCornerShape(16.dp)
+                ),
+        ) {
+            val state = rememberCalendarState(
+                startMonth = startMonth,
+                endMonth = endMonth,
+                firstVisibleMonth = currentMonth,
+                firstDayOfWeek = daysOfWeek.first(),
+            )
+            val coroutineScope = rememberCoroutineScope()
+            val visibleMonth = rememberFirstMostVisibleMonth(state, viewportPercent = 90f)
+            SimpleCalendarTitle(
+                modifier = Modifier.padding(vertical = 10.dp, horizontal = 8.dp),
+                currentMonth = visibleMonth.yearMonth,
+                goToPrevious = {
+                    coroutineScope.launch {
+                        state.animateScrollToMonth(state.firstVisibleMonth.yearMonth.previousMonth)
+                    }
+                },
+                goToNext = {
+                    coroutineScope.launch {
+                        state.animateScrollToMonth(state.firstVisibleMonth.yearMonth.nextMonth)
+                    }
+                },
+            )
+            HorizontalCalendar(
+                modifier = Modifier.testTag("calendar"),
+                state = state,
+                dayContent = { day ->
+                    Day(day, isSelected = testList.get(day.date.dayOfMonth - 1))
+                },
+                monthHeader = {
+                    MonthHeader(daysOfWeek = daysOfWeek)
+                },
+            )
+        }
+        Text("운동기록", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            itemsIndexed(
+                listOf(1, 2, 3, 4, 5)
+            ) { index, item ->
+                RoutineRecordPreview()
             }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun RoutineRecordPreview() {
+    Box (
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                color = MaterialTheme.colorScheme.background,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .border(
+                width = 2.dp,
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(
+                vertical = 10.dp,
+                horizontal = 10.dp
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Row (
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column () {
+                Text("test", fontWeight = FontWeight.Bold)
+                Text("test")
+            }
+            ClickableText(
+                text = AnnotatedString("자세히 보기") ,
+                onClick = { },
+                style = TextStyle(color = MaterialTheme.colorScheme.secondary)
+            )
         }
     }
 }

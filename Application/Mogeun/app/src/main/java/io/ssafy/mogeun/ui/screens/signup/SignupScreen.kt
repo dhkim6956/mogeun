@@ -138,7 +138,7 @@ fun Essential(inputForm: MutableIntState, firstText: MutableState<String>, navCo
                 actions = {
                     IconButton(onClick = { navController.navigate("login") }) {
                         Image(
-                            painter = painterResource(id = R.drawable.back),
+                            painter = painterResource(id = R.drawable.icon_setting),
                             contentDescription = "back",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.height(50.dp)
