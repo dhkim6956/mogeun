@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="white">#FFFFFFFF</color>
+    <string name="app_name">Mogeun</string>
+    <string name="gcm_defaultSenderId" translatable="false">596345237666</string>
+    <string name="google_api_key" translatable="false">AIzaSyAZW4WPci-cUyPIX9MczgjCnDIZJniavuU</string>
+    <string name="google_app_id" translatable="false">1:596345237666:android:6cb898c69a6d7db9a027fb</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyAZW4WPci-cUyPIX9MczgjCnDIZJniavuU</string>
+    <string name="google_storage_bucket" translatable="false">mogun-everyonesmuslce.appspot.com</string>
+    <string name="project_id" translatable="false">mogun-everyonesmuslce</string>
+    <string name="record_screen_title">기록</string>
+    <string name="routine_screen_title">루틴</string>
+    <string name="setting_screen_title">설정</string>
+    <string name="summary_screen_title">요약</string>
+    <style name="Theme.Mogeun" parent="android:Theme.Material.Light.NoActionBar"/>
+</resources>
