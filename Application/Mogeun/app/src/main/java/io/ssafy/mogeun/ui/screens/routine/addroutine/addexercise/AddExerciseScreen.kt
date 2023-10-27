@@ -1,11 +1,13 @@
 package io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise
 
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,8 +31,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import io.ssafy.mogeun.R
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -127,9 +132,21 @@ fun AddExerciseScreen(navController: NavHostController) {
                         )
                         .padding(16.dp)
                 ) {
-                    Column {
-                        Text(text = exercise.name)
-                        Text(text = exercise.musclePart)
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(text = exercise.name)
+                            Text(text = exercise.musclePart)
+                        }
+                        Image(
+                            painter = painterResource(id = R.drawable.chest),
+                            contentDescription = "chest",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.height(50.dp)
+
+                        )
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))  // 박스 사이에 8dp 높이의 공간 추가
