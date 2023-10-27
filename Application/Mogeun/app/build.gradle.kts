@@ -1,10 +1,7 @@
-import com.google.firebase.appdistribution.gradle.firebaseAppDistribution
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
-    id("com.google.firebase.appdistribution")
 }
 
 android {
@@ -31,14 +28,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-        }
-        debug {
-            firebaseAppDistribution {
-                appId = "1:596345237666:android:6cb898c69a6d7db9a027fb"
-                artifactType = "APK"
-                releaseNotes = "Debug Version"
-                testers = "tpehd1009@gmail.com, tjdalsdl19@gmail.com, lmg386411@gmail.com, dhkim6956@gmail.com, togkstls1008@gmail.com"
-            }
         }
     }
     compileOptions {
