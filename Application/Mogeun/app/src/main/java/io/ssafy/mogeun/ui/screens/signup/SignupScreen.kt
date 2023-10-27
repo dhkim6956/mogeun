@@ -35,7 +35,8 @@ fun SignupScreen(navController: NavHostController) {
             modifier = Modifier
                 .height(200.dp)
                 .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.primary),
+                .background(
+                    color = MaterialTheme.colorScheme.primary),
             contentAlignment = Alignment.Center
         ) {
             Column {
