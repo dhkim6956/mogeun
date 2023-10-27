@@ -19,16 +19,9 @@ import java.io.Serializable;
 public class SetDetail implements Serializable {
 
     @Id
-    @Column(name = "user_key")
-    private int userKey;
-
-    @Id
-    @Column(name = "routine_key")
-    private int routineKey;
-
-    @Id
-    @Column(name = "routine_plan_key")
-    private int routinePlanKey;
+    @Column(name = "set_key")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int setKey;
 
     @Column(name = "set_number")
     private int setNumber;
@@ -39,17 +32,14 @@ public class SetDetail implements Serializable {
     @Column(name = "target_repeat")
     private int targetRepeat;
 
-    @MapsId
     @ManyToOne
     @JoinColumn(name = "user_key")
     private User user;
 
-    @MapsId
     @ManyToOne
     @JoinColumn(name = "routine_key")
     private UserRoutine userRoutine;
 
-    @MapsId
     @ManyToOne
     @JoinColumn(name = "routine_plan_key")
     private UserRoutinePlan userRoutinePlan;

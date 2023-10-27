@@ -4,9 +4,11 @@ import com.mogun.backend.ApiResponse;
 import com.mogun.backend.controller.routine.response.PlanListResponse;
 import com.mogun.backend.controller.routine.response.SimplePlanInfoResponse;
 import com.mogun.backend.domain.exercise.Exercise;
+import com.mogun.backend.service.attachPart.AttachPartService;
 import com.mogun.backend.service.exercise.ExerciseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +22,9 @@ import java.util.List;
 public class ExerciseController {
 
     private final ExerciseService exerciseService;
+    private final AttachPartService attachPartService;
 
+    @GetMapping("ListAll")
     public ApiResponse getAllExercise() {
 
         List<SimplePlanInfoResponse> result = new ArrayList<>();
@@ -31,8 +35,10 @@ public class ExerciseController {
             result.add(SimplePlanInfoResponse.builder()
                     .execKey(item.getExecKey())
                     .execName(item.getName())
-                    .musclePart(item.getMainPart())
-                    .
+                    .musclePart(attachPartService.getAllPartNameByExercise(item))
+                    .build());
         }
+
+        return ApiResponse.ok(result);
     }
 }

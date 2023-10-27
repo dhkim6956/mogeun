@@ -14,6 +14,9 @@ import lombok.Data;
 @AllArgsConstructor
 public class RoutineDto {
 
+    // 회원 정보
+    private int userKey;
+
     // 루틴 정보
     private int routineKey;
     private String routineName;
@@ -27,6 +30,9 @@ public class RoutineDto {
     private int setAmount;
 
     // 계획 내 세트별 세부 사항
+    private User user;
+    private UserRoutine routine;
+    private UserRoutinePlan plan;
     private int setNumber;
     private int weight;
     private int targetRep;
@@ -49,14 +55,11 @@ public class RoutineDto {
                 .build();
     }
 
-    public SetDetail toSetDetailEntity(UserRoutinePlan routinePlan) {
+    public SetDetail toSetDetailEntity(User user, UserRoutine routine, UserRoutinePlan plan) {
         return SetDetail.builder()
-                .userRoutinePlan(routinePlan)
-                .routinePlanKey(routinePlan.getRoutinePlanKey())
-                .userRoutine(routinePlan.getUserRoutine())
-                .routineKey(routinePlan.getUserRoutine().getRoutineKey())
-                .user(routinePlan.getUser())
-                .userKey(routinePlan.getUser().getUserKey())
+                .user(user)
+                .userRoutine(routine)
+                .userRoutinePlan(plan)
                 .setNumber(setNumber)
                 .weight(weight)
                 .targetRepeat(targetRep)
