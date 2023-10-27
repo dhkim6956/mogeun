@@ -1,5 +1,6 @@
 package io.ssafy.mogeun.ui.screens.routine
 
+import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,17 +16,27 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -39,6 +50,7 @@ import io.ssafy.mogeun.R
 fun RoutineScreen(navController: NavHostController) {
 //    val context = LocalContext.current
 //    val test = LocalContext.current.resources.getIdentifier("chest", "string", context.packageName)
+    val openAlertDialog = remember { mutableStateOf(false) }
     Column(modifier = Modifier.padding(10.dp)) {
         Column {
             Row(
@@ -185,7 +197,7 @@ fun RoutineScreen(navController: NavHostController) {
         .fillMaxSize()
         .padding(end = 30.dp, bottom = 30.dp), contentAlignment = Alignment.BottomEnd) {
         Button(
-            onClick = { navController.navigate("addroutine") },
+            onClick = { openAlertDialog.value = true },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
             shape = RoundedCornerShape(10.dp)
         ) {
@@ -201,4 +213,65 @@ fun RoutineScreen(navController: NavHostController) {
             }
         }
     }
+    when {
+        // ...
+        openAlertDialog.value -> {
+            AlertDialogExample(
+                onDismissRequest = { openAlertDialog.value = false },
+                onConfirmation = {
+                    openAlertDialog.value = false
+                    println("Confirmation registered") // Add logic here to handle confirmation.
+                },
+                dialogTitle = "루틴 이름을 설정해 주세요.",
+                dialogText = "This is an example of an alert dialog with buttons.",
+                icon = Icons.Default.Info,
+                navController = navController
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AlertDialogExample(
+    navController: NavHostController,
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    dialogTitle: String,
+    dialogText: String,
+    icon: ImageVector,
+) {
+    val (name, setName) = remember { mutableStateOf("") }
+    AlertDialog(
+        icon = {
+            Icon(icon, contentDescription = "Example Icon")
+        },
+        title = {
+            Text(text = dialogTitle)
+        },
+        text = {
+            TextField(value = name, onValueChange = setName )
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    navController.navigate("addroutine")
+                }
+            ) {
+                Text("Confirm")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onDismissRequest()
+                }
+            ) {
+                Text("Dismiss")
+            }
+        }
+    )
 }
