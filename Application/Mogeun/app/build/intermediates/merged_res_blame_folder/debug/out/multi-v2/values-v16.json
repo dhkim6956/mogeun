@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "io.ssafy.mogeun.app-mergeDebugResources-55:/values-v16/values-v16.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\SSAFY\\.gradle\\caches\\transforms-3\\44929055f0ee7a1547ae4bee216b3b00\\transformed\\core-1.12.0\\res\\values-v16\\values-v16.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "65",
+                        "endOffsets": "116"
+                    }
+                }
+            ]
+        }
+    ]
+}
