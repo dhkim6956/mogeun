@@ -62,7 +62,7 @@ android {
 }
 
 dependencies {
-    implementation(libs.protolite.well.known.types)
+//    implementation(libs.protolite.well.known.types)
     val composeBom = platform(libs.androidx.compose.bom)
 
     implementation(libs.androidx.ktx)
