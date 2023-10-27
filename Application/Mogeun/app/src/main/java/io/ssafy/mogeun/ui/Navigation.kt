@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,7 +33,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import io.ssafy.mogeun.R
-import io.ssafy.mogeun.ui.screens.addroutine.AddRoutineScreen
+import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineScreen
 import io.ssafy.mogeun.ui.screens.record.RecordScreen
 import io.ssafy.mogeun.ui.screens.routine.RoutineScreen
 import io.ssafy.mogeun.ui.screens.routine.execution.ExecutionScreen

@@ -1,6 +1,7 @@
 package io.ssafy.mogeun.ui.screens.record
 
 import android.util.Log
+import android.widget.CalendarView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -49,8 +50,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.google.type.Date
 import com.kizitonwose.calendar.compose.CalendarLayoutInfo
 import com.kizitonwose.calendar.compose.CalendarState
 import com.kizitonwose.calendar.compose.HorizontalCalendar
@@ -64,42 +67,13 @@ import com.kizitonwose.calendar.core.previousMonth
 import io.ssafy.mogeun.R
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.time.DayOfWeek
 import java.time.YearMonth
+import java.util.Locale
 
 @Composable
 fun RecordScreen(navController: NavHostController) {
-    Column (
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                horizontal = 30.dp,
-                vertical = 10.dp
-            )
-            .background(color = MaterialTheme.colorScheme.background),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        CalenderUI()
-        Text("운동기록", fontSize=24.sp, fontWeight = FontWeight.Bold)
-        LazyColumn (
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
-        ) {
-            itemsIndexed(
-                listOf(1, 2, 3, 4, 5)
-            ) {index, item ->
-                RoutineRecord("23년 10월 6일, 09:10 ~ 10:21", "내가 만든 루틴") {}
-            }
-        }
-    }
-}
-
-@Preview
-@Composable
-fun RecordUIPreview() {
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -109,26 +83,15 @@ fun RecordUIPreview() {
             .background(color = MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        CalenderUI()
-        Text("운동기록", fontSize=24.sp, fontWeight = FontWeight.Bold)
-        LazyColumn (
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
-        ) {
-            itemsIndexed(
-                listOf(1, 2, 3)
-            ) {index, item ->
-                RoutineRecord("23년 10월 6일, 09:10 ~ 10:21", "내가 만든 루틴") {}
-            }
-        }
+        CalenderUI(500, navController)
     }
 }
 
 @Composable
-fun CalenderUI(adjacentMonths: Long = 500) {
+fun CalenderUI(
+    adjacentMonths: Long = 500,
+    navController: NavHostController
+) {
     val currentMonth = remember { YearMonth.now() }
     val startMonth = remember { currentMonth.minusMonths(adjacentMonths) }
     val endMonth = remember { currentMonth.plusMonths(adjacentMonths) }
@@ -181,6 +144,20 @@ fun CalenderUI(adjacentMonths: Long = 500) {
                 MonthHeader(daysOfWeek = daysOfWeek)
             },
         )
+    }
+    Text("운동기록", fontSize=24.sp, fontWeight = FontWeight.Bold)
+    LazyColumn (
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(20.dp)
+    ) {
+        itemsIndexed(
+            listOf(1, 2, 3, 4, 5)
+        ) {index, item ->
+            RoutineRecord(navController,"23년 10월 6일, 09:10 ~ 10:21", "내가 만든 루틴")
+        }
     }
 }
 
@@ -314,9 +291,9 @@ private fun CalendarLayoutInfo.firstMostVisibleMonth(viewportPercent: Float = 50
 
 @Composable
 fun RoutineRecord(
+    navController: NavHostController,
     routineTime: String,
-    routineName: String,
-    onClick: () -> Unit
+    routineName: String
 ) {
     Box (
         modifier = Modifier
@@ -345,7 +322,7 @@ fun RoutineRecord(
                 Text(routineTime, fontWeight = FontWeight.Bold)
                 Text(routineName)
             }
-            TextButton(onClick = { onClick() }) {
+            TextButton(onClick = { navController.navigate("recorddetail") }) {
                 Text(text = "자세히 보기", color = MaterialTheme.colorScheme.secondary)
             }
         }

@@ -37,6 +37,13 @@ sealed class Screen(
         topBarState = TopBarState(visibility = true, backBtnVisibility = false),
         bottomBarState = BottomBarState(true, R.drawable.icon_record, "record")
     )
+
+    object RecordDetail : Screen(
+        route = "recorddetail",
+        title = "루틴 상세 정보",
+        topBarState = TopBarState(visibility = true, backBtnVisibility = false),
+        bottomBarState = BottomBarState(true, R.drawable.icon_record, "recorddetail")
+    )
     object Summary : Screen(
         route = "summary",
         title = "요약",
@@ -64,6 +71,12 @@ sealed class Screen(
     object AddRoutine : Screen(
         route = "addroutine",
         title = "루틴 추가",
+        topBarState = TopBarState(visibility = true, backBtnVisibility = true),
+        bottomBarState = BottomBarState(true, R.drawable.icon_setting)
+    )
+    object AddExercise : Screen(
+        route = "addexercise",
+        title = "운동 추가",
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
         bottomBarState = BottomBarState(true, R.drawable.icon_setting)
     )
