@@ -17,7 +17,7 @@ import io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.AddExerciseScre
 
 @Composable
 fun MogeunNavHost(navController: NavHostController) {
-    NavHost(navController, startDestination = Screen.Routine.route) {
+    NavHost(navController, startDestination = Screen.Login.route) {
         composable(Screen.Routine.route) { RoutineScreen(navController = navController) }
         composable(Screen.Execution.route) { ExecutionScreen() }
         composable(Screen.Record.route) { RecordScreen(navController = navController) }

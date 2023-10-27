@@ -9,7 +9,10 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="272d87fa-ee1c-48ad-9217-7966f29ee8db" name="Changes" comment="📌refactor: firebase 계정 인증 과정 수정" />
+    <list default="true" id="272d87fa-ee1c-48ad-9217-7966f29ee8db" name="Changes" comment="🌈style: 로그인 / 회원가입 UI 수정">
+      <change beforePath="$PROJECT_DIR$/.gradle/8.1.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.1.1/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -83,6 +86,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
     "cidr.known.project.marker": "true",
+    "com.google.services.firebase.aqiPopupShown": "true",
     "last_opened_file_path": "C:/Users/SSAFY/Desktop/S09P31C104/Application/Mogeun",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.17",
@@ -94,7 +98,7 @@
       <command value="gradle app:testDebugUnitTest" />
     </option>
   </component>
-  <component name="RunManager" selected="Gradle.Mogeun [app:testDebugUnitTest]">
+  <component name="RunManager" selected="Android App.app">
     <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App">
       <module name="Mogeun.app.main" />
       <option name="DEPLOY" value="true" />
@@ -283,13 +287,28 @@
       <option name="project" value="LOCAL" />
       <updated>1698301942024</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="🌈style: 로그인 / 회원가입 UI 수정">
+      <created>1698384315919</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1698384315919</updated>
+    </task>
+    <task id="LOCAL-00008" summary="🌈style: 로그인 / 회원가입 UI 수정">
+      <created>1698384397292</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1698384397292</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="✨feat: Automation Build" />
     <MESSAGE value="refactor: firebase 계정 인증 과정 추가" />
     <MESSAGE value="refactor: firebase 계정 인증 과정 수정" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor: firebase 계정 인증 과정 수정" />
+    <MESSAGE value="style: 로그인 / 회원가입 UI 수정" />
+    <option name="LAST_COMMIT_MESSAGE" value="style: 로그인 / 회원가입 UI 수정" />
   </component>
 </project>
