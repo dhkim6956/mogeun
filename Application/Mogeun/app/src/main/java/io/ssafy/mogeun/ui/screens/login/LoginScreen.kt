@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -47,7 +48,7 @@ fun LoginScreen(navController: NavHostController) {
     Column {
         Box(
             modifier = Modifier
-                .height(200.dp)
+                .height(330.dp)
                 .fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) {
@@ -55,32 +56,33 @@ fun LoginScreen(navController: NavHostController) {
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "logo",
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.padding(end = 120.dp).padding(bottom = 100.dp).height(100.dp)
+                modifier = Modifier.padding(end = 120.dp).padding(bottom = 100.dp).height(150.dp)
             )
-            Text(text = "모근", fontSize = 48.sp)
+            Text(text = "모근", fontSize = 60.sp, color = MaterialTheme.colorScheme.primary)
         }
         Column(modifier = Modifier.padding(28.dp)) {
             Text(text = "아이디")
-
             TextField(
                 value = text1,
                 onValueChange = setValue1,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(10.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = "비밀번호")
-
             TextField(
                 value = text2,
                 onValueChange = setValue2,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(10.dp)
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(32.dp))
             Button(
-                onClick = { navController.navigate("main") },
-                modifier = Modifier.fillMaxWidth().height(52.dp)
+                onClick = { navController.navigate("routine") },
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+                shape = RoundedCornerShape(10.dp)
             ) {
-                Text(text = "로그인")
+                Text(text = "로그인", color = MaterialTheme.colorScheme.scrim)
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(
@@ -91,9 +93,10 @@ fun LoginScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {navController.navigate("signup")},
-                modifier = Modifier.fillMaxWidth().height(52.dp)
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+                shape = RoundedCornerShape(10.dp)
             ) {
-                Text(text = "회원가입")
+                Text(text = "회원가입", color = MaterialTheme.colorScheme.scrim)
             }
         }
     }
