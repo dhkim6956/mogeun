@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.ui.Screen
 
 @Composable
 fun RoutineScreen(navController: NavHostController) {
@@ -184,7 +185,7 @@ fun RoutineScreen(navController: NavHostController) {
             }
             Spacer(modifier = Modifier.height(10.dp))
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { navController.navigate(Screen.Execution.route) },
                 border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.scrim),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
             ) {
