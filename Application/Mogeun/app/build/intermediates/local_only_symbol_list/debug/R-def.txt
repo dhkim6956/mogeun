@@ -7,6 +7,12 @@ color purple_700
 color teal_200
 color teal_700
 color white
+drawable add_routine
+drawable biceps
+drawable chest
+drawable edit
+drawable ic_chevron_left
+drawable ic_chevron_right
 drawable ic_launcher_background
 drawable ic_launcher_foreground
 drawable icon_record
@@ -14,6 +20,8 @@ drawable icon_routine
 drawable icon_setting
 drawable icon_summary
 drawable logo
+drawable symbol_more
+drawable triceps
 mipmap ic_launcher
 mipmap ic_launcher_round
 string app_name
