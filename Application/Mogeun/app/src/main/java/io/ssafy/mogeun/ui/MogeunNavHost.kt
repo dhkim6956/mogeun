@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navigation
 import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineScreen
 import io.ssafy.mogeun.ui.screens.login.LoginScreen
 import io.ssafy.mogeun.ui.screens.record.RecordDetailScreen
@@ -17,11 +18,15 @@ import io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.AddExerciseScre
 
 @Composable
 fun MogeunNavHost(navController: NavHostController) {
-    NavHost(navController, startDestination = Screen.Routine.route) {
-        composable(Screen.Routine.route) { RoutineScreen(navController = navController) }
-        composable(Screen.Execution.route) { ExecutionScreen() }
-        composable(Screen.Record.route) { RecordScreen(navController = navController) }
-        composable(Screen.RecordDetail.route) { RecordDetailScreen(navController = navController) }
+    NavHost(navController, startDestination = Screen.Login.route) {
+        navigation(route = "Routines", startDestination = Screen.Routine.route) {
+            composable(Screen.Routine.route) { RoutineScreen(navController = navController) }
+            composable(Screen.Execution.route) { ExecutionScreen() }
+        }
+        navigation(route = "Records", startDestination = Screen.Record.route) {
+            composable(Screen.Record.route) { RecordScreen(navController = navController) }
+            composable(Screen.RecordDetail.route) { RecordDetailScreen(navController = navController) }
+        }
         composable(Screen.Summary.route) { SummaryScreen() }
         composable(Screen.Setting.route) { SettingScreen() }
         composable(Screen.Login.route) { LoginScreen(navController = navController) }
