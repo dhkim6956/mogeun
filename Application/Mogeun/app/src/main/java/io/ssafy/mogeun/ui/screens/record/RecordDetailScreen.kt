@@ -35,7 +35,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.patrykandpatrick.vico.compose.axis.horizontal.bottomAxis
+import com.patrykandpatrick.vico.compose.axis.vertical.startAxis
+import com.patrykandpatrick.vico.compose.chart.Chart
+import com.patrykandpatrick.vico.compose.chart.line.lineChart
+import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
+import com.patrykandpatrick.vico.core.entry.FloatEntry
+import com.patrykandpatrick.vico.core.entry.entryOf
 import io.ssafy.mogeun.R
+import kotlin.random.Random
 
 data class routineInfo(
     val title: String,
@@ -50,17 +58,18 @@ fun RecordDetailScreen(navController: NavHostController) {
             .padding(
                 horizontal = 30.dp,
                 vertical = 10.dp
-            ),
+            )
+            .background(color = MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         RoutineInfoCard()
-        RoutineGraphIconCard()
         LazyColumn (
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+            item { RoutineGraphIconCard() }
             itemsIndexed(listOf(1, 2, 3)) {index, item ->
-                RoutineExerciseCard()
+                RoutineExerciseCard(navController)
             }
         }
     }
@@ -73,18 +82,19 @@ fun RecordDetailScreenPreview() {
         modifier = Modifier
             .fillMaxSize()
             .padding(
-                horizontal = 30.dp
+                horizontal = 30.dp,
+                vertical = 10.dp
             ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         RoutineInfoCard()
-        RoutineGraphIconCard()
         LazyColumn (
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+            item { RoutineGraphIconCard() }
             itemsIndexed(listOf(1, 2, 3)) {index, item ->
-                RoutineExerciseCard()
+                RoutineExerciseCardPreview()
             }
         }
     }
@@ -171,11 +181,11 @@ fun RoutineGraphIconCard() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                vertical = 20.dp
+                top = 20.dp
             )
             .background(color = MaterialTheme.colorScheme.background)
     ) {
-        Row (
+        Column (
             modifier = Modifier.fillMaxWidth()
         ) {
             GraphCard()
@@ -187,15 +197,24 @@ fun RoutineGraphIconCard() {
 @Composable
 fun GraphCard() {
     Box (modifier = Modifier
-        .fillMaxWidth(0.5f)
+        .fillMaxWidth()
     ) {
-        Image(
-            modifier = Modifier.fillMaxWidth(),
-            painter = painterResource(id = R.drawable.logo),
-            contentDescription = "logo",
+//        Image(
+//            modifier = Modifier.fillMaxWidth(),
+//            painter = painterResource(id = R.drawable.logo),
+//            contentDescription = "logo",
+//        )
+        val producer = ChartEntryModelProducer(getRandomEntries())
+        Chart(
+            chart = lineChart(),
+            chartModelProducer = producer,
+            startAxis = startAxis(),
+            bottomAxis = bottomAxis()
         )
     }
 }
+
+fun getRandomEntries() = List(9) { entryOf(it, it * 10) }
 
 @Composable
 fun IconCard() {
@@ -205,8 +224,8 @@ fun IconCard() {
         Column {
             Text("사용근육")
             NonlazyGrid(
-                columns = 2,
-                itemCount = 3,
+                columns = 5,
+                itemCount = 9,
                 modifier = Modifier
                     .padding(start = 7.5.dp, end = 7.5.dp)
             ) {
@@ -219,9 +238,8 @@ fun IconCard() {
     }
 }
 
-@Preview
 @Composable
-fun RoutineExerciseCard() {
+fun RoutineExerciseCard(navController: NavHostController) {
     Box (
         modifier = Modifier
             .fillMaxWidth()
@@ -246,6 +264,7 @@ fun RoutineExerciseCard() {
             ) {
                 Column () {
                     Image(
+                        modifier = Modifier.fillMaxSize(0.3f),
                         painter = painterResource(id = R.drawable.logo),
                         contentDescription = "logo",
                     )
@@ -253,7 +272,59 @@ fun RoutineExerciseCard() {
                 }
                 NonlazyGrid(
                     columns = 5,
-                    itemCount = 9,
+                    itemCount = 4,
+                    modifier = Modifier
+                        .padding(start = 7.5.dp, end = 7.5.dp)
+                ) {
+                    SetWeightIcon()
+                }
+            }
+            ClickableText(
+                modifier = Modifier.align(Alignment.End),
+                text = AnnotatedString("자세히 보기"),
+                onClick = { navController.navigate("exercisedetail") },
+                style = TextStyle(color = MaterialTheme.colorScheme.secondary)
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun RoutineExerciseCardPreview() {
+    Box (
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                color = MaterialTheme.colorScheme.background,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .border(
+                width = 2.dp,
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(
+                vertical = 10.dp,
+                horizontal = 10.dp
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Column (modifier = Modifier.fillMaxWidth()) {
+            Row (
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column () {
+                    Image(
+                        modifier = Modifier.fillMaxSize(0.3f),
+                        painter = painterResource(id = R.drawable.logo),
+                        contentDescription = "logo",
+                    )
+                    Text("test")
+                }
+                NonlazyGrid(
+                    columns = 5,
+                    itemCount = 6,
                     modifier = Modifier
                         .padding(start = 7.5.dp, end = 7.5.dp)
                 ) {

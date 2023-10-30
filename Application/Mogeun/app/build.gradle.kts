@@ -77,6 +77,19 @@ dependencies {
     implementation("androidx.compose.foundation:foundation-android:1.5.4")
     implementation("com.kizitonwose.calendar:compose:2.4.0")
 
+    // Provides the utilities needed to use Vico in the view system.
+    implementation("com.patrykandpatrick.vico:views:1.6.3")
+    // Provides the utilities needed to use Vico in Jetpack Compose.
+    implementation("com.patrykandpatrick.vico:compose:1.6.3")
+    // An optional addition for `vico.compose` that creates a `ChartStyle` based on an M2 Material Theme.
+    implementation("com.patrykandpatrick.vico:compose-m2:1.6.3")
+    // An optional addition for `vico.compose` that creates a `ChartStyle` based on an M3 Material Theme.
+    implementation("com.patrykandpatrick.vico:compose-m3:1.6.3")
+
+    // gif
+    implementation("io.coil-kt:coil-compose:2.2.2")
+    implementation("io.coil-kt:coil-gif:2.2.2")
+
     implementation(platform("com.google.firebase:firebase-bom:32.4.0"))
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation ("com.github.bumptech.glide:glide:4.12.0")
