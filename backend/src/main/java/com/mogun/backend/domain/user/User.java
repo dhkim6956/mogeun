@@ -53,4 +53,17 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    @Override
+    public boolean equals(Object other) {
+
+        User user = (User)other;
+        if(this.email != user.getEmail())
+            return false;
+
+        if(this.userKey != user.getUserKey())
+            return false;
+
+        return true;
+    }
 }

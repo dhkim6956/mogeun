@@ -2,6 +2,7 @@ package com.mogun.backend.domain.report.routineReport;
 
 import com.mogun.backend.domain.user.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class RoutineReport {
@@ -17,7 +19,7 @@ public class RoutineReport {
     @Id
     @GeneratedValue
     @Column(name = "log_key")
-    private long routineReportKey;
+    private Long routineReportKey;
 
     @ManyToOne
     @JoinColumn(name = "user_key")
