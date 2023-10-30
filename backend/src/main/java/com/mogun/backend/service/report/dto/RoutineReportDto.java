@@ -1,6 +1,9 @@
 package com.mogun.backend.service.report.dto;
 
+import com.mogun.backend.domain.exercise.Exercise;
 import com.mogun.backend.domain.report.routineReport.RoutineReport;
+import com.mogun.backend.domain.report.setReport.SetReport;
+import com.mogun.backend.domain.routine.userRoutine.UserRoutine;
 import com.mogun.backend.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,20 +17,46 @@ import java.time.LocalDateTime;
 public class RoutineReportDto {
 
     private String email;
-    private User user;
+    private int userKey;
     private int routineKey;
-    private String routineName;
+
+    private int planKey;
+    private Long reportKey;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private char isAttached;
 
-    public RoutineReport toRoutineReportEntity() {
+    private int setNumber;
+    private int weight;
+    private int targetRep;
+    private int successRep;
+    private float muscleAverage;
+    private float muscleFatigue;
+
+    public RoutineReport toRoutineReportEntity(User user, UserRoutine routine) {
 
         return RoutineReport.builder()
                 .user(user)
-                .routineName(routineName)
+                .routineName(routine.getRoutineName())
                 .startTime(startTime)
                 .isAttached(isAttached)
+                .build();
+    }
+
+    public SetReport toSetReportEntity(RoutineReport report, Exercise exec) {
+
+        return SetReport.builder()
+                .routineReport(report)
+                .user(report.getUser())
+                .exercise(exec)
+                .setNumber(setNumber)
+                .muscleAverage(muscleAverage)
+                .muscleFatigue(muscleFatigue)
+                .trainWeight(weight)
+                .targetRep(targetRep)
+                .successesRep(successRep)
+                .startTime(startTime)
+                .endTime(endTime)
                 .build();
     }
 }
