@@ -33,10 +33,7 @@ public class SetDetailService {
         if(plan.isEmpty())
             return "요청 오류: 등록된 운동이 아님";
 
-        UserRoutine routine = plan.get().getUserRoutine();
-        User user = plan.get().getUser();
-
-        setDetailRepository.save(dto.toSetDetailEntity(user, routine, plan.get()));
+        setDetailRepository.save(dto.toSetDetailEntity(plan.get()));
 
         return "SUCCESS";
     }
@@ -48,11 +45,7 @@ public class SetDetailService {
             return "요청 오류: 등록된 운동이 아님";
 
         for(RoutineDto dto: dtoList) {
-
-            UserRoutine routine = plan.get().getUserRoutine();
-            User user = plan.get().getUser();
-
-            setDetailRepository.save(dto.toSetDetailEntity(user, routine, plan.get()));
+            setDetailRepository.save(dto.toSetDetailEntity(plan.get()));
         }
 
         return  "SUCCESS";

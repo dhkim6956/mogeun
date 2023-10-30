@@ -33,14 +33,6 @@ public class SetDetail implements Serializable {
     private int targetRepeat;
 
     @ManyToOne
-    @JoinColumn(name = "user_key")
-    private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "routine_key")
-    private UserRoutine userRoutine;
-
-    @ManyToOne
     @JoinColumn(name = "routine_plan_key")
     private UserRoutinePlan userRoutinePlan;
 }

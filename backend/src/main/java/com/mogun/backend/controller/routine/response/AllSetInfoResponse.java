@@ -16,6 +16,9 @@ public class AllSetInfoResponse {
     @JsonProperty("exec_name")
     private String execName;
 
-    @JsonProperty("sets")
+    @JsonProperty("set_amount")
+    private int setAmount;
+
+    @JsonProperty("set_details")
     List<SetInfo> setInfoList;
 }

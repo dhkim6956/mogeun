@@ -56,10 +56,8 @@ public class RoutineDto {
                 .build();
     }
 
-    public SetDetail toSetDetailEntity(User user, UserRoutine routine, UserRoutinePlan plan) {
+    public SetDetail toSetDetailEntity(UserRoutinePlan plan) {
         return SetDetail.builder()
-                .user(user)
-                .userRoutine(routine)
                 .userRoutinePlan(plan)
                 .setNumber(setNumber)
                 .weight(weight)

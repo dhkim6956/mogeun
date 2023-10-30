@@ -58,7 +58,7 @@ public class User {
     public boolean equals(Object other) {
 
         User user = (User)other;
-        if(this.email != user.getEmail())
+        if(!this.email.equals(user.getEmail()))
             return false;
 
         if(this.userKey != user.getUserKey())

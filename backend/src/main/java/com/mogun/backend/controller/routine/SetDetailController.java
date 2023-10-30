@@ -69,7 +69,6 @@ public class SetDetailController {
         String execName = setDetailList.get(0).getUserRoutinePlan().getExercise().getName();
 
         for(SetDetail item: setDetailList) {
-
             infoList.add(SetInfo.builder()
                     .setNumber(item.getSetNumber())
                     .weight(item.getWeight())
@@ -79,6 +78,7 @@ public class SetDetailController {
 
         return ApiResponse.ok(AllSetInfoResponse.builder()
                 .execName(execName)
+                .setAmount(setDetailList.size())
                 .setInfoList(infoList)
                 .build());
     }
