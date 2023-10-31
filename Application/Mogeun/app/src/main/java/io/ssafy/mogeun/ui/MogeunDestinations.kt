@@ -86,7 +86,13 @@ sealed class Screen(
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
         bottomBarState = BottomBarState(true, R.drawable.icon_setting)
     )
+    object ExplainExercise : Screen(
+        route = "explainexercise",
+        title = "운동 설명",
+        topBarState = TopBarState(visibility = true, backBtnVisibility = true),
+        bottomBarState = BottomBarState(true, R.drawable.icon_setting)
+    )
 }
 
 val rootScreen = arrayOf(Screen.Routine, Screen.Record, Screen.Summary, Screen.Setting)
-val screens = arrayOf(Screen.Routine, Screen.Execution, Screen.Record, Screen.Summary, Screen.Setting, Screen.Login, Screen.Signup, Screen.AddRoutine)
+val screens = arrayOf(Screen.Routine, Screen.Execution, Screen.Record, Screen.Summary, Screen.Setting, Screen.Login, Screen.Signup, Screen.AddRoutine, Screen.AddExercise, Screen.ExplainExercise)

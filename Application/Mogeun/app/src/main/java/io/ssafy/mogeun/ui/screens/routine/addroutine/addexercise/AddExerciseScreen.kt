@@ -1,9 +1,9 @@
 package io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise
 
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,9 +18,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ErrorOutline
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -33,49 +38,55 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import io.ssafy.mogeun.R
 import com.skydoves.landscapist.glide.GlideImage
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.graphics.graphicsLayer
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddExerciseScreen(navController: NavHostController) {
     val musclePartList = listOf("전체", "가슴", "등", "복근", "삼두", "승모근", "어깨", "이두", "종아리", "허벅지")
-    data class Exercise(val name: String, val musclePart: String, val image: Int)
+    var selectedExercises by remember { mutableStateOf(setOf<String>()) }
+    data class Exercise(val name: String, val musclePart: String, val image: Int, val engName: String)
     val exerciseArray = arrayOf(
-        Exercise("Barbell Bench Press", "가슴", R.drawable.z_barbell_bench_press),
-        Exercise("Dumbbell Bench Press", "가슴", R.drawable.z_dumbbell_bench_press),
-        Exercise("Chest Dips", "가슴", R.drawable.z_chest_dips),
-        Exercise("Dumbbell Shrug", "승모근", R.drawable.z_dumbbell_shrug),
-        Exercise("Barbell Shrug", "승모근", R.drawable.z_barbell_shrug),
-        Exercise("Lever Shrug", "승모근", R.drawable.z_lever_shrug),
-        Exercise("Cable Pulldown", "등", R.drawable.z_cable_pulldown),
-        Exercise("Pull up", "등", R.drawable.z_pull_up),
-        Exercise("Cable Seated Row", "등", R.drawable.z_cable_seated_row),
-        Exercise("Lever Preacher Curl", "이두", R.drawable.z_lever_preacher_curl),
-        Exercise("Barbell Drag Curl", "이두", R.drawable.z_barbell_drag_curl),
-        Exercise("Dumbbell Biceps Curl", "이두", R.drawable.z_dumbbell_biceps_curl),
-        Exercise("Dumbbell Seated Triceps Extension", "삼두", R.drawable.z_dumbbell_seated_triceps_extension),
-        Exercise("Cable Triceps Pushdown", "삼두", R.drawable.z_cable_triceps_pushdown),
-        Exercise("Barbell Close Grip Bench Press", "삼두", R.drawable.z_barbell_close_grip_bench_press),
-        Exercise("Lever Leg Extension", "허벅지", R.drawable.z_lever_leg_extension),
-        Exercise("Leg Press", "허벅지", R.drawable.z_leg_press),
-        Exercise("Squat", "허벅지", R.drawable.z_squat),
-        Exercise("Smith Calf Raise", "종아리", R.drawable.z_smith_calf_raise),
-        Exercise("Lever Standing Calf Raise", "종아리", R.drawable.z_lever_standing_calf_raise),
-        Exercise("Dumbbell Standing Calf Raise", "종아리", R.drawable.z_dumbbell_standing_calf_raise),
-        Exercise("Smith Seated Shoulder Press", "어깨", R.drawable.z_smith_seated_shoulder_press),
-        Exercise("Dumbbell Front Raise", "어깨", R.drawable.z_dumbbell_front_raise),
-        Exercise("Dumbbell Lateral Raise", "어깨", R.drawable.z_dumbbell_lateral_raise),
-        Exercise("Sit-ups", "복근", R.drawable.z_sit_ups),
-        Exercise("Vertical Leg Raise", "복근", R.drawable.z_vertical_leg_raise),
-        Exercise("Twisting Crunch", "복근", R.drawable.z_twisting_crunch)
+        Exercise("바벨 벤치 프레스", "가슴", R.drawable.z_barbell_bench_press, "barbell bench press"),
+        Exercise("덤벨 벤치 프레스", "가슴", R.drawable.z_dumbbell_bench_press, "dumbbell bench press"),
+        Exercise("딥스", "가슴", R.drawable.z_chest_dips, "chest dips"),
+        Exercise("덤벨 슈러그", "승모근", R.drawable.z_dumbbell_shrug, "dumbbell shrug"),
+        Exercise("바벨 슈러그", "승모근", R.drawable.z_barbell_shrug, "barbell shrug"),
+        Exercise("레버 슈러그", "승모근", R.drawable.z_lever_shrug, "lever shrug"),
+        Exercise("케이블 풀다운", "등", R.drawable.z_cable_pulldown, "cable pulldown"),
+        Exercise("풀업", "등", R.drawable.z_pull_up, "pull up"),
+        Exercise("케이블 시티드 로우", "등", R.drawable.z_cable_seated_row, "cable seated row"),
+        Exercise("레버 피쳐 컬", "이두", R.drawable.z_lever_preacher_curl, "lever preacher curl"),
+        Exercise("바벨 컬", "이두", R.drawable.z_barbell_drag_curl, "barbell drag curl"),
+        Exercise("덤벨 컬", "이두", R.drawable.z_dumbbell_biceps_curl, "dumbbell biceps curl"),
+        Exercise("덤벨 시티드 트라이셉스 익스텐션", "삼두", R.drawable.z_dumbbell_seated_triceps_extension, "dumbbell seated triceps extension"),
+        Exercise("케이블 트라이셉스 푸쉬다운", "삼두", R.drawable.z_cable_triceps_pushdown, "cable triceps pushdown"),
+        Exercise("바벨 클로우스 그립 벤치프레스", "삼두", R.drawable.z_barbell_close_grip_bench_press, "barbell close grip bench press"),
+        Exercise("레버 레그 익스텐션", "허벅지", R.drawable.z_lever_leg_extension, "lever leg extension"),
+        Exercise("레그프레스", "허벅지", R.drawable.z_leg_press, "leg press"),
+        Exercise("스쿼트", "허벅지", R.drawable.z_squat, "squat"),
+        Exercise("스미스 카프 레이즈", "종아리", R.drawable.z_smith_calf_raise, "smith calf raise"),
+        Exercise("레버 스탠딩 카프 레이즈", "종아리", R.drawable.z_lever_standing_calf_raise, "lever standing calf raise"),
+        Exercise("덤벨 스탠딩 카프 레이즈", "종아리", R.drawable.z_dumbbell_standing_calf_raise, "dumbbell standing calf raise"),
+        Exercise("스미스 시티드 숄더 프레스", "어깨", R.drawable.z_smith_seated_shoulder_press, "smith seated shoulder press"),
+        Exercise("덤벨 프론트 레이즈", "어깨", R.drawable.z_dumbbell_front_raise, "dumbbell front raise"),
+        Exercise("덤벨 레터럴 레이즈", "어깨", R.drawable.z_dumbbell_lateral_raise, "dumbbell lateral raise"),
+        Exercise("싯업", "복근", R.drawable.z_sit_ups, "sit ups"),
+        Exercise("버티컬 레그 레이즈", "복근", R.drawable.z_vertical_leg_raise, "vertical leg raise"),
+        Exercise("트위스팅 크런치", "복근", R.drawable.z_twisting_crunch, "twisting crunch")
         )
-    val (text1, setValue1) = remember {
+    val (searchText, setSearchText) = remember {
         mutableStateOf("")
     }
-    var selectedmusclePart by remember { mutableStateOf("전체") }
+    var selectedMusclePart by remember { mutableStateOf("전체") }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -85,14 +96,15 @@ fun AddExerciseScreen(navController: NavHostController) {
     ) {
         Spacer(modifier = Modifier.height(16.dp))
         TextField(
-            value = text1,
-            onValueChange = setValue1,
+            value = searchText,
+            onValueChange = setSearchText,
             modifier = Modifier
                 .fillMaxWidth()
                 .border(
                     width = 2.dp,
                     color = MaterialTheme.colorScheme.primary,
-                )
+                ),
+            placeholder  = {Text("검색")}
         )
 
         // slide_list_view
@@ -105,8 +117,8 @@ fun AddExerciseScreen(navController: NavHostController) {
         ) {
             items(musclePartList) { musclePart ->
                 FilterChip(
-                    selected = selectedmusclePart == musclePart,
-                    onClick = { selectedmusclePart = musclePart },
+                    selected = selectedMusclePart == musclePart,
+                    onClick = { selectedMusclePart = musclePart },
                     label = { Text(musclePart) }
                 )
             }
@@ -115,12 +127,13 @@ fun AddExerciseScreen(navController: NavHostController) {
 
         //exercise-list
         LazyColumn {
-            val filteredExercises = if(selectedmusclePart == "전체"){
-                exerciseArray.toList()
-            }else{
-                exerciseArray.filter { it.musclePart == selectedmusclePart }
-            }
+            val filteredExercises = exerciseArray
+                .filter { it.musclePart == selectedMusclePart || selectedMusclePart == "전체" }
+                .filter {
+                    it.name.contains(searchText, ignoreCase = true) || it.engName.contains(searchText, ignoreCase = true)
+                }
             items(filteredExercises) { exercise ->
+                val isSelected = exercise.name in selectedExercises
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -131,33 +144,61 @@ fun AddExerciseScreen(navController: NavHostController) {
                             shape = RoundedCornerShape(16.dp)
                         )
                         .padding(16.dp)
+                        .clickable { // 박스 클릭 이벤트
+                            // 이미 선택되었으면 선택 해제, 아니면 선택
+                            if (isSelected) {
+                                selectedExercises = selectedExercises - exercise.name
+                            } else {
+                                selectedExercises = selectedExercises + exercise.name
+                            }
+                        }
                 ) {
                     Row(
                         modifier = Modifier.fillMaxSize(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(text = exercise.name)
-                            Text(text = exercise.musclePart)
-                        }
                         GlideImage(
                             imageModel = exercise.image,
                             contentDescription = "GIF Image",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.height(60.dp).width(60.dp)
                         )
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = exercise.name,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(text = exercise.musclePart)
+                        }
+                        Icon(
+                            imageVector = if (isSelected) Icons.Outlined.Star else Icons.Outlined.StarBorder,
+                            contentDescription = "Localized description"
+                        )
+                        IconButton(onClick = { navController.navigate("explainexercise/${exercise.image}") }) {
+                            Icon(Icons.Outlined.ErrorOutline,
+                                contentDescription = "Localized description",
+                                modifier = Modifier.graphicsLayer(rotationZ = 180f)
+                            )
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))  // 박스 사이에 8dp 높이의 공간 추가
             }
         }
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp),
+    ) {
         Box(
             modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd
         ) {
-            Button(
-                onClick = { navController.navigate("addexercise") }
+            FloatingActionButton(
+                onClick = {  },
             ) {
-                Text("운동 추가")
+                Icon(Icons.Filled.Add, "Floating action button.")
             }
         }
     }

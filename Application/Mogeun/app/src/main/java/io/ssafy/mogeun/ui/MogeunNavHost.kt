@@ -2,8 +2,10 @@ package io.ssafy.mogeun.ui
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineScreen
 import io.ssafy.mogeun.ui.screens.login.LoginScreen
@@ -16,6 +18,7 @@ import io.ssafy.mogeun.ui.screens.setting.SettingScreen
 import io.ssafy.mogeun.ui.screens.signup.SignupScreen
 import io.ssafy.mogeun.ui.screens.summary.SummaryScreen
 import io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.AddExerciseScreen
+import io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.ExplainExerciseScreen
 
 @Composable
 fun MogeunNavHost(navController: NavHostController) {
@@ -36,5 +39,11 @@ fun MogeunNavHost(navController: NavHostController) {
         composable(Screen.Signup.route) { SignupScreen(navController = navController) }
         composable(Screen.AddRoutine.route) { AddRoutineScreen(navController = navController) }
         composable(Screen.AddExercise.route) { AddExerciseScreen(navController = navController) }
+        composable(
+            "${Screen.ExplainExercise.route}/{image}",
+            arguments = listOf(navArgument("image") { type = NavType.StringType })
+        ) { backStackEntry ->
+            ExplainExerciseScreen(navController = navController, data = backStackEntry.arguments?.getString("image"))
+        }
     }
 }
