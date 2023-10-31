@@ -13,6 +13,30 @@ data class Exercise(
 fun generateExercises(): List<Exercise> = buildList {
     val currentMonth = YearMonth.now()
 
+    add(
+        Exercise(
+            LocalDate.parse("2023-10-31"),
+            "11~34 ~ 12:21",
+            "내가 만든 루틴",
+        )
+    )
+
+    add(
+        Exercise(
+            LocalDate.parse("2023-11-01"),
+            "13~34 ~ 15:01",
+            "내가 만든 루틴",
+        )
+    )
+
+    add(
+        Exercise(
+            LocalDate.parse("2023-11-01"),
+            "18~34 ~ 20:01",
+            "내가 만든 루틴",
+        )
+    )
+
     currentMonth.atDay(17).also { date ->
         add(
             Exercise(
