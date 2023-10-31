@@ -1,6 +1,5 @@
 package com.mogun.backend.service.report;
 
-import com.mogun.backend.domain.musclePart.MusclePart;
 import com.mogun.backend.domain.report.routineReport.RoutineReport;
 import com.mogun.backend.domain.report.routineReport.repository.RoutineReportRepository;
 import com.mogun.backend.domain.report.routineResult.RoutineResult;
@@ -44,6 +43,17 @@ public class RoutineResultService {
 
 
         return "SUCCESS";
+    }
+
+    public ResultDto getAllInfoOfResult(ResultDto dto) {
+
+        Optional<RoutineResult> result = resultRepository.findById(dto.getResultKey());
+        if(result.isEmpty())
+            return null;
+
+        dto.setReport(dto.getReport());
+        dto.setConsumeCalorie(result.get().getConsumeCalorie());
+        return dto;
     }
 
     public List<ResultListDto> getMonthlyResult(ResultDto dto) {

@@ -18,6 +18,7 @@ public class ResultDto {
 
     private int userKey;
     private RoutineReport report;
+    private int resultKey;
     private Long reportKey;
     private float consumeCalorie;
 
