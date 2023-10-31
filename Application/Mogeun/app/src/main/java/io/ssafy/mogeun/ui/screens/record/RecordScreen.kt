@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,10 +24,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.AnnotatedString
@@ -60,6 +65,7 @@ import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.YearMonth
 
+private val exercies = generateExercises().groupBy { it.time }
 @Composable
 fun RecordScreen(navController: NavHostController) {
     Column(
@@ -83,12 +89,15 @@ fun CalenderUI(
     val currentMonth = remember { YearMonth.now() }
     val startMonth = remember { currentMonth.minusMonths(adjacentMonths) }
     val endMonth = remember { currentMonth.plusMonths(adjacentMonths) }
-    val selections = remember { mutableStateListOf<CalendarDay>() }
+    var selection by remember { mutableStateOf<CalendarDay?>(null) }
     val daysOfWeek = remember { daysOfWeek() }
-    val testList: MutableList<Boolean> = mutableListOf(true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true)
-//    for (i in 0 until 31) {
-//        testList[i] = false
-//    }
+    val exerciseDate = remember {
+        derivedStateOf {
+            val date = selection?.date
+            if (date == null) emptyList() else exercies[date].orEmpty()
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -126,7 +135,12 @@ fun CalenderUI(
             modifier = Modifier.testTag("calendar"),
             state = state,
             dayContent = { day ->
-                Day(day, isSelected = testList.get(day.date.dayOfMonth - 1))
+                Day(
+                    day,
+                    isSelected = exercies[day.date].isNullOrEmpty()
+                ) { clicked ->
+                    selection = clicked
+                }
             },
             monthHeader = {
                 MonthHeader(daysOfWeek = daysOfWeek)
@@ -141,10 +155,8 @@ fun CalenderUI(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        itemsIndexed(
-            listOf(1, 2, 3, 4, 5)
-        ) {index, item ->
-            RoutineRecord(navController,"23년 10월 6일, 09:10 ~ 10:21", "내가 만든 루틴")
+        items(items = exerciseDate.value) { exercise ->
+            RoutineRecord(navController, exercise.recordTime, exercise.name)
         }
     }
 }
@@ -224,19 +236,26 @@ private fun MonthHeader(daysOfWeek: List<DayOfWeek>) {
 }
 
 @Composable
-private fun Day(day: CalendarDay, isSelected: Boolean) {
+private fun Day(
+    day: CalendarDay,
+    isSelected: Boolean,
+    onClick: (CalendarDay) -> Unit = {}
+) {
     Box(
         modifier = Modifier
             .aspectRatio(1f) // This is important for square-sizing!
             .testTag("MonthDay")
             .padding(6.dp)
             .clip(CircleShape)
-            .background(color = if (isSelected && day.position == DayPosition.MonthDate) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer),
+            .clickable(
+                onClick = { onClick(day) },
+            )
+            .background(color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else if(day.position != DayPosition.MonthDate) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.primary),
         contentAlignment = Alignment.Center,
     ) {
         val textColor = when (day.position) {
             // Color.Unspecified will use the default text color from the current theme
-            DayPosition.MonthDate -> if (isSelected) Color.White else Color.Unspecified
+            DayPosition.MonthDate -> if (isSelected) Color.Unspecified else Color.White
             DayPosition.InDate -> if (day.position == DayPosition.MonthDate) MaterialTheme.colorScheme.onBackground else Color.Gray
             DayPosition.OutDate -> Color.Gray
         }
