@@ -9,10 +9,15 @@ import com.mogun.backend.domain.report.usedMusclePart.repository.UsedMusclePartR
 import com.mogun.backend.domain.user.User;
 import com.mogun.backend.domain.user.repository.UserRepository;
 import com.mogun.backend.service.report.dto.ResultDto;
+import com.mogun.backend.service.report.dto.ResultListDto;
+import com.mogun.backend.service.report.dto.SimpleReportInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,6 +25,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class RoutineResultService {
 
+    private final UserRepository userRepository;
     private final RoutineReportRepository reportRepository;
     private final RoutineResultRepository resultRepository;
     private final UsedMusclePartRepository usedMusclePartRepository;
@@ -38,5 +44,57 @@ public class RoutineResultService {
 
 
         return "SUCCESS";
+    }
+
+    public List<ResultListDto> getMonthlyResult(ResultDto dto) {
+
+        List<ResultListDto> list = new ArrayList<>();
+        Optional<User> user = userRepository.findById(dto.getUserKey());
+        if(user.isEmpty()) {
+            list.add(ResultListDto.builder().routineCount(-1).build());
+            return list;
+        }
+
+        LocalDate lastDate = LocalDate.now().minusMonths(1);
+
+
+        List<RoutineResult> results = resultRepository.findAllByFromRoutineDateAndUser(lastDate, user.get());
+
+        for(RoutineResult result: results) {
+            if(list.isEmpty()) {
+                list.add(ResultListDto.builder()
+                        .date(result.getRoutineDate())
+                        .routineCount(1)
+                        .routineReports(new ArrayList<>())
+                        .build());
+            }
+
+            int lastIndex = list.size() - 1;
+            RoutineReport report = result.getRoutineReport();
+
+            if(list.get(lastIndex).getDate().isEqual(result.getRoutineDate())) {
+                list.get(lastIndex).getRoutineReports().add(SimpleReportInfo.builder()
+                        .routineName(report.getRoutineName())
+                        .reportKey(report.getRoutineReportKey())
+                        .startTime(report.getStartTime())
+                        .endTime(report.getEndTime())
+                        .build());
+            } else {
+                list.add(ResultListDto.builder()
+                        .date(result.getRoutineDate())
+                        .routineCount(1)
+                        .routineReports(new ArrayList<>())
+                        .build());
+                lastIndex = list.size() - 1;
+                list.get(lastIndex).getRoutineReports().add(SimpleReportInfo.builder()
+                        .routineName(report.getRoutineName())
+                        .reportKey(report.getRoutineReportKey())
+                        .startTime(report.getStartTime())
+                        .endTime(report.getEndTime())
+                        .build());
+            }
+        }
+
+        return list;
     }
 }

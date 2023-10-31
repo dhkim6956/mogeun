@@ -16,6 +16,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class ResultDto {
 
+    private int userKey;
     private RoutineReport report;
     private Long reportKey;
     private float consumeCalorie;
