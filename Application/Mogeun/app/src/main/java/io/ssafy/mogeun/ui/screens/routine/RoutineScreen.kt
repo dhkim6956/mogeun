@@ -75,7 +75,7 @@ fun RoutineScreen(navController: NavHostController) {
                     )
                 }
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = { navController.navigate("Sheet") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
                 ) {
                     Image(

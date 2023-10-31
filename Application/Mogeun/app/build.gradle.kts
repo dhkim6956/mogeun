@@ -96,6 +96,7 @@ dependencies {
     annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
     implementation ("com.github.skydoves:landscapist-glide:1.5.0")
 
+    implementation("com.google.accompanist:accompanist-navigation-material:0.33.2-alpha")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext)

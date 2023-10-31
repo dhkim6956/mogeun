@@ -6,8 +6,11 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -27,11 +30,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.navigation.material.ModalBottomSheetLayout
+import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineScreen
 import io.ssafy.mogeun.ui.screens.record.RecordScreen
@@ -41,35 +49,35 @@ import io.ssafy.mogeun.ui.screens.setting.SettingScreen
 import io.ssafy.mogeun.ui.screens.summary.SummaryScreen
 import io.ssafy.mogeun.ui.screens.login.LoginScreen
 import io.ssafy.mogeun.ui.screens.signup.SignupScreen
+import io.ssafy.mogeun.ui.theme.MogeunTheme
 
 
-
+@OptIn(ExperimentalMaterialNavigationApi::class)
 @Composable
 fun Navigation() {
-    val navController: NavHostController = rememberNavController()
+    val bottomSheetNavigator = rememberBottomSheetNavigator()
+    val navController: NavHostController = rememberNavController(bottomSheetNavigator)
 
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
 
-    val currentScreen = screens.find { it.route == currentRoute } ?: Screen.Login
+    val currentScreen = screens.find { it.route == currentRoute } ?: Screen.AddRoutine
 
-    val topBarState = rememberSaveable { (mutableStateOf(true))}
-    val bottomBarState = rememberSaveable { (mutableStateOf(true))}
-
-    Scaffold (
-        topBar = {
-            TopBar(navController, currentScreen)
-        },
-        bottomBar = {
-            BottomBar(navController, currentScreen)
-        }
-    ) {innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
-            MogeunNavHost(navController = navController)
+    ModalBottomSheetLayout(bottomSheetNavigator) {
+        Scaffold (
+            topBar = {
+                TopBar(navController, currentScreen)
+            },
+            bottomBar = {
+                BottomBar(navController, currentScreen)
+            }
+        ) {innerPadding ->
+            Box(modifier = Modifier.padding(innerPadding)) {
+                MogeunNavHost(navController)
+            }
         }
     }
 }
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,8 +85,8 @@ fun Navigation() {
 fun TopBar(navController: NavHostController, currentScreen: Screen) {
     AnimatedVisibility(
         visible = currentScreen.topBarState.visibility,
-        enter = slideInVertically(initialOffsetY = { it }),
-        exit = slideOutVertically(targetOffsetY = { it })
+        enter = slideInVertically(initialOffsetY = { -it }),
+        exit = slideOutVertically(targetOffsetY = { -it })
     ) {
         TopAppBar(
             title = { Text(currentScreen.title) },
@@ -87,8 +95,10 @@ fun TopBar(navController: NavHostController, currentScreen: Screen) {
                     IconButton(
                         onClick = { navController.navigateUp() }
                     ) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "")
                     }
+                } else {
+                    Spacer(modifier = Modifier.width(48.dp))
                 }
             }
         )
