@@ -193,12 +193,11 @@ fun RoutineScreen(navController: NavHostController) {
             }
         }
     }
-
     Box(modifier = Modifier
         .fillMaxSize()
         .padding(end = 30.dp, bottom = 30.dp), contentAlignment = Alignment.BottomEnd) {
         Button(
-            onClick = { openAlertDialog.value = true },
+            onClick = { navController.navigate("addexercise") },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
             shape = RoundedCornerShape(10.dp)
         ) {
@@ -212,22 +211,6 @@ fun RoutineScreen(navController: NavHostController) {
                 Spacer(modifier = Modifier.width(10.dp))
                 Text(text = "루틴추가", color = MaterialTheme.colorScheme.scrim)
             }
-        }
-    }
-    when {
-        // ...
-        openAlertDialog.value -> {
-            AlertDialogExample(
-                onDismissRequest = { openAlertDialog.value = false },
-                onConfirmation = {
-                    openAlertDialog.value = false
-                    println("Confirmation registered") // Add logic here to handle confirmation.
-                },
-                dialogTitle = "루틴 이름을 설정해 주세요.",
-                dialogText = "This is an example of an alert dialog with buttons.",
-                icon = Icons.Default.Info,
-                navController = navController
-            )
         }
     }
 }
