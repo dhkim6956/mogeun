@@ -17,3 +17,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+  redis:
+    host: k9c104.p.ssafy.io
+    port: 6379
