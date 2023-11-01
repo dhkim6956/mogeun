@@ -20,6 +20,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -39,7 +41,8 @@ import io.ssafy.mogeun.R
 @Composable
 fun LoginScreen(viewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory),navController: NavHostController) {
 
-    if(viewModel.SigninSuccess) {
+    val signInSuccess by viewModel.signInSuccess.collectAsState()
+    if(signInSuccess) {
         navController.navigate("Routine")
     }
 
@@ -61,7 +64,10 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(factory = LoginViewModel.F
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "logo",
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.padding(end = 120.dp).padding(bottom = 100.dp).height(150.dp)
+                modifier = Modifier
+                    .padding(end = 120.dp)
+                    .padding(bottom = 100.dp)
+                    .height(150.dp)
             )
             Text(text = "모근", fontSize = 60.sp, color = MaterialTheme.colorScheme.primary)
         }
@@ -88,7 +94,9 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(factory = LoginViewModel.F
                     val ret = viewModel.signIn("mogun@ssafy.com", "mogun1234")
                     Log.d("signIn", "$ret") }
                 ,
-                modifier = Modifier.fillMaxWidth().height(52.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
                 shape = RoundedCornerShape(10.dp)
             ) {
                 Text(text = "로그인", color = MaterialTheme.colorScheme.scrim)
@@ -102,7 +110,9 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(factory = LoginViewModel.F
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {navController.navigate("signup")},
-                modifier = Modifier.fillMaxWidth().height(52.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
                 shape = RoundedCornerShape(10.dp)
             ) {
                 Text(text = "회원가입", color = MaterialTheme.colorScheme.scrim)
