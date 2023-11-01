@@ -13,10 +13,14 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.data.SignInRepository
 import io.ssafy.mogeun.model.SignInResponse
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class LoginViewModel(private val signInRepository: SignInRepository): ViewModel() {
-    var SigninSuccess: Boolean by mutableStateOf(false)
+    private val _signInSuccess = MutableStateFlow(false)
+    val signInSuccess: StateFlow<Boolean> = _signInSuccess.asStateFlow()
 
     fun signIn(email: String, pw: String) {
         lateinit var ret: SignInResponse
@@ -24,7 +28,7 @@ class LoginViewModel(private val signInRepository: SignInRepository): ViewModel(
             ret = signInRepository.signIn(email, pw)
 
             if(ret.message == "SUCCESS") {
-                SigninSuccess = true
+                _signInSuccess.value = true
             }
         }
     }
