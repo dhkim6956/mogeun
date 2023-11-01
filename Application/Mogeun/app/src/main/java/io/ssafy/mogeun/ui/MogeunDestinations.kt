@@ -13,81 +13,80 @@ data class BottomBarState(
     val originRoute: String? = null,
 )
 
-sealed class Screen(
+enum class Screen(
     val route: String,
     val title: String,
     val topBarState: TopBarState,
     val bottomBarState: BottomBarState
 ) {
-    object Routine : Screen(
-        route = "routine",
+    Routine(
+        route = "Routine",
         title = "루틴",
         topBarState = TopBarState(visibility = true, backBtnVisibility = false),
         bottomBarState = BottomBarState(true, R.drawable.icon_routine, "routine")
-    )
-    object Execution : Screen(
-        route = "execution",
-        title = "운동 진행",
-        topBarState = TopBarState(visibility = true, backBtnVisibility = false),
-        bottomBarState = BottomBarState(false)
-    )
-    object Record : Screen(
-        route = "record",
+    ),
+    Execution(
+    route = "Execution",
+    title = "운동 진행",
+    topBarState = TopBarState(visibility = true, backBtnVisibility = false),
+    bottomBarState = BottomBarState(false)
+    ),
+    Record(
+        route = "Record",
         title = "기록",
         topBarState = TopBarState(visibility = true, backBtnVisibility = false),
         bottomBarState = BottomBarState(true, R.drawable.icon_record, "record")
-    )
-    object RecordDetail : Screen(
-        route = "recorddetail",
+    ),
+    RecordDetail(
+        route = "RecordDetail",
         title = "루틴 상세 정보",
         topBarState = TopBarState(visibility = true, backBtnVisibility = false),
         bottomBarState = BottomBarState(true, R.drawable.icon_record, "record")
-    )
-
-    object ExerciseDetail : Screen(
-        route = "exercisedetail",
+    ),
+    ExerciseDetail(
+        route = "ExerciseDetail",
         title = "운동 상세 정보",
         topBarState = TopBarState(visibility = true, backBtnVisibility = false),
         bottomBarState = BottomBarState(true, R.drawable.icon_record, "record")
-    )
-    object Summary : Screen(
-        route = "summary",
+    ),
+    Summary(
+        route = "Summary",
         title = "요약",
         topBarState = TopBarState(visibility = true, backBtnVisibility = false),
         bottomBarState = BottomBarState(true, R.drawable.icon_summary, "summary")
-    )
-    object Setting : Screen(
-        route = "setting",
+    ),
+    Setting(
+        route = "Setting",
         title = "설정",
         topBarState = TopBarState(visibility = true, backBtnVisibility = false),
         bottomBarState = BottomBarState(true, R.drawable.icon_setting, "setting")
-    )
-    object Login : Screen(
-        route = "login",
+    ),
+    Login(
+        route = "Login",
         title = "로그인",
         topBarState = TopBarState(visibility = false, backBtnVisibility = false),
         bottomBarState = BottomBarState(false)
-    )
-    object Signup : Screen(
-        route = "signup",
+    ),
+    Signup(
+        route = "Signup",
         title = "회원가입",
         topBarState = TopBarState(visibility = false, backBtnVisibility = false),
         bottomBarState = BottomBarState(false)
-    )
-    object AddRoutine : Screen(
-        route = "addroutine",
+    ),
+    AddRoutine(
+        route = "AddRoutine",
         title = "루틴 추가",
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
         bottomBarState = BottomBarState(true, R.drawable.icon_setting)
-    )
-    object AddExercise : Screen(
-        route = "addexercise",
+    ),
+    AddExercise(
+        route = "AddExercise",
         title = "운동 추가",
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
         bottomBarState = BottomBarState(true, R.drawable.icon_setting)
-    )
-    object ExplainExercise : Screen(
-        route = "explainexercise",
+    ),
+    ExplainExercise(
+        route = "ExplainExercise",
         title = "운동 설명",
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
         bottomBarState = BottomBarState(true, R.drawable.icon_setting)
@@ -95,4 +94,3 @@ sealed class Screen(
 }
 
 val rootScreen = arrayOf(Screen.Routine, Screen.Record, Screen.Summary, Screen.Setting)
-val screens = arrayOf(Screen.Routine, Screen.Execution, Screen.Record, Screen.Summary, Screen.Setting, Screen.Login, Screen.Signup, Screen.AddRoutine, Screen.AddExercise, Screen.ExplainExercise)
