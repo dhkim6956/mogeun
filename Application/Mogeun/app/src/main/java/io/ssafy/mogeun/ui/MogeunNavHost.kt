@@ -1,5 +1,6 @@
 package io.ssafy.mogeun.ui
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -7,6 +8,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.navigation.material.bottomSheet
 import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineScreen
 import io.ssafy.mogeun.ui.screens.login.LoginScreen
 import io.ssafy.mogeun.ui.screens.record.ExerciseDetailScreen
@@ -20,6 +23,7 @@ import io.ssafy.mogeun.ui.screens.summary.SummaryScreen
 import io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.AddExerciseScreen
 import io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.ExplainExerciseScreen
 
+@OptIn(ExperimentalMaterialNavigationApi::class)
 @Composable
 fun MogeunNavHost(navController: NavHostController) {
     NavHost(navController, startDestination = Screen.Login.route) {
@@ -39,6 +43,10 @@ fun MogeunNavHost(navController: NavHostController) {
         composable(Screen.Signup.route) { SignupScreen(navController = navController) }
         composable(Screen.AddRoutine.route) { AddRoutineScreen(navController = navController) }
         composable(Screen.AddExercise.route) { AddExerciseScreen(navController = navController) }
+
+        bottomSheet("Sheet") {
+            Text("This is bottom sheet!")
+        }
         composable(
             "${Screen.ExplainExercise.route}/{image}",
             arguments = listOf(navArgument("image") { type = NavType.StringType })

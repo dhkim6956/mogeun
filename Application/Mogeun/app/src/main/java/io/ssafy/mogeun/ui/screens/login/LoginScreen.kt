@@ -30,13 +30,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import io.ssafy.mogeun.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavHostController) {
+fun LoginScreen(viewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory),navController: NavHostController) {
 
     val (text1, setValue1) = remember {
         mutableStateOf("")
@@ -78,7 +79,12 @@ fun LoginScreen(navController: NavHostController) {
             )
             Spacer(modifier = Modifier.height(32.dp))
             Button(
-                onClick = { navController.navigate("routine") },
+                onClick = {
+//                    viewModel.signIn("mogun@ssafy.com", "mogun1234")
+                          navController.navigate("Routine") {
+                              launchSingleTop = true
+                          }
+                          },
                 modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape = RoundedCornerShape(10.dp)
             ) {
