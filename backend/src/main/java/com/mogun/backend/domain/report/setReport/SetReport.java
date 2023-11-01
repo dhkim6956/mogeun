@@ -21,7 +21,7 @@ public class SetReport {
     @Id
     @GeneratedValue
     @Column(name = "set_report_key")
-    private long setReportKey;
+    private Long setReportKey;
 
     @ManyToOne
     @JoinColumn(name = "routine_report_key")

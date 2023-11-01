@@ -17,12 +17,12 @@ import java.time.LocalDate;
 public class ResultDto {
 
     private int userKey;
-    private RoutineReport report;
+    private String userEmail;
     private int resultKey;
-    private Long reportKey;
-    private float consumeCalorie;
-
     private int muscleKey;
+    private float consumeCalorie;
+    private RoutineReport report;
+    private Long reportKey;
 
     public RoutineResult toRoutineResultEntity(RoutineReport report) {
         return RoutineResult.builder()

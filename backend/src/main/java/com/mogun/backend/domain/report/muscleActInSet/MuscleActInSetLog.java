@@ -18,16 +18,12 @@ import java.io.Serializable;
 public class MuscleActInSetLog implements Serializable {
 
     @Id
-    @Column(name = "set_log_key")
+    @Column(name = "set_act_key")
     private Long setLogKey;
 
-    @Id
-    @Column(name = "routine_report_key")
-    private Long routineReportKey;
-
-    @Id
-    @Column(name = "user_key")
-    private int userKey;
+    @ManyToOne
+    @JoinColumn(name = "set_report_key")
+    private SetReport setReport;
 
     @ManyToOne
     @JoinColumn(name = "part_key")
@@ -38,20 +34,5 @@ public class MuscleActInSetLog implements Serializable {
 
     @Column(name = "muscle_activity")
     private float muscleActivity;
-
-    @MapsId
-    @ManyToOne
-    @JoinColumn(name = "set_log_key")
-    private SetReport setReport;
-
-    @MapsId
-    @ManyToOne
-    @JoinColumn(name = "routine_report_key")
-    private RoutineReport routineReport;
-
-    @MapsId
-    @ManyToOne
-    @JoinColumn(name = "user_key")
-    private User user;
 
 }

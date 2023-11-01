@@ -24,6 +24,9 @@ public class Exercise {
     @Column
     private String name;
 
+    @Column(name = "eng_name")
+    private String engName;
+
     @Column(name = "exec_desc")
     private String execDesc;
 

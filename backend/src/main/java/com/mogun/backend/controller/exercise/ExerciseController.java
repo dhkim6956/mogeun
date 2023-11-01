@@ -35,6 +35,7 @@ public class ExerciseController {
             result.add(SimplePlanInfoResponse.builder()
                     .execKey(item.getExecKey())
                     .execName(item.getName())
+                    .engName(item.getEngName())
                     .musclePart(attachPartService.getAllPartNameByExercise(item))
                     .build());
         }

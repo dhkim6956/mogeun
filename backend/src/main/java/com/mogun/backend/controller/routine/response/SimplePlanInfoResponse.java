@@ -18,6 +18,9 @@ public class SimplePlanInfoResponse {
     @JsonProperty("name")
     private String execName;
 
+    @JsonProperty("eng_name")
+    private String engName;
+
     @JsonProperty("sensing_part")
     private List<String> musclePart;
 }
