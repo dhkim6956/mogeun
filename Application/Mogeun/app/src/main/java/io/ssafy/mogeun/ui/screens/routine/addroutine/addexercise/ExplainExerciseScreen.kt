@@ -25,6 +25,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.skydoves.landscapist.glide.GlideImage
 import io.ssafy.mogeun.R
@@ -44,6 +45,13 @@ fun ExplainExerciseScreen(navController: NavHostController, data: String?) {
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.TopCenter
         ) {
+//            Column(modifier = Modifier.fillMaxWidth()) {
+//                Text(
+//                    text = exercise.name,
+//                    maxLines = 1,
+//                    overflow = TextOverflow.Ellipsis
+//                )
+//            }
             GlideImage(
                 imageModel = imageResId,
                 contentDescription = "GIF Image",

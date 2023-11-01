@@ -21,8 +21,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.StarBorder
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
@@ -45,7 +48,9 @@ import io.ssafy.mogeun.R
 import com.skydoves.landscapist.glide.GlideImage
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.TextButton
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,7 +58,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 fun AddExerciseScreen(navController: NavHostController) {
     val musclePartList = listOf("전체", "가슴", "등", "복근", "삼두", "승모근", "어깨", "이두", "종아리", "허벅지")
     var selectedExercises by remember { mutableStateOf(setOf<String>()) }
-    data class Exercise(val name: String, val musclePart: String, val image: Int, val engName: String)
+    val openAlertDialog = remember { mutableStateOf(false) }
+    data class Exercise(val name: String, val main_part: String, val image: Int, val engName: String)
     val exerciseArray = arrayOf(
         Exercise("바벨 벤치 프레스", "가슴", R.drawable.z_barbell_bench_press, "barbell bench press"),
         Exercise("덤벨 벤치 프레스", "가슴", R.drawable.z_dumbbell_bench_press, "dumbbell bench press"),
@@ -107,8 +113,7 @@ fun AddExerciseScreen(navController: NavHostController) {
             placeholder  = {Text("검색")}
         )
 
-        // slide_list_view
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         // muscle-part
         LazyRow(
@@ -123,12 +128,13 @@ fun AddExerciseScreen(navController: NavHostController) {
                 )
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         //exercise-list
         LazyColumn {
             val filteredExercises = exerciseArray
-                .filter { it.musclePart == selectedMusclePart || selectedMusclePart == "전체" }
+                .filter { it.main_part == selectedMusclePart || selectedMusclePart == "전체" }
                 .filter {
                     it.name.contains(searchText, ignoreCase = true) || it.engName.contains(searchText, ignoreCase = true)
                 }
@@ -144,8 +150,7 @@ fun AddExerciseScreen(navController: NavHostController) {
                             shape = RoundedCornerShape(16.dp)
                         )
                         .padding(16.dp)
-                        .clickable { // 박스 클릭 이벤트
-                            // 이미 선택되었으면 선택 해제, 아니면 선택
+                        .clickable {
                             if (isSelected) {
                                 selectedExercises = selectedExercises - exercise.name
                             } else {
@@ -169,7 +174,7 @@ fun AddExerciseScreen(navController: NavHostController) {
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
-                            Text(text = exercise.musclePart)
+                            Text(text = exercise.main_part)
                         }
                         Icon(
                             imageVector = if (isSelected) Icons.Outlined.Star else Icons.Outlined.StarBorder,
@@ -183,7 +188,7 @@ fun AddExerciseScreen(navController: NavHostController) {
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(8.dp))  // 박스 사이에 8dp 높이의 공간 추가
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
@@ -193,13 +198,84 @@ fun AddExerciseScreen(navController: NavHostController) {
             .padding(20.dp),
     ) {
         Box(
-            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            contentAlignment = Alignment.BottomEnd,
+
         ) {
-            FloatingActionButton(
-                onClick = {  },
-            ) {
-                Icon(Icons.Filled.Add, "Floating action button.")
+            if (selectedExercises.isNotEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd
+                ) {
+                    Button(
+                        onClick = { openAlertDialog.value = true },
+                    ) {
+                        Text("선택된 운동 추가")
+                    }
+                }
+                when {
+                    openAlertDialog.value -> {
+                        io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.AlertDialogExample(
+                            onDismissRequest = { openAlertDialog.value = false },
+                            onConfirmation = {
+                                openAlertDialog.value = false
+                                println("Confirmation registered") // Add logic here to handle confirmation.
+                            },
+                            dialogTitle = "루틴 이름을 설정해 주세요.",
+                            dialogText = "This is an example of an alert dialog with buttons.",
+                            icon = Icons.Default.Info,
+                            navController = navController
+                        )
+                    }
+                }
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AlertDialogExample(
+    navController: NavHostController,
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    dialogTitle: String,
+    dialogText: String,
+    icon: ImageVector,
+) {
+    val (name, setName) = remember { mutableStateOf("") }
+    AlertDialog(
+        icon = {
+            Icon(icon, contentDescription = "Example Icon")
+        },
+        title = {
+            Text(text = dialogTitle)
+        },
+        text = {
+            TextField(value = name, onValueChange = setName )
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    // 운동에 대한 정보를 post
+                    navController.popBackStack()
+                }
+            ) {
+                Text("Confirm")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onDismissRequest()
+                }
+            ) {
+                Text("Dismiss")
+            }
+        }
+    )
 }
