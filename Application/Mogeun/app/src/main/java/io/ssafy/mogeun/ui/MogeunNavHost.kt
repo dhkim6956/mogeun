@@ -46,6 +46,7 @@ fun MogeunNavHost(navController: NavHostController) {
 
         bottomSheet("Sheet") {
             Text("This is bottom sheet!")
+        }
         composable(
             "${Screen.ExplainExercise.route}/{image}",
             arguments = listOf(navArgument("image") { type = NavType.StringType })

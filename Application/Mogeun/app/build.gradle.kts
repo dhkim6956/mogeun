@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
     id("com.google.firebase.appdistribution")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
 }
 
 android {
@@ -97,6 +98,15 @@ dependencies {
     implementation ("com.github.skydoves:landscapist-glide:1.5.0")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("com.google.accompanist:accompanist-navigation-material:0.33.2-alpha")
+
+    // retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    // Retrofit with Kotlin serialization Converter
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    // Kotlin serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext)

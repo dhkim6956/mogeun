@@ -59,9 +59,10 @@ fun Navigation() {
     val navController: NavHostController = rememberNavController(bottomSheetNavigator)
 
     val navBackStackEntry = navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry.value?.destination?.route
 
-    val currentScreen = screens.find { it.route == currentRoute } ?: Screen.AddRoutine
+    val currentScreen = Screen.valueOf(
+        navBackStackEntry.value?.destination?.route ?: Screen.Login.name
+    )
 
     ModalBottomSheetLayout(bottomSheetNavigator) {
         Scaffold (
@@ -93,12 +94,10 @@ fun TopBar(navController: NavHostController, currentScreen: Screen) {
             navigationIcon = {
                 if (currentScreen.topBarState.backBtnVisibility) {
                     IconButton(
-                        onClick = { navController.navigateUp() }
+                        onClick = { navController.popBackStack() }
                     ) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "")
                     }
-                } else {
-                    Spacer(modifier = Modifier.width(48.dp))
                 }
             }
         )
