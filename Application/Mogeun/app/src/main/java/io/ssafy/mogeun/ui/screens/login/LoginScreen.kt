@@ -39,6 +39,10 @@ import io.ssafy.mogeun.R
 @Composable
 fun LoginScreen(viewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory),navController: NavHostController) {
 
+    if(viewModel.SigninSuccess) {
+        navController.navigate("Routine")
+    }
+
     val (text1, setValue1) = remember {
         mutableStateOf("")
     }
@@ -80,11 +84,10 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(factory = LoginViewModel.F
             Spacer(modifier = Modifier.height(32.dp))
             Button(
                 onClick = {
-//                    viewModel.signIn("mogun@ssafy.com", "mogun1234")
-                          navController.navigate("Routine") {
-                              launchSingleTop = true
-                          }
-                          },
+
+                    val ret = viewModel.signIn("mogun@ssafy.com", "mogun1234")
+                    Log.d("signIn", "$ret") }
+                ,
                 modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape = RoundedCornerShape(10.dp)
             ) {

@@ -19,10 +19,13 @@ class LoginViewModel(private val signInRepository: SignInRepository): ViewModel(
     var SigninSuccess: Boolean by mutableStateOf(false)
 
     fun signIn(email: String, pw: String) {
+        lateinit var ret: SignInResponse
         viewModelScope.launch {
-            val ret: SignInResponse = signInRepository.signIn(email, pw)
+            ret = signInRepository.signIn(email, pw)
 
-            Log.d("signIn", "$ret")
+            if(ret.message == "SUCCESS") {
+                SigninSuccess = true
+            }
         }
     }
 
