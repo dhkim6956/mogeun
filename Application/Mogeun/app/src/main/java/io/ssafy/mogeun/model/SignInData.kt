@@ -18,3 +18,19 @@ data class SignInResponse(
     val message: String,
     val data: String?
 )
+
+@Serializable
+data class DupEmailBody(
+    @SerialName(value = "is_joined")
+    val isJoined: Boolean,
+    @SerialName(value = "join_state")
+    val joinState: String
+)
+
+@Serializable
+data class DupEmailResponse(
+    val code: Int,
+    val status: String,
+    val message: String,
+    val data: DupEmailBody
+)

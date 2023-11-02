@@ -20,6 +20,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -39,12 +41,11 @@ import io.ssafy.mogeun.R
 @Composable
 fun LoginScreen(viewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory),navController: NavHostController) {
 
-    val (text1, setValue1) = remember {
-        mutableStateOf("")
+    val signInSuccess by viewModel.signInSuccess.collectAsState()
+    if(signInSuccess) {
+        navController.navigate("Routine")
     }
-    val (text2, setValue2) = remember {
-        mutableStateOf("")
-    }
+    val viewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory)
 
     Column {
         Box(
@@ -57,35 +58,39 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(factory = LoginViewModel.F
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "logo",
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.padding(end = 120.dp).padding(bottom = 100.dp).height(150.dp)
+                modifier = Modifier
+                    .padding(end = 120.dp)
+                    .padding(bottom = 100.dp)
+                    .height(150.dp)
             )
             Text(text = "모근", fontSize = 60.sp, color = MaterialTheme.colorScheme.primary)
         }
         Column(modifier = Modifier.padding(28.dp)) {
             Text(text = "아이디")
             TextField(
-                value = text1,
-                onValueChange = setValue1,
+                value = viewModel.text1,
+                onValueChange = { viewModel.updateText1(it) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = "비밀번호")
             TextField(
-                value = text2,
-                onValueChange = setValue2,
+                value = viewModel.text2,
+                onValueChange = { viewModel.updateText2(it) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp)
             )
             Spacer(modifier = Modifier.height(32.dp))
             Button(
                 onClick = {
-//                    viewModel.signIn("mogun@ssafy.com", "mogun1234")
-                          navController.navigate("Routine") {
-                              launchSingleTop = true
-                          }
-                          },
-                modifier = Modifier.fillMaxWidth().height(52.dp),
+
+                    val ret = viewModel.signIn("mogun@ssafy.com", "mogun1234")
+                    Log.d("signIn", "$ret") }
+                ,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
                 shape = RoundedCornerShape(10.dp)
             ) {
                 Text(text = "로그인", color = MaterialTheme.colorScheme.scrim)
@@ -99,7 +104,9 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(factory = LoginViewModel.F
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {navController.navigate("signup")},
-                modifier = Modifier.fillMaxWidth().height(52.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
                 shape = RoundedCornerShape(10.dp)
             ) {
                 Text(text = "회원가입", color = MaterialTheme.colorScheme.scrim)
