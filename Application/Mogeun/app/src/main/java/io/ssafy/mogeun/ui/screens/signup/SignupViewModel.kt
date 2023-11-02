@@ -1,6 +1,7 @@
 package io.ssafy.mogeun.ui.screens.signup
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableFloatStateOf
@@ -13,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.patrykandpatrick.vico.compose.axis.horizontal.topAxis
 import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.data.SignInRepository
 import io.ssafy.mogeun.model.DupEmailResponse
@@ -27,6 +29,7 @@ import kotlinx.coroutines.launch
 class SignupViewModel(private val signInRepository: SignInRepository): ViewModel() {
     private val _dupEmailSuccess = MutableStateFlow(false)
     val dupEmailSuccess: StateFlow<Boolean> = _dupEmailSuccess.asStateFlow()
+    var checkEmail by mutableIntStateOf(0)
     var id by mutableStateOf("")
     var password by mutableStateOf("")
     var checkingPassword by mutableStateOf("")
@@ -39,6 +42,9 @@ class SignupViewModel(private val signInRepository: SignInRepository): ViewModel
     var inputForm by mutableIntStateOf(1)
     var firstText by mutableStateOf("회원정보를")
 
+    fun updateCheckEmail(value: Int) {
+        checkEmail = value
+    }
     fun updateId(value: String) {
         id = value
     }
@@ -72,24 +78,34 @@ class SignupViewModel(private val signInRepository: SignInRepository): ViewModel
     fun updateFirstText(value: String) {
         firstText = value
     }
-    fun dupEmail(email: String) {
+    fun dupEmail() {
         lateinit var ret: DupEmailResponse
         viewModelScope.launch {
-            ret = signInRepository.dupEmail(email)
+            ret = signInRepository.dupEmail(id)
             Log.d("dupEmail", "$ret")
-
             if(ret.message == "SUCCESS") {
                 _dupEmailSuccess.value = true
+                updateCheckEmail(1)
             }
         }
     }
     fun signUp() {
-        lateinit var ret: SignUpResponse
-        viewModelScope.launch {
-            ret = signInRepository.signUp(id, password, nickname, "m", height, weight, muscleMass, bodyFat)
-            Log.d("signUp", "$ret")
-
-
+        if (checkEmail == 1) {
+            lateinit var ret: SignUpResponse
+            viewModelScope.launch {
+                ret = signInRepository.signUp(
+                    id,
+                    password,
+                    nickname,
+                    selectedGender,
+                    height,
+                    weight,
+                    muscleMass,
+                    bodyFat
+                )
+                Log.d("signUp", "$ret")
+            }
+        } else {
         }
     }
     companion object {

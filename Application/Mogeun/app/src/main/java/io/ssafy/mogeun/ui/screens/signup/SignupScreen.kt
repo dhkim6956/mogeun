@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
@@ -19,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,7 +34,6 @@ fun SignupScreen(viewModel: SignupViewModel = viewModel(factory = SignupViewMode
     val inputForm = viewModel.inputForm
     val firstText = viewModel.firstText
 
-
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -41,7 +42,8 @@ fun SignupScreen(viewModel: SignupViewModel = viewModel(factory = SignupViewMode
                 .height(200.dp)
                 .fillMaxSize()
                 .background(
-                    color = MaterialTheme.colorScheme.primary),
+                    color = MaterialTheme.colorScheme.primary
+                ),
             contentAlignment = Alignment.Center
         ) {
             Column {
@@ -80,14 +82,17 @@ fun Essential(viewModel: SignupViewModel = viewModel(factory = SignupViewModel.F
         Row {
             TextField(
                 value = id,
-                onValueChange = viewModel::updateId,
+                onValueChange = {
+                    viewModel.updateId(it)
+                    viewModel.updateCheckEmail(0)
+                },
                 modifier = Modifier.width(220.dp),
                 shape = RoundedCornerShape(10.dp)
             )
             Spacer(modifier = Modifier.width(16.dp))
             Button(
                 onClick = {
-                    val ret = viewModel.dupEmail("mogun@ssafy.com")
+                    val ret = viewModel.dupEmail()
                     Log.d("signIn", "$ret")
                 },
                 modifier = Modifier.width(100.dp),
@@ -140,8 +145,10 @@ fun Essential(viewModel: SignupViewModel = viewModel(factory = SignupViewModel.F
                 floatingActionButton = {
                     FloatingActionButton(
                         onClick = {
-                            viewModel.updateInputForm(2)
-                            viewModel.updateFirstText("인바디를")
+                            if(viewModel.checkEmail == 1 && viewModel.password == viewModel.checkingPassword && viewModel.nickname !== "" && viewModel.selectedGender !== "") {
+                                viewModel.updateInputForm(2)
+                                viewModel.updateFirstText("인바디를")
+                            }
                             },
                         containerColor = MaterialTheme.colorScheme.secondary,
                         elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
@@ -189,7 +196,10 @@ fun Inbody(
                 }
             },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(10.dp)
+            shape = RoundedCornerShape(10.dp),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number
+            )
         )
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -205,10 +215,12 @@ fun Inbody(
                 }
             },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(10.dp)
+            shape = RoundedCornerShape(10.dp),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number
+            )
         )
         Spacer(modifier = Modifier.height(16.dp))
-
         Text(text = "골격근량")
         TextField(
             value = muscleMassText,
@@ -221,10 +233,12 @@ fun Inbody(
                 }
             },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(10.dp)
+            shape = RoundedCornerShape(10.dp),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number
+            )
         )
         Spacer(modifier = Modifier.height(16.dp))
-
         Text(text = "체지방")
         TextField(
             value = bodyFatText,
@@ -237,7 +251,10 @@ fun Inbody(
                 }
             },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(10.dp)
+            shape = RoundedCornerShape(10.dp),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number
+            )
         )
     }
     Scaffold(
@@ -288,21 +305,21 @@ fun Inbody(
 @Composable
 fun Preview_MultipleRadioButtons(viewModel: SignupViewModel = viewModel(factory = SignupViewModel.Factory)) {
     val selectedGender = viewModel.selectedGender
-
     val isSelectedItem: (String) -> Boolean = { selectedGender == it }
     val onChangeState: (String) -> Unit = { viewModel.updateSelectedGender(it) }
-
-    val items = listOf("남성", "여성")
+    val items = listOf("m", "f")
     Column(Modifier.padding(8.dp)) {
         Text(text = "성별을 선택해주세요 : ${selectedGender.ifEmpty { "NONE" }}")
         items.forEach { item ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.selectable(
-                    selected = isSelectedItem(item),
-                    onClick = { onChangeState(item) },
-                    role = Role.RadioButton
-                ).padding(8.dp)
+                modifier = Modifier
+                    .selectable(
+                        selected = isSelectedItem(item),
+                        onClick = { onChangeState(item) },
+                        role = Role.RadioButton
+                    )
+                    .padding(8.dp)
             ) {
                 RadioButton(
                     selected = isSelectedItem(item),
