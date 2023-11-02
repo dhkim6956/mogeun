@@ -68,17 +68,17 @@ fun SignupScreen(viewModel: SignupViewModel = viewModel(factory = SignupViewMode
 
 @Composable
 fun Essential(viewModel: SignupViewModel = viewModel(factory = LoginViewModel.Factory), inputForm: MutableIntState, firstText: MutableState<String>, navController: NavHostController) {
-    val (id, setId) = remember { mutableStateOf("") }
-    val (password, setPassword) = remember { mutableStateOf("") }
-    val (checkingPassword, setCheckingPassword) = remember { mutableStateOf("") }
-    val (nickname, setNickname) = remember { mutableStateOf("") }
+    val id = viewModel.id
+    val password = viewModel.password
+    val checkingPassword = viewModel.checkingPassword
+    val nickname = viewModel.nickname
 
     Column(modifier = Modifier.padding(28.dp)) {
         Text(text = "아이디")
         Row {
             TextField(
                 value = id,
-                onValueChange = setId,
+                onValueChange = viewModel::updateId,
                 modifier = Modifier.width(220.dp),
                 shape = RoundedCornerShape(10.dp)
             )
@@ -98,7 +98,7 @@ fun Essential(viewModel: SignupViewModel = viewModel(factory = LoginViewModel.Fa
         Text(text = "비밀 번호")
         TextField(
             value = password,
-            onValueChange = setPassword,
+            onValueChange = viewModel::updatePassword,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp)
         )
@@ -106,7 +106,7 @@ fun Essential(viewModel: SignupViewModel = viewModel(factory = LoginViewModel.Fa
         Text(text = "비밀 번호 확인")
         TextField(
             value = checkingPassword,
-            onValueChange = setCheckingPassword,
+            onValueChange = viewModel::updateCheckingPassword,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp)
         )
@@ -114,7 +114,7 @@ fun Essential(viewModel: SignupViewModel = viewModel(factory = LoginViewModel.Fa
         Text(text = "닉네임")
         TextField(
             value = nickname,
-            onValueChange = setNickname,
+            onValueChange = viewModel::updateNickname,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp)
         )

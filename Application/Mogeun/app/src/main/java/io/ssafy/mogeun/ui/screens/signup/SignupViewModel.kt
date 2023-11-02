@@ -1,6 +1,9 @@
 package io.ssafy.mogeun.ui.screens.signup
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -19,6 +22,27 @@ import kotlinx.coroutines.launch
 class SignupViewModel(private val signInRepository: SignInRepository): ViewModel() {
     private val _dupEmailSuccess = MutableStateFlow(false)
     val dupEmailSuccess: StateFlow<Boolean> = _dupEmailSuccess.asStateFlow()
+    var id by mutableStateOf("")
+    var password by mutableStateOf("")
+    var checkingPassword by mutableStateOf("")
+    var nickname by mutableStateOf("")
+
+    fun updateId(value: String) {
+        id = value
+    }
+
+    fun updatePassword(value: String) {
+        password = value
+    }
+
+    fun updateCheckingPassword(value: String) {
+        checkingPassword = value
+    }
+
+    fun updateNickname(value: String) {
+        nickname = value
+    }
+
     fun dupEmail(email: String) {
         lateinit var ret: DupEmailResponse
         viewModelScope.launch {
