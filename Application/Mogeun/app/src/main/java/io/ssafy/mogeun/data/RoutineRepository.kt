@@ -1,6 +1,5 @@
 package io.ssafy.mogeun.data
 
-import io.ssafy.mogeun.model.DupEmailResponse
 import io.ssafy.mogeun.model.CreateRoutineRequest
 import io.ssafy.mogeun.model.CreateRoutineResponse
 import io.ssafy.mogeun.network.MogeunApiService
