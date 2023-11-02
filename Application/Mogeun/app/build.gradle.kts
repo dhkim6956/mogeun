@@ -107,6 +107,9 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     // Kotlin serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("io.coil-kt:coil-compose:2.5.0")
 
     // Room
     implementation("androidx.room:room-runtime:2.5.2")

@@ -10,6 +10,7 @@ import retrofit2.Retrofit
 interface AppContainer {
     val userDataRepository: SignInRepository
     val emgDataRepository: EmgRepository
+    val exerciseDataRepository: CreateRoutineRepository
 }
 
 class DefaultAppContainer(private val context: Context): AppContainer {
@@ -30,5 +31,9 @@ class DefaultAppContainer(private val context: Context): AppContainer {
 
     override val emgDataRepository: EmgRepository by lazy {
         OfflineEmgRepository(EmgDatabase.getDatabase(context).emgDao())
+    }
+    
+    override val exerciseDataRepository: CreateRoutineRepository by lazy {
+        NetworkCreateRoutineRepository(retrofitService)
     }
 }

@@ -1,9 +1,12 @@
 package io.ssafy.mogeun.ui.screens.signup
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
@@ -16,17 +19,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.ui.screens.login.LoginViewModel
 
 @Composable
-fun SignupScreen(navController: NavHostController) {
-    val inputForm = remember { mutableIntStateOf(1) }
-    val firstText = remember { mutableStateOf("회원정보를") }
-
+fun SignupScreen(viewModel: SignupViewModel = viewModel(factory = SignupViewModel.Factory), navController: NavHostController) {
+    val inputForm = viewModel.inputForm
+    val firstText = viewModel.firstText
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -36,12 +42,13 @@ fun SignupScreen(navController: NavHostController) {
                 .height(200.dp)
                 .fillMaxSize()
                 .background(
-                    color = MaterialTheme.colorScheme.primary),
+                    color = MaterialTheme.colorScheme.primary
+                ),
             contentAlignment = Alignment.Center
         ) {
             Column {
                 Text(
-                    text = firstText.value,
+                    text = firstText,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
                     color = Color.White,
@@ -56,32 +63,38 @@ fun SignupScreen(navController: NavHostController) {
                 )
             }
         }
-        when (inputForm.value) {
-            1 -> Essential(inputForm, firstText, navController) // 여성 버튼 클릭 시 firstText 값을 전달
-            2 -> Inbody(inputForm, firstText, navController)
+        when (inputForm) {
+            1 -> Essential(viewModel, navController)
+            2 -> Inbody(navController)
         }
     }
 }
 
 @Composable
-fun Essential(inputForm: MutableIntState, firstText: MutableState<String>, navController: NavHostController) {
-    val (id, setId) = remember { mutableStateOf("") }
-    val (password, setPassword) = remember { mutableStateOf("") }
-    val (checkingPassword, setCheckingPassword) = remember { mutableStateOf("") }
-    val (nickname, setNickname) = remember { mutableStateOf("") }
+fun Essential(viewModel: SignupViewModel = viewModel(factory = SignupViewModel.Factory), navController: NavHostController) {
+    val id = viewModel.id
+    val password = viewModel.password
+    val checkingPassword = viewModel.checkingPassword
+    val nickname = viewModel.nickname
 
     Column(modifier = Modifier.padding(28.dp)) {
         Text(text = "아이디")
         Row {
             TextField(
                 value = id,
-                onValueChange = setId,
+                onValueChange = {
+                    viewModel.updateId(it)
+                    viewModel.updateCheckEmail(0)
+                },
                 modifier = Modifier.width(220.dp),
                 shape = RoundedCornerShape(10.dp)
             )
             Spacer(modifier = Modifier.width(16.dp))
             Button(
-                onClick = { /*TODO*/ },
+                onClick = {
+                    val ret = viewModel.dupEmail()
+                    Log.d("signIn", "$ret")
+                },
                 modifier = Modifier.width(100.dp),
                 shape = RoundedCornerShape(10.dp)
             ) {
@@ -92,7 +105,7 @@ fun Essential(inputForm: MutableIntState, firstText: MutableState<String>, navCo
         Text(text = "비밀 번호")
         TextField(
             value = password,
-            onValueChange = setPassword,
+            onValueChange = viewModel::updatePassword,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp)
         )
@@ -100,7 +113,7 @@ fun Essential(inputForm: MutableIntState, firstText: MutableState<String>, navCo
         Text(text = "비밀 번호 확인")
         TextField(
             value = checkingPassword,
-            onValueChange = setCheckingPassword,
+            onValueChange = viewModel::updateCheckingPassword,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp)
         )
@@ -108,28 +121,12 @@ fun Essential(inputForm: MutableIntState, firstText: MutableState<String>, navCo
         Text(text = "닉네임")
         TextField(
             value = nickname,
-            onValueChange = setNickname,
+            onValueChange = viewModel::updateNickname,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp)
         )
         Spacer(modifier = Modifier.height(12.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Button(onClick = { /*TODO*/ }, shape = RoundedCornerShape(10.dp)) {
-                Text(text = "남성")
-            }
-            Spacer(modifier = Modifier.width(48.dp))
-            Button(
-                onClick = {
-
-                    },
-                shape = RoundedCornerShape(10.dp)
-            ) {
-                Text(text = "여성")
-            }
-        }
+        Preview_MultipleRadioButtons()
     }
     Scaffold(
         bottomBar = {
@@ -148,8 +145,10 @@ fun Essential(inputForm: MutableIntState, firstText: MutableState<String>, navCo
                 floatingActionButton = {
                     FloatingActionButton(
                         onClick = {
-                            inputForm.value = 2
-                            firstText.value = "인바디를"
+                            if(viewModel.checkEmail == 1 && viewModel.password == viewModel.checkingPassword && viewModel.nickname !== "" && viewModel.selectedGender !== "") {
+                                viewModel.updateInputForm(2)
+                                viewModel.updateFirstText("인바디를")
+                            }
                             },
                         containerColor = MaterialTheme.colorScheme.secondary,
                         elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
@@ -175,43 +174,87 @@ fun Essential(inputForm: MutableIntState, firstText: MutableState<String>, navCo
 }
 
 @Composable
-fun Inbody(inputForm: MutableIntState, firstText: MutableState<String>, navController: NavHostController) {
-    val (height, setHeight) = remember { mutableStateOf("") }
-    val (weight, setWeight) = remember { mutableStateOf("") }
-    val (muscleMass, setMuscleMass) = remember { mutableStateOf("") }
-    val (bodyFat, setBodyFat) = remember { mutableStateOf("") }
+fun Inbody(
+    navController: NavHostController,
+    viewModel: SignupViewModel = viewModel(factory = SignupViewModel.Factory)
+) {
+    var heightText by remember { mutableStateOf(if(viewModel.height == null) "" else viewModel.height.toString()) }
+    var weightText by remember { mutableStateOf(if(viewModel.weight == null) "" else viewModel.weight.toString()) }
+    var muscleMassText by remember { mutableStateOf(if(viewModel.muscleMass == null) "" else viewModel.muscleMass.toString()) }
+    var bodyFatText by remember { mutableStateOf(if(viewModel.bodyFat == null) "" else viewModel.bodyFat.toString()) }
 
     Column(modifier = Modifier.padding(28.dp)) {
         Text(text = "키")
         TextField(
-            value = height,
-            onValueChange = setHeight,
+            value = heightText,
+            onValueChange = {
+                heightText = it
+                if (it == "") {
+                    viewModel.updateHeight(null)
+                } else {
+                    viewModel.updateHeight(it.toDouble())
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(10.dp)
+            shape = RoundedCornerShape(10.dp),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number
+            )
         )
         Spacer(modifier = Modifier.height(16.dp))
+
         Text(text = "몸무게")
         TextField(
-            value = weight,
-            onValueChange = setWeight,
+            value = weightText,
+            onValueChange = {
+                weightText = it
+                if (it == "") {
+                    viewModel.updateWeight(null)
+                } else {
+                    viewModel.updateWeight(it.toDouble())
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(10.dp)
+            shape = RoundedCornerShape(10.dp),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number
+            )
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "골격근량")
         TextField(
-            value = muscleMass,
-            onValueChange = setMuscleMass,
+            value = muscleMassText,
+            onValueChange = {
+                muscleMassText = it
+                if (it == "") {
+                    viewModel.updateMuscleMass(null)
+                } else {
+                    viewModel.updateMuscleMass(it.toDouble())
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(10.dp)
+            shape = RoundedCornerShape(10.dp),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number
+            )
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "체지방")
         TextField(
-            value = bodyFat,
-            onValueChange = setBodyFat,
+            value = bodyFatText,
+            onValueChange = {
+                bodyFatText = it
+                if (it == "") {
+                    viewModel.updateBodyFat(null)
+                } else {
+                    viewModel.updateBodyFat(it.toDouble())
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(10.dp)
+            shape = RoundedCornerShape(10.dp),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number
+            )
         )
     }
     Scaffold(
@@ -231,7 +274,11 @@ fun Inbody(inputForm: MutableIntState, firstText: MutableState<String>, navContr
                 },
                 floatingActionButton = {
                     FloatingActionButton(
-                        onClick = {navController.navigate("login")  },
+                        onClick = {
+                            val ret = viewModel.signUp()
+                            Log.d("signUp", "$ret")
+                            navController.navigate("login")
+                        },
                         containerColor = MaterialTheme.colorScheme.secondary,
                         elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
                     ) {
@@ -252,5 +299,37 @@ fun Inbody(inputForm: MutableIntState, firstText: MutableState<String>, navContr
             modifier = Modifier.padding(innerPadding),
             text = ""
         )
+    }
+}
+
+@Composable
+fun Preview_MultipleRadioButtons(viewModel: SignupViewModel = viewModel(factory = SignupViewModel.Factory)) {
+    val selectedGender = viewModel.selectedGender
+    val isSelectedItem: (String) -> Boolean = { selectedGender == it }
+    val onChangeState: (String) -> Unit = { viewModel.updateSelectedGender(it) }
+    val items = listOf("m", "f")
+    Column(Modifier.padding(8.dp)) {
+        Text(text = "성별을 선택해주세요 : ${selectedGender.ifEmpty { "NONE" }}")
+        items.forEach { item ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .selectable(
+                        selected = isSelectedItem(item),
+                        onClick = { onChangeState(item) },
+                        role = Role.RadioButton
+                    )
+                    .padding(8.dp)
+            ) {
+                RadioButton(
+                    selected = isSelectedItem(item),
+                    onClick = null
+                )
+                Text(
+                    text = item,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
     }
 }
