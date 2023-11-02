@@ -28,6 +28,9 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCircleOutline
+import androidx.compose.material.icons.filled.PlayCircleOutline
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -48,10 +51,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.ssafy.mogeun.R
 import java.util.Calendar
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -66,15 +71,7 @@ fun ExecutionScreen() {
             .background(color = Color.Yellow)
     ) {
         ExerciseEMGScreen()
-        val chosenYear = remember { mutableStateOf(currentYear) }
-        val chosenMonth = remember { mutableStateOf(currentMonth) }
-        val chosenDay = remember { mutableStateOf(currentDay) }
 
-        DateSelectionSection(
-            onYearChosen = { chosenYear.value = it.toInt() },
-            onMonthChosen = { chosenMonth.value = monthsNames.indexOf(it) },
-            onDayChosen = { chosenDay.value = it.toInt() },
-        )
 
     //HorizontalPager(state = state, modifier = Modifier.fillMaxSize()) {page ->
     //            Box(
@@ -99,6 +96,11 @@ fun ExerciseEMGScreen(){
     var selectedTab by remember { mutableIntStateOf(0) }
     var lastClickTime by remember { mutableLongStateOf(0L) }
     val debounceDuration = 300 //0.1초
+    val chosenYear = remember { mutableStateOf(currentYear) }
+    val chosenMonth = remember { mutableStateOf(currentMonth) }
+    val chosenDay = remember { mutableStateOf(currentDay) }
+
+
 
     Column(modifier = Modifier
         .height(300.dp)
@@ -107,6 +109,7 @@ fun ExerciseEMGScreen(){
     ) {
         Box(modifier = Modifier //---------header---------
             .fillMaxHeight(0.15f)
+            .background(color = Color(0xFFDFEAFF))
         ) {
             Box(
                 modifier = Modifier
@@ -139,8 +142,7 @@ fun ExerciseEMGScreen(){
                     modifier = Modifier
                         .width(140.dp)
                         .height(36.dp)
-                        .padding(0.dp),
-
+                        .padding(0.dp)
                     ) {
                     Row(
                         horizontalArrangement = Arrangement.Center,
@@ -169,7 +171,9 @@ fun ExerciseEMGScreen(){
                 .fillMaxWidth(0.35f)
                 .background(color = Color.Green)
             ){
-
+                DateSelectionSection(
+                    onDayChosen = { chosenDay.value = it.toInt() },
+                )
             }
             Box(modifier = Modifier//EMG 신호 표기
                 .fillMaxHeight()
@@ -195,12 +199,12 @@ fun ExerciseEMGScreen(){
                     .background(color = Color.Blue)
                     .clickable {
                         val currentTime = System.currentTimeMillis()
-                        if(currentTime - lastClickTime>debounceDuration){
-                            if(setList.size>1){
+                        if (currentTime - lastClickTime > debounceDuration) {
+                            if (setList.size > 1) {
                                 setList.removeLast()
                                 selectedTab = setList.size - 1
                             }
-                            lastClickTime =currentTime
+                            lastClickTime = currentTime
                         }
                     },
                 ){
@@ -212,7 +216,34 @@ fun ExerciseEMGScreen(){
                 Box(modifier = Modifier
                     .fillMaxSize()
                     .background(color = Color.Cyan)
-                )
+                ){
+                   Row {
+                      Row(modifier = Modifier
+                          .fillMaxHeight()
+                      ){
+                          Icon(
+                              imageVector = Icons.Default.PlayCircleOutline,
+                              contentDescription = null,
+                              tint = Color.White,
+                              modifier = Modifier.size(20.dp)
+                              )
+                          Text(text = "시작")
+                      }
+                       Row(modifier = Modifier
+                           .fillMaxHeight()
+                       ){
+                           Icon(
+                               painter = painterResource(id = R.drawable.removecirclestop),
+                               contentDescription = "contentDescription",
+                               tint = Color.White,
+                               modifier = Modifier
+                                   .size(21.dp)
+                                   .padding(2.dp)
+                           )
+                           Text(text = "종료")
+                       }
+                   }
+                }
             }
         }
     }
@@ -240,6 +271,7 @@ private fun ScrollableTabRow(
                 modifier = Modifier
                     .fillMaxHeight()
                     .size(20.dp, 36.dp)
+                    .background(color = Color(0xFFDFEAFF))
             ) {
                 Text(text = text, fontSize = 14.sp)
             }
@@ -253,33 +285,57 @@ private fun ScrollableTabRow(
 
 @Composable
 fun DateSelectionSection(
-    onYearChosen: (String) -> Unit,
-    onMonthChosen: (String) -> Unit,
-    onDayChosen: (String) -> Unit,
+    onDayChosen: (String) -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceAround,
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp)
+            .fillMaxHeight()
+            .background(color = Color.LightGray)
+            .padding(10.dp)
+
     ) {
-        InfiniteItemsPicker(
-            items = days,
-            firstIndex = Int.MAX_VALUE / 2 + (currentDay - 2),
-            onItemSelected =  onDayChosen
-        )
+        Column (
+            modifier = Modifier
+                .fillMaxWidth(0.5f)
+                .background(color = Color.White)
+                .padding(3.dp)
 
-        InfiniteItemsPicker(
-            items = monthsNames,
-            firstIndex = Int.MAX_VALUE / 2 - 4 + currentMonth,
-            onItemSelected =  onMonthChosen
-        )
+        ) {
+            Box(modifier = Modifier
+                .padding(3.dp)
+                .background(color = Color.Gray)
+            ){
+                Text(text = "Kg")
+            }
+            InfiniteItemsPicker(
+                items = days,
+                firstIndex = Int.MAX_VALUE / 2 + (currentDay - 2),
+                onItemSelected =  onDayChosen
+            )
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = Color.White)
+                .padding(3.dp)
 
-        InfiniteItemsPicker(
-            items = years,
-            firstIndex = Int.MAX_VALUE / 2 + (currentYear - 1967),
-            onItemSelected = onYearChosen
-        )
+        ) {
+            Box(modifier = Modifier
+                .padding(3.dp)
+                .background(color = Color.Gray)
+            ){
+                Text(text = "Rep")
+            }
+            InfiniteItemsPicker(
+                items = days,
+                firstIndex = Int.MAX_VALUE / 2 + (currentDay - 2),
+                onItemSelected =  onDayChosen
+            )
+        }
+
+
     }
 }
 
@@ -299,7 +355,10 @@ fun InfiniteItemsPicker(
         listState.animateScrollToItem(index = listState.firstVisibleItemIndex)
     }
 
-    Box(modifier = Modifier.height(106.dp)) {
+    Box(modifier = Modifier
+        .height(106.dp)
+        .width(40.dp)
+    ) {
         LazyColumn(
             horizontalAlignment = Alignment.CenterHorizontally,
             state = listState,
