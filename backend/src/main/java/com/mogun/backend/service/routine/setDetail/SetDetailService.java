@@ -14,8 +14,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -54,6 +56,11 @@ public class SetDetailService {
     public List<SetDetail> getAllSetInfo(RoutineDto dto) {
 
         Optional<UserRoutinePlan> plan = planRepository.findById(dto.getPlanKey());
+        if(plan.isEmpty()) {
+            List<SetDetail> list = new ArrayList<>();
+            list.add(SetDetail.builder().setKey(-1).build());
+            return list;
+        }
 
         return setDetailRepository.findAllByUserRoutinePlan(plan.get());
     }

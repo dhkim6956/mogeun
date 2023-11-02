@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -41,5 +42,20 @@ public class ExerciseController {
         }
 
         return ApiResponse.ok(result);
+    }
+
+    @GetMapping("List")
+    public ApiResponse getExercise(@RequestParam("exec_key") int execKey) {
+
+        Exercise exec = exerciseService.getExercise(execKey);
+        if(exec == null)
+            return ApiResponse.badRequest("요청 오류: 등록되지 않은 운동 목록");
+
+        return ApiResponse.ok(SimplePlanInfoResponse.builder()
+                .execKey(exec.getExecKey())
+                .execName(exec.getName())
+                .engName(exec.getEngName())
+                .musclePart(attachPartService.getAllPartNameByExercise(exec))
+                .build());
     }
 }
