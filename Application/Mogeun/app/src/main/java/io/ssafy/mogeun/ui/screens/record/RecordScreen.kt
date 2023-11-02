@@ -62,6 +62,7 @@ import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.core.nextMonth
 import com.kizitonwose.calendar.core.previousMonth
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.ui.AppViewModelProvider
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
@@ -87,7 +88,7 @@ fun RecordScreen(navController: NavHostController) {
 fun CalenderUI(
     adjacentMonths: Long = 500,
     navController: NavHostController,
-    viewModel: RecordViewModel = viewModel(factory = RecordViewModel.Factory)
+    viewModel: RecordViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val currentMonth = remember { YearMonth.now() }
     val startMonth = remember { currentMonth.minusMonths(adjacentMonths) }
