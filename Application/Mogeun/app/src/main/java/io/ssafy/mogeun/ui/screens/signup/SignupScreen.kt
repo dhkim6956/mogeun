@@ -1,5 +1,6 @@
 package io.ssafy.mogeun.ui.screens.signup
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -19,11 +20,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.ui.screens.login.LoginViewModel
 
 @Composable
-fun SignupScreen(navController: NavHostController) {
+fun SignupScreen(viewModel: SignupViewModel = viewModel(factory = SignupViewModel.Factory), navController: NavHostController) {
     val inputForm = remember { mutableIntStateOf(1) }
     val firstText = remember { mutableStateOf("회원정보를") }
 
@@ -57,14 +60,14 @@ fun SignupScreen(navController: NavHostController) {
             }
         }
         when (inputForm.value) {
-            1 -> Essential(inputForm, firstText, navController) // 여성 버튼 클릭 시 firstText 값을 전달
+            1 -> Essential(viewModel, inputForm, firstText, navController)
             2 -> Inbody(inputForm, firstText, navController)
         }
     }
 }
 
 @Composable
-fun Essential(inputForm: MutableIntState, firstText: MutableState<String>, navController: NavHostController) {
+fun Essential(viewModel: SignupViewModel = viewModel(factory = LoginViewModel.Factory), inputForm: MutableIntState, firstText: MutableState<String>, navController: NavHostController) {
     val (id, setId) = remember { mutableStateOf("") }
     val (password, setPassword) = remember { mutableStateOf("") }
     val (checkingPassword, setCheckingPassword) = remember { mutableStateOf("") }
@@ -81,7 +84,10 @@ fun Essential(inputForm: MutableIntState, firstText: MutableState<String>, navCo
             )
             Spacer(modifier = Modifier.width(16.dp))
             Button(
-                onClick = { /*TODO*/ },
+                onClick = {
+                    val ret = viewModel.dupEmail("mogun@ssafy.com")
+                    Log.d("signIn", "$ret")
+                },
                 modifier = Modifier.width(100.dp),
                 shape = RoundedCornerShape(10.dp)
             ) {
