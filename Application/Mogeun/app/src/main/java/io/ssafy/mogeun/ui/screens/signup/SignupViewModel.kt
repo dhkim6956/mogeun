@@ -2,7 +2,9 @@ package io.ssafy.mogeun.ui.screens.signup
 
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -26,6 +28,12 @@ class SignupViewModel(private val signInRepository: SignInRepository): ViewModel
     var password by mutableStateOf("")
     var checkingPassword by mutableStateOf("")
     var nickname by mutableStateOf("")
+    var height by mutableStateOf<Float?>(null)
+    var weight by mutableStateOf<Float?>(null)
+    var muscleMass by mutableStateOf<Float?>(null)
+    var bodyFat by mutableStateOf<Float?>(null)
+    var inputForm by mutableIntStateOf(1)
+    var firstText by mutableStateOf("회원정보를")
 
     fun updateId(value: String) {
         id = value
@@ -41,6 +49,29 @@ class SignupViewModel(private val signInRepository: SignInRepository): ViewModel
 
     fun updateNickname(value: String) {
         nickname = value
+    }
+    fun updateHeight(value: Float) {
+        height = value
+    }
+
+    fun updateWeight(value: Float) {
+        weight = value
+    }
+
+    fun updateMuscleMass(value: Float) {
+        muscleMass = value
+    }
+
+    fun updateBodyFat(value: Float) {
+        bodyFat = value
+    }
+
+    fun updateInputForm(value: Int) {
+        inputForm = value
+    }
+
+    fun updateFirstText(value: String) {
+        firstText = value
     }
 
     fun dupEmail(email: String) {
