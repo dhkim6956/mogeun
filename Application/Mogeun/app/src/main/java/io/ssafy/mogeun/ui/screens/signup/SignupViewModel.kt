@@ -30,6 +30,7 @@ class SignupViewModel(private val signInRepository: SignInRepository): ViewModel
     var password by mutableStateOf("")
     var checkingPassword by mutableStateOf("")
     var nickname by mutableStateOf("")
+    var selectedGender by mutableStateOf("")
     var height by mutableStateOf<Double?>(null)
     var weight by mutableStateOf<Double?>(null)
     var muscleMass by mutableStateOf<Double?>(null)
@@ -51,6 +52,9 @@ class SignupViewModel(private val signInRepository: SignInRepository): ViewModel
 
     fun updateNickname(value: String) {
         nickname = value
+    }
+    fun updateSelectedGender(value: String) {
+        selectedGender = value
     }
     fun updateHeight(value: Double?) {
         height = value

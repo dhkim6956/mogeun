@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -17,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -119,23 +121,7 @@ fun Essential(viewModel: SignupViewModel = viewModel(factory = SignupViewModel.F
             shape = RoundedCornerShape(10.dp)
         )
         Spacer(modifier = Modifier.height(12.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Button(onClick = { /*TODO*/ }, shape = RoundedCornerShape(10.dp)) {
-                Text(text = "남성")
-            }
-            Spacer(modifier = Modifier.width(48.dp))
-            Button(
-                onClick = {
-
-                    },
-                shape = RoundedCornerShape(10.dp)
-            ) {
-                Text(text = "여성")
-            }
-        }
+        Preview_MultipleRadioButtons()
     }
     Scaffold(
         bottomBar = {
@@ -292,5 +278,37 @@ fun Inbody(
             modifier = Modifier.padding(innerPadding),
             text = ""
         )
+    }
+}
+
+@Composable
+fun Preview_MultipleRadioButtons(viewModel: SignupViewModel = viewModel(factory = SignupViewModel.Factory)) {
+    val selectedGender = viewModel.selectedGender
+
+    val isSelectedItem: (String) -> Boolean = { selectedGender == it }
+    val onChangeState: (String) -> Unit = { viewModel.updateSelectedGender(it) }
+
+    val items = listOf("남성", "여성")
+    Column(Modifier.padding(8.dp)) {
+        Text(text = "성별을 선택해주세요 : ${selectedGender.ifEmpty { "NONE" }}")
+        items.forEach { item ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.selectable(
+                    selected = isSelectedItem(item),
+                    onClick = { onChangeState(item) },
+                    role = Role.RadioButton
+                ).padding(8.dp)
+            ) {
+                RadioButton(
+                    selected = isSelectedItem(item),
+                    onClick = null
+                )
+                Text(
+                    text = item,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
     }
 }
