@@ -20,9 +20,13 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static java.time.temporal.TemporalAdjusters.firstDayOfMonth;
+import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 
 @Service
 @Transactional
@@ -49,7 +53,6 @@ public class RoutineResultService {
 
         resultRepository.save(dto.toRoutineResultEntity(report.get()));
 
-
         return "SUCCESS";
     }
 
@@ -66,7 +69,6 @@ public class RoutineResultService {
             return SummaryResultDto.builder()
                     .performTime((long) -2)
                     .build();
-
 
         if(!result.get().getUser().equals(user.get()))
             return SummaryResultDto.builder()
@@ -185,7 +187,7 @@ public class RoutineResultService {
         return list;
     }
 
-    public List<ResultListDto> getMonthlyResult(ResultDto dto) {
+    public List<ResultListDto> getLastMonthResult(ResultDto dto) {
 
         List<ResultListDto> list = new ArrayList<>();
         Optional<User> user = userRepository.findById(dto.getUserKey());
@@ -196,14 +198,13 @@ public class RoutineResultService {
 
         LocalDate lastDate = LocalDate.now().minusMonths(1);
 
-
         List<RoutineResult> results = resultRepository.findAllByFromRoutineDateAndUser(lastDate, user.get());
 
         for(RoutineResult result: results) {
             if(list.isEmpty()) {
                 list.add(ResultListDto.builder()
                         .date(result.getRoutineDate())
-                        .routineCount(1)
+                        .routineCount(0)
                         .routineReports(new ArrayList<>())
                         .build());
             }
@@ -218,6 +219,8 @@ public class RoutineResultService {
                         .startTime(report.getStartTime())
                         .endTime(report.getEndTime())
                         .build());
+
+                list.get(lastIndex).setRoutineCount(list.get(lastIndex).getRoutineCount() + 1);
             } else {
                 list.add(ResultListDto.builder()
                         .date(result.getRoutineDate())
@@ -233,7 +236,59 @@ public class RoutineResultService {
                         .build());
             }
         }
+        return list;
+    }
 
+    public List<ResultListDto> getMonthlyRangeResult(ResultDto dto) {
+
+        List<ResultListDto> list = new ArrayList<>();
+        Optional<User> user = userRepository.findById(dto.getUserKey());
+        if(user.isEmpty()) {
+            list.add(ResultListDto.builder().routineCount(-1).build());
+            return list;
+        }
+
+        LocalDate startDate = dto.getDate().with(firstDayOfMonth());
+        LocalDate endDate = dto.getDate().with(lastDayOfMonth());
+
+        List<RoutineResult> results = resultRepository.findAllByBetweenRoutineDateAndUser(startDate, endDate, user.get());
+
+        for(RoutineResult result: results) {
+            if(list.isEmpty()) {
+                list.add(ResultListDto.builder()
+                        .date(result.getRoutineDate())
+                        .routineCount(0)
+                        .routineReports(new ArrayList<>())
+                        .build());
+            }
+
+            int lastIndex = list.size() - 1;
+            RoutineReport report = result.getRoutineReport();
+
+            if(list.get(lastIndex).getDate().isEqual(result.getRoutineDate())) {
+                list.get(lastIndex).getRoutineReports().add(SimpleReportInfo.builder()
+                        .routineName(report.getRoutineName())
+                        .reportKey(report.getRoutineReportKey())
+                        .startTime(report.getStartTime())
+                        .endTime(report.getEndTime())
+                        .build());
+
+                list.get(lastIndex).setRoutineCount(list.get(lastIndex).getRoutineCount() + 1);
+            } else {
+                list.add(ResultListDto.builder()
+                        .date(result.getRoutineDate())
+                        .routineCount(1)
+                        .routineReports(new ArrayList<>())
+                        .build());
+                lastIndex = list.size() - 1;
+                list.get(lastIndex).getRoutineReports().add(SimpleReportInfo.builder()
+                        .routineName(report.getRoutineName())
+                        .reportKey(report.getRoutineReportKey())
+                        .startTime(report.getStartTime())
+                        .endTime(report.getEndTime())
+                        .build());
+            }
+        }
         return list;
     }
 }

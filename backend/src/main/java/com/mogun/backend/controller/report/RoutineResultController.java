@@ -10,8 +10,10 @@ import com.mogun.backend.service.report.dto.SetResultListDto;
 import com.mogun.backend.service.report.dto.SummaryResultDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,11 +83,25 @@ public class RoutineResultController {
         return  ApiResponse.ok(responses);
     }
 
-    @GetMapping("/Monthly")
-    public ApiResponse getMonthlyResult(@RequestParam("user_key") int userKey) {
+    @GetMapping("/LastMonth")
+    public ApiResponse getLastMonthResult(@RequestParam("user_key") int userKey) {
 
-        List<ResultListDto> list =  resultService.getMonthlyResult(ResultDto.builder().userKey(userKey).build());
-        if(list.get(0).getRoutineCount() == -1)
+        List<ResultListDto> list =  resultService.getLastMonthResult(ResultDto.builder().userKey(userKey).build());
+        if(!list.isEmpty() && list.get(0).getRoutineCount() == -1)
+            return ApiResponse.badRequest("요청 오류: 등록된 회원이 아님");
+
+        return  ApiResponse.ok(list);
+    }
+
+    @GetMapping("/Monthly")
+    public ApiResponse getMonthlyResult(@RequestParam("user_key") int userKey, @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+
+        List<ResultListDto> list = resultService.getMonthlyRangeResult(ResultDto.builder()
+                .userKey(userKey)
+                .date(date)
+                .build());
+
+        if(!list.isEmpty() && list.get(0).getRoutineCount() == -1)
             return ApiResponse.badRequest("요청 오류: 등록된 회원이 아님");
 
         return  ApiResponse.ok(list);

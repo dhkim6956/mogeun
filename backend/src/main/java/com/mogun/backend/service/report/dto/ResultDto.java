@@ -23,6 +23,7 @@ public class ResultDto {
     private float consumeCalorie;
     private RoutineReport report;
     private Long reportKey;
+    private LocalDate date;
 
     public RoutineResult toRoutineResultEntity(RoutineReport report) {
         return RoutineResult.builder()

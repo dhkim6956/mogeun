@@ -19,4 +19,7 @@ public interface RoutineResultRepository extends JpaRepository<RoutineResult, In
 
     @Query(value = "SELECT * FROM routine_result rr WHERE rr.routine_date >= :before AND rr.user_key = :user ORDER BY rr.routine_date", nativeQuery = true)
     List<RoutineResult> findAllByFromRoutineDateAndUser(@Param("before") LocalDate before, @Param("user") User user);
+
+    @Query(value = "SELECT * FROM routine_result rr WHERE rr.routine_date >= :before AND rr.routine_date <= :after AND rr.user_key = :user ORDER BY rr.routine_date", nativeQuery = true)
+    List<RoutineResult> findAllByBetweenRoutineDateAndUser(@Param("before") LocalDate before, @Param("after") LocalDate after, @Param("user") User user);
 }
