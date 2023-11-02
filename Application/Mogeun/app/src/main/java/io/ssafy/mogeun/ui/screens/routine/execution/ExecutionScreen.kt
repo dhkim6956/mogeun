@@ -91,6 +91,7 @@ fun ExerciseEMGScreen(){
     ) {
         Box(modifier = Modifier //---------header---------
             .fillMaxHeight(0.15f)
+            .background(color = Color(0xFFDFEAFF))
         ) {
             Box(
                 modifier = Modifier
@@ -123,8 +124,7 @@ fun ExerciseEMGScreen(){
                     modifier = Modifier
                         .width(140.dp)
                         .height(36.dp)
-                        .padding(0.dp),
-
+                        .padding(0.dp)
                     ) {
                     Row(
                         horizontalArrangement = Arrangement.Center,
@@ -179,12 +179,12 @@ fun ExerciseEMGScreen(){
                     .background(color = Color.Blue)
                     .clickable {
                         val currentTime = System.currentTimeMillis()
-                        if(currentTime - lastClickTime>debounceDuration){
-                            if(setList.size>1){
+                        if (currentTime - lastClickTime > debounceDuration) {
+                            if (setList.size > 1) {
                                 setList.removeLast()
                                 selectedTab = setList.size - 1
                             }
-                            lastClickTime =currentTime
+                            lastClickTime = currentTime
                         }
                     },
                 ){
@@ -196,7 +196,16 @@ fun ExerciseEMGScreen(){
                 Box(modifier = Modifier
                     .fillMaxSize()
                     .background(color = Color.Cyan)
-                )
+                ){
+                   Row {
+                       Button(onClick = {},
+                           ) {
+                           Text(text = "종료")
+                       }
+                       Button(onClick = { }) {
+                       }
+                   }
+                }
             }
         }
     }
@@ -224,6 +233,7 @@ private fun ScrollableTabRow(
                 modifier = Modifier
                     .fillMaxHeight()
                     .size(20.dp, 36.dp)
+                    .background(color = Color(0xFFDFEAFF))
             ) {
                 Text(text = text, fontSize = 14.sp)
             }
