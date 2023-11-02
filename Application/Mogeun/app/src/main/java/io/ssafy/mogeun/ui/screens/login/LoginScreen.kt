@@ -68,7 +68,7 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(factory = LoginViewModel.F
         Column(modifier = Modifier.padding(28.dp)) {
             Text(text = "아이디")
             TextField(
-                value = viewModel.text1,
+                value = viewModel.id,
                 onValueChange = { viewModel.updateText1(it) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp)
@@ -76,7 +76,7 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(factory = LoginViewModel.F
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = "비밀번호")
             TextField(
-                value = viewModel.text2,
+                value = viewModel.pwd,
                 onValueChange = { viewModel.updateText2(it) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp)
@@ -84,7 +84,7 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(factory = LoginViewModel.F
             Spacer(modifier = Modifier.height(32.dp))
             Button(
                 onClick = {
-                    val ret = viewModel.signIn("mogun12@ssafy.com", "mogun1234")
+                    val ret = viewModel.signIn()
                     Log.d("signIn", "$ret") }
                 ,
                 modifier = Modifier
