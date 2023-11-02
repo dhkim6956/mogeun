@@ -1,5 +1,6 @@
 package io.ssafy.mogeun.ui.screens.record
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -38,7 +40,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.AnnotatedString
@@ -48,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.kizitonwose.calendar.compose.CalendarLayoutInfo
 import com.kizitonwose.calendar.compose.CalendarState
@@ -65,7 +67,7 @@ import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.YearMonth
 
-private val exercies = generateExercises().groupBy { it.time }
+//private val exercies = generateExercises().groupBy { it.time }
 @Composable
 fun RecordScreen(navController: NavHostController) {
     Column(
@@ -84,19 +86,30 @@ fun RecordScreen(navController: NavHostController) {
 @Composable
 fun CalenderUI(
     adjacentMonths: Long = 500,
-    navController: NavHostController
+    navController: NavHostController,
+    viewModel: RecordViewModel = viewModel(factory = RecordViewModel.Factory)
 ) {
     val currentMonth = remember { YearMonth.now() }
     val startMonth = remember { currentMonth.minusMonths(adjacentMonths) }
     val endMonth = remember { currentMonth.plusMonths(adjacentMonths) }
     var selection by remember { mutableStateOf<CalendarDay?>(null) }
     val daysOfWeek = remember { daysOfWeek() }
-    val exerciseDate = remember {
-        derivedStateOf {
-            val date = selection?.date
-            if (date == null) emptyList() else exercies[date].orEmpty()
-        }
+    val state = rememberCalendarState(
+        startMonth = startMonth,
+        endMonth = endMonth,
+        firstVisibleMonth = currentMonth,
+        firstDayOfWeek = daysOfWeek.first(),
+    )
+    val coroutineScope = rememberCoroutineScope()
+    val visibleMonth = rememberFirstMostVisibleMonth(state, viewportPercent = 90f)
+    val recordMonthlySuccess by viewModel.recordMonthlySuccess.collectAsState()
+
+    if (!recordMonthlySuccess) {
+        Log.d("date", visibleMonth.yearMonth.toString().plus("-01"))
+        viewModel.recordMonthly("2", visibleMonth.yearMonth.toString().plus("-01"))
     }
+
+    val routines = viewModel.recordList.groupBy { it.date }
 
     Column(
         modifier = Modifier
@@ -109,25 +122,19 @@ fun CalenderUI(
                 shape = RoundedCornerShape(16.dp)
             ),
     ) {
-        val state = rememberCalendarState(
-            startMonth = startMonth,
-            endMonth = endMonth,
-            firstVisibleMonth = currentMonth,
-            firstDayOfWeek = daysOfWeek.first(),
-        )
-        val coroutineScope = rememberCoroutineScope()
-        val visibleMonth = rememberFirstMostVisibleMonth(state, viewportPercent = 90f)
         SimpleCalendarTitle(
             modifier = Modifier.padding(vertical = 10.dp, horizontal = 8.dp),
             currentMonth = visibleMonth.yearMonth,
             goToPrevious = {
                 coroutineScope.launch {
                     state.animateScrollToMonth(state.firstVisibleMonth.yearMonth.previousMonth)
+                    viewModel.initRecordMonthlySuccess()
                 }
             },
             goToNext = {
                 coroutineScope.launch {
                     state.animateScrollToMonth(state.firstVisibleMonth.yearMonth.nextMonth)
+                    viewModel.initRecordMonthlySuccess()
                 }
             },
         )
@@ -137,7 +144,7 @@ fun CalenderUI(
             dayContent = { day ->
                 Day(
                     day,
-                    isSelected = exercies[day.date].isNullOrEmpty()
+                    isSelected = routines[day.date.toString()].isNullOrEmpty()
                 ) { clicked ->
                     selection = clicked
                 }
@@ -155,8 +162,12 @@ fun CalenderUI(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        items(items = exerciseDate.value) { exercise ->
-            RoutineRecord(navController, exercise.recordTime, exercise.name)
+        val date = selection?.date
+        val routineList = routines[date.toString()].orEmpty()
+        items(items = routineList) { routineReports ->
+            for (routine in routineReports.routineReports) {
+                RoutineRecord(navController, routine.startTime, routine.routineName)
+            }
         }
     }
 }

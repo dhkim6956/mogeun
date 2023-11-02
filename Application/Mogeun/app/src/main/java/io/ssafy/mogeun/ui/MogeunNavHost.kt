@@ -48,7 +48,7 @@ fun MogeunNavHost(navController: NavHostController) {
             Text("This is bottom sheet!")
         }
         composable(
-            "${Screen.ExplainExercise.route}/{image}",
+            "${Screen.ExplainExercise.route}",
             arguments = listOf(navArgument("image") { type = NavType.StringType })
         ) { backStackEntry ->
             ExplainExerciseScreen(navController = navController, data = backStackEntry.arguments?.getString("image"))
