@@ -8,6 +8,7 @@ import retrofit2.Retrofit
 
 interface AppContainer {
     val userDataRepository: SignInRepository
+    val exerciseDataRepository: CreateRoutineRepository
 }
 
 class DefaultAppContainer: AppContainer {
@@ -24,5 +25,9 @@ class DefaultAppContainer: AppContainer {
 
     override val userDataRepository: SignInRepository by lazy {
         NetworkSignInRepository(retrofitService)
+    }
+
+    override val exerciseDataRepository: CreateRoutineRepository by lazy {
+        NetworkCreateRoutineRepository(retrofitService)
     }
 }

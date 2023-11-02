@@ -1,6 +1,7 @@
 package io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise
 
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -51,6 +52,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.lifecycle.viewmodel.compose.viewModel
+import io.ssafy.mogeun.ui.screens.login.LoginViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -245,6 +248,7 @@ fun AlertDialogExample(
     icon: ImageVector,
 ) {
     val (name, setName) = remember { mutableStateOf("") }
+    val viewModel: CreateRoutineViewModel = viewModel(factory = CreateRoutineViewModel.Factory)
     AlertDialog(
         icon = {
             Icon(icon, contentDescription = "Example Icon")
@@ -261,6 +265,8 @@ fun AlertDialogExample(
         confirmButton = {
             TextButton(
                 onClick = {
+                    val ret = viewModel.createRoutine("mogun@ssafy.com", "mogun1234")
+                    Log.d("createRoutine", "$ret")
                     // 운동에 대한 정보를 post
                     navController.popBackStack()
                 }
