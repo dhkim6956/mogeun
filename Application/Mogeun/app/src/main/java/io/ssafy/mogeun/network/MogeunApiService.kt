@@ -3,6 +3,7 @@ package io.ssafy.mogeun.network
 import io.ssafy.mogeun.model.CreateRoutineRequest
 import io.ssafy.mogeun.model.CreateRoutineResponse
 import io.ssafy.mogeun.model.DupEmailResponse
+import io.ssafy.mogeun.model.MonthlyResponse
 import io.ssafy.mogeun.model.SignInRequest
 import io.ssafy.mogeun.model.SignInResponse
 import io.ssafy.mogeun.model.SignUpRequest
@@ -10,7 +11,6 @@ import io.ssafy.mogeun.model.SignUpResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface MogeunApiService {
@@ -25,4 +25,8 @@ interface MogeunApiService {
 
     @POST("Routine/Create")
     suspend fun CreateRoutine(@Body createRoutineRequest: CreateRoutineRequest): CreateRoutineResponse
+
+
+    @GET("Result/Monthly")
+    suspend fun recordMonthly(@Query("user_key") userKey: String, @Query("date") date: String): MonthlyResponse
 }
