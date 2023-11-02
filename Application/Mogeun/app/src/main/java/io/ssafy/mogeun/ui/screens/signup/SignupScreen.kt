@@ -60,14 +60,14 @@ fun SignupScreen(viewModel: SignupViewModel = viewModel(factory = SignupViewMode
             }
         }
         when (inputForm) {
-            1 -> Essential(viewModel, inputForm, firstText, navController)
-            2 -> Inbody(inputForm, firstText, navController)
+            1 -> Essential(viewModel, navController)
+            2 -> Inbody(navController)
         }
     }
 }
 
 @Composable
-fun Essential(viewModel: SignupViewModel = viewModel(factory = SignupViewModel.Factory), inputForm: Int, firstText: String, navController: NavHostController) {
+fun Essential(viewModel: SignupViewModel = viewModel(factory = SignupViewModel.Factory), navController: NavHostController) {
     val id = viewModel.id
     val password = viewModel.password
     val checkingPassword = viewModel.checkingPassword
@@ -182,45 +182,74 @@ fun Essential(viewModel: SignupViewModel = viewModel(factory = SignupViewModel.F
 
 @Composable
 fun Inbody(
-    inputForm: Int,
-    firstText: String,
     navController: NavHostController,
     viewModel: SignupViewModel = viewModel(factory = SignupViewModel.Factory)
 ) {
-    val height = viewModel.height
-    val weight = viewModel.weight
-    val muscleMass = viewModel.muscleMass
-    val bodyFat = viewModel.bodyFat
+    var heightText by remember { mutableStateOf(if(viewModel.height == null) "" else viewModel.height.toString()) }
+    var weightText by remember { mutableStateOf(if(viewModel.weight == null) "" else viewModel.weight.toString()) }
+    var muscleMassText by remember { mutableStateOf(if(viewModel.muscleMass == null) "" else viewModel.muscleMass.toString()) }
+    var bodyFatText by remember { mutableStateOf(if(viewModel.bodyFat == null) "" else viewModel.bodyFat.toString()) }
 
     Column(modifier = Modifier.padding(28.dp)) {
         Text(text = "키")
         TextField(
-            value = height.toString(),
-            onValueChange = { viewModel::updateHeight },
+            value = heightText,
+            onValueChange = {
+                heightText = it
+                if (it == "") {
+                    viewModel.updateHeight(null)
+                } else {
+                    viewModel.updateHeight(it.toDouble())
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
+
         Text(text = "몸무게")
         TextField(
-            value = weight.toString(),
-            onValueChange = { viewModel::updateWeight },
+            value = weightText,
+            onValueChange = {
+                weightText = it
+                if (it == "") {
+                    viewModel.updateWeight(null)
+                } else {
+                    viewModel.updateWeight(it.toDouble())
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
+
         Text(text = "골격근량")
         TextField(
-            value = muscleMass.toString(),
-            onValueChange = { viewModel::updateMuscleMass },
+            value = muscleMassText,
+            onValueChange = {
+                muscleMassText = it
+                if (it == "") {
+                    viewModel.updateMuscleMass(null)
+                } else {
+                    viewModel.updateMuscleMass(it.toDouble())
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
+
         Text(text = "체지방")
         TextField(
-            value = bodyFat.toString(),
-            onValueChange = { viewModel::updateBodyFat },
+            value = bodyFatText,
+            onValueChange = {
+                bodyFatText = it
+                if (it == "") {
+                    viewModel.updateBodyFat(null)
+                } else {
+                    viewModel.updateBodyFat(it.toDouble())
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp)
         )

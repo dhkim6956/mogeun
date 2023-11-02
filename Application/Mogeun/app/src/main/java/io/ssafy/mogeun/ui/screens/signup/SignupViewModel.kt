@@ -2,6 +2,8 @@ package io.ssafy.mogeun.ui.screens.signup
 
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,10 +30,10 @@ class SignupViewModel(private val signInRepository: SignInRepository): ViewModel
     var password by mutableStateOf("")
     var checkingPassword by mutableStateOf("")
     var nickname by mutableStateOf("")
-    var height by mutableStateOf<Float?>(null)
-    var weight by mutableStateOf<Float?>(null)
-    var muscleMass by mutableStateOf<Float?>(null)
-    var bodyFat by mutableStateOf<Float?>(null)
+    var height by mutableStateOf<Double?>(null)
+    var weight by mutableStateOf<Double?>(null)
+    var muscleMass by mutableStateOf<Double?>(null)
+    var bodyFat by mutableStateOf<Double?>(null)
     var inputForm by mutableIntStateOf(1)
     var firstText by mutableStateOf("회원정보를")
 
@@ -50,19 +52,19 @@ class SignupViewModel(private val signInRepository: SignInRepository): ViewModel
     fun updateNickname(value: String) {
         nickname = value
     }
-    fun updateHeight(value: Float) {
+    fun updateHeight(value: Double?) {
         height = value
     }
 
-    fun updateWeight(value: Float) {
+    fun updateWeight(value: Double?) {
         weight = value
     }
 
-    fun updateMuscleMass(value: Float) {
+    fun updateMuscleMass(value: Double?) {
         muscleMass = value
     }
 
-    fun updateBodyFat(value: Float) {
+    fun updateBodyFat(value: Double?) {
         bodyFat = value
     }
 
