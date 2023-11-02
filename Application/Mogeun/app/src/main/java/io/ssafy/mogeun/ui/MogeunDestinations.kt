@@ -91,8 +91,8 @@ enum class Screen(
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
         bottomBarState = BottomBarState(true, R.drawable.icon_setting)
     ),
-    Room(
-        route = "Room",
+    SqlSample(
+        route = "SqlSample",
         title = "sql 테스트 페이지",
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
         bottomBarState = BottomBarState(true)

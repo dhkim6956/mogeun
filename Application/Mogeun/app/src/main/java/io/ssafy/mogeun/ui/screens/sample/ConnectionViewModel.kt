@@ -51,12 +51,5 @@ class ConnectionViewModel(private val emgRepository: EmgRepository): ViewModel()
 
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as MogeunApplication)
-                val emgRepository = application.container.emgDataRepository
-                ConnectionViewModel(emgRepository = emgRepository)
-            }
-        }
     }
 }

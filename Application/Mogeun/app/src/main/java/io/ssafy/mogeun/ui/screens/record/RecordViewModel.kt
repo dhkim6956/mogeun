@@ -42,13 +42,5 @@ class RecordViewModel(private val recordRepository: RecordRepository): ViewModel
             }
         }
     }
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as MogeunApplication)
-                val recordRepository = application.container.recordRepository
-                RecordViewModel(recordRepository = recordRepository)
-            }
-        }
-    }
+
 }

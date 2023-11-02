@@ -1,4 +1,4 @@
-package io.ssafy.mogeun.ui
+package io.ssafy.mogeun
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
@@ -26,6 +26,9 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
+import io.ssafy.mogeun.ui.MogeunNavHost
+import io.ssafy.mogeun.ui.Screen
+import io.ssafy.mogeun.ui.rootScreen
 
 
 @OptIn(ExperimentalMaterialNavigationApi::class)
