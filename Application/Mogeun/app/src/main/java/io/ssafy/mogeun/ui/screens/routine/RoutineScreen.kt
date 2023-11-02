@@ -140,7 +140,7 @@ fun RoutineScreen(navController: NavHostController) {
                 .padding(bottom = 10.dp), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(text = "루틴명 : 밀기", modifier = Modifier.padding(start = 40.dp, top = 10.dp), fontSize = 24.sp)
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = { navController.navigate("Room") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
                 ) {
                     Image(

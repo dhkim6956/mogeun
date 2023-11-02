@@ -1,5 +1,6 @@
 package io.ssafy.mogeun.data
 
+import android.content.Context
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import io.ssafy.mogeun.network.MogeunApiService
 import kotlinx.serialization.json.Json
@@ -8,9 +9,10 @@ import retrofit2.Retrofit
 
 interface AppContainer {
     val userDataRepository: SignInRepository
+    val emgDataRepository: EmgRepository
 }
 
-class DefaultAppContainer: AppContainer {
+class DefaultAppContainer(private val context: Context): AppContainer {
     private val baseUrl = "https://k9c104.p.ssafy.io:8080/API/"
 
     private val retrofit = Retrofit.Builder()
@@ -24,5 +26,9 @@ class DefaultAppContainer: AppContainer {
 
     override val userDataRepository: SignInRepository by lazy {
         NetworkSignInRepository(retrofitService)
+    }
+
+    override val emgDataRepository: EmgRepository by lazy {
+        OfflineEmgRepository(EmgDatabase.getDatabase(context).emgDao())
     }
 }

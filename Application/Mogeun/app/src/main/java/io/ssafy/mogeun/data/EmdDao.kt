@@ -18,5 +18,5 @@ interface EmgDao {
     fun getEmgStream(): Flow<Emg>
 
     @Query("DELETE FROM emgValue")
-    fun deleteEmgData()
+    suspend fun deleteEmgData()
 }

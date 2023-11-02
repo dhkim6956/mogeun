@@ -22,6 +22,7 @@ import io.ssafy.mogeun.ui.screens.signup.SignupScreen
 import io.ssafy.mogeun.ui.screens.summary.SummaryScreen
 import io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.AddExerciseScreen
 import io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.ExplainExerciseScreen
+import io.ssafy.mogeun.ui.screens.sample.ConnectionScreen
 
 @OptIn(ExperimentalMaterialNavigationApi::class)
 @Composable
@@ -53,5 +54,6 @@ fun MogeunNavHost(navController: NavHostController) {
         ) { backStackEntry ->
             ExplainExerciseScreen(navController = navController, data = backStackEntry.arguments?.getString("image"))
         }
+        composable(Screen.Room.route) { ConnectionScreen() }
     }
 }
