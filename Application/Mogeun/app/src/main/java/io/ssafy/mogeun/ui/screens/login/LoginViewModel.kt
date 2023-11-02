@@ -21,25 +21,24 @@ import kotlinx.coroutines.launch
 class LoginViewModel(private val signInRepository: SignInRepository) : ViewModel() {
     private val _signInSuccess = MutableStateFlow(false)
     val signInSuccess: StateFlow<Boolean> = _signInSuccess.asStateFlow()
-
     // 텍스트 필드에 대한 상태 변수
-    var text1 by mutableStateOf("")
-    var text2 by mutableStateOf("")
+    var id by mutableStateOf("")
+    var pwd by mutableStateOf("")
 
     // text1 및 text2를 업데이트하는 함수
     fun updateText1(value: String) {
-        text1 = value
+        id = value
     }
 
     fun updateText2(value: String) {
-        text2 = value
+        pwd = value
     }
 
-    fun signIn(email: String, pw: String) {
+    fun signIn() {
         lateinit var ret: SignInResponse
         viewModelScope.launch {
-            ret = signInRepository.signIn(email, pw)
-
+            ret = signInRepository.signIn(id, pwd)
+            Log.d("signIn", "$ret")
             if (ret.message == "SUCCESS") {
                 _signInSuccess.value = true
             }

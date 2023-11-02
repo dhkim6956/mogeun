@@ -60,9 +60,16 @@ fun Navigation() {
 
     val navBackStackEntry = navController.currentBackStackEntryAsState()
 
-    val currentScreen = Screen.valueOf(
-        navBackStackEntry.value?.destination?.route ?: Screen.Login.name
-    )
+    val screens = arrayOf(Screen.ExplainExercise)
+    val currentRoute = navBackStackEntry.value?.destination?.route
+
+    val currentScreen = try {
+        Screen.valueOf(
+            currentRoute ?: Screen.Login.name
+        )
+    } catch (e: Exception) {
+        screens.find { it.route == currentRoute } ?: Screen.Login
+    }
 
     ModalBottomSheetLayout(bottomSheetNavigator) {
         Scaffold (
