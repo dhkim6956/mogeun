@@ -44,14 +44,4 @@ class LoginViewModel(private val signInRepository: SignInRepository) : ViewModel
             }
         }
     }
-
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[APPLICATION_KEY] as MogeunApplication)
-                val signInRepository = application.container.userDataRepository
-                LoginViewModel(signInRepository = signInRepository)
-            }
-        }
-    }
 }

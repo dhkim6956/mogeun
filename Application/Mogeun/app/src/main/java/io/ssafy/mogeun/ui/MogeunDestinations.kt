@@ -90,6 +90,12 @@ enum class Screen(
         title = "운동 설명",
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
         bottomBarState = BottomBarState(true, R.drawable.icon_setting)
+    ),
+    SqlSample(
+        route = "SqlSample",
+        title = "sql 테스트 페이지",
+        topBarState = TopBarState(visibility = true, backBtnVisibility = true),
+        bottomBarState = BottomBarState(true)
     )
 }
 
