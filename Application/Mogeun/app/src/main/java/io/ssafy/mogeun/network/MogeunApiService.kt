@@ -1,5 +1,7 @@
 package io.ssafy.mogeun.network
 
+import io.ssafy.mogeun.model.CreateRoutineRequest
+import io.ssafy.mogeun.model.CreateRoutineResponse
 import io.ssafy.mogeun.model.DupEmailResponse
 import io.ssafy.mogeun.model.SignInRequest
 import io.ssafy.mogeun.model.SignInResponse
@@ -20,4 +22,7 @@ interface MogeunApiService {
 
     @POST("User/Enroll")
     suspend fun signUp(@Body signUpRequest: SignUpRequest): SignUpResponse
+
+    @POST("Routine/Create")
+    suspend fun CreateRoutine(@Body createRoutineRequest: CreateRoutineRequest): CreateRoutineResponse
 }

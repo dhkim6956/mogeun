@@ -70,7 +70,7 @@ fun AddRoutineScreen(navController: NavHostController) {
                         Text(text = "exercise")
                     }
                 }
-                Spacer(modifier = Modifier.height(8.dp))  // 박스 사이에 8dp 높이의 공간 추가
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }

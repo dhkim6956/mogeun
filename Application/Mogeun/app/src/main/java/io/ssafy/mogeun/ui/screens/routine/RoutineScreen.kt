@@ -140,7 +140,7 @@ fun RoutineScreen(navController: NavHostController) {
                 .padding(bottom = 10.dp), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(text = "루틴명 : 밀기", modifier = Modifier.padding(start = 40.dp, top = 10.dp), fontSize = 24.sp)
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = { navController.navigate("addroutine") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
                 ) {
                     Image(
@@ -149,7 +149,6 @@ fun RoutineScreen(navController: NavHostController) {
                         contentScale = ContentScale.Crop,
                     )
                 }
-
             }
             Row {
                 Column(modifier = Modifier.width(200.dp)) {
@@ -213,49 +212,4 @@ fun RoutineScreen(navController: NavHostController) {
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AlertDialogExample(
-    navController: NavHostController,
-    onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
-    dialogTitle: String,
-    dialogText: String,
-    icon: ImageVector,
-) {
-    val (name, setName) = remember { mutableStateOf("") }
-    AlertDialog(
-        icon = {
-            Icon(icon, contentDescription = "Example Icon")
-        },
-        title = {
-            Text(text = dialogTitle)
-        },
-        text = {
-            TextField(value = name, onValueChange = setName )
-        },
-        onDismissRequest = {
-            onDismissRequest()
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    navController.navigate("addroutine")
-                }
-            ) {
-                Text("Confirm")
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = {
-                    onDismissRequest()
-                }
-            ) {
-                Text("Dismiss")
-            }
-        }
-    )
 }
