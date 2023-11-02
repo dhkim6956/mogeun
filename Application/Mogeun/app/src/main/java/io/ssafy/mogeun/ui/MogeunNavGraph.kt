@@ -15,7 +15,7 @@ import io.ssafy.mogeun.ui.screens.login.LoginScreen
 import io.ssafy.mogeun.ui.screens.record.ExerciseDetailScreen
 import io.ssafy.mogeun.ui.screens.record.RecordDetailScreen
 import io.ssafy.mogeun.ui.screens.record.RecordScreen
-import io.ssafy.mogeun.ui.screens.routine.RoutineScreen
+import io.ssafy.mogeun.ui.screens.routine.searchRoutine.RoutineScreen
 import io.ssafy.mogeun.ui.screens.routine.execution.ExecutionScreen
 import io.ssafy.mogeun.ui.screens.setting.SettingScreen
 import io.ssafy.mogeun.ui.screens.signup.SignupScreen
