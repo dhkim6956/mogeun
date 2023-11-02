@@ -257,7 +257,11 @@ fun Inbody(
                 },
                 floatingActionButton = {
                     FloatingActionButton(
-                        onClick = {navController.navigate("login")  },
+                        onClick = {
+                            val ret = viewModel.signUp()
+                            Log.d("signUp", "$ret")
+                            navController.navigate("login")
+                        },
                         containerColor = MaterialTheme.colorScheme.secondary,
                         elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
                     ) {

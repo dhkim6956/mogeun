@@ -21,7 +21,6 @@ import kotlinx.coroutines.launch
 class LoginViewModel(private val signInRepository: SignInRepository) : ViewModel() {
     private val _signInSuccess = MutableStateFlow(false)
     val signInSuccess: StateFlow<Boolean> = _signInSuccess.asStateFlow()
-
     // 텍스트 필드에 대한 상태 변수
     var text1 by mutableStateOf("")
     var text2 by mutableStateOf("")
@@ -39,7 +38,7 @@ class LoginViewModel(private val signInRepository: SignInRepository) : ViewModel
         lateinit var ret: SignInResponse
         viewModelScope.launch {
             ret = signInRepository.signIn(email, pw)
-
+            Log.d("signIn", "$ret")
             if (ret.message == "SUCCESS") {
                 _signInSuccess.value = true
             }

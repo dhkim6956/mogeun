@@ -17,6 +17,7 @@ import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.data.SignInRepository
 import io.ssafy.mogeun.model.DupEmailResponse
 import io.ssafy.mogeun.model.SignInResponse
+import io.ssafy.mogeun.model.SignUpResponse
 import io.ssafy.mogeun.ui.screens.login.LoginViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,15 +42,12 @@ class SignupViewModel(private val signInRepository: SignInRepository): ViewModel
     fun updateId(value: String) {
         id = value
     }
-
     fun updatePassword(value: String) {
         password = value
     }
-
     fun updateCheckingPassword(value: String) {
         checkingPassword = value
     }
-
     fun updateNickname(value: String) {
         nickname = value
     }
@@ -59,27 +57,21 @@ class SignupViewModel(private val signInRepository: SignInRepository): ViewModel
     fun updateHeight(value: Double?) {
         height = value
     }
-
     fun updateWeight(value: Double?) {
         weight = value
     }
-
     fun updateMuscleMass(value: Double?) {
         muscleMass = value
     }
-
     fun updateBodyFat(value: Double?) {
         bodyFat = value
     }
-
     fun updateInputForm(value: Int) {
         inputForm = value
     }
-
     fun updateFirstText(value: String) {
         firstText = value
     }
-
     fun dupEmail(email: String) {
         lateinit var ret: DupEmailResponse
         viewModelScope.launch {
@@ -89,6 +81,15 @@ class SignupViewModel(private val signInRepository: SignInRepository): ViewModel
             if(ret.message == "SUCCESS") {
                 _dupEmailSuccess.value = true
             }
+        }
+    }
+    fun signUp() {
+        lateinit var ret: SignUpResponse
+        viewModelScope.launch {
+            ret = signInRepository.signUp(id, password, nickname, "m", height, weight, muscleMass, bodyFat)
+            Log.d("signUp", "$ret")
+
+
         }
     }
     companion object {

@@ -84,8 +84,7 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(factory = LoginViewModel.F
             Spacer(modifier = Modifier.height(32.dp))
             Button(
                 onClick = {
-
-                    val ret = viewModel.signIn("mogun@ssafy.com", "mogun1234")
+                    val ret = viewModel.signIn("mogun12@ssafy.com", "mogun1234")
                     Log.d("signIn", "$ret") }
                 ,
                 modifier = Modifier
