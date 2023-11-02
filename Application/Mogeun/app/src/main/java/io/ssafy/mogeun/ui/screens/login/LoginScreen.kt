@@ -45,13 +45,7 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(factory = LoginViewModel.F
     if(signInSuccess) {
         navController.navigate("Routine")
     }
-
-    val (text1, setValue1) = remember {
-        mutableStateOf("")
-    }
-    val (text2, setValue2) = remember {
-        mutableStateOf("")
-    }
+    val viewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory)
 
     Column {
         Box(
@@ -74,16 +68,16 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(factory = LoginViewModel.F
         Column(modifier = Modifier.padding(28.dp)) {
             Text(text = "아이디")
             TextField(
-                value = text1,
-                onValueChange = setValue1,
+                value = viewModel.text1,
+                onValueChange = { viewModel.updateText1(it) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = "비밀번호")
             TextField(
-                value = text2,
-                onValueChange = setValue2,
+                value = viewModel.text2,
+                onValueChange = { viewModel.updateText2(it) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp)
             )
