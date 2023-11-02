@@ -195,32 +195,32 @@ fun Inbody(
     Column(modifier = Modifier.padding(28.dp)) {
         Text(text = "키")
         TextField(
-            value = height,
-            onValueChange = viewModel::updateHeight,
+            value = height.toString(),
+            onValueChange = { viewModel::updateHeight },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "몸무게")
         TextField(
-            value = weight,
-            onValueChange = viewModel::updateWeight,
+            value = weight.toString(),
+            onValueChange = { viewModel::updateWeight },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "골격근량")
         TextField(
-            value = muscleMass,
-            onValueChange = viewModel::updateMuscleMass,
+            value = muscleMass.toString(),
+            onValueChange = { viewModel::updateMuscleMass },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "체지방")
         TextField(
-            value = bodyFat,
-            onValueChange = viewModel::updateBodyFat,
+            value = bodyFat.toString(),
+            onValueChange = { viewModel::updateBodyFat },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp)
         )
