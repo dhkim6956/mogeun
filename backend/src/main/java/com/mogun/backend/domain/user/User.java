@@ -54,6 +54,8 @@ public class User {
         this.password = password;
     }
 
+
+    // ---- 비지니스 로직 ---- //
     @Override
     public boolean equals(Object other) {
 

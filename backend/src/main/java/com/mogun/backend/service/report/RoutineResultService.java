@@ -242,6 +242,7 @@ public class RoutineResultService {
     public List<ResultListDto> getMonthlyRangeResult(ResultDto dto) {
 
         List<ResultListDto> list = new ArrayList<>();
+
         Optional<User> user = userRepository.findById(dto.getUserKey());
         if(user.isEmpty()) {
             list.add(ResultListDto.builder().routineCount(-1).build());
