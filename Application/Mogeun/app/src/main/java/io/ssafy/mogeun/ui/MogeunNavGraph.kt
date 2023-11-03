@@ -31,7 +31,13 @@ fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarH
         }
         navigation(route = "Records", startDestination = Screen.Record.route) {
             composable(Screen.Record.route) { RecordScreen(navController = navController) }
-            composable(Screen.RecordDetail.route) { RecordDetailScreen(navController = navController) }
+            composable(
+                Screen.RecordDetail.route,
+                arguments = listOf(navArgument("reportKey") { type = NavType.StringType })
+            )
+            { backStackEntry ->
+                RecordDetailScreen(navController = navController, reportKey = backStackEntry.arguments?.getString("reportKey"))
+            }
             composable(Screen.ExerciseDetail.route) { ExerciseDetailScreen() }
 
         }

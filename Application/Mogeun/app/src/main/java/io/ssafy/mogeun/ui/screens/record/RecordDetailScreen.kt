@@ -51,7 +51,10 @@ data class routineInfo(
 )
 
 @Composable
-fun RecordDetailScreen(navController: NavHostController) {
+fun RecordDetailScreen(
+    navController: NavHostController,
+    reportKey: String?
+) {
     Column (
         modifier = Modifier
             .fillMaxSize()
