@@ -16,7 +16,7 @@ data class SignInResponse(
     val code: Int,
     val status: String,
     val message: String,
-    val data: String?
+    val data: Int
 )
 
 @Serializable
@@ -69,4 +69,21 @@ data class SignUpResponseBody(
     val weight: Double,
     val smm: Double,
     val ffm: Double
+)
+
+@Serializable
+data class GetInbodyResponse(
+    val code: Int,
+    val status:String,
+    val message: String,
+    val data: GetInbodyResponseBody
+)
+@Serializable
+data class GetInbodyResponseBody(
+    val height: Double,
+    val weight: Double,
+    @SerialName(value = "muscle_mass")
+    val muscleMass: Double,
+    @SerialName(value = "body_fat")
+    val bodyFat: Double
 )

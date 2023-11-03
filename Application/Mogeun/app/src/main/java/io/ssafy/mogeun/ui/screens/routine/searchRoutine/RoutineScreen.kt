@@ -19,8 +19,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -31,15 +35,25 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.ui.Screen
+import io.ssafy.mogeun.ui.screens.signup.SignupViewModel
 
 @Composable
-fun RoutineScreen(navController: NavHostController) {
+fun RoutineScreen(
+    viewModel: RoutineViewModel = viewModel(factory = RoutineViewModel.Factory),
+    navController: NavHostController) {
 //    val context = LocalContext.current
 //    val test = LocalContext.current.resources.getIdentifier("chest", "string", context.packageName)
     val openAlertDialog = remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+
+        viewModel.getInbody()
+    }
+
     Column(modifier = Modifier.padding(10.dp)) {
         Column {
             Row(
@@ -95,7 +109,7 @@ fun RoutineScreen(navController: NavHostController) {
                 ) {
                     Text(text = "골격근량")
                     Spacer(modifier = Modifier.weight(1f))
-                    Text(text = "32.kg")
+                    Text(text = "${viewModel.muscleMass.toString()} kg")
                 }
                 Row(modifier = Modifier
                     .padding(
@@ -116,7 +130,7 @@ fun RoutineScreen(navController: NavHostController) {
                 ) {
                     Text(text = "체지방량")
                     Spacer(modifier = Modifier.weight(1f))
-                    Text(text = "14.2%")
+                    Text(text = "${ viewModel.bodyFat.toString() } kg")
                 }
             }
         }
@@ -150,7 +164,8 @@ fun RoutineScreen(navController: NavHostController) {
                             modifier = Modifier
                                 .background(
                                     color = MaterialTheme.colorScheme.surface,
-                                    RoundedCornerShape(15.dp))
+                                    RoundedCornerShape(15.dp)
+                                )
                                 .width(48.dp)
                                 .height(48.dp),
                             contentAlignment = Alignment.Center
@@ -167,7 +182,8 @@ fun RoutineScreen(navController: NavHostController) {
                             modifier = Modifier
                                 .background(
                                     color = MaterialTheme.colorScheme.surface,
-                                    RoundedCornerShape(15.dp))
+                                    RoundedCornerShape(15.dp)
+                                )
                                 .width(48.dp)
                                 .height(48.dp),
                             contentAlignment = Alignment.Center
@@ -184,7 +200,8 @@ fun RoutineScreen(navController: NavHostController) {
                             modifier = Modifier
                                 .background(
                                     color = MaterialTheme.colorScheme.surface,
-                                    RoundedCornerShape(15.dp))
+                                    RoundedCornerShape(15.dp)
+                                )
                                 .width(48.dp)
                                 .height(48.dp),
                             contentAlignment = Alignment.Center

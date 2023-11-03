@@ -16,7 +16,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.patrykandpatrick.vico.compose.axis.horizontal.topAxis
 import io.ssafy.mogeun.MogeunApplication
-import io.ssafy.mogeun.data.SignInRepository
+import io.ssafy.mogeun.data.UserRepository
 import io.ssafy.mogeun.model.DupEmailResponse
 import io.ssafy.mogeun.model.SignInResponse
 import io.ssafy.mogeun.model.SignUpResponse
@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class SignupViewModel(private val signInRepository: SignInRepository): ViewModel() {
+class SignupViewModel(private val signInRepository: UserRepository): ViewModel() {
     private val _dupEmailSuccess = MutableStateFlow(false)
     val dupEmailSuccess: StateFlow<Boolean> = _dupEmailSuccess.asStateFlow()
     var checkEmail by mutableIntStateOf(0)
