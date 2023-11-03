@@ -19,8 +19,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -31,15 +35,25 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.ui.Screen
+import io.ssafy.mogeun.ui.screens.signup.SignupViewModel
 
 @Composable
-fun RoutineScreen(navController: NavHostController) {
+fun RoutineScreen(
+    viewModel: RoutineViewModel = viewModel(factory = RoutineViewModel.Factory),
+    navController: NavHostController) {
 //    val context = LocalContext.current
 //    val test = LocalContext.current.resources.getIdentifier("chest", "string", context.packageName)
     val openAlertDialog = remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+
+        viewModel.getInbody()
+    }
+
     Column(modifier = Modifier.padding(10.dp)) {
         Column {
             Row(
@@ -95,7 +109,7 @@ fun RoutineScreen(navController: NavHostController) {
                 ) {
                     Text(text = "골격근량")
                     Spacer(modifier = Modifier.weight(1f))
-                    Text(text = "32.kg")
+                    Text(text = "${viewModel.muscleMass.toString()} kg")
                 }
                 Row(modifier = Modifier
                     .padding(
@@ -116,7 +130,7 @@ fun RoutineScreen(navController: NavHostController) {
                 ) {
                     Text(text = "체지방량")
                     Spacer(modifier = Modifier.weight(1f))
-                    Text(text = "14.2%")
+                    Text(text = "${ viewModel.bodyFat.toString() } kg")
                 }
             }
         }
@@ -125,8 +139,10 @@ fun RoutineScreen(navController: NavHostController) {
             .padding(top = 20.dp)) {
             Row(modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 10.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(text = "루틴명 : 밀기", modifier = Modifier.padding(start = 40.dp, top = 10.dp), fontSize = 24.sp)
+                .padding(bottom = 10.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "밀기", modifier = Modifier.padding(start = 32.dp, top = 12.dp), fontSize = 24.sp)
                 Button(
                     onClick = { navController.navigate("addroutine") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
@@ -138,46 +154,77 @@ fun RoutineScreen(navController: NavHostController) {
                     )
                 }
             }
-            Row {
-                Column(modifier = Modifier.width(200.dp)) {
-                    Text(text = "- 덤벨 푸쉬업")
-                    Text(text = "- 바벨 벤치 프레스")
-                    Text(text = "- 덤벨 플라이")
-                }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
                 Column {
-                    Text(text = "사용 근육")
                     Row {
-                        Image(
-                            painter = painterResource(id = R.drawable.chest),
-                            contentDescription = "chest",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.height(50.dp)
-                        )
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.surface,
+                                    RoundedCornerShape(15.dp)
+                                )
+                                .width(48.dp)
+                                .height(48.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.chest),
+                                contentDescription = "chest",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.height(32.dp)
+                            )
+                        }
                         Spacer(modifier = Modifier.width(10.dp))
-                        Image(
-                            painter = painterResource(id = R.drawable.triceps),
-                            contentDescription = "triceps",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.height(50.dp)
-                        )
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.surface,
+                                    RoundedCornerShape(15.dp)
+                                )
+                                .width(48.dp)
+                                .height(48.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.triceps),
+                                contentDescription = "triceps",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.height(32.dp)
+                            )
+                        }
                         Spacer(modifier = Modifier.width(10.dp))
-                        Image(
-                            painter = painterResource(id = R.drawable.biceps),
-                            contentDescription = "biceps",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.height(50.dp)
-                        )
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.surface,
+                                    RoundedCornerShape(15.dp)
+                                )
+                                .width(48.dp)
+                                .height(48.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.biceps),
+                                contentDescription = "biceps",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.height(32.dp)
+                            )
+                        }
                     }
+                }
+                Button(
+                    onClick = { navController.navigate(Screen.Execution.route) },
+                    border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.scrim),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(text = "루틴시작", color = MaterialTheme.colorScheme.scrim)
                 }
             }
             Spacer(modifier = Modifier.height(10.dp))
-            Button(
-                onClick = { navController.navigate(Screen.Execution.route) },
-                border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.scrim),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-            ) {
-                Text(text = "루틴시작", color = MaterialTheme.colorScheme.scrim)
-            }
         }
     }
     Box(modifier = Modifier
