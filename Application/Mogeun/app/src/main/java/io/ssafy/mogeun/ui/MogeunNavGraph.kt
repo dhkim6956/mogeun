@@ -1,6 +1,6 @@
 package io.ssafy.mogeun.ui
 
-import androidx.compose.material3.Text
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -8,8 +8,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.bottomSheet
 import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineScreen
 import io.ssafy.mogeun.ui.screens.login.LoginScreen
 import io.ssafy.mogeun.ui.screens.record.ExerciseDetailScreen
@@ -24,9 +22,8 @@ import io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.AddExerciseScre
 import io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.ExplainExerciseScreen
 import io.ssafy.mogeun.ui.screens.sample.ConnectionScreen
 
-@OptIn(ExperimentalMaterialNavigationApi::class)
 @Composable
-fun MogeunNavHost(navController: NavHostController) {
+fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarHostState) {
     NavHost(navController, startDestination = Screen.Login.route) {
         navigation(route = "Routines", startDestination = Screen.Routine.route) {
             composable(Screen.Routine.route) { RoutineScreen(navController = navController) }
@@ -34,7 +31,13 @@ fun MogeunNavHost(navController: NavHostController) {
         }
         navigation(route = "Records", startDestination = Screen.Record.route) {
             composable(Screen.Record.route) { RecordScreen(navController = navController) }
-            composable(Screen.RecordDetail.route) { RecordDetailScreen(navController = navController) }
+            composable(
+                Screen.RecordDetail.route,
+                arguments = listOf(navArgument("reportKey") { type = NavType.StringType })
+            )
+            { backStackEntry ->
+                RecordDetailScreen(navController = navController, reportKey = backStackEntry.arguments?.getString("reportKey"))
+            }
             composable(Screen.ExerciseDetail.route) { ExerciseDetailScreen() }
 
         }
@@ -45,9 +48,6 @@ fun MogeunNavHost(navController: NavHostController) {
         composable(Screen.AddRoutine.route) { AddRoutineScreen(navController = navController) }
         composable(Screen.AddExercise.route) { AddExerciseScreen(navController = navController) }
 
-        bottomSheet("Sheet") {
-            Text("This is bottom sheet!")
-        }
         composable(
             "${Screen.ExplainExercise.route}",
             arguments = listOf(navArgument("image") { type = NavType.StringType })

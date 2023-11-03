@@ -7,36 +7,35 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.ModalBottomSheetLayout
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import io.ssafy.mogeun.ui.MogeunNavHost
 import io.ssafy.mogeun.ui.Screen
 import io.ssafy.mogeun.ui.rootScreen
 
 
-@OptIn(ExperimentalMaterialNavigationApi::class)
 @Composable
 fun Navigation() {
-    val bottomSheetNavigator = rememberBottomSheetNavigator()
-    val navController: NavHostController = rememberNavController(bottomSheetNavigator)
+    val snackbarHostState = remember{ SnackbarHostState() }
 
+    val navController: NavHostController = rememberNavController()
     val navBackStackEntry = navController.currentBackStackEntryAsState()
 
     val screens = arrayOf(Screen.ExplainExercise)
@@ -50,18 +49,19 @@ fun Navigation() {
         screens.find { it.route == currentRoute } ?: Screen.Login
     }
 
-    ModalBottomSheetLayout(bottomSheetNavigator) {
-        Scaffold (
-            topBar = {
-                TopBar(navController, currentScreen)
-            },
-            bottomBar = {
-                BottomBar(navController, currentScreen)
-            }
-        ) {innerPadding ->
-            Box(modifier = Modifier.padding(innerPadding)) {
-                MogeunNavHost(navController)
-            }
+    Scaffold (
+        topBar = {
+            TopBar(navController, currentScreen)
+        },
+        bottomBar = {
+            BottomBar(navController, currentScreen)
+        },
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
+        }
+    ) {innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)) {
+            MogeunNavHost(navController, snackbarHostState)
         }
     }
 }
@@ -82,7 +82,7 @@ fun TopBar(navController: NavHostController, currentScreen: Screen) {
                     IconButton(
                         onClick = { navController.popBackStack() }
                     ) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "")
+                        Icon(Icons.Outlined.ArrowBack, contentDescription = "")
                     }
                 }
             }
