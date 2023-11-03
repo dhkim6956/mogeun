@@ -56,6 +56,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.patrykandpatrick.vico.compose.component.shape.shader.verticalGradient
 import io.ssafy.mogeun.R
 import java.util.Calendar
 
@@ -96,16 +97,17 @@ fun ExerciseEMGScreen(){
     var selectedTab by remember { mutableIntStateOf(0) }
     var lastClickTime by remember { mutableLongStateOf(0L) }
     val debounceDuration = 300 //0.1초
-    val chosenYear = remember { mutableStateOf(currentYear) }
-    val chosenMonth = remember { mutableStateOf(currentMonth) }
-    val chosenDay = remember { mutableStateOf(currentDay) }
+    val chosenWeight = remember { mutableStateOf(preWeight) }
+    val chosenRep = remember { mutableStateOf(preRep) }
+
 
 
 
     Column(modifier = Modifier
         .height(300.dp)
         .fillMaxWidth(0.95f)
-        .background(color = Color.White)
+        .background(color = Color(0xFFF7F7F7))
+        .clip(RoundedCornerShape(12.dp)),
     ) {
         Box(modifier = Modifier //---------header---------
             .fillMaxHeight(0.15f)
@@ -113,7 +115,7 @@ fun ExerciseEMGScreen(){
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(0.65f)
+                    .fillMaxWidth(0.7f)
                     .fillMaxHeight(),
                 contentAlignment = Alignment.TopStart
             ){
@@ -140,7 +142,7 @@ fun ExerciseEMGScreen(){
                     }
                 },
                     modifier = Modifier
-                        .width(140.dp)
+                        .width(120.dp)
                         .height(36.dp)
                         .padding(0.dp)
                     ) {
@@ -155,14 +157,16 @@ fun ExerciseEMGScreen(){
                                 .size(20.dp)
                                 .padding(0.dp),
                         )
-                        Text(modifier = Modifier.fillMaxWidth()
-                            ,text = "세트 추가"
-                            , fontSize = 16.sp)
+                        Text(modifier = Modifier
+                            .fillMaxWidth(),
+                            text = "세트 추가",
+                            fontSize = 12.sp,
+                        )
                     }
                 }
             }
         }
-        Row(modifier = Modifier //body
+        Row(modifier = Modifier //---------------body-------------------
             .fillMaxHeight(0.7f)
             .fillMaxWidth()
         ) {
@@ -172,7 +176,8 @@ fun ExerciseEMGScreen(){
                 .background(color = Color.Green)
             ){
                 DateSelectionSection(
-                    onDayChosen = { chosenDay.value = it.toInt() },
+                    onWeightChosen = { chosenWeight.value = it.toInt() },
+                    onRepChosen = { chosenRep.value = it.toInt() },
                 )
             }
             Box(modifier = Modifier//EMG 신호 표기
@@ -184,7 +189,8 @@ fun ExerciseEMGScreen(){
             }
         }
         Box(modifier = Modifier //---------footer---------
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(Color(0xFFF7F7F7)),
         ) {
             Row(modifier = Modifier
                 .fillMaxSize()
@@ -217,25 +223,38 @@ fun ExerciseEMGScreen(){
                     .fillMaxSize()
                     .background(color = Color.Cyan)
                 ){
-                   Row {
+                   Row(
+                       modifier = Modifier
+                           .fillMaxSize(),
+                       horizontalArrangement = Arrangement.End
+
+                   ) {
                       Row(modifier = Modifier
                           .fillMaxHeight()
+                          .padding(4.dp)
+                          .clickable {  },
+                          verticalAlignment = Alignment.CenterVertically,
+                          horizontalArrangement = Arrangement.Center,
                       ){
                           Icon(
                               imageVector = Icons.Default.PlayCircleOutline,
                               contentDescription = null,
-                              tint = Color.White,
-                              modifier = Modifier.size(20.dp)
+                              tint = Color(0xFF556FF7),
+                              modifier = Modifier.size(20.dp),
                               )
-                          Text(text = "시작")
+                          Text(text = "시작",fontSize = 15.sp, textAlign = TextAlign.Center)
                       }
                        Row(modifier = Modifier
                            .fillMaxHeight()
+                           .padding(start = 4.dp, top = 4.dp, bottom = 4.dp, end = 8.dp)
+                           .clickable {  },
+                           verticalAlignment = Alignment.CenterVertically,
+                           horizontalArrangement = Arrangement.Center,
                        ){
                            Icon(
                                painter = painterResource(id = R.drawable.removecirclestop),
                                contentDescription = "contentDescription",
-                               tint = Color.White,
+                               tint = Color(0xFFFFD5D5),
                                modifier = Modifier
                                    .size(21.dp)
                                    .padding(2.dp)
@@ -285,7 +304,8 @@ private fun ScrollableTabRow(
 
 @Composable
 fun DateSelectionSection(
-    onDayChosen: (String) -> Unit
+    onWeightChosen: (String) -> Unit,
+    onRepChosen: (String) -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceAround,
@@ -298,40 +318,42 @@ fun DateSelectionSection(
     ) {
         Column (
             modifier = Modifier
-                .fillMaxWidth(0.5f)
-                .background(color = Color.White)
-                .padding(3.dp)
-
+                .fillMaxWidth(0.4f)
+                .fillMaxHeight()
+                .clip(RoundedCornerShape(4.dp)),
         ) {
             Box(modifier = Modifier
-                .padding(3.dp)
-                .background(color = Color.Gray)
+                .fillMaxWidth()
+                .fillMaxHeight(0.3f)
+                .background(color = Color.Gray),
+                contentAlignment = Alignment.Center
             ){
-                Text(text = "Kg")
+                Text(text = "Kg",textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
             }
             InfiniteItemsPicker(
-                items = days,
-                firstIndex = Int.MAX_VALUE / 2 + (currentDay - 2),
-                onItemSelected =  onDayChosen
+                items = KgValue,
+                firstIndex = (301 * 200)+preWeight - 1,
+                onItemSelected =  onWeightChosen
             )
         }
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(color = Color.White)
-                .padding(3.dp)
-
+                .fillMaxWidth(0.66f)
+                .fillMaxHeight()
+                .clip(RoundedCornerShape(4.dp)),
         ) {
             Box(modifier = Modifier
-                .padding(3.dp)
-                .background(color = Color.Gray)
+                .fillMaxWidth()
+                .fillMaxHeight(0.3f)
+                .background(color = Color.Gray),
+                contentAlignment = Alignment.Center
             ){
                 Text(text = "Rep")
             }
             InfiniteItemsPicker(
-                items = days,
-                firstIndex = Int.MAX_VALUE / 2 + (currentDay - 2),
-                onItemSelected =  onDayChosen
+                items = RepValue,
+                firstIndex = (101 * 200) + preRep - 1,
+                onItemSelected =  onRepChosen
             )
         }
 
@@ -358,8 +380,11 @@ fun InfiniteItemsPicker(
     Box(modifier = Modifier
         .height(106.dp)
         .width(40.dp)
+        .background(Color.White),
+        contentAlignment = Alignment.Center
     ) {
         LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
             state = listState,
             content = {
@@ -373,9 +398,13 @@ fun InfiniteItemsPicker(
 
                     Text(
                         text = items[index],
-                        modifier = Modifier.alpha(if (it == listState.firstVisibleItemIndex + 1) 1f else 0.3f),
+                        modifier = Modifier
+                            .alpha(if (it == listState.firstVisibleItemIndex + 1) 1f else 0.3f)
+                            .background(Color(if(it == listState.firstVisibleItemIndex + 1)0xFFDDE2FD else 0xFFFFFFFF))
+                            .fillMaxWidth(),
                         style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        fontSize = 20.sp
                     )
 
                     Spacer(modifier = Modifier.height(6.dp))
@@ -390,29 +419,13 @@ fun InfiniteItemsPicker(
 @Composable
 fun PreviewEMGScreen(){
     ExerciseEMGScreen()
-
-
 }
 
 
-val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
-val currentMonth = Calendar.getInstance().get(Calendar.MONTH)
+val preWeight = 50 //이전에 사용한 무계 가져오기
+val preRep = 10//이전에 사용한 반복횟수 가져오기
 
-val years = (1950..2050).map { it.toString() }
-val monthsNumber = (1..12).map { it.toString() }
-val days = (1..31).map { it.toString() }
-val monthsNames = listOf(
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec"
-)
+
+val KgValue = (0..300).map { it.toString() }
+val RepValue = (0..100).map { it.toString() }
+
