@@ -125,8 +125,10 @@ fun RoutineScreen(navController: NavHostController) {
             .padding(top = 20.dp)) {
             Row(modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 10.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(text = "루틴명 : 밀기", modifier = Modifier.padding(start = 40.dp, top = 10.dp), fontSize = 24.sp)
+                .padding(bottom = 10.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "밀기", modifier = Modifier.padding(start = 32.dp, top = 12.dp), fontSize = 24.sp)
                 Button(
                     onClick = { navController.navigate("addroutine") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
@@ -138,46 +140,74 @@ fun RoutineScreen(navController: NavHostController) {
                     )
                 }
             }
-            Row {
-                Column(modifier = Modifier.width(200.dp)) {
-                    Text(text = "- 덤벨 푸쉬업")
-                    Text(text = "- 바벨 벤치 프레스")
-                    Text(text = "- 덤벨 플라이")
-                }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
                 Column {
-                    Text(text = "사용 근육")
                     Row {
-                        Image(
-                            painter = painterResource(id = R.drawable.chest),
-                            contentDescription = "chest",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.height(50.dp)
-                        )
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.surface,
+                                    RoundedCornerShape(15.dp))
+                                .width(48.dp)
+                                .height(48.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.chest),
+                                contentDescription = "chest",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.height(32.dp)
+                            )
+                        }
                         Spacer(modifier = Modifier.width(10.dp))
-                        Image(
-                            painter = painterResource(id = R.drawable.triceps),
-                            contentDescription = "triceps",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.height(50.dp)
-                        )
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.surface,
+                                    RoundedCornerShape(15.dp))
+                                .width(48.dp)
+                                .height(48.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.triceps),
+                                contentDescription = "triceps",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.height(32.dp)
+                            )
+                        }
                         Spacer(modifier = Modifier.width(10.dp))
-                        Image(
-                            painter = painterResource(id = R.drawable.biceps),
-                            contentDescription = "biceps",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.height(50.dp)
-                        )
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.surface,
+                                    RoundedCornerShape(15.dp))
+                                .width(48.dp)
+                                .height(48.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.biceps),
+                                contentDescription = "biceps",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.height(32.dp)
+                            )
+                        }
                     }
+                }
+                Button(
+                    onClick = { navController.navigate(Screen.Execution.route) },
+                    border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.scrim),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(text = "루틴시작", color = MaterialTheme.colorScheme.scrim)
                 }
             }
             Spacer(modifier = Modifier.height(10.dp))
-            Button(
-                onClick = { navController.navigate(Screen.Execution.route) },
-                border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.scrim),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-            ) {
-                Text(text = "루틴시작", color = MaterialTheme.colorScheme.scrim)
-            }
         }
     }
     Box(modifier = Modifier
