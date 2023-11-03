@@ -6,6 +6,7 @@ import io.ssafy.mogeun.model.DupEmailResponse
 import io.ssafy.mogeun.model.GetInbodyResponse
 import io.ssafy.mogeun.model.ListAllExerciseResponse
 import io.ssafy.mogeun.model.MonthlyResponse
+import io.ssafy.mogeun.model.RoutineResponse
 import io.ssafy.mogeun.model.SignInRequest
 import io.ssafy.mogeun.model.SignInResponse
 import io.ssafy.mogeun.model.SignUpRequest
@@ -34,6 +35,9 @@ interface MogeunApiService {
 
     @GET("Result/Monthly")
     suspend fun recordMonthly(@Query("user_key") userKey: String, @Query("date") date: String): MonthlyResponse
+
+    @GET("Result/Routine")
+    suspend fun recordRoutine(@Query("user_key") userKey:String, @Query("routine_result_key") reportKey: String): RoutineResponse
 
     @GET("Exercise/ListAll")
     suspend fun listAllExercise(@Query("name") name: String, @Query("eng_name") engName: String, @Query("exec_desc") execDesc: String, @Query("main_part") mainPart: Int, @Query("image_path") imagePath: String): ListAllExerciseResponse
