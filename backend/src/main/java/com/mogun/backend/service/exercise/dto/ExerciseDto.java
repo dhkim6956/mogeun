@@ -14,14 +14,17 @@ public class ExerciseDto {
 
     private int execKey;
     private String execName;
+    private String engName;
     private String description;
     private String imagePath;
     private MusclePart part;
+    private int partKey;
 
     public Exercise toExerciseEntity() {
 
         return Exercise.builder()
                 .name(execName)
+                .engName(engName)
                 .execDesc(description)
                 .imagePath(imagePath)
                 .mainPart(part)

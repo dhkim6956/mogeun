@@ -1,5 +1,6 @@
 package com.mogun.backend.mogun.service;
 
+import com.mogun.backend.MainApplication;
 import com.mogun.backend.domain.user.User;
 import com.mogun.backend.domain.user.repository.UserRepository;
 import com.mogun.backend.domain.userDetail.repository.UserDetailRepository;
@@ -10,30 +11,36 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Optional;
 
-@ExtendWith(SpringExtension.class)
-public class UserServiceTest {
+@SpringBootTest
+public class UserServiceTest extends MainApplication {
 
     // Test 주체
+    @InjectMocks
     private UserService userService;
 
     // Test 협력자
-    @MockBean
+    @Mock
     private UserRepository userRepository;
-    @MockBean
+    @Mock
     private UserDetailRepository userDetailRepository;
 
     // Test 실행 전 userService 에 가짜 객체를 주입
-    @BeforeEach
-    void setUp() {
-        userService = new UserService(userRepository, userDetailRepository);
-    }
+//    @BeforeEach
+//    void setUp() {
+//        userService = new UserService(userRepository, userDetailRepository);
+//    }
 
     @Test
     @DisplayName("회원 등록 테스트")
@@ -45,10 +52,8 @@ public class UserServiceTest {
         String password = "175863";
         char gender = 'm';
         String name = "무근이";
-		/*
-		when
-		 */
-        userRepository.save(UserDto.builder()
+
+        User toSave = UserDto.builder()
                 .email(email)
                 .password(password)
                 .gender(gender)
@@ -57,11 +62,14 @@ public class UserServiceTest {
                 .weight(66)
                 .muscleMass(13.8F)
                 .bodyFat(17.3F)
-                .build().toEntity());
+                .build().toEntity();
+		/*
+		when
+		 */
+        User saved = userRepository.save(toSave);
 		/*
 		then
 		 */
-        Optional<User> user = userRepository.findByEmail(email);
-        Assertions.assertThat(user.isEmpty()).isEqualTo(false);
+        Assertions.assertThat(saved).isEqualTo(toSave);
     }
 }
