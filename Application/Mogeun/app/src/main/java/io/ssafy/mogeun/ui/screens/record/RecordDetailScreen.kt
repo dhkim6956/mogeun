@@ -48,15 +48,10 @@ import com.patrykandpatrick.vico.core.entry.entryOf
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.ui.AppViewModelProvider
 
-data class RoutineInfoData(
-    val title: String,
-    val detail: String
-)
-
 @Composable
 fun RecordDetailScreen(
     navController: NavHostController,
-    viewModel: RecordDetailViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    viewModel: RecordViewModel = viewModel(factory = AppViewModelProvider.Factory),
     reportKey: String?
 ) {
     val recordMonthlySuccess by viewModel.recordRoutineSuccess.collectAsState()
@@ -64,6 +59,9 @@ fun RecordDetailScreen(
         Log.d("reportKey", reportKey.toString())
         viewModel.recordRoutine("1", reportKey.toString())
     }
+
+    val routineInfo = viewModel.routineInfo
+
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -74,14 +72,18 @@ fun RecordDetailScreen(
             .background(color = MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        RoutineInfoCard()
+        if (routineInfo != null) {
+            RoutineInfoCard(routineInfo.calorie, routineInfo.totalSets, routineInfo.performTime)
+        }
         LazyColumn (
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             item { RoutineGraphIconCard() }
-            itemsIndexed(listOf(1, 2, 3)) {index, item ->
-                RoutineExerciseCard(navController)
+            if (routineInfo != null) {
+                itemsIndexed(routineInfo.exercises) {index, item ->
+                    RoutineExerciseCard(navController, item.execName, item.sets)
+                }
             }
         }
     }
@@ -99,7 +101,7 @@ fun RecordDetailScreenPreview() {
             ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        RoutineInfoCard()
+        RoutineInfoCard(1.3F, 3, 3)
         LazyColumn (
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -113,9 +115,19 @@ fun RecordDetailScreenPreview() {
 }
 
 @Composable
-fun RoutineInfoCard() {
+fun RoutineInfoCard(
+    calorie: Float,
+    totalSets: Int,
+    performTime: Int
+) {
+    data class RoutineInfoData(
+        val title: String,
+        val detail: String
+    )
+
     var routineInfoList: List<RoutineInfoData> =
-        listOf(RoutineInfoData("소모 칼로리", "72kcal"), RoutineInfoData("수행한 세트", "22set"), RoutineInfoData("운동한 시간", "71분"))
+        listOf(RoutineInfoData("소모 칼로리", calorie.toString() + "kcal"), RoutineInfoData("수행한 세트", totalSets.toString() + "set"), RoutineInfoData("운동한 시간", performTime.toString() + "분"))
+
     Card (
         modifier = Modifier
             .fillMaxWidth()
@@ -147,7 +159,7 @@ fun RoutineInfoCard() {
                     )
             ) {
                 routineInfoList.forEach{
-                    RoutineInfo(it)
+                    RoutineInfo(it.title, it.detail)
                 }
                 Spacer(
                     modifier = Modifier
@@ -161,7 +173,8 @@ fun RoutineInfoCard() {
 
 @Composable
 fun RoutineInfo(
-    routineInfo: RoutineInfoData
+    title: String,
+    detail: String
 ) {
     Row (
         modifier = Modifier
@@ -182,8 +195,8 @@ fun RoutineInfo(
         ,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(routineInfo.title)
-        Text(routineInfo.detail)
+        Text(title)
+        Text(detail)
     }
 }
 
@@ -212,11 +225,6 @@ fun GraphCard() {
     Box (modifier = Modifier
         .fillMaxWidth()
     ) {
-//        Image(
-//            modifier = Modifier.fillMaxWidth(),
-//            painter = painterResource(id = R.drawable.logo),
-//            contentDescription = "logo",
-//        )
         val producer = ChartEntryModelProducer(getRandomEntries())
         Chart(
             chart = lineChart(),
@@ -252,7 +260,11 @@ fun IconCard() {
 }
 
 @Composable
-fun RoutineExerciseCard(navController: NavHostController) {
+fun RoutineExerciseCard(
+    navController: NavHostController,
+    name: String,
+    sets: Int
+) {
     Box (
         modifier = Modifier
             .fillMaxWidth()
@@ -275,17 +287,19 @@ fun RoutineExerciseCard(navController: NavHostController) {
             Row (
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Column () {
+                Column (
+                    modifier = Modifier.fillMaxWidth(0.3f),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Image(
-                        modifier = Modifier.fillMaxSize(0.3f),
                         painter = painterResource(id = R.drawable.logo),
                         contentDescription = "logo",
                     )
-                    Text("test")
+                    Text(name)
                 }
                 NonlazyGrid(
-                    columns = 5,
-                    itemCount = 4,
+                    columns = 4,
+                    itemCount = sets,
                     modifier = Modifier
                         .padding(start = 7.5.dp, end = 7.5.dp)
                 ) {

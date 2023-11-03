@@ -46,9 +46,11 @@ data class Exercise(
 data class RoutineInfoData(
     val name: String,
     val date: String,
-    val calorie: Int,
+    val calorie: Float,
     @SerialName(value = "perform_time")
     val performTime: Int,
+    @SerialName(value = "total_sets")
+    val totalSets: Int,
     val exercises: List<Exercise>
 )
 
