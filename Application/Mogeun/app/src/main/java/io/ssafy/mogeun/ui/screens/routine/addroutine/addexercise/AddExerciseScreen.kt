@@ -245,7 +245,7 @@ fun AlertDialogExample(
     dialogText: String,
     icon: ImageVector,
 ) {
-    val (name, setName) = remember { mutableStateOf("") }
+    val (userKey, setName) = remember { mutableStateOf("") }
     val viewModel: AddRoutineViewModel = viewModel(factory = AddRoutineViewModel.Factory)
     AlertDialog(
         icon = {
@@ -255,7 +255,7 @@ fun AlertDialogExample(
             Text(text = dialogTitle)
         },
         text = {
-            TextField(value = name, onValueChange = setName )
+            TextField(value = userKey, onValueChange = setName )
         },
         onDismissRequest = {
             onDismissRequest()
@@ -263,7 +263,7 @@ fun AlertDialogExample(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val ret = viewModel.addRoutine("mogun@ssafy.com", "mogun1234")
+                    val ret = viewModel.addRoutine(11, "mogun1234")
                     Log.d("addRoutine", "$ret")
                     // 운동에 대한 정보를 post
                     navController.popBackStack()

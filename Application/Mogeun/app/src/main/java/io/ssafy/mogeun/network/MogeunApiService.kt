@@ -4,6 +4,7 @@ import io.ssafy.mogeun.model.AddRoutineRequest
 import io.ssafy.mogeun.model.AddRoutineResponse
 import io.ssafy.mogeun.model.DupEmailResponse
 import io.ssafy.mogeun.model.GetInbodyResponse
+import io.ssafy.mogeun.model.ListAllExerciseResponse
 import io.ssafy.mogeun.model.MonthlyResponse
 import io.ssafy.mogeun.model.SignInRequest
 import io.ssafy.mogeun.model.SignInResponse

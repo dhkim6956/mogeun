@@ -9,14 +9,14 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import io.ssafy.mogeun.MogeunApplication
-import io.ssafy.mogeun.data.RoutineRepository
+import io.ssafy.mogeun.data.AddRoutineRepository
 import io.ssafy.mogeun.model.AddRoutineResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class AddRoutineViewModel(private val addRoutineRepository: RoutineRepository) : ViewModel() {
+class AddRoutineViewModel(private val addRoutineRepository: AddRoutineRepository) : ViewModel() {
     private val _addRoutineSuccess = MutableStateFlow(false)
     val addRoutineSuccess: StateFlow<Boolean> = _addRoutineSuccess.asStateFlow()
 
@@ -26,10 +26,10 @@ class AddRoutineViewModel(private val addRoutineRepository: RoutineRepository) :
         text1 = value
     }
 
-    fun addRoutine(email: String, routineName: String) {
+    fun addRoutine(userKey: Int, routineName: String) {
         lateinit var ret: AddRoutineResponse
         viewModelScope.launch {
-            ret = addRoutineRepository.addRoutine(email, routineName)
+            ret = addRoutineRepository.addRoutine(userKey, routineName)
             //Log.d("jhk", "${ret.message}")
             if (ret.message == "SUCCESS") {
                 _addRoutineSuccess.value = true
@@ -41,7 +41,7 @@ class AddRoutineViewModel(private val addRoutineRepository: RoutineRepository) :
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as MogeunApplication)
-                val addRoutineRepository = application.container.routineRepository
+                val addRoutineRepository = application.container.addRoutineRepository
                 AddRoutineViewModel(addRoutineRepository = addRoutineRepository)
             }
         }
