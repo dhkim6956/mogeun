@@ -30,7 +30,11 @@ import io.ssafy.mogeun.R
 import io.ssafy.mogeun.ui.screens.login.LoginViewModel
 
 @Composable
-fun SignupScreen(viewModel: SignupViewModel = viewModel(factory = SignupViewModel.Factory), navController: NavHostController) {
+fun SignupScreen(
+    viewModel: SignupViewModel = viewModel(factory = SignupViewModel.Factory),
+    navController: NavHostController,
+
+) {
     val inputForm = viewModel.inputForm
     val firstText = viewModel.firstText
 
