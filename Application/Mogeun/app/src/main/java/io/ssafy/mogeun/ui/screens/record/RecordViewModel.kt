@@ -1,28 +1,21 @@
 package io.ssafy.mogeun.ui.screens.record
 
 import android.util.Log
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.data.RecordRepository
 import io.ssafy.mogeun.model.MonthlyResponse
-import io.ssafy.mogeun.model.RoutineInfoList
+import io.ssafy.mogeun.model.MonthlyRoutine
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 class RecordViewModel(private val recordRepository: RecordRepository): ViewModel() {
     private val _recordMonthlySuccess = MutableStateFlow(false)
     val recordMonthlySuccess: StateFlow<Boolean> = _recordMonthlySuccess.asStateFlow()
-    var recordList = mutableStateListOf<RoutineInfoList>()
+    var recordList = mutableStateListOf<MonthlyRoutine>()
 
     fun initRecordMonthlySuccess() {
         _recordMonthlySuccess.value = false

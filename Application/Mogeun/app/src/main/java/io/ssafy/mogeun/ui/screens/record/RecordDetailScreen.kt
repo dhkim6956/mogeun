@@ -1,5 +1,6 @@
 package io.ssafy.mogeun.ui.screens.record
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,6 +23,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,18 +37,18 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.patrykandpatrick.vico.compose.axis.horizontal.bottomAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.startAxis
 import com.patrykandpatrick.vico.compose.chart.Chart
 import com.patrykandpatrick.vico.compose.chart.line.lineChart
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
-import com.patrykandpatrick.vico.core.entry.FloatEntry
 import com.patrykandpatrick.vico.core.entry.entryOf
 import io.ssafy.mogeun.R
-import kotlin.random.Random
+import io.ssafy.mogeun.ui.AppViewModelProvider
 
-data class routineInfo(
+data class RoutineInfoData(
     val title: String,
     val detail: String
 )
@@ -53,8 +56,14 @@ data class routineInfo(
 @Composable
 fun RecordDetailScreen(
     navController: NavHostController,
+    viewModel: RecordDetailViewModel = viewModel(factory = AppViewModelProvider.Factory),
     reportKey: String?
 ) {
+    val recordMonthlySuccess by viewModel.recordRoutineSuccess.collectAsState()
+    if (!recordMonthlySuccess) {
+        Log.d("reportKey", reportKey.toString())
+        viewModel.recordRoutine("1", reportKey.toString())
+    }
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -105,7 +114,8 @@ fun RecordDetailScreenPreview() {
 
 @Composable
 fun RoutineInfoCard() {
-    var routineInfoList: List<routineInfo> = listOf(routineInfo("운동일자", "2023년 10월 6일"), routineInfo("소모 칼로리", "72kcal"), routineInfo("수행한 세트", "22set"), routineInfo("운동한 시간", "71분"))
+    var routineInfoList: List<RoutineInfoData> =
+        listOf(RoutineInfoData("소모 칼로리", "72kcal"), RoutineInfoData("수행한 세트", "22set"), RoutineInfoData("운동한 시간", "71분"))
     Card (
         modifier = Modifier
             .fillMaxWidth()
@@ -151,7 +161,7 @@ fun RoutineInfoCard() {
 
 @Composable
 fun RoutineInfo(
-    routineInfo: routineInfo
+    routineInfo: RoutineInfoData
 ) {
     Row (
         modifier = Modifier
@@ -285,7 +295,7 @@ fun RoutineExerciseCard(navController: NavHostController) {
             ClickableText(
                 modifier = Modifier.align(Alignment.End),
                 text = AnnotatedString("자세히 보기"),
-                onClick = { navController.navigate("exercisedetail") },
+                onClick = { navController.navigate("ExerciseDetail") },
                 style = TextStyle(color = MaterialTheme.colorScheme.secondary)
             )
         }

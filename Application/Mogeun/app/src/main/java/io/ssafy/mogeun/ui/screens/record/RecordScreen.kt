@@ -101,13 +101,6 @@ fun CalenderUI(
 
     val routines = viewModel.recordList.groupBy { it.date }
 
-    val routineSelectedDate = remember {
-        derivedStateOf {
-            val date = selection?.date
-            if (date == null) emptyList() else routines[date.toString()].orEmpty()
-        }
-    }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -127,8 +120,9 @@ fun CalenderUI(
         )
         val coroutineScope = rememberCoroutineScope()
         val visibleMonth = rememberFirstMostVisibleMonth(state, viewportPercent = 90f)
-        val recordMonthlySuccess by viewModel.recordMonthlySuccess.collectAsState()
 
+        // 해당 달에 대한 루틴 수행 기록 rest api 통신
+        val recordMonthlySuccess by viewModel.recordMonthlySuccess.collectAsState()
         if (!recordMonthlySuccess) {
             Log.d("date", visibleMonth.yearMonth.toString().plus("-01"))
             viewModel.recordMonthly("1", visibleMonth.yearMonth.toString().plus("-01"))
@@ -358,7 +352,7 @@ fun RoutineRecord(
             }
             ClickableText(
                 text = AnnotatedString("자세히 보기") ,
-                onClick = { navController.navigate("recorddetail") },
+                onClick = { navController.navigate("RecordDetail/${reportKey}") },
                 style = TextStyle(color = MaterialTheme.colorScheme.secondary)
             )
         }
