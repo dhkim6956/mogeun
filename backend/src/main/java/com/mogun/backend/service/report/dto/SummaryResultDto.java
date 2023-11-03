@@ -26,6 +26,9 @@ public class SummaryResultDto {
     @JsonProperty("perform_time")
     private Long performTime;
 
+    @JsonProperty("total_sets")
+    private int totalSets;
+
     @JsonProperty("exercises")
     List<ExerciseResultDto> exerciseResultDtoList;
 }

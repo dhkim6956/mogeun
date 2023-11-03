@@ -31,7 +31,6 @@ public class UserService {
             return "이미 등록된 이메일";
         if(joinState == 'E')
             return "탈퇴한 회원";
-
         if(!(userGender== 'm' || userGender == 'f'))
             return "지원 가능한 성별이 아님(m 혹은 f)";
 

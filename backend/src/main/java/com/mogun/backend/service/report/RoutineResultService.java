@@ -116,6 +116,7 @@ public class RoutineResultService {
                 .routineName(result.get().getRoutineReport().getRoutineName())
                 .routineDate(result.get().getRoutineDate())
                 .consumeCalorie(result.get().getConsumeCalorie())
+                .totalSets(setReportList.size())
                 .performTime(performTime.toMinutes())
                 .exerciseResultDtoList(exerciseResultDtoList)
                 .build();
