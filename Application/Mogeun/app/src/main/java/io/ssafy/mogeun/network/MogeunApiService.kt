@@ -29,13 +29,13 @@ interface MogeunApiService {
     suspend fun getInbody(@Query("user_key") userKey: String): GetInbodyResponse
 
     @POST("Routine/Create")
-    suspend fun AddRoutine(@Body addRoutineRequest: AddRoutineRequest): AddRoutineResponse
+    suspend fun addRoutine(@Body addRoutineRequest: AddRoutineRequest): AddRoutineResponse
 
 
     @GET("Result/Monthly")
     suspend fun recordMonthly(@Query("user_key") userKey: String, @Query("date") date: String): MonthlyResponse
 
     @GET("Exercise/ListAll")
-    suspend fun listAllExercise(@Query("name") name: String, @Query("eng_name") engName: String, @Query("exec_desc") execDesc: String, @Query("main_part") mainPart: Int, @Query("image_path") imagePath: String)
+    suspend fun listAllExercise(@Query("name") name: String, @Query("eng_name") engName: String, @Query("exec_desc") execDesc: String, @Query("main_part") mainPart: Int, @Query("image_path") imagePath: String): ListAllExerciseResponse
 
 }
