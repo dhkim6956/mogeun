@@ -14,9 +14,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
@@ -30,8 +33,9 @@ import io.ssafy.mogeun.ui.rootScreen
 
 @Composable
 fun Navigation() {
-    val navController: NavHostController = rememberNavController()
+    val snackbarHostState = remember{ SnackbarHostState() }
 
+    val navController: NavHostController = rememberNavController()
     val navBackStackEntry = navController.currentBackStackEntryAsState()
 
     val screens = arrayOf(Screen.ExplainExercise)
@@ -51,10 +55,13 @@ fun Navigation() {
         },
         bottomBar = {
             BottomBar(navController, currentScreen)
+        },
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
         }
     ) {innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-            MogeunNavHost(navController)
+            MogeunNavHost(navController, snackbarHostState)
         }
     }
 }

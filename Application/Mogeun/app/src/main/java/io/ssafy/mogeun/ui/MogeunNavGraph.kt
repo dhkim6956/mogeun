@@ -1,5 +1,6 @@
 package io.ssafy.mogeun.ui
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -22,7 +23,7 @@ import io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.ExplainExercise
 import io.ssafy.mogeun.ui.screens.sample.ConnectionScreen
 
 @Composable
-fun MogeunNavHost(navController: NavHostController) {
+fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarHostState) {
     NavHost(navController, startDestination = Screen.Login.route) {
         navigation(route = "Routines", startDestination = Screen.Routine.route) {
             composable(Screen.Routine.route) { RoutineScreen(navController = navController) }
