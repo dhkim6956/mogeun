@@ -8,7 +8,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 
 interface AppContainer {
-    val userDataRepository: SignInRepository
+    val userDataRepository: UserRepository
     val emgDataRepository: EmgRepository
     val recordRepository: RecordRepository
     val routineRepository: RoutineRepository
@@ -26,8 +26,8 @@ class DefaultAppContainer(private val context: Context): AppContainer {
         retrofit.create(MogeunApiService::class.java)
     }
 
-    override val userDataRepository: SignInRepository by lazy {
-        NetworkSignInRepository(retrofitService)
+    override val userDataRepository: UserRepository by lazy {
+        NetworkUserRepository(retrofitService)
     }
 
     override val emgDataRepository: EmgRepository by lazy {
