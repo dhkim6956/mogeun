@@ -1,63 +1,41 @@
-package io.ssafy.mogeun.ui
+package io.ssafy.mogeun
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.ModalBottomSheetLayout
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
-import io.ssafy.mogeun.R
-import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineScreen
-import io.ssafy.mogeun.ui.screens.record.RecordScreen
-import io.ssafy.mogeun.ui.screens.routine.RoutineScreen
-import io.ssafy.mogeun.ui.screens.routine.execution.ExecutionScreen
-import io.ssafy.mogeun.ui.screens.setting.SettingScreen
-import io.ssafy.mogeun.ui.screens.summary.SummaryScreen
-import io.ssafy.mogeun.ui.screens.login.LoginScreen
-import io.ssafy.mogeun.ui.screens.signup.SignupScreen
-import io.ssafy.mogeun.ui.theme.MogeunTheme
+import io.ssafy.mogeun.ui.MogeunNavHost
+import io.ssafy.mogeun.ui.Screen
+import io.ssafy.mogeun.ui.rootScreen
 
 
-@OptIn(ExperimentalMaterialNavigationApi::class)
 @Composable
 fun Navigation() {
-    val bottomSheetNavigator = rememberBottomSheetNavigator()
-    val navController: NavHostController = rememberNavController(bottomSheetNavigator)
+    val snackbarHostState = remember{ SnackbarHostState() }
 
+    val navController: NavHostController = rememberNavController()
     val navBackStackEntry = navController.currentBackStackEntryAsState()
 
     val screens = arrayOf(Screen.ExplainExercise)
@@ -71,18 +49,19 @@ fun Navigation() {
         screens.find { it.route == currentRoute } ?: Screen.Login
     }
 
-    ModalBottomSheetLayout(bottomSheetNavigator) {
-        Scaffold (
-            topBar = {
-                TopBar(navController, currentScreen)
-            },
-            bottomBar = {
-                BottomBar(navController, currentScreen)
-            }
-        ) {innerPadding ->
-            Box(modifier = Modifier.padding(innerPadding)) {
-                MogeunNavHost(navController)
-            }
+    Scaffold (
+        topBar = {
+            TopBar(navController, currentScreen)
+        },
+        bottomBar = {
+            BottomBar(navController, currentScreen)
+        },
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
+        }
+    ) {innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)) {
+            MogeunNavHost(navController, snackbarHostState)
         }
     }
 }
@@ -103,7 +82,7 @@ fun TopBar(navController: NavHostController, currentScreen: Screen) {
                     IconButton(
                         onClick = { navController.popBackStack() }
                     ) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "")
+                        Icon(Icons.Outlined.ArrowBack, contentDescription = "")
                     }
                 }
             }

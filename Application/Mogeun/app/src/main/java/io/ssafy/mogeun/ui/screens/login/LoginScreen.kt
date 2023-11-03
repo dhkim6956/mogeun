@@ -1,6 +1,7 @@
 package io.ssafy.mogeun.ui.screens.login
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -36,16 +37,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.ui.AppViewModelProvider
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(viewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory),navController: NavHostController) {
+fun LoginScreen(viewModel: LoginViewModel = viewModel(factory = AppViewModelProvider.Factory),navController: NavHostController) {
 
     val signInSuccess by viewModel.signInSuccess.collectAsState()
     if(signInSuccess) {
         navController.navigate("Routine")
     }
-    val viewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory)
 
     Column {
         Box(

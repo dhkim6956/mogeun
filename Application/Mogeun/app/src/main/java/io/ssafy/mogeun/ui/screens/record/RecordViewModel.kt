@@ -26,6 +26,7 @@ class RecordViewModel(private val recordRepository: RecordRepository): ViewModel
 
     fun initRecordMonthlySuccess() {
         _recordMonthlySuccess.value = false
+        recordList.clear()
     }
 
     fun recordMonthly(userKey: String, date: String) {
@@ -42,13 +43,5 @@ class RecordViewModel(private val recordRepository: RecordRepository): ViewModel
             }
         }
     }
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as MogeunApplication)
-                val recordRepository = application.container.recordRepository
-                RecordViewModel(recordRepository = recordRepository)
-            }
-        }
-    }
+
 }

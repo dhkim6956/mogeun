@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
     id("com.google.firebase.appdistribution")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
+    id("com.google.devtools.ksp") version("1.8.10-1.0.9")
 }
 
 android {
@@ -43,11 +44,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
     buildFeatures {
         compose = true
@@ -97,7 +98,6 @@ dependencies {
     annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
     implementation ("com.github.skydoves:landscapist-glide:1.5.0")
     implementation("androidx.compose.material:material-icons-extended")
-    implementation("com.google.accompanist:accompanist-navigation-material:0.33.2-alpha")
 
     // retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -109,6 +109,11 @@ dependencies {
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("io.coil-kt:coil-compose:2.5.0")
+
+    // Room
+    implementation("androidx.room:room-runtime:2.5.2")
+    ksp("androidx.room:room-compiler:2.5.2")
+    implementation("androidx.room:room-ktx:2.5.2")
 
 
     testImplementation(libs.junit)

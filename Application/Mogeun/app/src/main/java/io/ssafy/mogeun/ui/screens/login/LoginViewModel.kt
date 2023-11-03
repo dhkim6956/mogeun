@@ -11,14 +11,14 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import io.ssafy.mogeun.MogeunApplication
-import io.ssafy.mogeun.data.SignInRepository
+import io.ssafy.mogeun.data.UserRepository
 import io.ssafy.mogeun.model.SignInResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class LoginViewModel(private val signInRepository: SignInRepository) : ViewModel() {
+class LoginViewModel(private val signInRepository: UserRepository) : ViewModel() {
     private val _signInSuccess = MutableStateFlow(false)
     val signInSuccess: StateFlow<Boolean> = _signInSuccess.asStateFlow()
     // 텍스트 필드에 대한 상태 변수
@@ -41,16 +41,6 @@ class LoginViewModel(private val signInRepository: SignInRepository) : ViewModel
             Log.d("signIn", "$ret")
             if (ret.message == "SUCCESS") {
                 _signInSuccess.value = true
-            }
-        }
-    }
-
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[APPLICATION_KEY] as MogeunApplication)
-                val signInRepository = application.container.userDataRepository
-                LoginViewModel(signInRepository = signInRepository)
             }
         }
     }
