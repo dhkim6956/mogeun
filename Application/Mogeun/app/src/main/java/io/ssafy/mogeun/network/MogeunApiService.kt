@@ -3,6 +3,7 @@ package io.ssafy.mogeun.network
 import io.ssafy.mogeun.model.CreateRoutineRequest
 import io.ssafy.mogeun.model.CreateRoutineResponse
 import io.ssafy.mogeun.model.DupEmailResponse
+import io.ssafy.mogeun.model.GetInbodyResponse
 import io.ssafy.mogeun.model.MonthlyResponse
 import io.ssafy.mogeun.model.SignInRequest
 import io.ssafy.mogeun.model.SignInResponse
@@ -22,6 +23,9 @@ interface MogeunApiService {
 
     @POST("User/Enroll")
     suspend fun signUp(@Body signUpRequest: SignUpRequest): SignUpResponse
+
+    @GET("User/Detail")
+    suspend fun getInbody(@Query("user_key") userKey: String): GetInbodyResponse
 
     @POST("Routine/Create")
     suspend fun CreateRoutine(@Body createRoutineRequest: CreateRoutineRequest): CreateRoutineResponse
