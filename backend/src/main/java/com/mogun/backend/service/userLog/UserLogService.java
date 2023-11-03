@@ -31,7 +31,7 @@ public class UserLogService {
 
     public String changeHeight(UserLogDto dto) {
 
-        Optional<User> user = userRepository.findByEmail(dto.getEmail());
+        Optional<User> user = userRepository.findById(dto.getUserKey());
         if(user.isEmpty() || user.get().getIsLeaved() == 'E')
             return "요청 오류: 등록된 회원이 아님";
 
@@ -45,7 +45,7 @@ public class UserLogService {
 
     public String changeWeight(UserLogDto dto) {
 
-        Optional<User> user = userRepository.findByEmail(dto.getEmail());
+        Optional<User> user = userRepository.findById(dto.getUserKey());
         if(user.isEmpty() || user.get().getIsLeaved() == 'E')
             return "요청 오류: 등록된 회원이 아님";
 
@@ -59,7 +59,7 @@ public class UserLogService {
 
     public String changeMuscleMass(UserLogDto dto) {
 
-        Optional<User> user = userRepository.findByEmail(dto.getEmail());
+        Optional<User> user = userRepository.findById(dto.getUserKey());
         if(user.isEmpty() || user.get().getIsLeaved() == 'E')
             return "요청 오류: 등록된 회원이 아님";
 
@@ -73,7 +73,7 @@ public class UserLogService {
 
     public String changeBodyFat(UserLogDto dto) {
 
-        Optional<User> user = userRepository.findByEmail(dto.getEmail());
+        Optional<User> user = userRepository.findById(dto.getUserKey());
         if(user.isEmpty() || user.get().getIsLeaved() == 'E')
             return "요청 오류: 등록된 회원이 아님";
 

@@ -64,7 +64,7 @@ public class RoutineResultService {
                     .performTime((long) -1)
                     .build();
 
-        Optional<User> user = userRepository.findByEmail(dto.getUserEmail());
+        Optional<User> user = userRepository.findById(dto.getUserKey());
         if(user.isEmpty())
             return SummaryResultDto.builder()
                     .performTime((long) -2)
@@ -124,7 +124,7 @@ public class RoutineResultService {
     public List<SetResultListDto> getExerciseResult(ResultDto dto) {
 
         List<SetResultListDto> list = new ArrayList<>();
-        Optional<User> user = userRepository.findByEmail(dto.getUserEmail());
+        Optional<User> user = userRepository.findById(dto.getUserKey());
         if(user.isEmpty()) {
             list.add(SetResultListDto.builder()
                     .status(-1)

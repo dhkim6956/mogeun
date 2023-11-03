@@ -24,7 +24,7 @@ public class UserLogController {
     public ApiResponse changeHeight(@RequestBody CommonChangeRequest request) {
 
         String result = logService.changeHeight(UserLogDto.builder()
-                .email(request.getEmail())
+                .userKey(request.getUserKey())
                 .heightAfter(request.getHeight())
                 .build());
 
@@ -38,7 +38,7 @@ public class UserLogController {
     public ApiResponse changeWeight(@RequestBody CommonChangeRequest request) {
 
         String result = logService.changeWeight(UserLogDto.builder()
-                .email(request.getEmail())
+                .userKey(request.getUserKey())
                 .weightAfter(request.getWeight())
                 .build());
 
@@ -52,7 +52,7 @@ public class UserLogController {
     public ApiResponse changeMuscleMass(@RequestBody CommonChangeRequest request) {
 
         String result = logService.changeMuscleMass(UserLogDto.builder()
-                .email(request.getEmail())
+                .userKey(request.getUserKey())
                 .muscleMassAfter(request.getMuscleMass())
                 .build());
 
@@ -66,7 +66,7 @@ public class UserLogController {
     public ApiResponse changeBodyFat(@RequestBody CommonChangeRequest request) {
 
         String result = logService.changeBodyFat(UserLogDto.builder()
-                .email(request.getEmail())
+                .userKey(request.getUserKey())
                 .bodyFatAfter(request.getBodyFat())
                 .build());
 

@@ -64,8 +64,8 @@ public class UserService {
         return 'N';
     }
 
-    public UserDto getUserDetail(String email) {
-        Optional<User> user = userRepository.findByEmail(email);
+    public UserDto getUserDetail(int userKey) {
+        Optional<User> user = userRepository.findById(userKey);
 
         Optional<UserDetail> userDetail = userDetailRepository.findById(user.get().getUserKey());
         return UserDto.builder()
@@ -88,11 +88,13 @@ public class UserService {
         return "SUCCESS";
     }
 
-    public String signIn(String email, String password) {
+    public int signIn(String email, String password) {
 
-        if(!userRepository.existsByEmailAndPassword(email, password))
-            return "요청 오류: 잘못된 회원 정보";
+        Optional<User> user = userRepository.findByEmailAndPassword(email, password);
 
-        return "SUCCESS";
+        if(user.isEmpty())
+            return -1;
+
+        return user.get().getUserKey();
     }
 }

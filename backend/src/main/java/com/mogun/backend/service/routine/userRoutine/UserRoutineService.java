@@ -33,9 +33,9 @@ public class UserRoutineService {
                 .build();
     }
 
-    public String createRoutine(RoutineDto dto, String email) {
+    public String createRoutine(RoutineDto dto, int userKey) {
 
-        Optional<User> user = userRepository.findByEmail(email);
+        Optional<User> user = userRepository.findById(userKey);
         if(user.isEmpty() || user.get().getIsLeaved() != 'J')
             return "요청 오류: 등록된 회원이 아님";
 
@@ -66,10 +66,10 @@ public class UserRoutineService {
         return "SUCCESS";
     }
 
-    public List<RoutineDto> getAllRoutine(String email) {
+    public List<RoutineDto> getAllRoutine(int userKey) {
 
         List<RoutineDto> dtoList = new ArrayList<>();
-        Optional<User> user = userRepository.findByEmail(email);
+        Optional<User> user = userRepository.findById(userKey);
         if(user.isEmpty() || user.get().getIsLeaved() != 'J')
             return dtoList;
 

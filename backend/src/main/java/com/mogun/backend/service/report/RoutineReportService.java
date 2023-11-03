@@ -25,7 +25,7 @@ public class RoutineReportService {
 
     public String startRoutineReport(RoutineReportDto dto) {
 
-        Optional<User> user = userRepository.findByEmail(dto.getEmail());
+        Optional<User> user = userRepository.findById(dto.getUserKey());
         if(user.isEmpty())
             return "요청 오류: 등록된 회원이 아님";
 
@@ -45,7 +45,7 @@ public class RoutineReportService {
 
     public String endRoutineReport(RoutineReportDto dto) {
 
-        Optional<User> user = userRepository.findByEmail(dto.getEmail());
+        Optional<User> user = userRepository.findById(dto.getUserKey());
         if(user.isEmpty())
             return "요청 오류: 등록된 회원이 아님";
 

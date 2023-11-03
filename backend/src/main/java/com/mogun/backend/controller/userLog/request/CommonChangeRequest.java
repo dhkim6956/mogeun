@@ -7,6 +7,9 @@ import lombok.Data;
 @Data
 public class CommonChangeRequest {
 
+    @JsonProperty("user_key")
+    private int userKey;
+
     @JsonProperty("user_email")
     private String email;
 

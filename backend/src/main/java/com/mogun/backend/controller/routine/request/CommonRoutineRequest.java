@@ -10,6 +10,9 @@ import lombok.Data;
 @AllArgsConstructor
 public class CommonRoutineRequest {
 
+    @JsonProperty("user_key")
+    private int userKey;
+
     @JsonProperty("user_email")
     private String email;
 

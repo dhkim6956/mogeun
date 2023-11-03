@@ -26,7 +26,7 @@ public class RoutineController {
 
         String result = routineService.createRoutine(RoutineDto.builder()
                 .routineName(request.getRoutineName()).build(),
-                request.getEmail());
+                request.getUserKey());
 
         return ApiResponse.postAndPutResponse(result, request);
     }
@@ -53,10 +53,10 @@ public class RoutineController {
     }
 
     @GetMapping("/ListAll")
-    public ApiResponse getAllRoutine(@RequestParam String email) {
+    public ApiResponse getAllRoutine(@RequestParam("user_key") int userKey) {
 
         List<SimpleRoutineInfoResponse> list = new ArrayList<>();
-        List<RoutineDto> result = routineService.getAllRoutine(email);
+        List<RoutineDto> result = routineService.getAllRoutine(userKey);
 
         for(RoutineDto dto: result) {
             list.add(SimpleRoutineInfoResponse.builder()

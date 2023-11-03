@@ -1,5 +1,6 @@
 package com.mogun.backend.controller.user;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mogun.backend.ApiResponse;
 import com.mogun.backend.controller.user.request.ChangePasswordRequest;
 import com.mogun.backend.controller.user.request.ExitRequest;
@@ -86,9 +87,9 @@ public class UserController {
     }
 
     @GetMapping("/Detail")
-    public ApiResponse getUserDetail(@RequestParam String email) {
+    public ApiResponse getUserDetail(@RequestParam("user_key") int userKey) {
 
-        UserDto result = userService.getUserDetail(email);
+        UserDto result = userService.getUserDetail(userKey);
 
         return ApiResponse.ok(UserDetailResponse.builder()
                 .height(result.getHeight())
@@ -101,11 +102,11 @@ public class UserController {
     @PostMapping("/SignIn")
     public ApiResponse signIn(@RequestBody SignInRequest request) {
 
-        String result = userService.signIn(request.getUserEmail(), request.getUserPassword());
+        int result = userService.signIn(request.getUserEmail(), request.getUserPassword());
 
-        if(result != "SUCCESS")
-            return ApiResponse.badRequest(result);
+        if(result == -1)
+            return ApiResponse.badRequest("요청 오류: 일치하지 않는 회원 정보");
 
-        return ApiResponse.of(HttpStatus.ACCEPTED, result, null);
+        return ApiResponse.of(HttpStatus.ACCEPTED, "SUCCESS", result);
     }
 }

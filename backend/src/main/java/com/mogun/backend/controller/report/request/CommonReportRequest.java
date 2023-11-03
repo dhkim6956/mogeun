@@ -12,6 +12,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CommonReportRequest {
 
+    @JsonProperty("user_key")
+    private int userKey;
+
     @JsonProperty("email")
     private String email;
 

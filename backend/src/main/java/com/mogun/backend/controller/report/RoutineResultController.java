@@ -37,10 +37,10 @@ public class RoutineResultController {
     }
 
     @GetMapping("/Routine")
-    public ApiResponse getRoutineResult(@RequestParam("email") String email, @RequestParam("routine_result_key") int resultKey) {
+    public ApiResponse getRoutineResult(@RequestParam("user_key") int userKey, @RequestParam("routine_result_key") int resultKey) {
 
         SummaryResultDto dto = resultService.getAllInfoOfResult(ResultDto.builder()
-                .userEmail(email)
+                .userKey(userKey)
                 .resultKey(resultKey)
                 .build());
 
@@ -56,10 +56,10 @@ public class RoutineResultController {
     }
 
     @GetMapping("/Exercise")
-    public ApiResponse getExerciseResult(@RequestParam("email") String email, @RequestParam("routine_result_key") int resultKey) {
+    public ApiResponse getExerciseResult(@RequestParam("user_key") int userKey, @RequestParam("routine_result_key") int resultKey) {
 
         List<SetResultListDto> list = resultService.getExerciseResult(ResultDto.builder()
-                .userEmail(email)
+                .userKey(userKey)
                 .resultKey(resultKey)
                 .build());
 

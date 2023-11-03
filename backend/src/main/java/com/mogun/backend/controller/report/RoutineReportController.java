@@ -22,7 +22,7 @@ public class RoutineReportController {
     public ApiResponse startRoutineReport(@RequestBody CommonReportRequest request) {
 
         String result = routineReportService.startRoutineReport(RoutineReportDto.builder()
-                .email(request.getEmail())
+                .userKey(request.getUserKey())
                 .routineKey(request.getRoutineKey())
                 .isAttached(request.getIsAttached())
                 .build());
@@ -35,7 +35,7 @@ public class RoutineReportController {
 
         String result = routineReportService.endRoutineReport(RoutineReportDto.builder()
                 .reportKey(request.getRoutineReportKey())
-                .email(request.getEmail())
+                .userKey(request.getUserKey())
                 .build());
 
         return ApiResponse.postAndPutResponse(result, request);
