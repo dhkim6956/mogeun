@@ -33,13 +33,28 @@ data class MonthlyResponse(
 )
 
 @Serializable
+data class SetResult(
+    @SerialName(value = "set_number")
+    val setNumber: Int,
+    val weight: Float,
+    @SerialName(value = "target_rep")
+    val targetRep: Int,
+    @SerialName(value = "success_rep")
+    val successRep: Int,
+    @SerialName(value = "muscle_activity")
+    val muscleActivity: List<Int>
+)
+
+@Serializable
 data class Exercise(
     @SerialName(value = "exec_name")
     val execName: String,
     @SerialName(value = "image_path")
     val imagePath: String,
     val sets:Int,
-    val parts: List<String>
+    val parts: List<String>,
+    @SerialName(value = "set_results")
+    val setResults: List<SetResult>
 )
 
 @Serializable
