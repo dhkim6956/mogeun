@@ -12,6 +12,7 @@ interface AppContainer {
     val emgDataRepository: EmgRepository
     val recordRepository: RecordRepository
     val exerciseDataRepository: CreateRoutineRepository
+    val keyRepository: KeyRepository
 }
 
 class DefaultAppContainer(private val context: Context): AppContainer {
@@ -40,5 +41,9 @@ class DefaultAppContainer(private val context: Context): AppContainer {
 
     override val exerciseDataRepository: CreateRoutineRepository by lazy {
         NetworkCreateRoutineRepository(retrofitService)
+    }
+
+    override val keyRepository: KeyRepository by lazy {
+        OfflineKeyRepository(KeyDatabase.getDatabase(context).keyDao())
     }
 }
