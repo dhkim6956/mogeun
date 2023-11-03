@@ -24,4 +24,7 @@ public class ExerciseResultDto {
 
     @JsonProperty("parts")
     private List<String> partList;
+
+    @JsonProperty("set_results")
+    private List<SetResultDto> setResultList;
 }
