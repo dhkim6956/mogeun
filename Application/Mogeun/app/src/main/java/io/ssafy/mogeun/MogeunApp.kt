@@ -7,7 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,19 +23,14 @@ import androidx.compose.ui.res.vectorResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.ModalBottomSheetLayout
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import io.ssafy.mogeun.ui.MogeunNavHost
 import io.ssafy.mogeun.ui.Screen
 import io.ssafy.mogeun.ui.rootScreen
 
 
-@OptIn(ExperimentalMaterialNavigationApi::class)
 @Composable
 fun Navigation() {
-    val bottomSheetNavigator = rememberBottomSheetNavigator()
-    val navController: NavHostController = rememberNavController(bottomSheetNavigator)
+    val navController: NavHostController = rememberNavController()
 
     val navBackStackEntry = navController.currentBackStackEntryAsState()
 
@@ -50,18 +45,16 @@ fun Navigation() {
         screens.find { it.route == currentRoute } ?: Screen.Login
     }
 
-    ModalBottomSheetLayout(bottomSheetNavigator) {
-        Scaffold (
-            topBar = {
-                TopBar(navController, currentScreen)
-            },
-            bottomBar = {
-                BottomBar(navController, currentScreen)
-            }
-        ) {innerPadding ->
-            Box(modifier = Modifier.padding(innerPadding)) {
-                MogeunNavHost(navController)
-            }
+    Scaffold (
+        topBar = {
+            TopBar(navController, currentScreen)
+        },
+        bottomBar = {
+            BottomBar(navController, currentScreen)
+        }
+    ) {innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)) {
+            MogeunNavHost(navController)
         }
     }
 }
@@ -82,7 +75,7 @@ fun TopBar(navController: NavHostController, currentScreen: Screen) {
                     IconButton(
                         onClick = { navController.popBackStack() }
                     ) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "")
+                        Icon(Icons.Outlined.ArrowBack, contentDescription = "")
                     }
                 }
             }
