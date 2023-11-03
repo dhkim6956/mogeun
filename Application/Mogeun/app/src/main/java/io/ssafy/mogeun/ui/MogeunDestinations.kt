@@ -96,6 +96,12 @@ enum class Screen(
         title = "sql 테스트 페이지",
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
         bottomBarState = BottomBarState(true)
+    ),
+    Connection(
+        route = "Connection",
+        title = "기기 연결",
+        topBarState = TopBarState(visibility = true, backBtnVisibility = true),
+        bottomBarState = BottomBarState(true)
     )
 }
 

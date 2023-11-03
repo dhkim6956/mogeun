@@ -1,16 +1,14 @@
 package io.ssafy.mogeun.ui
 
-import android.app.Application
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.ui.screens.login.LoginViewModel
 import io.ssafy.mogeun.ui.screens.record.RecordViewModel
-import io.ssafy.mogeun.ui.screens.sample.ConnectionViewModel
+import io.ssafy.mogeun.ui.screens.sample.DbSampleViewModel
+import io.ssafy.mogeun.ui.screens.setting.connection.ConnectionViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory {
@@ -27,6 +25,11 @@ object AppViewModelProvider {
         }
         initializer {
             ConnectionViewModel(
+                mogeunApplication().container.emgDataRepository
+            )
+        }
+        initializer {
+            DbSampleViewModel(
                 mogeunApplication().container.emgDataRepository
             )
         }

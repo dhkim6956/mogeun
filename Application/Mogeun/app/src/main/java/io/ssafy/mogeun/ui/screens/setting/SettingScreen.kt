@@ -2,6 +2,7 @@ package io.ssafy.mogeun.ui.screens.setting
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,10 +28,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import io.ssafy.mogeun.R
 
 @Composable
-fun SettingScreen() {
+fun SettingScreen(navController: NavController) {
     Column(modifier = Modifier.padding(32.dp)) {
         Column {
             Text(
@@ -177,6 +179,9 @@ fun SettingScreen() {
                 }
                 .fillMaxWidth()
                 .padding(16.dp)
+                .clickable {
+                    navController.navigate("Connection")
+                }
             ) {
                 Box(
                     contentAlignment = Alignment.Center,

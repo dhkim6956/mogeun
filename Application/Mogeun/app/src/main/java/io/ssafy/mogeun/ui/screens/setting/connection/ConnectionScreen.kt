@@ -1,4 +1,4 @@
-package io.ssafy.mogeun.ui.screens.sample
+package io.ssafy.mogeun.ui.screens.setting.connection
 
 import android.util.Log
 import androidx.compose.foundation.layout.Column
