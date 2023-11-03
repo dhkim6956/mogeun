@@ -1,7 +1,7 @@
 package io.ssafy.mogeun.network
 
-import io.ssafy.mogeun.model.CreateRoutineRequest
-import io.ssafy.mogeun.model.CreateRoutineResponse
+import io.ssafy.mogeun.model.AddRoutineRequest
+import io.ssafy.mogeun.model.AddRoutineResponse
 import io.ssafy.mogeun.model.DupEmailResponse
 import io.ssafy.mogeun.model.MonthlyResponse
 import io.ssafy.mogeun.model.SignInRequest
@@ -24,9 +24,13 @@ interface MogeunApiService {
     suspend fun signUp(@Body signUpRequest: SignUpRequest): SignUpResponse
 
     @POST("Routine/Create")
-    suspend fun CreateRoutine(@Body createRoutineRequest: CreateRoutineRequest): CreateRoutineResponse
+    suspend fun AddRoutine(@Body addRoutineRequest: AddRoutineRequest): AddRoutineResponse
 
 
     @GET("Result/Monthly")
     suspend fun recordMonthly(@Query("user_key") userKey: String, @Query("date") date: String): MonthlyResponse
+
+    @GET("Exercise/ListAll")
+    suspend fun listAllExercise(@Query("name") name: String, @Query("eng_name") engName: String, @Query("exec_desc") execDesc: String, @Query("main_part") mainPart: Int, @Query("image_path") imagePath: String)
+
 }

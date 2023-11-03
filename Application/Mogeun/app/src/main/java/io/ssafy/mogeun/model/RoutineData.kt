@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CreateRoutineRequest(
+data class AddRoutineRequest(
     @SerialName(value = "user_email")
     val email: String,
     @SerialName(value = "routine_name")
@@ -12,7 +12,7 @@ data class CreateRoutineRequest(
 )
 
 @Serializable
-data class CreateRoutineResponsedata(
+data class AddRoutineResponsedata(
     val routine_key: Int, // int
     val routine_name: String, // int
     val user_email:String,
@@ -22,10 +22,18 @@ data class CreateRoutineResponsedata(
     val set_key: Int
 )
 @Serializable
-data class CreateRoutineResponse(
+data class AddRoutineResponse(
     val code: Int,
     val status: String,
     val message: String,
-    val data: CreateRoutineResponsedata
+    val data: AddRoutineResponsedata
 )
 
+@Serializable
+data class ListAllExerciseResponse(
+    val name: String,
+    val engName: String,
+    val execDesc: String,
+    val mainPart: Int,
+    val imagePath: String
+)

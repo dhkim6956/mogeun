@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ErrorOutline
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.StarBorder
@@ -29,7 +28,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -53,7 +51,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewmodel.compose.viewModel
-import io.ssafy.mogeun.ui.screens.login.LoginViewModel
+import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -248,7 +246,7 @@ fun AlertDialogExample(
     icon: ImageVector,
 ) {
     val (name, setName) = remember { mutableStateOf("") }
-    val viewModel: CreateRoutineViewModel = viewModel(factory = CreateRoutineViewModel.Factory)
+    val viewModel: AddRoutineViewModel = viewModel(factory = AddRoutineViewModel.Factory)
     AlertDialog(
         icon = {
             Icon(icon, contentDescription = "Example Icon")
@@ -265,8 +263,8 @@ fun AlertDialogExample(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val ret = viewModel.createRoutine("mogun@ssafy.com", "mogun1234")
-                    Log.d("createRoutine", "$ret")
+                    val ret = viewModel.addRoutine("mogun@ssafy.com", "mogun1234")
+                    Log.d("addRoutine", "$ret")
                     // 운동에 대한 정보를 post
                     navController.popBackStack()
                 }

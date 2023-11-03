@@ -11,7 +11,7 @@ interface AppContainer {
     val userDataRepository: SignInRepository
     val emgDataRepository: EmgRepository
     val recordRepository: RecordRepository
-    val exerciseDataRepository: CreateRoutineRepository
+    val routineRepository: RoutineRepository
 }
 
 class DefaultAppContainer(private val context: Context): AppContainer {
@@ -38,7 +38,9 @@ class DefaultAppContainer(private val context: Context): AppContainer {
         NetworkRecordRepository(retrofitService)
     }
 
-    override val exerciseDataRepository: CreateRoutineRepository by lazy {
-        NetworkCreateRoutineRepository(retrofitService)
+    override val routineRepository: RoutineRepository by lazy {
+        NetworkAddRoutineRepository(retrofitService)
+//        NetworkListAllExerciseRepository(retrofitService)
     }
+
 }
