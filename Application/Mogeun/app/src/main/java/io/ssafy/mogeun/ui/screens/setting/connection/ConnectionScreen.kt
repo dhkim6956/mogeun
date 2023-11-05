@@ -54,6 +54,14 @@ fun ConnectionScreen(viewModel: ConnectionViewModel = viewModel(factory = AppVie
                 Text("Connecting ...")
             }
         }
+        state.isConnected -> {
+            ChatScreen(
+                state = state,
+                onDisconnect = viewModel::disconnectFromDevice,
+                onSendMessage = viewModel::sendMessage
+            )
+        }
+        
         else -> {
             Column(
                 modifier = Modifier
