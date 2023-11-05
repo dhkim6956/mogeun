@@ -25,7 +25,8 @@ object AppViewModelProvider {
         }
         initializer {
             ConnectionViewModel(
-                mogeunApplication().container.emgDataRepository
+                mogeunApplication().container.emgDataRepository,
+                mogeunApplication().container.bluetoothController
             )
         }
         initializer {

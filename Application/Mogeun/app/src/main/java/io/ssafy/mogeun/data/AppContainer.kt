@@ -2,6 +2,8 @@ package io.ssafy.mogeun.data
 
 import android.content.Context
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import io.ssafy.mogeun.data.bluetooth.AndroidBluetoothController
+import io.ssafy.mogeun.data.bluetooth.BluetoothController
 import io.ssafy.mogeun.network.MogeunApiService
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -12,6 +14,7 @@ interface AppContainer {
     val emgDataRepository: EmgRepository
     val recordRepository: RecordRepository
     val exerciseDataRepository: CreateRoutineRepository
+    val bluetoothController: BluetoothController
 }
 
 class DefaultAppContainer(private val context: Context): AppContainer {
@@ -40,5 +43,9 @@ class DefaultAppContainer(private val context: Context): AppContainer {
 
     override val exerciseDataRepository: CreateRoutineRepository by lazy {
         NetworkCreateRoutineRepository(retrofitService)
+    }
+
+    override val bluetoothController: BluetoothController by lazy {
+        AndroidBluetoothController(context)
     }
 }

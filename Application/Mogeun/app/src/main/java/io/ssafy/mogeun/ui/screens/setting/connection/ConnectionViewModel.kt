@@ -5,12 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.ssafy.mogeun.data.Emg
 import io.ssafy.mogeun.data.EmgRepository
+import io.ssafy.mogeun.data.bluetooth.BluetoothController
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
 
-class ConnectionViewModel(private val emgRepository: EmgRepository): ViewModel() {
+class ConnectionViewModel(private val emgRepository: EmgRepository, private val bluetoothController: BluetoothController): ViewModel() {
 
     private val _emgInput = mutableStateOf<Emg>(Emg(0, 1, "left", 0.0, System.currentTimeMillis()))
 
@@ -39,6 +42,26 @@ class ConnectionViewModel(private val emgRepository: EmgRepository): ViewModel()
     suspend fun saveData() {
         _emgInput.value = _emgInput.value.copy(time = System.currentTimeMillis())
         emgRepository.insertEmg(_emgInput.value)
+    }
+
+    private val _state = MutableStateFlow(ConnectionUiState())
+    val state = combine(
+        bluetoothController.scannedDevices,
+        bluetoothController.pairedDevices,
+        _state
+    ) { scannedDevices, pairedDevices, state ->
+        state.copy(
+            scannedDevices = scannedDevices,
+            pairedDevices = pairedDevices
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(TIMEOUT_MILLIS), _state.value)
+
+    fun startScan() {
+        bluetoothController.startDiscovery()
+    }
+
+    fun stopScan() {
+        bluetoothController.stopDiscovery()
     }
 
     companion object {
