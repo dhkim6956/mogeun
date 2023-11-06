@@ -50,8 +50,12 @@ fun RoutineScreen(
     val openAlertDialog = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-
-        viewModel.getInbody()
+        viewModel.getUserKey()
+    }
+    LaunchedEffect(viewModel.userKey) {
+        if (viewModel.userKey !== null) {
+            viewModel.getInbody()
+        }
     }
 
     Column(modifier = Modifier.padding(10.dp)) {
