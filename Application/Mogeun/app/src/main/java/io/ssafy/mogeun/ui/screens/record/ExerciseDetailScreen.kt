@@ -188,11 +188,45 @@ fun MuscleActivity() {
             )
             .background(color = MaterialTheme.colorScheme.background)
     ) {
-        NonlazyGrid(
+        MuscleActivityGrid(
             columns = 2,
             itemCount = 4
         ) {
-            SetWeightIcon()
+            Box(modifier = Modifier.background(color = Color.Green))
+        }
+    }
+}
+
+@Composable
+fun MuscleActivityGrid(
+    columns: Int,
+    itemCount: Int,
+    modifier: Modifier = Modifier,
+    content: @Composable() (Int) -> Unit
+) {
+    Column(modifier = modifier) {
+        var rows = (itemCount / columns)
+        if (itemCount.mod(columns) > 0) {
+            rows += 1
+        }
+
+        for (rowId in 0 until rows) {
+            val firstIndex = rowId * columns
+
+            Row {
+                for (columnId in 0 until columns) {
+                    val index = firstIndex + columnId
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    ) {
+                        if (index < itemCount) {
+                            content(index)
+                        }
+                    }
+                }
+            }
         }
     }
 }

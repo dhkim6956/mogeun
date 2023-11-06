@@ -244,7 +244,7 @@ fun IconCard() {
     ) {
         Column {
             Text("사용근육")
-            NonlazyGrid(
+            MuscleGrid(
                 columns = 5,
                 itemCount = 9,
                 modifier = Modifier
@@ -297,13 +297,13 @@ fun RoutineExerciseCard(
                     )
                     Text(name)
                 }
-                NonlazyGrid(
+                WeightGrid(
                     columns = 4,
                     itemCount = sets,
                     modifier = Modifier
                         .padding(start = 7.5.dp, end = 7.5.dp)
                 ) {
-                    SetWeightIcon()
+                    SetWeightIcon(it + 50)
                 }
             }
             ClickableText(
@@ -349,13 +349,13 @@ fun RoutineExerciseCardPreview() {
                     )
                     Text("test")
                 }
-                NonlazyGrid(
+                WeightGrid(
                     columns = 5,
                     itemCount = 6,
                     modifier = Modifier
                         .padding(start = 7.5.dp, end = 7.5.dp)
                 ) {
-                    SetWeightIcon()
+                    SetWeightIcon(it)
                 }
             }
             ClickableText(
@@ -369,7 +369,7 @@ fun RoutineExerciseCardPreview() {
 }
 
 @Composable
-fun SetWeightIcon() {
+fun SetWeightIcon(weight: Int) {
     Box(
         modifier = Modifier
             .aspectRatio(1f) // This is important for square-sizing!
@@ -379,7 +379,7 @@ fun SetWeightIcon() {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "100",
+            text = weight.toString(),
             color = MaterialTheme.colorScheme.onBackground,
             fontSize = 14.sp,
         )
@@ -387,7 +387,7 @@ fun SetWeightIcon() {
 }
 
 @Composable
-fun NonlazyGrid(
+fun WeightGrid(
     columns: Int,
     itemCount: Int,
     modifier: Modifier = Modifier,
@@ -412,6 +412,40 @@ fun NonlazyGrid(
                     ) {
                         if (index < itemCount) {
                             content(index)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun MuscleGrid(
+    columns: Int,
+    itemCount: Int,
+    modifier: Modifier = Modifier,
+    content: @Composable() () -> Unit
+) {
+    Column(modifier = modifier) {
+        var rows = (itemCount / columns)
+        if (itemCount.mod(columns) > 0) {
+            rows += 1
+        }
+
+        for (rowId in 0 until rows) {
+            val firstIndex = rowId * columns
+
+            Row {
+                for (columnId in 0 until columns) {
+                    val index = firstIndex + columnId
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    ) {
+                        if (index < itemCount) {
+                            content()
                         }
                     }
                 }
