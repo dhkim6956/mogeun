@@ -48,52 +48,33 @@ import com.skydoves.landscapist.glide.GlideImage
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineViewModel
+import io.ssafy.mogeun.ui.AppViewModelProvider
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddExerciseScreen(navController: NavHostController) {
-    val musclePartList = listOf("전체", "가슴", "등", "복근", "삼두", "승모근", "어깨", "이두", "종아리", "허벅지")
+fun AddExerciseScreen(
+    navController: NavHostController,
+    viewModel: AddExerciseViewModel = viewModel(factory = AppViewModelProvider.Factory)
+) {
+    val musclePartList = listOf("전체", "chest", "등", "복근", "삼두", "승모근", "어깨", "이두", "종아리", "허벅지")
     var selectedExercises by remember { mutableStateOf(setOf<String>()) }
     val openAlertDialog = remember { mutableStateOf(false) }
-    data class Exercise(val name: String, val main_part: String, val image: Int, val engName: String)
-    val exerciseArray = arrayOf(
-        Exercise("바벨 벤치 프레스", "가슴", R.drawable.z_barbell_bench_press, "barbell bench press"),
-        Exercise("덤벨 벤치 프레스", "가슴", R.drawable.z_dumbbell_bench_press, "dumbbell bench press"),
-        Exercise("딥스", "가슴", R.drawable.z_chest_dips, "chest dips"),
-        Exercise("덤벨 슈러그", "승모근", R.drawable.z_dumbbell_shrug, "dumbbell shrug"),
-        Exercise("바벨 슈러그", "승모근", R.drawable.z_barbell_shrug, "barbell shrug"),
-        Exercise("레버 슈러그", "승모근", R.drawable.z_lever_shrug, "lever shrug"),
-        Exercise("케이블 풀다운", "등", R.drawable.z_cable_pulldown, "cable pulldown"),
-        Exercise("풀업", "등", R.drawable.z_pull_up, "pull up"),
-        Exercise("케이블 시티드 로우", "등", R.drawable.z_cable_seated_row, "cable seated row"),
-        Exercise("레버 피쳐 컬", "이두", R.drawable.z_lever_preacher_curl, "lever preacher curl"),
-        Exercise("바벨 컬", "이두", R.drawable.z_barbell_drag_curl, "barbell drag curl"),
-        Exercise("덤벨 컬", "이두", R.drawable.z_dumbbell_biceps_curl, "dumbbell biceps curl"),
-        Exercise("덤벨 시티드 트라이셉스 익스텐션", "삼두", R.drawable.z_dumbbell_seated_triceps_extension, "dumbbell seated triceps extension"),
-        Exercise("케이블 트라이셉스 푸쉬다운", "삼두", R.drawable.z_cable_triceps_pushdown, "cable triceps pushdown"),
-        Exercise("바벨 클로우스 그립 벤치프레스", "삼두", R.drawable.z_barbell_close_grip_bench_press, "barbell close grip bench press"),
-        Exercise("레버 레그 익스텐션", "허벅지", R.drawable.z_lever_leg_extension, "lever leg extension"),
-        Exercise("레그프레스", "허벅지", R.drawable.z_leg_press, "leg press"),
-        Exercise("스쿼트", "허벅지", R.drawable.z_squat, "squat"),
-        Exercise("스미스 카프 레이즈", "종아리", R.drawable.z_smith_calf_raise, "smith calf raise"),
-        Exercise("레버 스탠딩 카프 레이즈", "종아리", R.drawable.z_lever_standing_calf_raise, "lever standing calf raise"),
-        Exercise("덤벨 스탠딩 카프 레이즈", "종아리", R.drawable.z_dumbbell_standing_calf_raise, "dumbbell standing calf raise"),
-        Exercise("스미스 시티드 숄더 프레스", "어깨", R.drawable.z_smith_seated_shoulder_press, "smith seated shoulder press"),
-        Exercise("덤벨 프론트 레이즈", "어깨", R.drawable.z_dumbbell_front_raise, "dumbbell front raise"),
-        Exercise("덤벨 레터럴 레이즈", "어깨", R.drawable.z_dumbbell_lateral_raise, "dumbbell lateral raise"),
-        Exercise("싯업", "복근", R.drawable.z_sit_ups, "sit ups"),
-        Exercise("버티컬 레그 레이즈", "복근", R.drawable.z_vertical_leg_raise, "vertical leg raise"),
-        Exercise("트위스팅 크런치", "복근", R.drawable.z_twisting_crunch, "twisting crunch")
-        )
+    val exercises = viewModel.exerciseList
+
     val (searchText, setSearchText) = remember {
         mutableStateOf("")
     }
     var selectedMusclePart by remember { mutableStateOf("전체") }
+    LaunchedEffect(Unit){
+        viewModel.listAllExercise()
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -134,8 +115,8 @@ fun AddExerciseScreen(navController: NavHostController) {
 
         //exercise-list
         LazyColumn {
-            val filteredExercises = exerciseArray
-                .filter { it.main_part == selectedMusclePart || selectedMusclePart == "전체" }
+            val filteredExercises = exercises
+                .filter { it.mainPart == selectedMusclePart || selectedMusclePart == "전체" }
                 .filter {
                     it.name.contains(searchText, ignoreCase = true) || it.engName.contains(searchText, ignoreCase = true)
                 }
@@ -164,10 +145,12 @@ fun AddExerciseScreen(navController: NavHostController) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         GlideImage(
-                            imageModel = exercise.image,
+                            imageModel = exercise.imagePath.toString(),
                             contentDescription = "GIF Image",
                             contentScale = ContentScale.Crop,
-                            modifier = Modifier.height(60.dp).width(60.dp)
+                            modifier = Modifier
+                                .height(60.dp)
+                                .width(60.dp)
                         )
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
@@ -175,13 +158,13 @@ fun AddExerciseScreen(navController: NavHostController) {
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
-                            Text(text = exercise.main_part)
+//                            Text(text = exercise.mainPart)
                         }
                         Icon(
                             imageVector = if (isSelected) Icons.Outlined.Star else Icons.Outlined.StarBorder,
                             contentDescription = "Localized description"
                         )
-                        IconButton(onClick = { navController.navigate("explainexercise/${exercise.image.toString()}") }) {
+                        IconButton(onClick = { navController.navigate("explainexercise/${exercise.imagePath.toString()}") }) {
                             Icon(Icons.Outlined.ErrorOutline,
                                 contentDescription = "Localized description",
                                 modifier = Modifier.graphicsLayer(rotationZ = 180f)
@@ -235,6 +218,13 @@ fun AddExerciseScreen(navController: NavHostController) {
     }
 }
 
+@Composable
+fun receiveExerciseData(
+    adjacentMonths: Long = 500,
+    navController: NavHostController,
+    viewModel: AddExerciseViewModel = viewModel(factory = AppViewModelProvider.Factory)
+){}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlertDialogExample(
@@ -263,7 +253,7 @@ fun AlertDialogExample(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val ret = viewModel.addRoutine(11, "mogun1234")
+                    val ret = viewModel.addRoutine("11", "mogun1234")
                     Log.d("addRoutine", "$ret")
                     // 운동에 대한 정보를 post
                     navController.popBackStack()

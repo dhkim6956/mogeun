@@ -145,7 +145,7 @@ fun RoutineScreen(
     }
     Box(modifier = Modifier
         .fillMaxSize()
-        .padding(end = 30.dp, bottom = 30.dp), contentAlignment = Alignment.BottomEnd) {
+        .padding(start = 30.dp, bottom = 30.dp), contentAlignment = Alignment.BottomStart) {
         Button(
             onClick = { navController.navigate("addexercise") },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),

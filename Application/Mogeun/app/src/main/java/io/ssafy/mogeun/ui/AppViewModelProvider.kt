@@ -10,6 +10,8 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.ui.screens.login.LoginViewModel
 import io.ssafy.mogeun.ui.screens.record.RecordViewModel
+import io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.AddExerciseViewModel
+import io.ssafy.mogeun.ui.screens.routine.searchRoutine.RoutineViewModel
 import io.ssafy.mogeun.ui.screens.sample.ConnectionViewModel
 
 object AppViewModelProvider {
@@ -30,6 +32,11 @@ object AppViewModelProvider {
         initializer {
             ConnectionViewModel(
                 mogeunApplication().container.emgDataRepository
+            )
+        }
+        initializer {
+            AddExerciseViewModel(
+                mogeunApplication().container.listAllExerciseRepository
             )
         }
     }
