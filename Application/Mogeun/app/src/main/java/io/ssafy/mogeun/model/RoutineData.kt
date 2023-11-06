@@ -40,10 +40,15 @@ data class AddRoutineResponse(
 
 @Serializable
 data class ListAllExerciseResponsedata(
+    val key: Int,
     val name: String,
+    @SerialName(value = "eng_name")
     val engName: String,
-    val execDesc: String,
-    val mainPart: Int,
+    @SerialName(value = "sensing_part")
+    val sensingPart: String?,
+    @SerialName(value = "main_part")
+    val mainPart: String,
+    @SerialName(value = "image_path")
     val imagePath: String
 )
 

@@ -7,7 +7,7 @@ import io.ssafy.mogeun.network.MogeunApiService
 
 interface RoutineRepository{
     suspend fun addRoutine(userKey: Int, routineName: String): AddRoutineResponse
-    suspend fun listAllExercise(name: String, engName: String, execDesc: String, mainPart: Int, imagePath: String): ListAllExerciseResponse
+    suspend fun listAllExercise(): ListAllExerciseResponse
 }
 
 
@@ -17,8 +17,8 @@ class NetworkRoutineRepository(
     override suspend fun addRoutine(userKey: Int, routineName: String): AddRoutineResponse {
         return mogeunApiService.addRoutine(AddRoutineRequest(userKey, routineName))
     }
-    override suspend fun listAllExercise(name: String, engName: String, execDesc: String, mainPart: Int, imagePath: String): ListAllExerciseResponse {
-        return mogeunApiService.listAllExercise(name, engName, execDesc, mainPart, imagePath)
+    override suspend fun listAllExercise(): ListAllExerciseResponse {
+        return mogeunApiService.listAllExercise()
     }
 }
 
