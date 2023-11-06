@@ -43,11 +43,13 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
@@ -58,6 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.patrykandpatrick.vico.compose.component.shape.shader.verticalGradient
 import io.ssafy.mogeun.R
+import kotlinx.coroutines.delay
 import java.util.Calendar
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -99,6 +102,12 @@ fun ExerciseEMGScreen(){
     val debounceDuration = 300 //0.1초
     val chosenWeight = remember { mutableStateOf(preWeight) }
     val chosenRep = remember { mutableStateOf(preRep) }
+
+    //근전도 센서 신호
+    var EMGvalue1 by remember { mutableIntStateOf(0) }
+    var EMGvalue2 by remember { mutableIntStateOf(0) }
+    var EMGvalue3 by remember { mutableIntStateOf(0) }
+    var EMGvalue4 by remember { mutableIntStateOf(0) }
 
 
 
@@ -173,7 +182,8 @@ fun ExerciseEMGScreen(){
             Box(modifier = Modifier //무계, 횟수
                 .fillMaxHeight()
                 .fillMaxWidth(0.35f)
-                .background(color = Color.Green)
+                .background(Color(0xFFF7F7F7)),
+                contentAlignment = Alignment.Center
             ){
                 DateSelectionSection(
                     onWeightChosen = { chosenWeight.value = it.toInt() },
@@ -183,9 +193,9 @@ fun ExerciseEMGScreen(){
             Box(modifier = Modifier//EMG 신호 표기
                 .fillMaxHeight()
                 .fillMaxWidth()
-                .background(color = Color.Magenta)
+                .background(Color(0xFFF7F7F7)),
             ){
-
+                EMGCollector()
             }
         }
         Box(modifier = Modifier //---------footer---------
@@ -195,6 +205,7 @@ fun ExerciseEMGScreen(){
             Row(modifier = Modifier
                 .fillMaxSize()
                 .padding(15.dp)
+                .shadow(4.dp, shape = RoundedCornerShape(4.dp))
                 .clip(RoundedCornerShape(12.dp)),
                 horizontalArrangement = Arrangement.Center,
             )
@@ -202,7 +213,7 @@ fun ExerciseEMGScreen(){
                 Box(modifier = Modifier
                     .fillMaxWidth(0.3f)
                     .fillMaxHeight()
-                    .background(color = Color.Blue)
+                    .background(color = Color.White)
                     .clickable {
                         val currentTime = System.currentTimeMillis()
                         if (currentTime - lastClickTime > debounceDuration) {
@@ -221,7 +232,7 @@ fun ExerciseEMGScreen(){
                 }
                 Box(modifier = Modifier
                     .fillMaxSize()
-                    .background(color = Color.Cyan)
+                    .background(color = Color.White)
                 ){
                    Row(
                        modifier = Modifier
@@ -232,7 +243,7 @@ fun ExerciseEMGScreen(){
                       Row(modifier = Modifier
                           .fillMaxHeight()
                           .padding(4.dp)
-                          .clickable {  },
+                          .clickable { },
                           verticalAlignment = Alignment.CenterVertically,
                           horizontalArrangement = Arrangement.Center,
                       ){
@@ -247,7 +258,7 @@ fun ExerciseEMGScreen(){
                        Row(modifier = Modifier
                            .fillMaxHeight()
                            .padding(start = 4.dp, top = 4.dp, bottom = 4.dp, end = 8.dp)
-                           .clickable {  },
+                           .clickable { },
                            verticalAlignment = Alignment.CenterVertically,
                            horizontalArrangement = Arrangement.Center,
                        ){
@@ -300,7 +311,7 @@ private fun ScrollableTabRow(
 
 //private fun ScrollButton(){}
 
-//--------------------------------------------
+//-------------스크롤 버튼-------------------
 
 @Composable
 fun DateSelectionSection(
@@ -310,8 +321,8 @@ fun DateSelectionSection(
     Row(
         horizontalArrangement = Arrangement.SpaceAround,
         modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
+            .fillMaxWidth(0.9f)
+            .fillMaxHeight(0.9f)
             .background(color = Color.LightGray)
             .padding(10.dp)
 
@@ -379,7 +390,7 @@ fun InfiniteItemsPicker(
 
     Box(modifier = Modifier
         .height(106.dp)
-        .width(40.dp)
+        .fillMaxWidth()
         .background(Color.White),
         contentAlignment = Alignment.Center
     ) {
@@ -400,7 +411,7 @@ fun InfiniteItemsPicker(
                         text = items[index],
                         modifier = Modifier
                             .alpha(if (it == listState.firstVisibleItemIndex + 1) 1f else 0.3f)
-                            .background(Color(if(it == listState.firstVisibleItemIndex + 1)0xFFDDE2FD else 0xFFFFFFFF))
+                            .background(Color(if (it == listState.firstVisibleItemIndex + 1) 0xFFDDE2FD else 0xFFFFFFFF))
                             .fillMaxWidth(),
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center,
@@ -414,12 +425,92 @@ fun InfiniteItemsPicker(
     }
 }
 //--------------------------------------------
+@Composable
+fun EMGCollector() {
+    var signal_1 by remember { mutableStateOf(0) }
+    var signal_2 by remember { mutableStateOf(0) }
+    var signal_3 by remember { mutableStateOf(0) }
+    var signal_4 by remember { mutableStateOf(0) }
+
+    // CoroutineScope을 만듭니다.
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            // 0.05초당 한번씩 업데이트
+            delay(5)
+
+            signal_1++;
+            if(signal_1%2==0)signal_2++;
+            if(signal_1%3==0)signal_3++;
+            if(signal_1%4==0)signal_4++;
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+    ){
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.5f)
+        ) {
+            Box(modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(0.5f)
+                .background(Color.Gray),
+                contentAlignment = Alignment.Center
+            ){
+                Text("1 : $signal_1")
+            }
+            Box(modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth()
+                .background(Color.Red),
+                contentAlignment = Alignment.Center
+            ){
+                Text("2 : $signal_2")
+            }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+        ){
+            Box(modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(0.5f)
+                .background(Color.Red),
+                contentAlignment = Alignment.Center
+            ){
+                Text("3 : $signal_3")
+            }
+            Box(modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth()
+                .background(Color.Gray),
+                contentAlignment = Alignment.Center
+            ){
+                Text("4 : $signal_4")
+            }
+        }
+    }
+}
+
+//-----------------------------------------------------
+
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewEMGScreen(){
-    ExerciseEMGScreen()
+    Column {
+        ExerciseEMGScreen()
+    }
+
 }
+
+
 
 
 val preWeight = 50 //이전에 사용한 무계 가져오기
