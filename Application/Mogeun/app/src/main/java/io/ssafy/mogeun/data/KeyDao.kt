@@ -10,4 +10,6 @@ import kotlinx.coroutines.flow.Flow
 interface KeyDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(key: Key)
+    @Query("SELECT * FROM keyValue WHERE id = :id")
+    fun getKey(id: Int): Flow<Key>
 }

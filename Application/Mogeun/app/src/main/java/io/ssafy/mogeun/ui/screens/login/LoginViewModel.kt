@@ -60,5 +60,4 @@ class LoginViewModel(
         _keyInput.value = _keyInput.value.copy(userKey = key)
         keyRepository.insertKey(Key(1, key))
     }
-
 }
