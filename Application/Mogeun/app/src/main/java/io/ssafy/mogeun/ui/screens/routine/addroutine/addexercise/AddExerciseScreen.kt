@@ -66,7 +66,6 @@ fun AddExerciseScreen(
     val musclePartList = listOf("전체", "chest", "등", "복근", "삼두", "승모근", "어깨", "이두", "종아리", "허벅지")
     var selectedExercises by remember { mutableStateOf(setOf<String>()) }
     val openAlertDialog = remember { mutableStateOf(false) }
-    val exerciseList by viewModel.listAllExerciseSuccess.collectAsState()
     val exercises = viewModel.exerciseList
 
     val (searchText, setSearchText) = remember {
@@ -254,7 +253,7 @@ fun AlertDialogExample(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val ret = viewModel.addRoutine(11, "mogun1234")
+                    val ret = viewModel.addRoutine("11", "mogun1234")
                     Log.d("addRoutine", "$ret")
                     // 운동에 대한 정보를 post
                     navController.popBackStack()

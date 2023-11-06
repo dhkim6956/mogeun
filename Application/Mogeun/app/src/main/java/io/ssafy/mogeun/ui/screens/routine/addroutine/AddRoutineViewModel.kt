@@ -26,7 +26,7 @@ class AddRoutineViewModel(private val addRoutineRepository: RoutineRepository) :
         text1 = value
     }
 
-    fun addRoutine(userKey: Int, routineName: String) {
+    fun addRoutine(userKey: String, routineName: String) {
         lateinit var ret: AddRoutineResponse
         viewModelScope.launch {
             ret = addRoutineRepository.addRoutine(userKey, routineName)

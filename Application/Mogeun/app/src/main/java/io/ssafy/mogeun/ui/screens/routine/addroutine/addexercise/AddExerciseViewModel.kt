@@ -3,9 +3,10 @@ package io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.ssafy.mogeun.data.RoutineRepository
+import io.ssafy.mogeun.model.AddRoutineRequest
+import io.ssafy.mogeun.model.AddRoutineResponse
 import io.ssafy.mogeun.model.ListAllExerciseResponse
 import io.ssafy.mogeun.model.ListAllExerciseResponsedata
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,15 +19,24 @@ class AddExerciseViewModel(private val listAllExerciseRepository: RoutineReposit
     val listAllExerciseSuccess: StateFlow<Boolean> = _listAllExerciseSuccess.asStateFlow()
     var exerciseList = mutableStateListOf<ListAllExerciseResponsedata>()
 
+    private val _addRoutineSuccess = MutableStateFlow(false)
+    val addRoutineSuccess: StateFlow<Boolean> = _addRoutineSuccess.asStateFlow()
+    var myRoutine = mutableStateListOf<AddRoutineRequest>()
+
     fun initListAllExerciseSuccess() {
         _listAllExerciseSuccess.value = false
         exerciseList.clear()
     }
 
+    fun initAddRoutineSuccess() {
+        _addRoutineSuccess.value = false
+        myRoutine.clear()
+    }
+
     fun listAllExercise() {
         lateinit var ret: ListAllExerciseResponse
         viewModelScope.launch {
-            val ret = listAllExerciseRepository.listAllExercise()
+            ret = listAllExerciseRepository.listAllExercise()
             Log.d("listAllExercise", "$ret")
 
             if (ret.message == "SUCCESS") {
@@ -34,6 +44,17 @@ class AddExerciseViewModel(private val listAllExerciseRepository: RoutineReposit
                 for(exercise in ret.data){
                     exerciseList.add(exercise)
                 }
+            }
+        }
+    }
+
+    fun addRoutine(userKey: String, routineName: String) {
+        lateinit var ret: AddRoutineResponse
+        viewModelScope.launch{
+            ret = listAllExerciseRepository.addRoutine(userKey, routineName)
+            Log.d("addRoutine", "$ret")
+            if(ret.message == "SUCCESS") {
+                _addRoutineSuccess.value = true
             }
         }
     }
