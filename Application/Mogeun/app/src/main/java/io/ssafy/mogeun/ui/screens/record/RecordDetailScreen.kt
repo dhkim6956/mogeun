@@ -46,6 +46,7 @@ import com.patrykandpatrick.vico.compose.chart.line.lineChart
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
 import com.patrykandpatrick.vico.core.entry.entryOf
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.model.SetResult
 import io.ssafy.mogeun.ui.AppViewModelProvider
 
 @Composable
@@ -82,7 +83,7 @@ fun RecordDetailScreen(
             item { RoutineGraphIconCard() }
             if (routineInfo != null) {
                 itemsIndexed(routineInfo.exercises) {index, item ->
-                    RoutineExerciseCard(navController, item.execName, item.sets)
+                    RoutineExerciseCard(navController, item.execName, item.sets, item.setResults)
                 }
             }
         }
@@ -263,7 +264,8 @@ fun IconCard() {
 fun RoutineExerciseCard(
     navController: NavHostController,
     name: String,
-    sets: Int
+    sets: Int,
+    setResult: List<SetResult>
 ) {
     Box (
         modifier = Modifier
@@ -288,7 +290,7 @@ fun RoutineExerciseCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column (
-                    modifier = Modifier.fillMaxWidth(0.3f),
+                    modifier = Modifier.fillMaxWidth(0.4f),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(
@@ -303,7 +305,7 @@ fun RoutineExerciseCard(
                     modifier = Modifier
                         .padding(start = 7.5.dp, end = 7.5.dp)
                 ) {
-                    SetWeightIcon(it + 50)
+                    SetWeightIcon(setResult[it].weight.toInt())
                 }
             }
             ClickableText(
