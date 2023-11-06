@@ -23,4 +23,10 @@ public class SimplePlanInfoResponse {
 
     @JsonProperty("sensing_part")
     private List<String> musclePart;
+
+    @JsonProperty("main_part")
+    private String mainPart;
+
+    @JsonProperty("image_path")
+    private String imagePath;
 }

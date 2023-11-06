@@ -36,7 +36,9 @@ public class ExerciseController {
                     .execKey(item.getExecKey())
                     .execName(item.getName())
                     .engName(item.getEngName())
-                    .musclePart(attachPartService.getAllPartNameByExercise(item))
+                    .mainPart(item.getMainPart().getPartName())
+                    .imagePath(item.getImagePath())
+//                    .musclePart(attachPartService.getAllPartNameByExercise(item))
                     .build());
         }
 
