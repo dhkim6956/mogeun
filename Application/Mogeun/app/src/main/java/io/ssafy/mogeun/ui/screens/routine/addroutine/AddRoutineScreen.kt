@@ -35,7 +35,7 @@ import androidx.compose.foundation.lazy.items
 
 
 @Composable
-fun AddRoutineScreen(navController: NavHostController) {
+fun AddRoutineScreen(navController: NavHostController, routineName: String?) {
     val exerciseList = listOf(
         "Barbell Bench Press",
         "Dumbbell Bench Press",

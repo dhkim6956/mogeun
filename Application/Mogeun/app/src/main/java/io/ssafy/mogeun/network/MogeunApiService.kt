@@ -11,6 +11,7 @@ import io.ssafy.mogeun.model.SignInRequest
 import io.ssafy.mogeun.model.SignInResponse
 import io.ssafy.mogeun.model.SignUpRequest
 import io.ssafy.mogeun.model.SignUpResponse
+import io.ssafy.mogeun.model.GetRoutineListResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -28,6 +29,9 @@ interface MogeunApiService {
 
     @GET("User/Detail")
     suspend fun getInbody(@Query("user_key") userKey: String): GetInbodyResponse
+
+    @GET("Routine/ListAll")
+    suspend fun getRoutineList(@Query("user_key") userKey: String): GetRoutineListResponse
 
     @POST("Routine/Create")
     suspend fun addRoutine(@Body addRoutineRequest: AddRoutineRequest): AddRoutineResponse

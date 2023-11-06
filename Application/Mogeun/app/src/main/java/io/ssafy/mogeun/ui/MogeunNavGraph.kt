@@ -44,11 +44,15 @@ fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarH
         composable(Screen.Setting.route) { SettingScreen() }
         composable(Screen.Login.route) { LoginScreen(navController = navController) }
         composable(Screen.Signup.route) { SignupScreen(navController = navController) }
-        composable(Screen.AddRoutine.route) { AddRoutineScreen(navController = navController) }
+        composable(
+            Screen.AddRoutine.route,
+            arguments = listOf(navArgument("routineName") {type = NavType.StringType})
+        ) {backStackEntry ->
+            AddRoutineScreen(navController = navController, routineName = backStackEntry.arguments?.getString("routineName")) }
         composable(Screen.AddExercise.route) { AddExerciseScreen(navController = navController) }
 
         composable(
-            "${Screen.ExplainExercise.route}",
+            Screen.ExplainExercise.route,
             arguments = listOf(navArgument("image") { type = NavType.StringType })
         ) { backStackEntry ->
             ExplainExerciseScreen(navController = navController, data = backStackEntry.arguments?.getString("image"))
