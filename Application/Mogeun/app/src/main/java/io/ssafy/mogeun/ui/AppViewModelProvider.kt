@@ -25,7 +25,8 @@ object AppViewModelProvider {
         }
         initializer {
             RecordViewModel(
-                mogeunApplication().container.recordRepository
+                mogeunApplication().container.recordRepository,
+                mogeunApplication().container.keyRepository
             )
         }
         initializer {

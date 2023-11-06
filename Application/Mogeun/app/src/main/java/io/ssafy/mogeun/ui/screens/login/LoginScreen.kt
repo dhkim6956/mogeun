@@ -72,7 +72,7 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(factory = AppViewModelProv
                 value = viewModel.id,
                 onValueChange = { viewModel.updateText1(it) },
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(10.dp)
+                shape = RoundedCornerShape(10.dp),
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = "비밀번호")
