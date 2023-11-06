@@ -38,7 +38,7 @@ enum class Screen(
         bottomBarState = BottomBarState(true, R.drawable.icon_record, "record")
     ),
     RecordDetail(
-        route = "RecordDetail",
+        route = "RecordDetail/{reportKey}",
         title = "루틴 상세 정보",
         topBarState = TopBarState(visibility = true, backBtnVisibility = false),
         bottomBarState = BottomBarState(true, R.drawable.icon_record, "record")

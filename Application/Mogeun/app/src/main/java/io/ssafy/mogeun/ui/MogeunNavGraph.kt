@@ -39,7 +39,6 @@ fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarH
                 RecordDetailScreen(navController = navController, reportKey = backStackEntry.arguments?.getString("reportKey"))
             }
             composable(Screen.ExerciseDetail.route) { ExerciseDetailScreen() }
-
         }
         composable(Screen.Summary.route) { SummaryScreen() }
         composable(Screen.Setting.route) { SettingScreen() }
