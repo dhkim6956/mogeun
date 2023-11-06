@@ -13,6 +13,7 @@ interface AppContainer {
     val recordRepository: RecordRepository
     val addRoutineRepository: AddRoutineRepository
     val listAllExerciseRepository: ListAllExerciseRepository
+    val keyRepository: KeyRepository
 }
 
 class DefaultAppContainer(private val context: Context): AppContainer {
@@ -41,6 +42,10 @@ class DefaultAppContainer(private val context: Context): AppContainer {
 
     override val addRoutineRepository: AddRoutineRepository by lazy {
         NetworkAddRoutineRepository(retrofitService)
+    }
+
+    override val keyRepository: KeyRepository by lazy {
+        OfflineKeyRepository(KeyDatabase.getDatabase(context).keyDao())
     }
 
     override val listAllExerciseRepository: ListAllExerciseRepository by lazy {

@@ -17,7 +17,8 @@ object AppViewModelProvider {
         // Initializer for ItemEditViewModel
         initializer {
             LoginViewModel(
-                mogeunApplication().container.userDataRepository
+                mogeunApplication().container.userDataRepository,
+                mogeunApplication().container.keyRepository
             )
         }
         initializer {
