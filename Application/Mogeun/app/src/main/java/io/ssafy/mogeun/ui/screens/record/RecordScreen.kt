@@ -65,6 +65,7 @@ import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.core.nextMonth
 import com.kizitonwose.calendar.core.previousMonth
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.data.KeyRepository
 import io.ssafy.mogeun.ui.AppViewModelProvider
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
@@ -124,8 +125,10 @@ fun CalenderUI(
         // 해당 달에 대한 루틴 수행 기록 rest api 통신
         val recordMonthlySuccess by viewModel.recordMonthlySuccess.collectAsState()
         if (!recordMonthlySuccess) {
-            Log.d("date", visibleMonth.yearMonth.toString().plus("-01"))
-            viewModel.recordMonthly("1", visibleMonth.yearMonth.toString().plus("-01"))
+            LaunchedEffect(viewModel.userKey) {
+                Log.d("date", visibleMonth.yearMonth.toString().plus("-01"))
+                viewModel.recordMonthly(visibleMonth.yearMonth.toString().plus("-01"))
+            }
         }
 
         LaunchedEffect(visibleMonth) {
@@ -175,7 +178,7 @@ fun CalenderUI(
         val routineLists = routines[date.toString()].orEmpty()
         if (!routineLists.isEmpty()) {
             items(items = routineLists[0].routineReports) { routineReport ->
-                RoutineRecord(navController, routineReport.startTime, routineReport.routineName, routineReport.key)
+                RoutineRecord(navController, routineReport.startTime, routineReport.endTime, routineReport.routineName, routineReport.key)
             }
         }
     }
@@ -319,7 +322,8 @@ private fun CalendarLayoutInfo.firstMostVisibleMonth(viewportPercent: Float = 50
 @Composable
 fun RoutineRecord(
     navController: NavHostController,
-    routineTime: String,
+    routineStartTime: String,
+    routineEndTime: String,
     routineName: String,
     reportKey: Int
 ) {
@@ -341,6 +345,9 @@ fun RoutineRecord(
             ),
         contentAlignment = Alignment.Center
     ) {
+        val StartTime = routineStartTime.split("T")
+        val EndTime = routineEndTime.split("T")
+        val routineTime = StartTime[1] + "~" + EndTime[1]
         Row (
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
