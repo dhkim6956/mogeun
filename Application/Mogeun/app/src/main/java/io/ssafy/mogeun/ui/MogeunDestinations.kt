@@ -74,7 +74,7 @@ enum class Screen(
         bottomBarState = BottomBarState(false)
     ),
     AddRoutine(
-        route = "AddRoutine",
+        route = "AddRoutine/{routineName}",
         title = "루틴 추가",
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
         bottomBarState = BottomBarState(true, R.drawable.icon_setting)
