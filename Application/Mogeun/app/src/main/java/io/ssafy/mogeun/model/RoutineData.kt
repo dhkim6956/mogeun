@@ -52,5 +52,5 @@ data class ListAllExerciseResponse(
     val code: Int,
     val status: String,
     val message: String,
-    val data: ListAllExerciseResponsedata
+    val data: List<ListAllExerciseResponsedata>
 )

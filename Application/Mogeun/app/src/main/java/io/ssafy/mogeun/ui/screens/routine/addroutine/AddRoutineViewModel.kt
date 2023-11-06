@@ -9,14 +9,14 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import io.ssafy.mogeun.MogeunApplication
-import io.ssafy.mogeun.data.AddRoutineRepository
+import io.ssafy.mogeun.data.RoutineRepository
 import io.ssafy.mogeun.model.AddRoutineResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class AddRoutineViewModel(private val addRoutineRepository: AddRoutineRepository) : ViewModel() {
+class AddRoutineViewModel(private val addRoutineRepository: RoutineRepository) : ViewModel() {
     private val _addRoutineSuccess = MutableStateFlow(false)
     val addRoutineSuccess: StateFlow<Boolean> = _addRoutineSuccess.asStateFlow()
 
