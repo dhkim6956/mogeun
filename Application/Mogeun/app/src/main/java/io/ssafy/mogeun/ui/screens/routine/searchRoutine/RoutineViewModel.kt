@@ -3,6 +3,7 @@ package io.ssafy.mogeun.ui.screens.routine.searchRoutine
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -12,20 +13,24 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.data.KeyRepository
+import io.ssafy.mogeun.data.RoutineRepository
 import io.ssafy.mogeun.data.UserRepository
 import io.ssafy.mogeun.model.DupEmailResponse
 import io.ssafy.mogeun.model.GetInbodyResponse
+import io.ssafy.mogeun.model.GetRoutineListResponse
 import io.ssafy.mogeun.ui.screens.signup.SignupViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class RoutineViewModel(
     private val UserRepository: UserRepository,
-    private val keyRepository: KeyRepository
+    private val keyRepository: KeyRepository,
+    private val RoutineRepository: RoutineRepository
 ) : ViewModel() {
     var muscleMass by mutableStateOf<Double?>(null)
     var bodyFat by mutableStateOf<Double?>(null)
     var userKey by mutableStateOf<Int?>(null)
+    val routineList = mutableStateListOf<String>()
 
     fun updateMuscleMass(value: Double?) {
         muscleMass = value
@@ -48,6 +53,19 @@ class RoutineViewModel(
         }
     }
 
+    fun getRoutineList() {
+        lateinit var ret: GetRoutineListResponse
+        viewModelScope.launch {
+            ret = RoutineRepository.getRoutineList(userKey.toString())
+            for (i in 0 until ret.data.size) {
+                ret.data[i].name?.let {
+                    routine ->
+                    routineList.add(routine)
+                }
+            }
+        }
+    }
+
     fun getUserKey() {
         viewModelScope.launch {
             val key = keyRepository.getKey().first()
@@ -63,7 +81,8 @@ class RoutineViewModel(
                 val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as MogeunApplication)
                 val UserRepository = application.container.userDataRepository
                 val keyRepository = application.container.keyRepository
-                RoutineViewModel(UserRepository = UserRepository ,keyRepository)
+                val RoutineRepository = application.container.addRoutineRepository
+                RoutineViewModel(UserRepository = UserRepository ,keyRepository, RoutineRepository = RoutineRepository)
             }
         }
     }

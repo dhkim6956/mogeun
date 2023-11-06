@@ -54,3 +54,17 @@ data class ListAllExerciseResponse(
     val message: String,
     val data: List<ListAllExerciseResponsedata>
 )
+
+@Serializable
+data class GetRoutineListResponse(
+    val code: Int,
+    val status: String,
+    val message: String,
+    val data: List<GetRoutineListResponseBody>
+)
+
+@Serializable
+data class GetRoutineListResponseBody(
+    val key: Int,
+    val name: String
+)
