@@ -115,6 +115,11 @@ dependencies {
     ksp("androidx.room:room-compiler:2.5.2")
     implementation("androidx.room:room-ktx:2.5.2")
 
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+    implementation ("androidx.appcompat:appcompat:1.4.1")
+
+
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext)

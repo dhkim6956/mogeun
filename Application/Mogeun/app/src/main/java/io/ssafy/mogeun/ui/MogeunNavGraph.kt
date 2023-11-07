@@ -22,6 +22,7 @@ import io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.AddExerciseScre
 import io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.ExplainExerciseScreen
 import io.ssafy.mogeun.ui.screens.sample.DbSampleScreen
 import io.ssafy.mogeun.ui.screens.setting.connection.ConnectionScreen
+import io.ssafy.mogeun.ui.screens.setting.user.UserScreen
 
 @Composable
 fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarHostState) {
@@ -40,17 +41,22 @@ fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarH
                 RecordDetailScreen(navController = navController, reportKey = backStackEntry.arguments?.getString("reportKey"))
             }
             composable(Screen.ExerciseDetail.route) { ExerciseDetailScreen() }
-
         }
         composable(Screen.Summary.route) { SummaryScreen() }
         composable(Screen.Setting.route) { SettingScreen(navController = navController) }
+        composable(Screen.Setting.route) { SettingScreen(navController = navController) }
+        composable(Screen.User.route) { UserScreen()}
         composable(Screen.Login.route) { LoginScreen(navController = navController) }
         composable(Screen.Signup.route) { SignupScreen(navController = navController) }
-        composable(Screen.AddRoutine.route) { AddRoutineScreen(navController = navController) }
+        composable(
+            Screen.AddRoutine.route,
+            arguments = listOf(navArgument("routineName") {type = NavType.StringType})
+        ) {backStackEntry ->
+            AddRoutineScreen(navController = navController, routineName = backStackEntry.arguments?.getString("routineName")) }
         composable(Screen.AddExercise.route) { AddExerciseScreen(navController = navController) }
 
         composable(
-            "${Screen.ExplainExercise.route}",
+            Screen.ExplainExercise.route,
             arguments = listOf(navArgument("image") { type = NavType.StringType })
         ) { backStackEntry ->
             ExplainExerciseScreen(navController = navController, data = backStackEntry.arguments?.getString("image"))

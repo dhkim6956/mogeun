@@ -59,6 +59,7 @@ fun SettingScreen(navController: NavController) {
                 }
                 .fillMaxWidth()
                 .padding(16.dp)
+                .clickable{ navController.navigate("User") }
             ) {
                 Box(
                     contentAlignment = Alignment.Center,

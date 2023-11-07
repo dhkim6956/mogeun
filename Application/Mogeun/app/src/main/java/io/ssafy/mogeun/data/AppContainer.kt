@@ -13,8 +13,10 @@ interface AppContainer {
     val userDataRepository: UserRepository
     val emgDataRepository: EmgRepository
     val recordRepository: RecordRepository
-    val exerciseDataRepository: CreateRoutineRepository
     val bluetoothController: BluetoothController
+    val keyRepository: KeyRepository
+    val addRoutineRepository: RoutineRepository
+    val listAllExerciseRepository: RoutineRepository
 }
 
 class DefaultAppContainer(private val context: Context): AppContainer {
@@ -41,11 +43,20 @@ class DefaultAppContainer(private val context: Context): AppContainer {
         NetworkRecordRepository(retrofitService)
     }
 
-    override val exerciseDataRepository: CreateRoutineRepository by lazy {
-        NetworkCreateRoutineRepository(retrofitService)
+    override val addRoutineRepository: RoutineRepository by lazy {
+        NetworkRoutineRepository(retrofitService)
+    }
+
+    override val keyRepository: KeyRepository by lazy {
+        OfflineKeyRepository(KeyDatabase.getDatabase(context).keyDao())
     }
 
     override val bluetoothController: BluetoothController by lazy {
         AndroidBluetoothController(context)
     }
+
+    override val listAllExerciseRepository: RoutineRepository by lazy {
+        NetworkRoutineRepository(retrofitService)
+    }
+
 }

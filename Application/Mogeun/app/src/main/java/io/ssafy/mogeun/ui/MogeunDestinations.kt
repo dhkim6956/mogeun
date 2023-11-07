@@ -38,7 +38,7 @@ enum class Screen(
         bottomBarState = BottomBarState(true, R.drawable.icon_record, "record")
     ),
     RecordDetail(
-        route = "RecordDetail",
+        route = "RecordDetail/{reportKey}",
         title = "루틴 상세 정보",
         topBarState = TopBarState(visibility = true, backBtnVisibility = false),
         bottomBarState = BottomBarState(true, R.drawable.icon_record, "record")
@@ -61,6 +61,12 @@ enum class Screen(
         topBarState = TopBarState(visibility = true, backBtnVisibility = false),
         bottomBarState = BottomBarState(true, R.drawable.icon_setting, "setting")
     ),
+    User(
+        route = "User",
+        title = "유저 정보 변경",
+        topBarState = TopBarState(visibility = true, backBtnVisibility = true),
+        bottomBarState = BottomBarState(true, originRoute = "setting")
+    ),
     Login(
         route = "Login",
         title = "로그인",
@@ -74,7 +80,7 @@ enum class Screen(
         bottomBarState = BottomBarState(false)
     ),
     AddRoutine(
-        route = "AddRoutine",
+        route = "AddRoutine/{routineName}",
         title = "루틴 추가",
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
         bottomBarState = BottomBarState(true, R.drawable.icon_setting)

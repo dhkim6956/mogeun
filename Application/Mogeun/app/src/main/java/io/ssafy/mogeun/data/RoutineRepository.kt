@@ -1,17 +1,32 @@
 package io.ssafy.mogeun.data
 
-import io.ssafy.mogeun.model.CreateRoutineRequest
-import io.ssafy.mogeun.model.CreateRoutineResponse
+import io.ssafy.mogeun.model.AddRoutineRequest
+import io.ssafy.mogeun.model.AddRoutineResponse
+import io.ssafy.mogeun.model.GetInbodyResponse
+import io.ssafy.mogeun.model.ListAllExerciseResponse
+import io.ssafy.mogeun.model.GetRoutineListResponse
 import io.ssafy.mogeun.network.MogeunApiService
 
-interface CreateRoutineRepository {
-    suspend fun createRoutine(email: String, routineName: String): CreateRoutineResponse
+interface RoutineRepository{
+    suspend fun addRoutine(userKey: String, routineName: String): AddRoutineResponse
+
+    suspend fun getRoutineList(user_key: String): GetRoutineListResponse
+    suspend fun listAllExercise(): ListAllExerciseResponse
 }
 
-class NetworkCreateRoutineRepository(
+
+class NetworkRoutineRepository(
     private val mogeunApiService: MogeunApiService
-): CreateRoutineRepository {
-    override suspend fun createRoutine(email: String, routineName: String): CreateRoutineResponse {
-        return mogeunApiService.CreateRoutine(CreateRoutineRequest(email, routineName))
+): RoutineRepository {
+    override suspend fun addRoutine(userKey: String, routineName: String): AddRoutineResponse {
+        return mogeunApiService.addRoutine(userKey, routineName)
+    }
+    override suspend fun listAllExercise(): ListAllExerciseResponse {
+        return mogeunApiService.listAllExercise()
+    }
+
+    override suspend fun getRoutineList(key: String): GetRoutineListResponse {
+        return mogeunApiService.getRoutineList(key)
     }
 }
+
