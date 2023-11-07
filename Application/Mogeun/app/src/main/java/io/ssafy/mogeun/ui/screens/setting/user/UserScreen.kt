@@ -36,7 +36,9 @@ fun UserScreen(
         viewModel.getUserKey()
     }
     LaunchedEffect(viewModel.userKey) {
-        viewModel.getInbody()
+        if (viewModel.userKey !== null) {
+            viewModel.getInbody()
+        }
     }
 
     Column {
