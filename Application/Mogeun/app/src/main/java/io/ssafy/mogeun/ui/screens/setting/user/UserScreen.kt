@@ -18,10 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import io.ssafy.mogeun.ui.screens.signup.SignupViewModel
 
 @Composable
-fun UserScreen(viewModel: UserViewModel = viewModel(factory = UserViewModel.Factory)) {
+fun UserScreen(
+    viewModel: UserViewModel = viewModel(factory = UserViewModel.Factory),
+    navController: NavHostController
+) {
     var heightText by remember { mutableStateOf(if(viewModel.height == null) "" else viewModel.height.toString()) }
     var weightText by remember { mutableStateOf(if(viewModel.weight == null) "" else viewModel.weight.toString()) }
     var muscleMassText by remember { mutableStateOf(if(viewModel.muscleMass == null) "" else viewModel.muscleMass.toString()) }
@@ -30,6 +34,9 @@ fun UserScreen(viewModel: UserViewModel = viewModel(factory = UserViewModel.Fact
 
     LaunchedEffect(Unit) {
         viewModel.getUserKey()
+    }
+    LaunchedEffect(viewModel.userKey) {
+        viewModel.getInbody()
     }
 
     Column {
@@ -106,7 +113,10 @@ fun UserScreen(viewModel: UserViewModel = viewModel(factory = UserViewModel.Fact
                     keyboardType = KeyboardType.Number
                 )
             )
-            Button(onClick = {viewModel.updateUser()}) {
+            Button(onClick = {
+                viewModel.updateUser()
+                navController.navigate("Routine")
+            }) {
                 Text(text = "변경사항 수정")
             }
         }
