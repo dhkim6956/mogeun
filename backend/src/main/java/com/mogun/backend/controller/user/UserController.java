@@ -92,6 +92,7 @@ public class UserController {
         UserDto result = userService.getUserDetail(userKey);
 
         return ApiResponse.ok(UserDetailResponse.builder()
+                .userName(result.getName())
                 .height(result.getHeight())
                 .weight(result.getWeight())
                 .muscleMass(result.getMuscleMass())

@@ -68,6 +68,7 @@ public class UserService {
 
         Optional<UserDetail> userDetail = userDetailRepository.findById(user.get().getUserKey());
         return UserDto.builder()
+                .name(user.get().getName()) // Seongmin 닉네임 추가
                 .height(userDetail.get().getHeight())
                 .weight(userDetail.get().getWeight())
                 .muscleMass(userDetail.get().getMuscleMass())
