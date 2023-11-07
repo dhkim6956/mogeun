@@ -23,6 +23,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -31,6 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
@@ -46,6 +48,7 @@ import com.patrykandpatrick.vico.compose.chart.line.lineChart
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
 import com.patrykandpatrick.vico.core.entry.entryOf
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.model.SetResult
 import io.ssafy.mogeun.ui.AppViewModelProvider
 
 @Composable
@@ -56,8 +59,10 @@ fun RecordDetailScreen(
 ) {
     val recordMonthlySuccess by viewModel.recordRoutineSuccess.collectAsState()
     if (!recordMonthlySuccess) {
-        Log.d("reportKey", reportKey.toString())
-        viewModel.recordRoutine("1", reportKey.toString())
+        LaunchedEffect(viewModel.userKey) {
+            Log.d("reportKey", reportKey.toString())
+            viewModel.recordRoutine(reportKey.toString())
+        }
     }
 
     val routineInfo = viewModel.routineInfo
@@ -73,7 +78,7 @@ fun RecordDetailScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (routineInfo != null) {
-            RoutineInfoCard(routineInfo.calorie, routineInfo.totalSets, routineInfo.performTime)
+            RoutineInfoCard(routineInfo.name, routineInfo.calorie, routineInfo.totalSets, routineInfo.performTime)
         }
         LazyColumn (
             modifier = Modifier.fillMaxWidth(),
@@ -82,7 +87,7 @@ fun RecordDetailScreen(
             item { RoutineGraphIconCard() }
             if (routineInfo != null) {
                 itemsIndexed(routineInfo.exercises) {index, item ->
-                    RoutineExerciseCard(navController, item.execName, item.sets)
+                    RoutineExerciseCard(navController, item.execName, item.sets, item.imagePath, item.setResults)
                 }
             }
         }
@@ -101,7 +106,7 @@ fun RecordDetailScreenPreview() {
             ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        RoutineInfoCard(1.3F, 3, 3)
+        RoutineInfoCard("test",1.3F, 3, 3)
         LazyColumn (
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -116,6 +121,7 @@ fun RecordDetailScreenPreview() {
 
 @Composable
 fun RoutineInfoCard(
+    name: String,
     calorie: Float,
     totalSets: Int,
     performTime: Int
@@ -149,7 +155,7 @@ fun RoutineInfoCard(
                 ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("test", fontSize = 24.sp)
+            Text(name, fontSize = 24.sp)
             Column (
                 modifier = Modifier
                     .fillMaxWidth()
@@ -244,7 +250,7 @@ fun IconCard() {
     ) {
         Column {
             Text("사용근육")
-            NonlazyGrid(
+            MuscleGrid(
                 columns = 5,
                 itemCount = 9,
                 modifier = Modifier
@@ -263,7 +269,9 @@ fun IconCard() {
 fun RoutineExerciseCard(
     navController: NavHostController,
     name: String,
-    sets: Int
+    sets: Int,
+    imagePath: String,
+    setResult: List<SetResult>
 ) {
     Box (
         modifier = Modifier
@@ -288,22 +296,23 @@ fun RoutineExerciseCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column (
-                    modifier = Modifier.fillMaxWidth(0.3f),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier = Modifier.fillMaxWidth(0.4f)
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.logo),
-                        contentDescription = "logo",
-                    )
+                    val exerciseImage = LocalContext.current.resources.getIdentifier(imagePath, "drawable", LocalContext.current.packageName)
+//                    Image(
+//                        painter = painterResource(id = exerciseImage),
+//                        contentDescription = "logo",
+//                    )
+                    GifImage(imageId = exerciseImage)
                     Text(name)
                 }
-                NonlazyGrid(
+                WeightGrid(
                     columns = 4,
                     itemCount = sets,
                     modifier = Modifier
                         .padding(start = 7.5.dp, end = 7.5.dp)
                 ) {
-                    SetWeightIcon()
+                    SetWeightIcon(setResult[it].weight.toInt())
                 }
             }
             ClickableText(
@@ -349,13 +358,13 @@ fun RoutineExerciseCardPreview() {
                     )
                     Text("test")
                 }
-                NonlazyGrid(
+                WeightGrid(
                     columns = 5,
                     itemCount = 6,
                     modifier = Modifier
                         .padding(start = 7.5.dp, end = 7.5.dp)
                 ) {
-                    SetWeightIcon()
+                    SetWeightIcon(it)
                 }
             }
             ClickableText(
@@ -369,7 +378,7 @@ fun RoutineExerciseCardPreview() {
 }
 
 @Composable
-fun SetWeightIcon() {
+fun SetWeightIcon(weight: Int) {
     Box(
         modifier = Modifier
             .aspectRatio(1f) // This is important for square-sizing!
@@ -379,7 +388,7 @@ fun SetWeightIcon() {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "100",
+            text = weight.toString(),
             color = MaterialTheme.colorScheme.onBackground,
             fontSize = 14.sp,
         )
@@ -387,7 +396,7 @@ fun SetWeightIcon() {
 }
 
 @Composable
-fun NonlazyGrid(
+fun WeightGrid(
     columns: Int,
     itemCount: Int,
     modifier: Modifier = Modifier,
@@ -412,6 +421,40 @@ fun NonlazyGrid(
                     ) {
                         if (index < itemCount) {
                             content(index)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun MuscleGrid(
+    columns: Int,
+    itemCount: Int,
+    modifier: Modifier = Modifier,
+    content: @Composable() () -> Unit
+) {
+    Column(modifier = modifier) {
+        var rows = (itemCount / columns)
+        if (itemCount.mod(columns) > 0) {
+            rows += 1
+        }
+
+        for (rowId in 0 until rows) {
+            val firstIndex = rowId * columns
+
+            Row {
+                for (columnId in 0 until columns) {
+                    val index = firstIndex + columnId
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    ) {
+                        if (index < itemCount) {
+                            content()
                         }
                     }
                 }

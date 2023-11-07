@@ -45,9 +45,14 @@ fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarH
         composable(Screen.Summary.route) { SummaryScreen() }
         composable(Screen.Setting.route) { SettingScreen(navController = navController) }
         composable(Screen.Setting.route) { SettingScreen(navController = navController) }
-        composable(Screen.User.route) { UserScreen()}
+        composable(Screen.User.route) { UserScreen(navController = navController)}
         composable(Screen.Login.route) { LoginScreen(navController = navController) }
-        composable(Screen.Signup.route) { SignupScreen(navController = navController) }
+        composable(Screen.Signup.route) {
+            SignupScreen(
+                navController = navController,
+                snackbarHostState = snackbarHostState
+            ) 
+        }
         composable(
             Screen.AddRoutine.route,
             arguments = listOf(navArgument("routineName") {type = NavType.StringType})

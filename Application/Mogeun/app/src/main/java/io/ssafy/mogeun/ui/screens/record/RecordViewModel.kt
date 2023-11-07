@@ -67,15 +67,24 @@ class RecordViewModel(
         }
     }
 
-    fun recordRoutine(userKey: String, reportKey: String) {
-        lateinit var ret: RoutineResponse
+    fun recordRoutine(reportKey: String) {
         viewModelScope.launch {
-            ret = recordRepository.recordRoutine(userKey, reportKey)
-            Log.d("recordRoutine", "$ret")
+            val key = keyRepository.getKey().first()
+            val userKey = key?.userKey
+            Log.d("getUserKey", "사용자 키: $userKey")
+            updateUserKey(userKey)
+        }
 
-            if(ret.message == "SUCCESS") {
-                _recordRoutineSuccess.value = true
-                routineInfo = ret.data
+        if (userKey !== null) {
+            lateinit var ret: RoutineResponse
+            viewModelScope.launch {
+                ret = recordRepository.recordRoutine(userKey.toString(), reportKey)
+                Log.d("recordRoutine", "$ret")
+
+                if (ret.message == "SUCCESS") {
+                    _recordRoutineSuccess.value = true
+                    routineInfo = ret.data
+                }
             }
         }
     }

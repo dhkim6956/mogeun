@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -14,22 +15,36 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import io.ssafy.mogeun.ui.screens.signup.SignupViewModel
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun UserScreen(viewModel: UserViewModel = viewModel(factory = UserViewModel.Factory)) {
+fun UserScreen(
+    viewModel: UserViewModel = viewModel(factory = UserViewModel.Factory),
+    navController: NavHostController
+) {
     var heightText by remember { mutableStateOf(if(viewModel.height == null) "" else viewModel.height.toString()) }
     var weightText by remember { mutableStateOf(if(viewModel.weight == null) "" else viewModel.weight.toString()) }
     var muscleMassText by remember { mutableStateOf(if(viewModel.muscleMass == null) "" else viewModel.muscleMass.toString()) }
     var bodyFatText by remember { mutableStateOf(if(viewModel.bodyFat == null) "" else viewModel.bodyFat.toString()) }
     var nickname by remember { mutableStateOf(if(viewModel.nickname == null) "" else viewModel.nickname.toString()) }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(Unit) {
         viewModel.getUserKey()
+    }
+    LaunchedEffect(viewModel.userKey) {
+        if (viewModel.userKey !== null) {
+            viewModel.getInbody()
+        }
     }
 
     Column {
@@ -44,8 +59,14 @@ fun UserScreen(viewModel: UserViewModel = viewModel(factory = UserViewModel.Fact
                     } else {
                         viewModel.updateNickname(it)
                     }
-
+                },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(onDone = {
+                    keyboardController?.hide()
                 })
+            )
             Text(text = "신장")
             TextField(
                 value = heightText,
@@ -58,8 +79,12 @@ fun UserScreen(viewModel: UserViewModel = viewModel(factory = UserViewModel.Fact
                     }
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number
-                )
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(onDone = {
+                    keyboardController?.hide()
+                })
             )
             Text(text = "체중")
             TextField(
@@ -73,8 +98,12 @@ fun UserScreen(viewModel: UserViewModel = viewModel(factory = UserViewModel.Fact
                     }
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number
-                )
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(onDone = {
+                    keyboardController?.hide()
+                })
             )
             Text(text = "골격근량")
             TextField(
@@ -88,8 +117,12 @@ fun UserScreen(viewModel: UserViewModel = viewModel(factory = UserViewModel.Fact
                     }
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number
-                )
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(onDone = {
+                    keyboardController?.hide()
+                })
             )
             Text(text = "체지방량")
             TextField(
@@ -103,10 +136,17 @@ fun UserScreen(viewModel: UserViewModel = viewModel(factory = UserViewModel.Fact
                     }
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number
-                )
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(onDone = {
+                    keyboardController?.hide()
+                })
             )
-            Button(onClick = {viewModel.updateUser()}) {
+            Button(onClick = {
+                viewModel.updateUser()
+                navController.navigate("Routine")
+            }) {
                 Text(text = "변경사항 수정")
             }
         }

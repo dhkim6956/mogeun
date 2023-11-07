@@ -345,9 +345,9 @@ fun RoutineRecord(
             ),
         contentAlignment = Alignment.Center
     ) {
-        val StartTime = routineStartTime.split("T")
-        val EndTime = routineEndTime.split("T")
-        val routineTime = StartTime[1] + "~" + EndTime[1]
+        val startTime = routineStartTime.split("T")[1].split(".")
+        val endTime = routineEndTime.split("T")[1].split(".")
+        val routineTime = startTime[0] + "~" + endTime[0]
         Row (
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,

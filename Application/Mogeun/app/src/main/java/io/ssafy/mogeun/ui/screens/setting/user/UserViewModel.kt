@@ -12,6 +12,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.data.KeyRepository
 import io.ssafy.mogeun.data.UserRepository
+import io.ssafy.mogeun.model.GetInbodyResponse
 import io.ssafy.mogeun.model.SignUpResponse
 import io.ssafy.mogeun.model.UpdateUserResponse
 import io.ssafy.mogeun.ui.screens.signup.SignupViewModel
@@ -46,6 +47,18 @@ class UserViewModel(
     }
     fun updateBodyFat(value: Double?) {
         bodyFat = value
+    }
+    fun getInbody() {
+        lateinit var ret: GetInbodyResponse
+        viewModelScope.launch {
+            ret = UserRepository.getInbody(userKey.toString())
+            Log.d("getInbody", "$ret")
+            updateMuscleMass(ret.data.muscleMass)
+            updateBodyFat(ret.data.bodyFat)
+            updateNickname(ret.data.userName)
+            updateHeight(ret.data.height)
+            updateWeight(ret.data.weight)
+        }
     }
     fun updateUser() {
         lateinit var ret: UpdateUserResponse

@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -75,13 +76,32 @@ fun RoutineScreen(
                     modifier = Modifier
                         .height(50.dp)
                         .width(280.dp)
+                        .padding(start = 24.dp)
                 ) {
-                    Text(
-                        text = "모근이님 안녕하세요.",
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth(),
-                        fontSize = 24.sp
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        Text(
+                            modifier = Modifier.width(144.dp),
+                            text = "${viewModel.username}",
+                            fontSize = 24.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        Text(
+                            text = " 님 안녕하세요.",
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.fillMaxWidth(),
+                            fontSize = 16.sp
+                        )
+                    }
                 }
                 Button(
                     onClick = { navController.navigate("User") },
