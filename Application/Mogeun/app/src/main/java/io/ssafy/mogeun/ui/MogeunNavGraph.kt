@@ -20,7 +20,9 @@ import io.ssafy.mogeun.ui.screens.signup.SignupScreen
 import io.ssafy.mogeun.ui.screens.summary.SummaryScreen
 import io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.AddExerciseScreen
 import io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.ExplainExerciseScreen
-import io.ssafy.mogeun.ui.screens.sample.ConnectionScreen
+import io.ssafy.mogeun.ui.screens.sample.DbSampleScreen
+import io.ssafy.mogeun.ui.screens.setting.connection.ConnectionScreen
+import io.ssafy.mogeun.ui.screens.setting.user.UserScreen
 
 @Composable
 fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarHostState) {
@@ -41,7 +43,9 @@ fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarH
             composable(Screen.ExerciseDetail.route) { ExerciseDetailScreen() }
         }
         composable(Screen.Summary.route) { SummaryScreen() }
-        composable(Screen.Setting.route) { SettingScreen() }
+        composable(Screen.Setting.route) { SettingScreen(navController = navController) }
+        composable(Screen.Setting.route) { SettingScreen(navController = navController) }
+        composable(Screen.User.route) { UserScreen()}
         composable(Screen.Login.route) { LoginScreen(navController = navController) }
         composable(Screen.Signup.route) { SignupScreen(navController = navController) }
         composable(
@@ -57,6 +61,7 @@ fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarH
         ) { backStackEntry ->
             ExplainExerciseScreen(navController = navController, data = backStackEntry.arguments?.getString("image"))
         }
-        composable(Screen.SqlSample.route) { ConnectionScreen() }
+        composable(Screen.SqlSample.route) { DbSampleScreen() }
+        composable(Screen.Connection.route) { ConnectionScreen(snackbarHostState = snackbarHostState) }
     }
 }

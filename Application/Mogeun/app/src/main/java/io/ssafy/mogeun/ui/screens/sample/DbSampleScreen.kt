@@ -21,7 +21,7 @@ import io.ssafy.mogeun.ui.theme.MogeunTheme
 import kotlinx.coroutines.launch
 
 @Composable
-fun ConnectionScreen(viewModel: ConnectionViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
+fun DbSampleScreen(viewModel: DbSampleViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -66,6 +66,6 @@ fun ConnectionScreen(viewModel: ConnectionViewModel = viewModel(factory = AppVie
 @Composable
 fun TestScreenPreview() {
     MogeunTheme {
-        ConnectionScreen()
+        DbSampleScreen()
     }
 }

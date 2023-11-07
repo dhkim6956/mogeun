@@ -6,6 +6,8 @@ import io.ssafy.mogeun.model.SignInRequest
 import io.ssafy.mogeun.model.SignInResponse
 import io.ssafy.mogeun.model.SignUpRequest
 import io.ssafy.mogeun.model.SignUpResponse
+import io.ssafy.mogeun.model.UpdateUserRequest
+import io.ssafy.mogeun.model.UpdateUserResponse
 import io.ssafy.mogeun.network.MogeunApiService
 
 interface UserRepository {
@@ -13,6 +15,7 @@ interface UserRepository {
     suspend fun dupEmail(email: String): DupEmailResponse
     suspend fun signUp(userEmail: String, userPw: String, userName: String, gender: String, height: Double?, weight: Double?, smm: Double?, ffm: Double?): SignUpResponse
     suspend fun getInbody(user_key: String): GetInbodyResponse
+    suspend fun updateUser(userKey: Int?, userName: String?, weight: Double?, height: Double?, muscleMass: Double?, bodyFat: Double?): UpdateUserResponse
 }
 
 class NetworkUserRepository(
@@ -29,5 +32,8 @@ class NetworkUserRepository(
     }
     override suspend fun getInbody(key: String): GetInbodyResponse {
         return mogeunApiService.getInbody(userKey = key)
+    }
+    override suspend fun updateUser(userKey: Int?, userName: String?, weight: Double?, height: Double?, muscleMass: Double?, bodyFat: Double?): UpdateUserResponse {
+        return mogeunApiService.updateUser(UpdateUserRequest(userKey, userName, weight, height, muscleMass, bodyFat))
     }
 }

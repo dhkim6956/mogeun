@@ -61,6 +61,12 @@ enum class Screen(
         topBarState = TopBarState(visibility = true, backBtnVisibility = false),
         bottomBarState = BottomBarState(true, R.drawable.icon_setting, "setting")
     ),
+    User(
+        route = "User",
+        title = "유저 정보 변경",
+        topBarState = TopBarState(visibility = true, backBtnVisibility = true),
+        bottomBarState = BottomBarState(true, originRoute = "setting")
+    ),
     Login(
         route = "Login",
         title = "로그인",
@@ -94,6 +100,12 @@ enum class Screen(
     SqlSample(
         route = "SqlSample",
         title = "sql 테스트 페이지",
+        topBarState = TopBarState(visibility = true, backBtnVisibility = true),
+        bottomBarState = BottomBarState(true)
+    ),
+    Connection(
+        route = "Connection",
+        title = "기기 연결",
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
         bottomBarState = BottomBarState(true)
     )
