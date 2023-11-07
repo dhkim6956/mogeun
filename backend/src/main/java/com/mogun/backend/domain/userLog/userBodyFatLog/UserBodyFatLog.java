@@ -4,7 +4,9 @@ import com.mogun.backend.domain.user.User;
 import lombok.Builder;
 
 import javax.persistence.*;
+import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Entity
 public class UserBodyFatLog {
@@ -33,6 +35,6 @@ public class UserBodyFatLog {
         this.user = user;
         this.bodyFatBefore = bodyFatBefore;
         this.bodyFatAfter = bodyFatAfter;
-        this.changedTime = LocalDateTime.now();
+        this.changedTime = LocalDateTime.now(Clock.system(ZoneId.of("Asia/Seoul")));
     }
 }
