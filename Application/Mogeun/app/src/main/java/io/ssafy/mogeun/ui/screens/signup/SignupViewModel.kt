@@ -41,12 +41,16 @@ class SignupViewModel(private val signInRepository: UserRepository): ViewModel()
     var inputForm by mutableIntStateOf(1)
     var firstText by mutableStateOf("회원정보를")
     var rightInformation by mutableStateOf<Boolean>(false)
+    var successSignUp by mutableStateOf<Boolean>(false)
 
     fun updateDupEmailSuccess(value: Boolean) {
         dupEmailSuccess = value
     }
     fun updateRightInformation(value: Boolean) {
         rightInformation = value
+    }
+    fun updateSuccessSignUp(value: Boolean) {
+        successSignUp = value
     }
     fun updateCheckEmail(value: Int) {
         checkEmail = value
@@ -110,6 +114,7 @@ class SignupViewModel(private val signInRepository: UserRepository): ViewModel()
                     bodyFat
                 )
                 Log.d("signUp", "$ret")
+                updateSuccessSignUp(true)
             }
         } else {
         }

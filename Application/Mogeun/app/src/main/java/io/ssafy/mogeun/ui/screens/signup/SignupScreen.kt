@@ -76,7 +76,7 @@ fun SignupScreen(
         }
         when (inputForm) {
             1 -> Essential(viewModel, navController, snackbarHostState)
-            2 -> Inbody(navController, viewModel)
+            2 -> Inbody(navController, viewModel, snackbarHostState)
         }
     }
 }
@@ -87,7 +87,6 @@ fun Essential(
     viewModel: SignupViewModel = viewModel(factory = SignupViewModel.Factory),
     navController: NavHostController,
     snackbarHostState: SnackbarHostState
-
 ) {
     val id = viewModel.id
     val password = viewModel.password
@@ -113,7 +112,10 @@ fun Essential(
         }
     }
 
-    Column(modifier = Modifier.padding(28.dp).verticalScroll(rememberScrollState())) {
+    Column(
+        modifier = Modifier
+            .padding(start = 28.dp, top = 28.dp, end = 28.dp)
+            .verticalScroll(rememberScrollState())) {
         Text(text = "아이디")
         Row {
             TextField(
@@ -149,7 +151,13 @@ fun Essential(
             value = password,
             onValueChange = viewModel::updatePassword,
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(10.dp)
+            shape = RoundedCornerShape(10.dp),
+            keyboardActions = KeyboardActions(onDone = {
+                keyboardController?.hide()
+            }),
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done
+            )
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = "비밀 번호 확인")
@@ -157,7 +165,13 @@ fun Essential(
             value = checkingPassword,
             onValueChange = viewModel::updateCheckingPassword,
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(10.dp)
+            shape = RoundedCornerShape(10.dp),
+            keyboardActions = KeyboardActions(onDone = {
+                keyboardController?.hide()
+            }),
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done
+            )
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = "닉네임")
@@ -165,7 +179,13 @@ fun Essential(
             value = nickname,
             onValueChange = viewModel::updateNickname,
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(10.dp)
+            shape = RoundedCornerShape(10.dp),
+            keyboardActions = KeyboardActions(onDone = {
+                keyboardController?.hide()
+            }),
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done
+            )
         )
         Spacer(modifier = Modifier.height(12.dp))
         Preview_MultipleRadioButtons()
@@ -180,7 +200,7 @@ fun Essential(
                             painter = painterResource(id = R.drawable.back),
                             contentDescription = "back",
                             contentScale = ContentScale.Crop,
-                            modifier = Modifier.height(50.dp)
+                            modifier = Modifier.height(100.dp)
                         )
                     }
                 },
@@ -217,15 +237,28 @@ fun Essential(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun Inbody(
     navController: NavHostController,
-    viewModel: SignupViewModel = viewModel(factory = SignupViewModel.Factory)
+    viewModel: SignupViewModel = viewModel(factory = SignupViewModel.Factory),
+    snackbarHostState: SnackbarHostState
 ) {
     var heightText by remember { mutableStateOf(if(viewModel.height == null) "" else viewModel.height.toString()) }
     var weightText by remember { mutableStateOf(if(viewModel.weight == null) "" else viewModel.weight.toString()) }
     var muscleMassText by remember { mutableStateOf(if(viewModel.muscleMass == null) "" else viewModel.muscleMass.toString()) }
     var bodyFatText by remember { mutableStateOf(if(viewModel.bodyFat == null) "" else viewModel.bodyFat.toString()) }
+    val coroutineScope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    LaunchedEffect(viewModel.successSignUp) {
+        if(viewModel.successSignUp) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("회원가입 성공.")
+                viewModel.updateSuccessSignUp(false)
+            }
+        }
+    }
 
     Column(modifier = Modifier.padding(28.dp)) {
         Text(text = "키")
@@ -242,8 +275,12 @@ fun Inbody(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp),
             keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number
-            )
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(onDone = {
+                keyboardController?.hide()
+            })
         )
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -261,8 +298,12 @@ fun Inbody(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp),
             keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number
-            )
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(onDone = {
+                keyboardController?.hide()
+            })
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "골격근량")
@@ -279,8 +320,12 @@ fun Inbody(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp),
             keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number
-            )
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(onDone = {
+                keyboardController?.hide()
+            })
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "체지방")
@@ -297,8 +342,12 @@ fun Inbody(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp),
             keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number
-            )
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(onDone = {
+                keyboardController?.hide()
+            })
         )
     }
     Scaffold(
@@ -307,7 +356,11 @@ fun Inbody(
                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 actions = {
                     IconButton(
-                        onClick = {navController.navigate("login")},
+                        onClick = {
+                            val ret = viewModel.signUp()
+                            Log.d("signUp", "$ret")
+                            navController.navigate("login")
+                        },
                         modifier = Modifier
                             .width(104.dp)
                             .height(36.dp)
@@ -353,26 +406,33 @@ fun Preview_MultipleRadioButtons(viewModel: SignupViewModel = viewModel(factory 
     val onChangeState: (String) -> Unit = { viewModel.updateSelectedGender(it) }
     val items = listOf("m", "f")
     Column(Modifier.padding(8.dp)) {
-        Text(text = "성별을 선택해주세요 : ${selectedGender.ifEmpty { "NONE" }}")
-        items.forEach { item ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .selectable(
+        Text(text = "성별을 선택해주세요.")
+        Row {
+            items.forEach { item ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .selectable(
+                            selected = isSelectedItem(item),
+                            onClick = { onChangeState(item) },
+                            role = Role.RadioButton
+                        )
+                        .padding(8.dp)
+                ) {
+                    RadioButton(
                         selected = isSelectedItem(item),
-                        onClick = { onChangeState(item) },
-                        role = Role.RadioButton
+                        onClick = null
                     )
-                    .padding(8.dp)
-            ) {
-                RadioButton(
-                    selected = isSelectedItem(item),
-                    onClick = null
-                )
-                Text(
-                    text = item,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                    if(item == "m") {
+                        Text(
+                            text = "남성",
+                        )
+                    } else {
+                        Text(
+                            text = "여성",
+                        )
+                    }
+                }
             }
         }
     }
