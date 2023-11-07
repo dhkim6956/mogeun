@@ -23,6 +23,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -57,8 +58,10 @@ fun RecordDetailScreen(
 ) {
     val recordMonthlySuccess by viewModel.recordRoutineSuccess.collectAsState()
     if (!recordMonthlySuccess) {
-        Log.d("reportKey", reportKey.toString())
-        viewModel.recordRoutine("1", reportKey.toString())
+        LaunchedEffect(viewModel.userKey) {
+            Log.d("reportKey", reportKey.toString())
+            viewModel.recordRoutine(reportKey.toString())
+        }
     }
 
     val routineInfo = viewModel.routineInfo
