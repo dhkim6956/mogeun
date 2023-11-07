@@ -80,6 +80,8 @@ data class GetInbodyResponse(
 )
 @Serializable
 data class GetInbodyResponseBody(
+    @SerialName(value = "user_name")
+    val userName: String,
     val height: Double,
     val weight: Double,
     @SerialName(value = "muscle_mass")
