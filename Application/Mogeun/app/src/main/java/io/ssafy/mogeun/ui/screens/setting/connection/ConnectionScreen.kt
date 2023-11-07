@@ -64,13 +64,13 @@ fun ConnectionScreen(viewModel: ConnectionViewModel = viewModel(factory = AppVie
                 Text("Connecting ...")
             }
         }
-        state.isConnected -> {
-            ChatScreen(
-                state = state,
-                onDisconnect = viewModel::disconnectFromDevice,
-                onSendMessage = viewModel::sendMessage
-            )
-        }
+//        state.isConnected -> {
+//            ChatScreen(
+//                state = state,
+//                onDisconnect = viewModel::disconnectFromDevice,
+//                onSendMessage = viewModel::sendMessage
+//            )
+//        }
         
         else -> {
             Column(
@@ -80,6 +80,7 @@ fun ConnectionScreen(viewModel: ConnectionViewModel = viewModel(factory = AppVie
                 BluetoothDeviceList(
                     pairedDevices = state.pairedDevices,
                     scannedDevices = state.scannedDevices,
+                    connectedDevices = state.connectedDevices,
                     onClick = viewModel::connectToDevice,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -95,9 +96,6 @@ fun ConnectionScreen(viewModel: ConnectionViewModel = viewModel(factory = AppVie
                     Button(onClick = viewModel::stopScan) {
                         Text(text = "Stop scan")
                     }
-                    Button(onClick = viewModel::waitForIncomingConnections) {
-                        Text(text = "Start Server")
-                    }
                 }
             }
         }
@@ -109,12 +107,31 @@ fun ConnectionScreen(viewModel: ConnectionViewModel = viewModel(factory = AppVie
 fun BluetoothDeviceList(
     pairedDevices: List<BluetoothDevice>,
     scannedDevices: List<BluetoothDevice>,
+    connectedDevices: List<BluetoothDevice>,
     onClick: (BluetoothDevice) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
         modifier = modifier
     ) {
+        item {
+            Text(
+                text = "Connected Devices",
+                fontWeight = FontWeight.Bold,
+                fontSize = 24.sp,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+        items(connectedDevices) { device ->
+            Text(
+                text = device.name ?: "(No name)",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onClick(device) }
+                    .padding(16.dp)
+            )
+        }
+
         item {
             Text(
                 text = "Paired Devices",

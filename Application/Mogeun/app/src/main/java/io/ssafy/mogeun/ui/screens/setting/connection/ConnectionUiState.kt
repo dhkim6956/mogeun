@@ -6,6 +6,7 @@ import io.ssafy.mogeun.model.BluetoothMessage
 data class ConnectionUiState (
     val scannedDevices: List<BluetoothDevice> = emptyList(),
     val pairedDevices: List<BluetoothDevice> = emptyList(),
+    val connectedDevices: List<BluetoothDevice> = emptyList(),
     val isConnected: Boolean = false,
     val isConnecting: Boolean = false,
     val errorMessage: String? = null,

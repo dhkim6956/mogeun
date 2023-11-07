@@ -1,6 +1,7 @@
 package io.ssafy.mogeun.data.bluetooth
 
 import android.bluetooth.BluetoothSocket
+import android.util.Log
 import io.ssafy.mogeun.model.BluetoothMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -12,25 +13,25 @@ import java.io.IOException
 class BluetoothDataTransferService(
     private val socket: BluetoothSocket
 ) {
-    fun listenForIncomingMessage(): Flow<BluetoothMessage> {
+    fun listenForIncomingMessage(): Flow<BluetoothMessage?> {
         return flow {
             if (!socket.isConnected){
                 return@flow
             }
-            val buffer = ByteArray(1024)
+            val buffer = ByteArray(6)
             while (true) {
                 val byteCount = try {
                     socket.inputStream.read(buffer)
                 } catch (e: IOException) {
                     throw TransferFailedException()
                 }
-
                 emit(
                     buffer.decodeToString(
                         endIndex = byteCount
                     ).toBluetoothMessage(
                         isFromLocalUser = false
                     )
+
                 )
             }
         }.flowOn(Dispatchers.IO)

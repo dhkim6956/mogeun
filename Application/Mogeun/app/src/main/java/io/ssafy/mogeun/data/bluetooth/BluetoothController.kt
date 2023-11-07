@@ -37,6 +37,7 @@ interface BluetoothController {
     val isConnected: StateFlow<Boolean>
     val scannedDevices: StateFlow<List<BluetoothDevice>>
     val pairedDevices: StateFlow<List<BluetoothDevice>>
+    val connectedDevices: StateFlow<List<BluetoothDevice>>
     val errors: SharedFlow<String>
 
     fun startDiscovery()
@@ -76,6 +77,10 @@ class AndroidBluetoothController(
     private val _pairedDevices = MutableStateFlow<List<BluetoothDeviceDomain>> (emptyList())
     override val pairedDevices: StateFlow<List<BluetoothDeviceDomain>>
         get() = _pairedDevices.asStateFlow()
+
+    private val _connectedDevices = MutableStateFlow<List<BluetoothDeviceDomain>> (emptyList())
+    override val connectedDevices: StateFlow<List<BluetoothDevice>>
+        get() = _connectedDevices.asStateFlow()
 
     private val _errors = MutableSharedFlow<String>()
     override val errors: SharedFlow<String>
@@ -164,8 +169,12 @@ class AndroidBluetoothController(
                     emitAll(
                         service
                             .listenForIncomingMessage()
-                            .map {
-                                ConnectionResult.TransferSucceeded(it)
+                            .map { message ->
+                                if (message != null) {
+                                    ConnectionResult.TransferSucceeded(message)
+                                } else {
+                                    ConnectionResult.Error("errString")
+                                }
                             }
                     )
                 }
@@ -201,11 +210,25 @@ class AndroidBluetoothController(
                     socket.connect()
                     emit(ConnectionResult.ConnectionEstablished)
 
+                    _connectedDevices.update {devices->
+                        if(device in devices) devices else devices + device
+                    }
+
                     BluetoothDataTransferService(socket).also {
                         dataTransferService = it
+
+                        trySendMessage(0)
+
                         emitAll(
                             it.listenForIncomingMessage()
-                                .map { ConnectionResult.TransferSucceeded(it) }
+                                .map { message ->
+                                    if(message != null) {
+                                        ConnectionResult.TransferSucceeded(message)
+                                    }
+                                    else {
+                                        ConnectionResult.Error("errString")
+                                    }
+                                }
                         )
                     }
                 } catch (e: IOException) {
@@ -215,6 +238,9 @@ class AndroidBluetoothController(
                 }
             }
         }.onCompletion {
+            _connectedDevices.update { devices ->
+                devices.filter { it != device }
+            }
             closeConnection()
         }.flowOn(Dispatchers.IO)
     }

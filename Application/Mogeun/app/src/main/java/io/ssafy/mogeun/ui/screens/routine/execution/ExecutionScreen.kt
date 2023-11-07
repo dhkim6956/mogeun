@@ -50,44 +50,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.patrykandpatrick.vico.compose.component.shape.shader.verticalGradient
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.ui.AppViewModelProvider
 import kotlinx.coroutines.delay
-import java.util.Calendar
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ExecutionScreen() {
-    //val state = rememberPagerState { 10 }
+fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
+    val pagerState = rememberPagerState { 10 }
 
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color.Yellow)
-    ) {
-        ExerciseEMGScreen()
-
-
-    //HorizontalPager(state = state, modifier = Modifier.fillMaxSize()) {page ->
-    //            Box(
-    //                modifier = Modifier
-    //                    .padding(10.dp)
-    //                    .background(Color.Blue)
-    //                    .fillMaxWidth()
-    //                    .aspectRatio(1f),
-    //            ) {
-    //                Text(text = page.toString(), fontSize = 32.sp)
-    //            }
-    //   }
+    HorizontalPager(pagerState, Modifier.fillMaxSize()) {page ->
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            ExerciseEMGScreen()
+        }
     }
 }
 
@@ -108,9 +94,6 @@ fun ExerciseEMGScreen(){
     var EMGvalue2 by remember { mutableIntStateOf(0) }
     var EMGvalue3 by remember { mutableIntStateOf(0) }
     var EMGvalue4 by remember { mutableIntStateOf(0) }
-
-
-
 
     Column(modifier = Modifier
         .height(300.dp)
@@ -509,9 +492,6 @@ fun PreviewEMGScreen(){
     }
 
 }
-
-
-
 
 val preWeight = 50 //이전에 사용한 무계 가져오기
 val preRep = 10//이전에 사용한 반복횟수 가져오기
