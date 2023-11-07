@@ -31,6 +31,7 @@ class RoutineViewModel(
     var bodyFat by mutableStateOf<Double?>(null)
     var userKey by mutableStateOf<Int?>(null)
     val routineList = mutableStateListOf<String>()
+    var username by mutableStateOf<String?>(null)
 
     fun updateMuscleMass(value: Double?) {
         muscleMass = value
@@ -41,6 +42,9 @@ class RoutineViewModel(
     fun updateUserKey(value: Int?) {
         userKey = value
     }
+    fun updateUsername(value: String?) {
+        username = value
+    }
 
     fun getInbody() {
         lateinit var ret: GetInbodyResponse
@@ -49,6 +53,7 @@ class RoutineViewModel(
             Log.d("getInbody", "$ret")
             updateMuscleMass(ret.data.muscleMass)
             updateBodyFat(ret.data.bodyFat)
+            updateUsername(ret.data.userName)
             Log.d("updateUserKey", "${userKey}")
         }
     }
