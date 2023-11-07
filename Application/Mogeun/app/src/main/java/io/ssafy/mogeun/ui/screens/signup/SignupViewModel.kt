@@ -27,8 +27,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SignupViewModel(private val signInRepository: UserRepository): ViewModel() {
-    private val _dupEmailSuccess = MutableStateFlow(false)
-    val dupEmailSuccess: StateFlow<Boolean> = _dupEmailSuccess.asStateFlow()
+    var dupEmailSuccess by mutableStateOf<Boolean>(false)
     var checkEmail by mutableIntStateOf(0)
     var id by mutableStateOf("")
     var password by mutableStateOf("")
@@ -41,7 +40,14 @@ class SignupViewModel(private val signInRepository: UserRepository): ViewModel()
     var bodyFat by mutableStateOf<Double?>(null)
     var inputForm by mutableIntStateOf(1)
     var firstText by mutableStateOf("회원정보를")
+    var rightInformation by mutableStateOf<Boolean>(false)
 
+    fun updateDupEmailSuccess(value: Boolean) {
+        dupEmailSuccess = value
+    }
+    fun updateRightInformation(value: Boolean) {
+        rightInformation = value
+    }
     fun updateCheckEmail(value: Int) {
         checkEmail = value
     }
@@ -84,7 +90,7 @@ class SignupViewModel(private val signInRepository: UserRepository): ViewModel()
             ret = signInRepository.dupEmail(id)
             Log.d("dupEmail", "$ret")
             if(ret.message == "SUCCESS") {
-                _dupEmailSuccess.value = true
+                updateDupEmailSuccess(true)
                 updateCheckEmail(1)
             }
         }

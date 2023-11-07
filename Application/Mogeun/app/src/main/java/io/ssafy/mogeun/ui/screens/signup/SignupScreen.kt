@@ -4,9 +4,12 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
@@ -15,11 +18,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -28,12 +34,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.ui.screens.login.LoginViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun SignupScreen(
     viewModel: SignupViewModel = viewModel(factory = SignupViewModel.Factory),
     navController: NavHostController,
-
+    snackbarHostState: SnackbarHostState
 ) {
     val inputForm = viewModel.inputForm
     val firstText = viewModel.firstText
@@ -68,20 +75,45 @@ fun SignupScreen(
             }
         }
         when (inputForm) {
-            1 -> Essential(viewModel, navController)
-            2 -> Inbody(navController)
+            1 -> Essential(viewModel, navController, snackbarHostState)
+            2 -> Inbody(navController, viewModel)
         }
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun Essential(viewModel: SignupViewModel = viewModel(factory = SignupViewModel.Factory), navController: NavHostController) {
+fun Essential(
+    viewModel: SignupViewModel = viewModel(factory = SignupViewModel.Factory),
+    navController: NavHostController,
+    snackbarHostState: SnackbarHostState
+
+) {
     val id = viewModel.id
     val password = viewModel.password
     val checkingPassword = viewModel.checkingPassword
     val nickname = viewModel.nickname
+    val coroutineScope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
 
-    Column(modifier = Modifier.padding(28.dp)) {
+    LaunchedEffect(viewModel.dupEmailSuccess) {
+        if(viewModel.dupEmailSuccess) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("사용 가능한 아이디 입니다.")
+                viewModel.updateDupEmailSuccess(false)
+            }
+        }
+    }
+    LaunchedEffect(viewModel.rightInformation) {
+        if(viewModel.rightInformation) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("입력이 올바르지 않습니다.")
+                viewModel.updateRightInformation(false)
+            }
+        }
+    }
+
+    Column(modifier = Modifier.padding(28.dp).verticalScroll(rememberScrollState())) {
         Text(text = "아이디")
         Row {
             TextField(
@@ -91,7 +123,13 @@ fun Essential(viewModel: SignupViewModel = viewModel(factory = SignupViewModel.F
                     viewModel.updateCheckEmail(0)
                 },
                 modifier = Modifier.width(220.dp),
-                shape = RoundedCornerShape(10.dp)
+                shape = RoundedCornerShape(10.dp),
+                keyboardActions = KeyboardActions(onDone = {
+                    keyboardController?.hide()
+                }),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done
+                )
             )
             Spacer(modifier = Modifier.width(16.dp))
             Button(
@@ -152,6 +190,8 @@ fun Essential(viewModel: SignupViewModel = viewModel(factory = SignupViewModel.F
                             if(viewModel.checkEmail == 1 && viewModel.password == viewModel.checkingPassword && viewModel.nickname !== "" && viewModel.selectedGender !== "") {
                                 viewModel.updateInputForm(2)
                                 viewModel.updateFirstText("인바디를")
+                            } else {
+                                viewModel.updateRightInformation(true)
                             }
                             },
                         containerColor = MaterialTheme.colorScheme.secondary,
