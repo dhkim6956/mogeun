@@ -83,19 +83,20 @@ fun RoutineScreen(
                         contentAlignment = Alignment.CenterStart
                     ) {
                         Text(
-                            modifier = Modifier.width(160.dp),
+                            modifier = Modifier.width(144.dp),
                             text = "${viewModel.username}",
                             fontSize = 24.sp,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
+                    Spacer(modifier = Modifier.width(12.dp))
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.CenterEnd
                     ) {
                         Text(
-                            text = "님 안녕하세요.",
+                            text = " 님 안녕하세요.",
                             textAlign = TextAlign.End,
                             modifier = Modifier.fillMaxWidth(),
                             fontSize = 16.sp
