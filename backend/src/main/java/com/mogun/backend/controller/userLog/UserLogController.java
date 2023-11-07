@@ -7,10 +7,7 @@ import com.mogun.backend.service.userLog.dto.UserLogDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -67,6 +64,25 @@ public class UserLogController {
 
         String result = logService.changeBodyFat(UserLogDto.builder()
                 .userKey(request.getUserKey())
+                .bodyFatAfter(request.getBodyFat())
+                .build());
+
+        if(result != "SUCCESS")
+            return ApiResponse.badRequest(result);
+
+        return ApiResponse.of(HttpStatus.ACCEPTED, result, null);
+    }
+
+    // Seongmin Change/All API 추가
+    @PutMapping("/Change/All")
+    public ApiResponse changeAll(@RequestBody CommonChangeRequest request) {
+
+        String result = logService.changeAll(UserLogDto.builder()
+                .userKey(request.getUserKey())
+                .userName(request.getUserName())
+                .heightAfter(request.getHeight())
+                .weightAfter(request.getWeight())
+                .muscleMassAfter(request.getMuscleMass())
                 .bodyFatAfter(request.getBodyFat())
                 .build());
 

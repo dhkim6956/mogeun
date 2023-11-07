@@ -54,6 +54,11 @@ public class User {
         this.password = password;
     }
 
+    // Seongmin 닉네임 setter 추가
+    public void setName(String name) {
+        this.name = name;
+    }
+
 
     // ---- 비지니스 로직 ---- //
     @Override

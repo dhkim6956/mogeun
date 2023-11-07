@@ -84,4 +84,45 @@ public class UserLogService {
 
         return "SUCCESS";
     }
+
+    // Seongmin Change/All API를 위한 서비스 추가
+    public String changeAll(UserLogDto dto) {
+
+        Optional<User> user = userRepository.findById(dto.getUserKey());
+        if(user.isEmpty() || user.get().getIsLeaved() == 'E')
+            return "요청 오류: 등록된 회원이 아님";
+
+        if (dto.getUserName() != null && user.get().getName() != dto.getUserName()) {
+            user.get().setName(dto.getUserName());
+            userRepository.save(user.get());
+        }
+
+        Optional<UserDetail> detail = detailRepository.findById(user.get().getUserKey());
+
+        if (dto.getHeightAfter() != detail.get().getHeight()) {
+            dto.setHeightBefore(detail.get().getHeight());
+            heightLogRepository.save(dto.toHeightLogEntity(user.get()));
+            detail.get().setHeight(dto.getHeightAfter());
+        }
+
+        if (dto.getWeightAfter() != detail.get().getWeight()) {
+            dto.setWeightBefore(detail.get().getWeight());
+            weightLogRepository.save(dto.toWeightLogEntity(user.get()));
+            detail.get().setWeight(dto.getWeightAfter());
+        }
+
+        if (dto.getMuscleMassAfter() != detail.get().getMuscleMass()) {
+            dto.setMuscleMassBefore(detail.get().getMuscleMass());
+            muscleMassLogRepository.save(dto.toMuscleMassLogEntity(user.get()));
+            detail.get().setMuscleMass(dto.getMuscleMassAfter());
+        }
+
+        if (dto.getBodyFatAfter() != detail.get().getBodyFat()) {
+            dto.setBodyFatBefore(detail.get().getBodyFat());
+            bodyFatLogRepository.save(dto.toBodyFatLogEntity(user.get()));
+            detail.get().setBodyFat(dto.getBodyFatAfter());
+        }
+
+        return "SUCCESS";
+    }
 }
