@@ -40,7 +40,7 @@ interface MogeunApiService {
     suspend fun getRoutineList(@Query("user_key") userKey: String): GetRoutineListResponse
 
     @POST("Routine/Create")
-    suspend fun addRoutine(@Body addRoutineRequest: AddRoutineRequest): AddRoutineResponse
+    suspend fun addRoutine(@Query("user_key") userKey: String, @Query("routine_name") routineName: String): AddRoutineResponse
 
 
     @GET("Result/Monthly")
@@ -51,5 +51,6 @@ interface MogeunApiService {
 
     @GET("Exercise/ListAll")
     suspend fun listAllExercise(): ListAllExerciseResponse
+
 
 }
