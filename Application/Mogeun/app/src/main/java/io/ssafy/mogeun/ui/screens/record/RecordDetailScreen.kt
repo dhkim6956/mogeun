@@ -32,6 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
@@ -77,7 +78,7 @@ fun RecordDetailScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (routineInfo != null) {
-            RoutineInfoCard(routineInfo.calorie, routineInfo.totalSets, routineInfo.performTime)
+            RoutineInfoCard(routineInfo.name, routineInfo.calorie, routineInfo.totalSets, routineInfo.performTime)
         }
         LazyColumn (
             modifier = Modifier.fillMaxWidth(),
@@ -86,7 +87,7 @@ fun RecordDetailScreen(
             item { RoutineGraphIconCard() }
             if (routineInfo != null) {
                 itemsIndexed(routineInfo.exercises) {index, item ->
-                    RoutineExerciseCard(navController, item.execName, item.sets, item.setResults)
+                    RoutineExerciseCard(navController, item.execName, item.sets, item.imagePath, item.setResults)
                 }
             }
         }
@@ -105,7 +106,7 @@ fun RecordDetailScreenPreview() {
             ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        RoutineInfoCard(1.3F, 3, 3)
+        RoutineInfoCard("test",1.3F, 3, 3)
         LazyColumn (
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -120,6 +121,7 @@ fun RecordDetailScreenPreview() {
 
 @Composable
 fun RoutineInfoCard(
+    name: String,
     calorie: Float,
     totalSets: Int,
     performTime: Int
@@ -153,7 +155,7 @@ fun RoutineInfoCard(
                 ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("test", fontSize = 24.sp)
+            Text(name, fontSize = 24.sp)
             Column (
                 modifier = Modifier
                     .fillMaxWidth()
@@ -268,6 +270,7 @@ fun RoutineExerciseCard(
     navController: NavHostController,
     name: String,
     sets: Int,
+    imagePath: String,
     setResult: List<SetResult>
 ) {
     Box (
@@ -293,13 +296,14 @@ fun RoutineExerciseCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column (
-                    modifier = Modifier.fillMaxWidth(0.4f),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier = Modifier.fillMaxWidth(0.4f)
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.logo),
-                        contentDescription = "logo",
-                    )
+                    val exerciseImage = LocalContext.current.resources.getIdentifier(imagePath, "drawable", LocalContext.current.packageName)
+//                    Image(
+//                        painter = painterResource(id = exerciseImage),
+//                        contentDescription = "logo",
+//                    )
+                    GifImage(imageId = exerciseImage)
                     Text(name)
                 }
                 WeightGrid(
