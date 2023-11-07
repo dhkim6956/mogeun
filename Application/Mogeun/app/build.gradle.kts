@@ -118,7 +118,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
     implementation ("androidx.appcompat:appcompat:1.4.1")
 
-
+    implementation ("com.github.wendykierp:JTransforms:3.1")
 
 
     testImplementation(libs.junit)
