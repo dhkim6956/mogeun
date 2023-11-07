@@ -3,16 +3,16 @@ package io.ssafy.mogeun.data.bluetooth
 import io.ssafy.mogeun.model.BluetoothMessage
 
 fun String.toBluetoothMessage(isFromLocalUser: Boolean): BluetoothMessage {
-    val name = substringBeforeLast("#")
+    val id = substringBeforeLast("#")
     val message = substringAfter("#")
 
     return BluetoothMessage(
-        message = message,
-        senderName = name,
+        message = message.toInt(),
+        sensorId = id.toInt(),
         isFromLocalUser = isFromLocalUser
     )
 }
 
 fun BluetoothMessage.toByteArray(): ByteArray {
-    return "$senderName#$message".encodeToByteArray()
+    return "$sensorId#$message".encodeToByteArray()
 }

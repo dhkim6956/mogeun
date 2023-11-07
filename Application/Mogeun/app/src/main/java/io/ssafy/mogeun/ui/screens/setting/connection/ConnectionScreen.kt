@@ -12,11 +12,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -27,19 +29,27 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ssafy.mogeun.data.bluetooth.BluetoothDevice
 import io.ssafy.mogeun.ui.AppViewModelProvider
 import io.ssafy.mogeun.ui.theme.MogeunTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
-fun ConnectionScreen(viewModel: ConnectionViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
+fun ConnectionScreen(viewModel: ConnectionViewModel = viewModel(factory = AppViewModelProvider.Factory), snackbarHostState: SnackbarHostState) {
     val state by viewModel.state.collectAsState()
-    
+
+    val coroutineScope = rememberCoroutineScope()
+
     LaunchedEffect(key1 = state.errorMessage) {
         state.errorMessage?.let{ message ->
-            Log.d("bluetooth", message)
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(message)
+            }
         }
     }
     LaunchedEffect(key1 = state.isConnected) {
         if(state.isConnected) {
-            Log.d("bluetooth", "연결 성공")
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("연결 성공")
+            }
         }
     }
 
@@ -140,13 +150,5 @@ fun BluetoothDeviceList(
                     .padding(16.dp)
             )
         }
-    }
-}
-
-@Preview
-@Composable
-fun ConnectionScreenPreview() {
-    MogeunTheme {
-        ConnectionScreen()
     }
 }

@@ -56,6 +56,6 @@ fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarH
             ExplainExerciseScreen(navController = navController, data = backStackEntry.arguments?.getString("image"))
         }
         composable(Screen.SqlSample.route) { DbSampleScreen() }
-        composable(Screen.Connection.route) { ConnectionScreen() }
+        composable(Screen.Connection.route) { ConnectionScreen(snackbarHostState = snackbarHostState) }
     }
 }

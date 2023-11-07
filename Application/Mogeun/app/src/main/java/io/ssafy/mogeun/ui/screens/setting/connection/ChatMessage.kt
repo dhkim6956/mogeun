@@ -44,12 +44,12 @@ fun ChatMessage(
             .padding(16.dp)
     ) {
         Text(
-            text = message.senderName,
+            text = "${message.sensorId}",
             fontSize = 10.sp,
             color = Color.Black
         )
         Text(
-            text = message.message,
+            text = "${message.message}",
             color = Color.Black,
             modifier = Modifier.widthIn(max = 250.dp)
         )
@@ -62,8 +62,8 @@ fun ChatMessagePreview() {
     MogeunTheme {
         ChatMessage(
             message = BluetoothMessage(
-                message = "Hello World!",
-                senderName = "Pixel 6",
+                message = 0,
+                sensorId = 1,
                 isFromLocalUser = false
             )
         )

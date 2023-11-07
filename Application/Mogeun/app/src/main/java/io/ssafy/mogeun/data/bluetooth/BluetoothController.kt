@@ -9,6 +9,10 @@ import android.bluetooth.BluetoothSocket
 import android.content.Context
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.util.Log
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import io.ssafy.mogeun.model.BluetoothMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,7 +45,7 @@ interface BluetoothController {
     fun startBluetoothServer(): Flow<ConnectionResult>
     fun connectToDevice(device: BluetoothDevice): Flow<ConnectionResult>
 
-    suspend fun trySendMessage(message: String): BluetoothMessage?
+    suspend fun trySendMessage(message: Int): BluetoothMessage?
     fun closeConnection()
 
     fun release()
@@ -215,7 +219,7 @@ class AndroidBluetoothController(
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun trySendMessage(message: String): BluetoothMessage? {
+    override suspend fun trySendMessage(message: Int): BluetoothMessage? {
         if(!hasPermission(Manifest.permission.BLUETOOTH_CONNECT)) {
             return null
         }
@@ -226,7 +230,7 @@ class AndroidBluetoothController(
 
         val bluetoothMessage = BluetoothMessage(
             message = message,
-            senderName = bluetoothAdapter?.name ?: "Unknown name",
+            sensorId = 0,
             isFromLocalUser = true
         )
 
@@ -236,6 +240,7 @@ class AndroidBluetoothController(
     }
 
     override fun closeConnection() {
+        Log.d("bluetooth","정상종료됨")
         currentClientSocket?.close()
         currentServerSocket?.close()
         currentClientSocket = null

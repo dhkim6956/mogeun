@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Send
@@ -23,6 +24,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -30,7 +33,7 @@ import androidx.compose.ui.unit.dp
 fun ChatScreen(
     state: ConnectionUiState,
     onDisconnect: () -> Unit,
-    onSendMessage: (String) -> Unit
+    onSendMessage: (Int) -> Unit
 ) {
     val message = rememberSaveable {
         mutableStateOf("")
@@ -87,10 +90,14 @@ fun ChatScreen(
                 modifier = Modifier.weight(1f),
                 placeholder = {
                     Text(text = "Message")
-                }
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Decimal,
+                    imeAction = ImeAction.Send
+                )
             )
             IconButton(onClick = {
-                onSendMessage(message.value)
+                onSendMessage(message.value.toInt())
                 message.value = ""
                 keyboardController?.hide()
             }) {

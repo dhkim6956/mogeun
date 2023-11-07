@@ -103,7 +103,7 @@ class ConnectionViewModel(private val emgRepository: EmgRepository, private val 
             .listen()
     }
 
-    fun sendMessage(message: String) {
+    fun sendMessage(message: Int) {
         viewModelScope.launch {
             val bluetoothMessage = bluetoothController.trySendMessage(message)
             if(bluetoothMessage != null) {
