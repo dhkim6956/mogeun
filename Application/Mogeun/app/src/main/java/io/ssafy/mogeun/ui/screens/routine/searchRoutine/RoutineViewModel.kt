@@ -30,7 +30,7 @@ class RoutineViewModel(
     var muscleMass by mutableStateOf<Double?>(null)
     var bodyFat by mutableStateOf<Double?>(null)
     var userKey by mutableStateOf<Int?>(null)
-    val routineList = mutableStateListOf<String>()
+    var tmp by mutableStateOf<GetRoutineListResponse?>(null)
     var username by mutableStateOf<String?>(null)
 
     fun updateMuscleMass(value: Double?) {
@@ -45,7 +45,6 @@ class RoutineViewModel(
     fun updateUsername(value: String?) {
         username = value
     }
-
     fun getInbody() {
         lateinit var ret: GetInbodyResponse
         viewModelScope.launch {
@@ -57,20 +56,14 @@ class RoutineViewModel(
             Log.d("updateUserKey", "${userKey}")
         }
     }
-
     fun getRoutineList() {
         lateinit var ret: GetRoutineListResponse
         viewModelScope.launch {
             ret = RoutineRepository.getRoutineList(userKey.toString())
-            for (i in 0 until ret.data.size) {
-                ret.data[i].name?.let {
-                    routine ->
-                    routineList.add(routine)
-                }
-            }
+            Log.d("RoutineList", "$ret")
+            tmp = ret
         }
     }
-
     fun getUserKey() {
         viewModelScope.launch {
             val key = keyRepository.getKey().first()
@@ -79,7 +72,6 @@ class RoutineViewModel(
             updateUserKey(userKey)
         }
     }
-
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {

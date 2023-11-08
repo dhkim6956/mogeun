@@ -24,28 +24,28 @@ class UserViewModel(
     private val keyRepository: KeyRepository,
 ): ViewModel() {
     var userKey by mutableStateOf<Int?>(null)
-    var nickname by mutableStateOf<String?>(null)
-    var height by mutableStateOf<Double?>(null)
-    var weight by mutableStateOf<Double?>(null)
-    var muscleMass by mutableStateOf<Double?>(null)
-    var bodyFat by mutableStateOf<Double?>(null)
+    var nickname by mutableStateOf<String>("nickname")
+    var height by mutableStateOf<Double>(0.0)
+    var weight by mutableStateOf<Double>(0.0)
+    var muscleMass by mutableStateOf<Double>(0.0)
+    var bodyFat by mutableStateOf<Double>(0.0)
 
     fun updateUserKey(value: Int?) {
         userKey = value
     }
-    fun updateNickname(value: String?) {
+    fun updateNickname(value: String) {
         nickname = value
     }
-    fun updateHeight(value: Double?) {
+    fun updateHeight(value: Double) {
         height = value
     }
-    fun updateWeight(value: Double?) {
+    fun updateWeight(value: Double) {
         weight = value
     }
-    fun updateMuscleMass(value: Double?) {
+    fun updateMuscleMass(value: Double) {
         muscleMass = value
     }
-    fun updateBodyFat(value: Double?) {
+    fun updateBodyFat(value: Double) {
         bodyFat = value
     }
     fun getInbody() {
