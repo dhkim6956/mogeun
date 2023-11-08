@@ -31,11 +31,6 @@ fun UserScreen(
     viewModel: UserViewModel = viewModel(factory = UserViewModel.Factory),
     navController: NavHostController
 ) {
-    var heightText by remember { mutableStateOf(if(viewModel.height == null) "" else viewModel.height.toString()) }
-    var weightText by remember { mutableStateOf(if(viewModel.weight == null) "" else viewModel.weight.toString()) }
-    var muscleMassText by remember { mutableStateOf(if(viewModel.muscleMass == null) "" else viewModel.muscleMass.toString()) }
-    var bodyFatText by remember { mutableStateOf(if(viewModel.bodyFat == null) "" else viewModel.bodyFat.toString()) }
-    var nickname by remember { mutableStateOf(if(viewModel.nickname == null) "" else viewModel.nickname.toString()) }
     val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(Unit) {
@@ -46,19 +41,13 @@ fun UserScreen(
             viewModel.getInbody()
         }
     }
-
     Column {
         Column(modifier = Modifier.padding(24.dp)) {
             Text(text = "닉네임")
             TextField(
-                value = nickname,
+                value = viewModel.nickname,
                 onValueChange = {
-                    nickname = it
-                    if (it == "") {
-                        viewModel.updateNickname(null)
-                    } else {
-                        viewModel.updateNickname(it)
-                    }
+                    viewModel.updateNickname(it)
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Done
@@ -69,14 +58,9 @@ fun UserScreen(
             )
             Text(text = "신장")
             TextField(
-                value = heightText,
+                value = viewModel.height.toString(),
                 onValueChange = {
-                    heightText = it
-                    if (it == "") {
-                        viewModel.updateHeight(null)
-                    } else {
-                        viewModel.updateHeight(it.toDouble())
-                    }
+                    viewModel.updateHeight(it.toDouble())
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
@@ -88,14 +72,9 @@ fun UserScreen(
             )
             Text(text = "체중")
             TextField(
-                value = weightText,
+                value = viewModel.weight.toString(),
                 onValueChange = {
-                    weightText = it
-                    if (it == "") {
-                        viewModel.updateWeight(null)
-                    } else {
-                        viewModel.updateWeight(it.toDouble())
-                    }
+                    viewModel.updateWeight(it.toDouble())
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
@@ -107,14 +86,9 @@ fun UserScreen(
             )
             Text(text = "골격근량")
             TextField(
-                value = muscleMassText,
+                value = viewModel.muscleMass.toString(),
                 onValueChange = {
-                    muscleMassText = it
-                    if (it == "") {
-                        viewModel.updateMuscleMass(null)
-                    } else {
-                        viewModel.updateMuscleMass(it.toDouble())
-                    }
+                    viewModel.updateMuscleMass(it.toDouble())
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
@@ -126,14 +100,9 @@ fun UserScreen(
             )
             Text(text = "체지방량")
             TextField(
-                value = bodyFatText,
+                value = viewModel.bodyFat.toString(),
                 onValueChange = {
-                    bodyFatText = it
-                    if (it == "") {
-                        viewModel.updateBodyFat(null)
-                    } else {
-                        viewModel.updateBodyFat(it.toDouble())
-                    }
+                    viewModel.updateBodyFat(it.toDouble())
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
