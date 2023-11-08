@@ -57,7 +57,9 @@ public class RoutineReportController {
                 .endTime(request.getEndTime())
                 .build());
 
-        return ApiResponse.postAndPutResponse(result, request);
+//        return ApiResponse.postAndPutResponse(result, request);
+        // Seongmin 단순 accept response
+        return ApiResponse.accept();
     }
 
 }
