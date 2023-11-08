@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -33,6 +35,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,17 +44,15 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.model.GetRoutineListResponseBody
 import io.ssafy.mogeun.ui.Screen
 import io.ssafy.mogeun.ui.screens.signup.SignupViewModel
 
 @Composable
 fun RoutineScreen(
     viewModel: RoutineViewModel = viewModel(factory = RoutineViewModel.Factory),
-    navController: NavHostController) {
-//    val context = LocalContext.current
-//    val test = LocalContext.current.resources.getIdentifier("chest", "string", context.packageName)
-    val openAlertDialog = remember { mutableStateOf(false) }
-
+    navController: NavHostController
+) {
     LaunchedEffect(Unit) {
         viewModel.getUserKey()
     }
@@ -61,7 +62,6 @@ fun RoutineScreen(
             viewModel.getRoutineList()
         }
     }
-
     Column(modifier = Modifier.padding(10.dp)) {
         Column {
             Row(
@@ -162,8 +162,10 @@ fun RoutineScreen(
             }
         }
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(viewModel.routineList) { routine ->
-                RoutineList(navController, routine.toString())
+            viewModel.tmp?.let {
+                itemsIndexed(it.data) { index, item ->
+                    RoutineList(navController, item)
+                }
             }
         }
     }
@@ -188,9 +190,11 @@ fun RoutineScreen(
         }
     }
 }
-
 @Composable
-fun RoutineList(navController: NavHostController, routine: String) {
+fun RoutineList(
+    navController: NavHostController,
+    routine: GetRoutineListResponseBody,
+) {
     Column(modifier = Modifier
         .background(MaterialTheme.colorScheme.onPrimary)
         .padding(top = 20.dp)) {
@@ -199,11 +203,14 @@ fun RoutineList(navController: NavHostController, routine: String) {
             .padding(bottom = 10.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = routine, modifier = Modifier.padding(start = 32.dp, top = 12.dp), fontSize = 24.sp)
+            Text(
+                text = routine.name,
+                modifier = Modifier.padding(start = 12.dp, top = 12.dp),
+                fontSize = 24.sp,
+                maxLines = 1
+            )
             Button(
-                onClick = {
-                    navController.navigate("addroutine/$routine")
-                          },
+                onClick = { navController.navigate("addroutine/$routine") },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
             ) {
                 Image(
@@ -217,72 +224,42 @@ fun RoutineList(navController: NavHostController, routine: String) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-            Column {
-                Row {
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.surface,
-                                RoundedCornerShape(15.dp)
-                            )
-                            .width(48.dp)
-                            .height(48.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.chest),
-                            contentDescription = "chest",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.height(32.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.surface,
-                                RoundedCornerShape(15.dp)
-                            )
-                            .width(48.dp)
-                            .height(48.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.triceps),
-                            contentDescription = "triceps",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.height(32.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.surface,
-                                RoundedCornerShape(15.dp)
-                            )
-                            .width(48.dp)
-                            .height(48.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.biceps),
-                            contentDescription = "biceps",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.height(32.dp)
-                        )
+            Row(modifier = Modifier.width(200.dp)) {
+                LazyRow() {
+                    items(routine.imagePath) { target ->
+                        muscleIcon(target)
                     }
                 }
             }
             Button(
                 onClick = { navController.navigate(Screen.Execution.route) },
-                border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.scrim),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text(text = "루틴시작", color = MaterialTheme.colorScheme.scrim)
+                Text(text = "루틴시작")
             }
         }
         Spacer(modifier = Modifier.height(10.dp))
     }
+}
+@Composable
+fun muscleIcon(imagePath: String) {
+    Box(
+        modifier = Modifier
+            .background(
+                color = MaterialTheme.colorScheme.surface,
+                RoundedCornerShape(15.dp)
+            )
+            .width(48.dp)
+            .height(48.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        val image = LocalContext.current.resources.getIdentifier(imagePath, "drawable", LocalContext.current.packageName)
+        Image(
+            painter = painterResource(id = image),
+            contentDescription = imagePath,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.height(32.dp).width(32.dp)
+        )
+    }
+    Spacer(modifier = Modifier.width(10.dp))
 }
