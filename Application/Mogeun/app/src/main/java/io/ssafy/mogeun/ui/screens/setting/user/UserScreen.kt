@@ -1,13 +1,19 @@
 package io.ssafy.mogeun.ui.screens.setting.user
 
+import android.graphics.drawable.shapes.Shape
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -16,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -43,7 +50,7 @@ fun UserScreen(
         }
     }
     Column {
-        Column(modifier = Modifier.padding(24.dp)) {
+        Column(modifier = Modifier.padding(start = 48.dp, top = 24.dp, end = 48.dp)) {
             Text(text = "닉네임")
             TextField(
                 value = viewModel.nickname,
@@ -71,7 +78,8 @@ fun UserScreen(
                 ),
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
-                })
+                }),
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(20.dp))
             Text(text = "체중")
@@ -86,7 +94,8 @@ fun UserScreen(
                 ),
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
-                })
+                }),
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(20.dp))
             Text(text = "골격근량")
@@ -101,7 +110,8 @@ fun UserScreen(
                 ),
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
-                })
+                }),
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(20.dp))
             Text(text = "체지방량")
@@ -116,14 +126,28 @@ fun UserScreen(
                 ),
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
-                })
+                }),
+                modifier = Modifier.fillMaxWidth()
             )
-            Spacer(modifier = Modifier.height(20.dp))
-            Button(onClick = {
-                viewModel.updateUser()
-                navController.navigate("Routine")
-            }) {
-                Text(text = "변경사항 수정")
+            Spacer(modifier = Modifier.height(32.dp))
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Button(
+                    onClick = {
+                    viewModel.updateUser()
+                    navController.navigate("Routine")
+                    },
+                    modifier = Modifier
+                        .background(
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(12.dp),
+                        )
+                        .width(200.dp)
+                ) {
+                    Text(text = "변경사항 수정")
+                }
             }
         }
     }
