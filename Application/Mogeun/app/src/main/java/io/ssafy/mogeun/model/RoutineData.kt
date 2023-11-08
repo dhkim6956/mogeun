@@ -52,5 +52,7 @@ data class GetRoutineListResponse(
 @Serializable
 data class GetRoutineListResponseBody(
     val key: Int,
-    val name: String
+    val name: String,
+    @SerialName(value = "image_path")
+    val imagePath: List<String>
 )
