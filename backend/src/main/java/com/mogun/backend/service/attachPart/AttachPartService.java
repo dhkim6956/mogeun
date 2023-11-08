@@ -35,4 +35,17 @@ public class AttachPartService {
 
         return result;
     }
+
+    // Seongmin 이미지 가져오기
+    public List<String> getPartImagePathByExercise(Exercise exec) {
+
+        List<String> result = new ArrayList<>();
+        List<AttachPart> partList = attachPartRepository.findAllByExerciseAndAttachDirection(exec, 'L');
+
+        for(AttachPart item: partList) {
+            result.add(item.getMusclePart().getImagePath());
+        }
+
+        return result;
+    }
 }

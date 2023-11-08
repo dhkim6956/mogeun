@@ -11,4 +11,7 @@ import java.util.List;
 public interface AttachPartRepository extends JpaRepository<AttachPart, Integer> {
 
     List<AttachPart> findAllByExercise(Exercise exercise);
+
+    // Seongmin 부착 부위 왼쪽만 가져오기
+    List<AttachPart> findAllByExerciseAndAttachDirection(Exercise exercise, char L);
 }
