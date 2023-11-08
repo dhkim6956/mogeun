@@ -22,7 +22,7 @@ enum class Screen(
     Splash(
         route = "Splash",
         title = "로딩화면",
-        topBarState = TopBarState(visibility = true, backBtnVisibility = false),
+        topBarState = TopBarState(visibility = false, backBtnVisibility = false),
         bottomBarState = BottomBarState(false)
     ),
     Routine(
