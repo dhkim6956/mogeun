@@ -18,15 +18,28 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.ui.screens.routine.searchRoutine.RoutineViewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(navController: NavHostController) {
+fun SplashScreen(
+    viewModel: RoutineViewModel = viewModel(factory = RoutineViewModel.Factory),
+    navController: NavHostController
+) {
     LaunchedEffect(Unit) {
-        delay(3000)
-        navController.navigate("Login")
+        viewModel.getUserKey()
+    }
+    LaunchedEffect(viewModel.userKey) {
+        if (viewModel.userKey !== null) {
+            delay(3000)
+            navController.navigate("Routine")
+        } else {
+            delay(3000)
+            navController.navigate("Login")
+        }
     }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
