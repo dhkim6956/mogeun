@@ -48,8 +48,10 @@ import com.patrykandpatrick.vico.compose.chart.line.lineChart
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
 import com.patrykandpatrick.vico.core.entry.entryOf
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.model.Exercise
 import io.ssafy.mogeun.model.SetResult
 import io.ssafy.mogeun.ui.AppViewModelProvider
+import io.ssafy.mogeun.ui.screens.routine.searchRoutine.muscleIcon
 
 @Composable
 fun RecordDetailScreen(
@@ -84,7 +86,7 @@ fun RecordDetailScreen(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            item { RoutineGraphIconCard() }
+            item { viewModel.routineInfo?.let { RoutineGraphIconCard(it.exercises) } }
             if (routineInfo != null) {
                 itemsIndexed(routineInfo.exercises) {index, item ->
                     RoutineExerciseCard(navController, item.execName, item.sets, item.imagePath, item.setResults)
@@ -111,7 +113,7 @@ fun RecordDetailScreenPreview() {
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            item { RoutineGraphIconCard() }
+//            item { RoutineGraphIconCard() }
             itemsIndexed(listOf(1, 2, 3)) {index, item ->
                 RoutineExerciseCardPreview()
             }
@@ -206,9 +208,10 @@ fun RoutineInfo(
     }
 }
 
-@Preview
 @Composable
-fun RoutineGraphIconCard() {
+fun RoutineGraphIconCard(
+    exercises: List<Exercise>
+) {
     Box (
         modifier = Modifier
             .fillMaxWidth()
@@ -221,7 +224,7 @@ fun RoutineGraphIconCard() {
             modifier = Modifier.fillMaxWidth()
         ) {
             GraphCard()
-            IconCard()
+            IconCard(exercises)
         }
     }
 }
@@ -244,22 +247,27 @@ fun GraphCard() {
 fun getRandomEntries() = List(9) { entryOf(it, it * 10) }
 
 @Composable
-fun IconCard() {
+fun IconCard(
+    exercises: List<Exercise>
+) {
     Box (
         modifier = Modifier.fillMaxWidth()
     ) {
+        var parts: List<String> = emptyList()
+        for (exercise in exercises) {
+            parts = parts.union(exercise.parts).toList()
+        }
+
         Column {
             Text("사용근육")
             MuscleGrid(
                 columns = 5,
-                itemCount = 9,
+                itemCount = parts.size,
                 modifier = Modifier
                     .padding(start = 7.5.dp, end = 7.5.dp)
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.logo),
-                    contentDescription = "logo",
-                )
+                Log.d("part", parts[it])
+                muscleIcon(parts[it])
             }
         }
     }
@@ -298,7 +306,7 @@ fun RoutineExerciseCard(
                 Column (
                     modifier = Modifier.fillMaxWidth(0.4f)
                 ) {
-                    val exerciseImage = LocalContext.current.resources.getIdentifier(imagePath, "drawable", LocalContext.current.packageName)
+                    val exerciseImage = LocalContext.current.resources.getIdentifier("z_" + imagePath, "drawable", LocalContext.current.packageName)
 //                    Image(
 //                        painter = painterResource(id = exerciseImage),
 //                        contentDescription = "logo",
@@ -434,7 +442,7 @@ fun MuscleGrid(
     columns: Int,
     itemCount: Int,
     modifier: Modifier = Modifier,
-    content: @Composable() () -> Unit
+    content: @Composable() (Int) -> Unit
 ) {
     Column(modifier = modifier) {
         var rows = (itemCount / columns)
@@ -454,7 +462,7 @@ fun MuscleGrid(
                             .weight(1f)
                     ) {
                         if (index < itemCount) {
-                            content()
+                            content(index)
                         }
                     }
                 }
