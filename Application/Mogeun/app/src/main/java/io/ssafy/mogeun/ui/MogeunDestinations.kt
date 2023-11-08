@@ -19,6 +19,12 @@ enum class Screen(
     val topBarState: TopBarState,
     val bottomBarState: BottomBarState
 ) {
+    Splash(
+        route = "Splash",
+        title = "로딩화면",
+        topBarState = TopBarState(visibility = true, backBtnVisibility = false),
+        bottomBarState = BottomBarState(false)
+    ),
     Routine(
         route = "Routine",
         title = "루틴",

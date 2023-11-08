@@ -23,10 +23,12 @@ import io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.ExplainExercise
 import io.ssafy.mogeun.ui.screens.sample.DbSampleScreen
 import io.ssafy.mogeun.ui.screens.setting.connection.ConnectionScreen
 import io.ssafy.mogeun.ui.screens.setting.user.UserScreen
+import io.ssafy.mogeun.ui.screens.splash.SplashScreen
 
 @Composable
 fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarHostState) {
-    NavHost(navController, startDestination = Screen.Login.route) {
+    NavHost(navController, startDestination = Screen.Splash.route) {
+        composable(Screen.Splash.route) { SplashScreen(navController = navController)}
         navigation(route = "Routines", startDestination = Screen.Routine.route) {
             composable(Screen.Routine.route) { RoutineScreen(navController = navController) }
             composable(Screen.Execution.route) { ExecutionScreen() }
