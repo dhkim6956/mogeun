@@ -11,6 +11,7 @@ import com.mogun.backend.domain.report.setReport.SetReport;
 import com.mogun.backend.domain.report.setReport.repository.SetReportRepository;
 import com.mogun.backend.domain.report.usedMusclePart.repository.UsedMusclePartRepository;
 import com.mogun.backend.domain.routine.userRoutinePlan.UserRoutinePlan;
+import com.mogun.backend.domain.routine.userRoutinePlan.repository.UserRoutinePlanRepository;
 import com.mogun.backend.domain.user.User;
 import com.mogun.backend.domain.user.repository.UserRepository;
 import com.mogun.backend.service.attachPart.AttachPartService;
@@ -41,6 +42,8 @@ public class RoutineResultService {
     private final AttachPartService attachPartService;
     private final MuscleActInSetLogRepository actInSetLogRepository;
     private final UsedMusclePartRepository usedMusclePartRepository;
+    //Seongmin 루틴 정렬 위해 추가
+    private final UserRoutinePlanRepository userRoutinePlanRepository;
 
     public String createResult(ResultDto dto) {
 
