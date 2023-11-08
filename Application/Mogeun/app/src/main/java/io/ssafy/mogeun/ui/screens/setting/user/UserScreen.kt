@@ -2,6 +2,7 @@ package io.ssafy.mogeun.ui.screens.setting.user
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
@@ -54,8 +55,10 @@ fun UserScreen(
                 ),
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
-                })
+                }),
+                modifier = Modifier.fillMaxWidth()
             )
+            Spacer(modifier = Modifier.height(20.dp))
             Text(text = "신장")
             TextField(
                 value = viewModel.height.toString(),
@@ -70,6 +73,7 @@ fun UserScreen(
                     keyboardController?.hide()
                 })
             )
+            Spacer(modifier = Modifier.height(20.dp))
             Text(text = "체중")
             TextField(
                 value = viewModel.weight.toString(),
@@ -84,6 +88,7 @@ fun UserScreen(
                     keyboardController?.hide()
                 })
             )
+            Spacer(modifier = Modifier.height(20.dp))
             Text(text = "골격근량")
             TextField(
                 value = viewModel.muscleMass.toString(),
@@ -98,6 +103,7 @@ fun UserScreen(
                     keyboardController?.hide()
                 })
             )
+            Spacer(modifier = Modifier.height(20.dp))
             Text(text = "체지방량")
             TextField(
                 value = viewModel.bodyFat.toString(),
@@ -112,6 +118,7 @@ fun UserScreen(
                     keyboardController?.hide()
                 })
             )
+            Spacer(modifier = Modifier.height(20.dp))
             Button(onClick = {
                 viewModel.updateUser()
                 navController.navigate("Routine")
