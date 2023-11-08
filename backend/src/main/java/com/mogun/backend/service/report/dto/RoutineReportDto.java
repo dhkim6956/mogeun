@@ -40,6 +40,7 @@ public class RoutineReportDto {
                 .routineName(routine.getRoutineName())
                 .startTime(startTime)
                 .isAttached(isAttached)
+                .userRoutine(routine) // Seongmin
                 .build();
     }
 

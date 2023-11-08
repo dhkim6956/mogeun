@@ -11,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 
 @Service
@@ -36,7 +38,8 @@ public class RoutineReportService {
         if(!routine.get().getUser().equals(user.get()))
             return "요청 오류: 현재 회원이 소유한 루틴이 아님";
 
-        dto.setStartTime(LocalDateTime.now());
+        // Seongmin local time to Asia/Seoul
+        dto.setStartTime(LocalDateTime.now(Clock.system(ZoneId.of("Asia/Seoul"))));
 
         routineReportRepository.save(dto.toRoutineReportEntity(user.get(), routine.get()));
 
@@ -56,7 +59,8 @@ public class RoutineReportService {
         if(report.get().getEndTime() != null)
             return "요청 오류: 해당 로그는 이미 종료됨";
 
-        report.get().setEndTime(LocalDateTime.now());
+        // Seongmin local time to Asia/Seoul
+        report.get().setEndTime(LocalDateTime.now(Clock.system(ZoneId.of("Asia/Seoul"))));
 
         return "SUCCESS";
     }
