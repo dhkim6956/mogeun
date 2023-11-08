@@ -1,5 +1,7 @@
 package io.ssafy.mogeun.data
 
+import io.ssafy.mogeun.model.DeleteUserRequest
+import io.ssafy.mogeun.model.DeleteUserResponse
 import io.ssafy.mogeun.model.DupEmailResponse
 import io.ssafy.mogeun.model.GetInbodyResponse
 import io.ssafy.mogeun.model.SignInRequest
@@ -16,6 +18,7 @@ interface UserRepository {
     suspend fun signUp(userEmail: String, userPw: String, userName: String, gender: String, height: Double?, weight: Double?, smm: Double?, ffm: Double?): SignUpResponse
     suspend fun getInbody(user_key: String): GetInbodyResponse
     suspend fun updateUser(userKey: Int?, userName: String?, weight: Double?, height: Double?, muscleMass: Double?, bodyFat: Double?): UpdateUserResponse
+    suspend fun deleteUser(userEmail: String, userPw: String): DeleteUserResponse
 }
 
 class NetworkUserRepository(
@@ -35,5 +38,8 @@ class NetworkUserRepository(
     }
     override suspend fun updateUser(userKey: Int?, userName: String?, weight: Double?, height: Double?, muscleMass: Double?, bodyFat: Double?): UpdateUserResponse {
         return mogeunApiService.updateUser(UpdateUserRequest(userKey, userName, weight, height, muscleMass, bodyFat))
+    }
+    override suspend fun deleteUser(userEmail: String, userPw: String): DeleteUserResponse {
+        return mogeunApiService.deleteUser(DeleteUserRequest(userEmail, userPw))
     }
 }

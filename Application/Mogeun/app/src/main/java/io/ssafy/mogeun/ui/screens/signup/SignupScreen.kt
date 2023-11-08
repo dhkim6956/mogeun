@@ -95,12 +95,15 @@ fun Essential(
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    LaunchedEffect(viewModel.dupEmailSuccess) {
+    LaunchedEffect(viewModel.checkEmail) {
         if(viewModel.dupEmailSuccess) {
             coroutineScope.launch {
                 snackbarHostState.showSnackbar("사용 가능한 아이디 입니다.")
                 viewModel.updateDupEmailSuccess(false)
             }
+        }
+        if(viewModel.checkEmail == 2) {
+            snackbarHostState.showSnackbar("중복된 아이디 입니다.")
         }
     }
     LaunchedEffect(viewModel.rightInformation) {

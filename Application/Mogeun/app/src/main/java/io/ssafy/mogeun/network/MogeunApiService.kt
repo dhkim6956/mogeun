@@ -2,7 +2,8 @@ package io.ssafy.mogeun.network
 
 import io.ssafy.mogeun.model.AddRoutineRequest
 import io.ssafy.mogeun.model.AddRoutineResponse
-import io.ssafy.mogeun.model.DupEmailBody
+import io.ssafy.mogeun.model.DeleteUserRequest
+import io.ssafy.mogeun.model.DeleteUserResponse
 import io.ssafy.mogeun.model.DupEmailResponse
 import io.ssafy.mogeun.model.GetInbodyResponse
 import io.ssafy.mogeun.model.ListAllExerciseResponse
@@ -43,7 +44,7 @@ interface MogeunApiService {
     suspend fun getRoutineList(@Query("user_key") userKey: String): GetRoutineListResponse
 
     @POST("Routine/Create")
-    suspend fun addRoutine(@Query("user_key") userKey: String, @Query("routine_name") routineName: String): AddRoutineResponse
+    suspend fun addRoutine(@Body addRoutineRequest: AddRoutineRequest): AddRoutineResponse
 
 
     @GET("Result/Monthly")
@@ -54,6 +55,9 @@ interface MogeunApiService {
 
     @GET("Exercise/ListAll")
     suspend fun listAllExercise(): ListAllExerciseResponse
+
+    @POST("User/Exit")
+    suspend fun deleteUser(@Body deleteUserRequest: DeleteUserRequest): DeleteUserResponse
 
     @POST("Report/Routine/Set")
     suspend fun getSet(@Body setRequest: SetRequest): SetResponse

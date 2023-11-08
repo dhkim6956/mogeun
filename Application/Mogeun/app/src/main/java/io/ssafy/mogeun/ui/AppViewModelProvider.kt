@@ -39,7 +39,8 @@ object AppViewModelProvider {
         }
         initializer {
             AddExerciseViewModel(
-                mogeunApplication().container.listAllExerciseRepository
+                mogeunApplication().container.listAllExerciseRepository,
+                mogeunApplication().container.keyRepository
             )
         }
         initializer {
