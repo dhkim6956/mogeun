@@ -6,17 +6,35 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AddRoutineRequest(
     @SerialName(value = "user_key")
-    val userKey: String,
+    val userKey: Int,
     @SerialName(value = "routine_name")
     val routineName: String
 )
-
+@Serializable
+data class AddRoutineResponseData(
+    @SerialName(value = "user_key")
+    val userKey: Int,
+    @SerialName(value = "user_email")
+    val userEmail: String?,
+    @SerialName(value = "routine_name")
+    val routineName: String,
+    @SerialName(value = "routine_key")
+    val routineKey: Int,
+    @SerialName(value = "exec_key")
+    val execKey: Int,
+    @SerialName(value = "total_sets")
+    val totalSets: Int,
+    @SerialName(value = "plan_key")
+    val planKey: Int,
+    @SerialName(value = "set_key")
+    val setKey: Int
+)
 @Serializable
 data class AddRoutineResponse(
     val code: Int,
     val status: String,
     val message: String,
-    val data: AddRoutineRequest
+    val data: AddRoutineResponseData
 )
 
 @Serializable

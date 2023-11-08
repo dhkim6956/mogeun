@@ -2,6 +2,7 @@ package io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise
 
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -52,6 +53,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineViewModel
 import io.ssafy.mogeun.ui.AppViewModelProvider
@@ -61,9 +64,10 @@ import io.ssafy.mogeun.ui.AppViewModelProvider
 @Composable
 fun AddExerciseScreen(
     navController: NavHostController,
-    viewModel: AddExerciseViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: AddExerciseViewModel = viewModel(factory = AppViewModelProvider.Factory),
+//    addRoutineVeiwModel: AddRoutineViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    val musclePartList = listOf("전체", "chest", "등", "복근", "삼두", "승모근", "어깨", "이두", "종아리", "허벅지")
+    val musclePartList = listOf("전체", "가슴", "등", "복근", "삼두", "승모근", "어깨", "이두", "종아리", "허벅지")
     var selectedExercises by remember { mutableStateOf(setOf<String>()) }
     val openAlertDialog = remember { mutableStateOf(false) }
     val exercises = viewModel.exerciseList
@@ -122,6 +126,8 @@ fun AddExerciseScreen(
                 }
             items(filteredExercises) { exercise ->
                 val isSelected = exercise.name in selectedExercises
+                val context = LocalContext.current
+                val imageResId = context.resources.getIdentifier("z_${exercise.imagePath}", "drawable", context.packageName)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -145,7 +151,7 @@ fun AddExerciseScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         GlideImage(
-                            imageModel = exercise.imagePath.toString(),
+                            imageModel = imageResId,
                             contentDescription = "GIF Image",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -160,11 +166,12 @@ fun AddExerciseScreen(
                             )
 //                            Text(text = exercise.mainPart)
                         }
+
                         Icon(
                             imageVector = if (isSelected) Icons.Outlined.Star else Icons.Outlined.StarBorder,
                             contentDescription = "Localized description"
                         )
-                        IconButton(onClick = { navController.navigate("explainexercise/${exercise.imagePath.toString()}") }) {
+                        IconButton(onClick = { navController.navigate("explainexercise/${imageResId}") }) {
                             Icon(Icons.Outlined.ErrorOutline,
                                 contentDescription = "Localized description",
                                 modifier = Modifier.graphicsLayer(rotationZ = 180f)
@@ -186,7 +193,6 @@ fun AddExerciseScreen(
                 .fillMaxSize()
                 .padding(16.dp),
             contentAlignment = Alignment.BottomEnd,
-
         ) {
             if (selectedExercises.isNotEmpty()) {
                 Box(
@@ -217,14 +223,6 @@ fun AddExerciseScreen(
         }
     }
 }
-
-@Composable
-fun receiveExerciseData(
-    adjacentMonths: Long = 500,
-    navController: NavHostController,
-    viewModel: AddExerciseViewModel = viewModel(factory = AppViewModelProvider.Factory)
-){}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlertDialogExample(
@@ -253,7 +251,8 @@ fun AlertDialogExample(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val ret = viewModel.addRoutine("11", "mogun1234")
+                    val ret = viewModel.addRoutine(12, "success???")
+
                     Log.d("addRoutine", "$ret")
                     // 운동에 대한 정보를 post
                     navController.popBackStack()

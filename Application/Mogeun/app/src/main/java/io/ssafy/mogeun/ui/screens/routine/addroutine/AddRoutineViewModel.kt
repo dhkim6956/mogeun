@@ -1,5 +1,6 @@
 package io.ssafy.mogeun.ui.screens.routine.addroutine
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -26,11 +27,11 @@ class AddRoutineViewModel(private val addRoutineRepository: RoutineRepository) :
         text1 = value
     }
 
-    fun addRoutine(userKey: String, routineName: String) {
+    fun addRoutine(userKey: Int, routineName: String) {
         lateinit var ret: AddRoutineResponse
         viewModelScope.launch {
             ret = addRoutineRepository.addRoutine(userKey, routineName)
-            //Log.d("jhk", "${ret.message}")
+            Log.d("addroutine", "$ret")
             if (ret.message == "SUCCESS") {
                 _addRoutineSuccess.value = true
             }

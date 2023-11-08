@@ -41,14 +41,15 @@ class AddExerciseViewModel(private val listAllExerciseRepository: RoutineReposit
 
             if (ret.message == "SUCCESS") {
                 _listAllExerciseSuccess.value = true
-                for(exercise in ret.data){
-                    exerciseList.add(exercise)
-                }
+                // 이름을 기준으로 중복을 제거합니다.
+                val uniqueExercises = ret.data.distinctBy { it.name }
+                exerciseList.clear()
+                exerciseList.addAll(uniqueExercises)
             }
         }
     }
 
-    fun addRoutine(userKey: String, routineName: String) {
+    fun addRoutine(userKey: Int, routineName: String) {
         lateinit var ret: AddRoutineResponse
         viewModelScope.launch{
             ret = listAllExerciseRepository.addRoutine(userKey, routineName)
