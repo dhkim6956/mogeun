@@ -51,11 +51,8 @@ import io.ssafy.mogeun.ui.screens.signup.SignupViewModel
 @Composable
 fun RoutineScreen(
     viewModel: RoutineViewModel = viewModel(factory = RoutineViewModel.Factory),
-    navController: NavHostController) {
-//    val context = LocalContext.current
-//    val test = LocalContext.current.resources.getIdentifier("chest", "string", context.packageName)
-    val openAlertDialog = remember { mutableStateOf(false) }
-
+    navController: NavHostController
+) {
     LaunchedEffect(Unit) {
         viewModel.getUserKey()
     }
@@ -65,7 +62,6 @@ fun RoutineScreen(
             viewModel.getRoutineList()
         }
     }
-
     Column(modifier = Modifier.padding(10.dp)) {
         Column {
             Row(
@@ -194,13 +190,10 @@ fun RoutineScreen(
         }
     }
 }
-
 @Composable
 fun RoutineList(
-    navController: NavHostController, 
-//    routine: String,
+    navController: NavHostController,
     routine: GetRoutineListResponseBody,
-    viewModel: RoutineViewModel = viewModel(factory = RoutineViewModel.Factory),
 ) {
     Column(modifier = Modifier
         .background(MaterialTheme.colorScheme.onPrimary)
@@ -249,7 +242,6 @@ fun RoutineList(
         Spacer(modifier = Modifier.height(10.dp))
     }
 }
-
 @Composable
 fun muscleIcon(imagePath: String) {
     Box(
