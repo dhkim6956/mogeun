@@ -12,4 +12,6 @@ interface KeyDao {
     suspend fun insert(key: Key)
     @Query("SELECT * FROM keyValue WHERE id = :id")
     fun getKey(id: Int): Flow<Key>
+    @Query("DELETE FROM keyValue")
+    suspend fun deleteKeyData()
 }
