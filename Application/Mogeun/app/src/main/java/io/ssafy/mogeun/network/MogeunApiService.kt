@@ -40,7 +40,7 @@ interface MogeunApiService {
     suspend fun getRoutineList(@Query("user_key") userKey: String): GetRoutineListResponse
 
     @POST("Routine/Create")
-    suspend fun addRoutine(@Query("user_key") userKey: String, @Query("routine_name") routineName: String): AddRoutineResponse
+    suspend fun addRoutine(@Body addRoutineRequest: AddRoutineRequest): AddRoutineResponse
 
 
     @GET("Result/Monthly")
