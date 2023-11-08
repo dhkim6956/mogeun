@@ -97,6 +97,9 @@ public class RoutineResultService {
                     .partList(new ArrayList<>())
                     .setResultList(new ArrayList<>())
                     .build());
+
+            // Seongmin muscle part -> part image path
+            exerciseResultDtoList.get(exerciseNameList.size() - 1).getPartList().addAll(attachPartService.getPartImagePathByExercise(routinePlan.getExercise()));
         }
 
 //        for (SetReport setReport: setReportList) {
