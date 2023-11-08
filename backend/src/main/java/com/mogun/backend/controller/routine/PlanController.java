@@ -60,12 +60,17 @@ public class PlanController {
 
         for(RoutineDto item: list) {
 
-            List<String> parts = attachPartService.getAllPartNameByExercise(item.getExec());
+//            List<String> parts = attachPartService.getAllPartNameByExercise(item.getExec());
+            // Seongmin 사용 근육 가져오기
+            List<String> parts = attachPartService.getPartNameByExercise(item.getExec());
 
             planList.add(SimplePlanInfoResponse.builder()
                     .execKey(item.getExec().getExecKey())
                     .execName(item.getExec().getName())
+                    .imagePath(item.getExec().getImagePath())
                     .musclePart(parts)
+                    .engName(item.getExec().getEngName())
+                    .mainPart(item.getExec().getMainPart().getPartName())
                     .build());
         }
 

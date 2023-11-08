@@ -36,6 +36,19 @@ public class AttachPartService {
         return result;
     }
 
+    // Seongmin 사용 근육 왼쪽 오른쪽 구분 X
+    public List<String> getPartNameByExercise(Exercise exec) {
+
+        List<String> result = new ArrayList<>();
+        List<AttachPart> partList = attachPartRepository.findAllByExerciseAndAttachDirection(exec, 'L');
+
+        for(AttachPart item: partList) {
+            result.add(item.getMusclePart().getPartName());
+        }
+
+        return result;
+    }
+
     // Seongmin 이미지 가져오기
     public List<String> getPartImagePathByExercise(Exercise exec) {
 
