@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -33,6 +35,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.model.GetRoutineListResponseBody
 import io.ssafy.mogeun.ui.Screen
 import io.ssafy.mogeun.ui.screens.signup.SignupViewModel
 
@@ -162,8 +166,10 @@ fun RoutineScreen(
             }
         }
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(viewModel.routineList) { routine ->
-                RoutineList(navController, routine.toString())
+            viewModel.tmp?.let {
+                itemsIndexed(it.data) { index, item ->
+                    RoutineList(navController, item)
+                }
             }
         }
     }
@@ -190,7 +196,12 @@ fun RoutineScreen(
 }
 
 @Composable
-fun RoutineList(navController: NavHostController, routine: String) {
+fun RoutineList(
+    navController: NavHostController, 
+//    routine: String,
+    routine: GetRoutineListResponseBody,
+    viewModel: RoutineViewModel = viewModel(factory = RoutineViewModel.Factory),
+) {
     Column(modifier = Modifier
         .background(MaterialTheme.colorScheme.onPrimary)
         .padding(top = 20.dp)) {
@@ -199,7 +210,7 @@ fun RoutineList(navController: NavHostController, routine: String) {
             .padding(bottom = 10.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = routine, modifier = Modifier.padding(start = 32.dp, top = 12.dp), fontSize = 24.sp)
+            Text(text = routine.name, modifier = Modifier.padding(start = 32.dp, top = 12.dp), fontSize = 24.sp)
             Button(
                 onClick = {
                     navController.navigate("addroutine/$routine")
@@ -219,58 +230,10 @@ fun RoutineList(navController: NavHostController, routine: String) {
         ) {
             Column {
                 Row {
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.surface,
-                                RoundedCornerShape(15.dp)
-                            )
-                            .width(48.dp)
-                            .height(48.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.chest),
-                            contentDescription = "chest",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.height(32.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.surface,
-                                RoundedCornerShape(15.dp)
-                            )
-                            .width(48.dp)
-                            .height(48.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.triceps),
-                            contentDescription = "triceps",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.height(32.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.surface,
-                                RoundedCornerShape(15.dp)
-                            )
-                            .width(48.dp)
-                            .height(48.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.biceps),
-                            contentDescription = "biceps",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.height(32.dp)
-                        )
+                    LazyRow() {
+                        items(routine.imagePath) { target ->
+                            muscleIcon(target)
+                        }
                     }
                 }
             }
@@ -285,4 +248,27 @@ fun RoutineList(navController: NavHostController, routine: String) {
         }
         Spacer(modifier = Modifier.height(10.dp))
     }
+}
+
+@Composable
+fun muscleIcon(imagePath: String) {
+    Box(
+        modifier = Modifier
+            .background(
+                color = MaterialTheme.colorScheme.surface,
+                RoundedCornerShape(15.dp)
+            )
+            .width(48.dp)
+            .height(48.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        val image = LocalContext.current.resources.getIdentifier(imagePath, "drawable", LocalContext.current.packageName)
+        Image(
+            painter = painterResource(id = image),
+            contentDescription = imagePath,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.height(32.dp).width(32.dp)
+        )
+    }
+    Spacer(modifier = Modifier.width(10.dp))
 }
