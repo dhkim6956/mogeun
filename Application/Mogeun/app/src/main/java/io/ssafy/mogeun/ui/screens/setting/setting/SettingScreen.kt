@@ -1,4 +1,4 @@
-package io.ssafy.mogeun.ui.screens.setting
+package io.ssafy.mogeun.ui.screens.setting.setting
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,11 +28,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.ui.screens.routine.searchRoutine.RoutineViewModel
 
 @Composable
-fun SettingScreen(navController: NavController) {
+fun SettingScreen(
+    viewModel: SettingViewModel = viewModel(factory = SettingViewModel.Factory),
+    navController: NavController
+) {
     Column(modifier = Modifier.padding(32.dp)) {
         Column {
             Text(
@@ -95,6 +100,10 @@ fun SettingScreen(navController: NavController) {
                 }
                 .fillMaxWidth()
                 .padding(16.dp)
+                .clickable{
+                    viewModel.deleteUserKey()
+                    navController.navigate("Splash")
+                }
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
