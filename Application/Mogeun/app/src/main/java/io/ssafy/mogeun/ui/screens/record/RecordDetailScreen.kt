@@ -89,7 +89,8 @@ fun RecordDetailScreen(
             item { viewModel.routineInfo?.let { RoutineGraphIconCard(it.exercises) } }
             if (routineInfo != null) {
                 itemsIndexed(routineInfo.exercises) {index, item ->
-                    RoutineExerciseCard(navController, item.execName, item.sets, item.imagePath, item.setResults)
+                    if (item.sets > 0)
+                        RoutineExerciseCard(navController, item.execName, item.sets, item.imagePath, item.setResults)
                 }
             }
         }
