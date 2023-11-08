@@ -10,6 +10,7 @@ import io.ssafy.mogeun.ui.screens.record.RecordViewModel
 import io.ssafy.mogeun.ui.screens.sample.DbSampleViewModel
 import io.ssafy.mogeun.ui.screens.setting.connection.ConnectionViewModel
 import io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.AddExerciseViewModel
+import io.ssafy.mogeun.ui.screens.routine.execution.ExecutionViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory {
@@ -28,7 +29,6 @@ object AppViewModelProvider {
         }
         initializer {
             ConnectionViewModel(
-                mogeunApplication().container.emgDataRepository,
                 mogeunApplication().container.bluetoothController
             )
         }
@@ -40,6 +40,12 @@ object AppViewModelProvider {
         initializer {
             AddExerciseViewModel(
                 mogeunApplication().container.listAllExerciseRepository
+            )
+        }
+        initializer {
+            ExecutionViewModel(
+                mogeunApplication().container.emgDataRepository,
+                mogeunApplication().container.bluetoothController
             )
         }
     }

@@ -1,5 +1,6 @@
 package io.ssafy.mogeun.ui.screens.setting.connection
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,46 +23,18 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
-class ConnectionViewModel(private val emgRepository: EmgRepository, private val bluetoothController: BluetoothController): ViewModel() {
-
-    private val _emgInput = mutableStateOf<Emg>(Emg(0, 1, "left", 0.0, System.currentTimeMillis()))
-
-    val emgInput = _emgInput
-
-    val emgStream: StateFlow<Emg?> =
-        emgRepository.getEmgStream()
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-                initialValue = null
-            )
-
-    fun setDeviceId(id: Int) {
-        _emgInput.value = _emgInput.value.copy(deviceId = id)
-    }
-
-    fun setSensingPart(part: String) {
-        _emgInput.value = _emgInput.value.copy(sensingPart = part)
-    }
-
-    fun setValue(value: Double) {
-        _emgInput.value = _emgInput.value.copy(value = value)
-    }
-
-    suspend fun saveData() {
-        _emgInput.value = _emgInput.value.copy(time = System.currentTimeMillis())
-        emgRepository.insertEmg(_emgInput.value)
-    }
-
+class ConnectionViewModel(private val bluetoothController: BluetoothController): ViewModel() {
     private val _state = MutableStateFlow(ConnectionUiState())
     val state = combine(
         bluetoothController.scannedDevices,
         bluetoothController.pairedDevices,
+        bluetoothController.connectedDevices,
         _state
-    ) { scannedDevices, pairedDevices, state ->
+    ) { scannedDevices, pairedDevices, connectedDevices, state ->
         state.copy(
             scannedDevices = scannedDevices,
             pairedDevices = pairedDevices,
+            connectedDevices = connectedDevices,
             messages = if(state.isConnected) state.messages else emptyList()
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(TIMEOUT_MILLIS), _state.value)
@@ -114,7 +87,6 @@ class ConnectionViewModel(private val emgRepository: EmgRepository, private val 
         }
     }
 
-
     fun startScan() {
         bluetoothController.startDiscovery()
     }
@@ -134,19 +106,23 @@ class ConnectionViewModel(private val emgRepository: EmgRepository, private val 
                     ) }
                 }
                 is ConnectionResult.TransferSucceeded -> {
+                    Log.d("bluetooth", "${result.message}")
                     _state.update { it.copy(
                         messages = it.messages + result.message
                     ) }
                 }
                 is ConnectionResult.Error -> {
-                    _state.update { it.copy(
-                        isConnected = false,
-                        isConnecting = false,
-                        errorMessage = result.message
-                    ) }
+                    if(result.message != "errString") {
+                        _state.update { it.copy(
+                            isConnected = false,
+                            isConnecting = false,
+                            errorMessage = result.message
+                        ) }
+                    }
                 }
             }
         }.catch {throwable ->
+            Log.d("bluetooth", "종료조건 ${throwable}")
             bluetoothController.closeConnection()
             _state.update { it.copy(
                 isConnected = false,

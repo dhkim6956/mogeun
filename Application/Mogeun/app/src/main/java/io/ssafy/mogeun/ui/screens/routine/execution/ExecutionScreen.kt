@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -58,36 +60,26 @@ import com.patrykandpatrick.vico.compose.axis.vertical.startAxis
 import com.patrykandpatrick.vico.compose.chart.Chart
 import com.patrykandpatrick.vico.compose.chart.line.lineChart
 import com.patrykandpatrick.vico.core.entry.entryModelOf
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.ui.AppViewModelProvider
 import kotlinx.coroutines.delay
 import org.jtransforms.fft.DoubleFFT_1D
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ExecutionScreen() {
-    //val state = rememberPagerState { 10 }
+fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
+    val pagerState = rememberPagerState { 10 }
 
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color.Yellow)
-    ) {
-        ExerciseEMGScreen()
-
-
-        //HorizontalPager(state = state, modifier = Modifier.fillMaxSize()) {page ->
-        //            Box(
-        //                modifier = Modifier
-        //                    .padding(10.dp)
-        //                    .background(Color.Blue)
-        //                    .fillMaxWidth()
-        //                    .aspectRatio(1f),
-        //            ) {
-        //                Text(text = page.toString(), fontSize = 32.sp)
-        //            }
-        //   }
+    HorizontalPager(pagerState, Modifier.fillMaxSize()) {page ->
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            ExerciseEMGScreen()
+        }
     }
 }
 
