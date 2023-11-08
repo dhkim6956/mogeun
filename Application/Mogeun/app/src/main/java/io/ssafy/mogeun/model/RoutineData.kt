@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AddRoutineRequest(
     @SerialName(value = "user_key")
-    val userKey: Int,
+    val userKey: Int?,
     @SerialName(value = "routine_name")
     val routineName: String
 )

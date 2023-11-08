@@ -78,6 +78,7 @@ fun AddExerciseScreen(
     var selectedMusclePart by remember { mutableStateOf("전체") }
     LaunchedEffect(Unit){
         viewModel.listAllExercise()
+        viewModel.getUserKey()
     }
     Column(
         modifier = Modifier
@@ -233,8 +234,11 @@ fun AlertDialogExample(
     dialogText: String,
     icon: ImageVector,
 ) {
-    val (userKey, setName) = remember { mutableStateOf("") }
     val viewModel: AddRoutineViewModel = viewModel(factory = AddRoutineViewModel.Factory)
+    var routineName by remember { mutableStateOf("") }
+    LaunchedEffect(viewModel.userKey){
+        viewModel.getUserKey()
+    }
     AlertDialog(
         icon = {
             Icon(icon, contentDescription = "Example Icon")
@@ -243,7 +247,16 @@ fun AlertDialogExample(
             Text(text = dialogTitle)
         },
         text = {
-            TextField(value = userKey, onValueChange = setName )
+            Column {
+                Text(text = dialogText)
+                Spacer(modifier = Modifier.height(8.dp)) // Spacing for better UI
+                // TextField for user to enter the routine name
+                TextField(
+                    value = routineName,
+                    onValueChange = { routineName = it },
+                    label = { Text("Enter routine name") }
+                )
+            }
         },
         onDismissRequest = {
             onDismissRequest()
@@ -251,11 +264,11 @@ fun AlertDialogExample(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val ret = viewModel.addRoutine(12, "success???")
-
-                    Log.d("addRoutine", "$ret")
-                    // 운동에 대한 정보를 post
-                    navController.popBackStack()
+                    viewModel.userKey?.let {
+                        val ret = viewModel.addRoutine(viewModel.userKey, routineName)
+                        Log.d("addRoutine", "$ret")
+                        navController.popBackStack()
+                    } ?: Log.e("addRoutine", "User key is null")
                 }
             ) {
                 Text("Confirm")
