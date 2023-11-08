@@ -203,11 +203,14 @@ fun RoutineList(
             .padding(bottom = 10.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = routine.name, modifier = Modifier.padding(start = 32.dp, top = 12.dp), fontSize = 24.sp)
+            Text(
+                text = routine.name,
+                modifier = Modifier.padding(start = 12.dp, top = 12.dp),
+                fontSize = 24.sp,
+                maxLines = 1
+            )
             Button(
-                onClick = {
-                    navController.navigate("addroutine/$routine")
-                          },
+                onClick = { navController.navigate("addroutine/$routine") },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
             ) {
                 Image(
@@ -221,22 +224,18 @@ fun RoutineList(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-            Column {
-                Row {
-                    LazyRow() {
-                        items(routine.imagePath) { target ->
-                            muscleIcon(target)
-                        }
+            Row(modifier = Modifier.width(200.dp)) {
+                LazyRow() {
+                    items(routine.imagePath) { target ->
+                        muscleIcon(target)
                     }
                 }
             }
             Button(
                 onClick = { navController.navigate(Screen.Execution.route) },
-                border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.scrim),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text(text = "루틴시작", color = MaterialTheme.colorScheme.scrim)
+                Text(text = "루틴시작")
             }
         }
         Spacer(modifier = Modifier.height(10.dp))
