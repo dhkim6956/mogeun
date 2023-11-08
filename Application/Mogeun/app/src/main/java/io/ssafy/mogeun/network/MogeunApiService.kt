@@ -2,6 +2,8 @@ package io.ssafy.mogeun.network
 
 import io.ssafy.mogeun.model.AddRoutineRequest
 import io.ssafy.mogeun.model.AddRoutineResponse
+import io.ssafy.mogeun.model.DeleteUserRequest
+import io.ssafy.mogeun.model.DeleteUserResponse
 import io.ssafy.mogeun.model.DupEmailResponse
 import io.ssafy.mogeun.model.GetInbodyResponse
 import io.ssafy.mogeun.model.ListAllExerciseResponse
@@ -52,5 +54,6 @@ interface MogeunApiService {
     @GET("Exercise/ListAll")
     suspend fun listAllExercise(): ListAllExerciseResponse
 
-
+    @POST("User/Exit")
+    suspend fun deleteUser(@Body deleteUserRequest: DeleteUserRequest): DeleteUserResponse
 }

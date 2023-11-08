@@ -110,3 +110,18 @@ data class UpdateUserResponse(
     val message: String,
     val data: String?
 )
+
+@Serializable
+data class DeleteUserRequest(
+    @SerialName(value = "user_email")
+    val userEmail: String,
+    @SerialName(value = "user_pw")
+    val userPw: String
+)
+@Serializable
+data class DeleteUserResponse(
+    val code: Int,
+    val status: String,
+    val message: String,
+    val body: String
+)
