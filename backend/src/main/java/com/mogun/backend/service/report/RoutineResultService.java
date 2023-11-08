@@ -10,6 +10,7 @@ import com.mogun.backend.domain.report.routineResult.repository.RoutineResultRep
 import com.mogun.backend.domain.report.setReport.SetReport;
 import com.mogun.backend.domain.report.setReport.repository.SetReportRepository;
 import com.mogun.backend.domain.report.usedMusclePart.repository.UsedMusclePartRepository;
+import com.mogun.backend.domain.routine.userRoutinePlan.UserRoutinePlan;
 import com.mogun.backend.domain.user.User;
 import com.mogun.backend.domain.user.repository.UserRepository;
 import com.mogun.backend.service.attachPart.AttachPartService;
@@ -79,6 +80,22 @@ public class RoutineResultService {
         List<SetReport> setReportList = setReportRepository.findAllByRoutineReport(report);
         List<ExerciseResultDto> exerciseResultDtoList = new ArrayList<>();
 
+        // Seongmin 루틴에서 설정한 운동에 맞게 정렬
+        List<UserRoutinePlan> RoutineList = userRoutinePlanRepository.findAllByUserRoutine(report.getUserRoutine());
+        List<String> exerciseNameList = new ArrayList<>();
+
+        for (UserRoutinePlan routinePlan: RoutineList) {
+            exerciseNameList.add(routinePlan.getExercise().getName());
+
+            exerciseResultDtoList.add(ExerciseResultDto.builder()
+                    .execName(routinePlan.getExercise().getName())
+                    .imagePath(routinePlan.getExercise().getImagePath())
+                    .sets(0)
+                    .partList(new ArrayList<>())
+                    .setResultList(new ArrayList<>())
+                    .build());
+        }
+
 //        for (SetReport setReport: setReportList) {
 //            if(exerciseResultDtoList.isEmpty()) {
 //                exerciseResultDtoList.add(ExerciseResultDto.builder()
@@ -137,77 +154,22 @@ public class RoutineResultService {
 //                        .build());
 //            }
 //        }
-        // Seongmin 같은 운동이지만 set가 1로 여러개 나오는 현상 수정
+        // Seongmin 같은 운동이지만 set가 1로 여러개 나오는 현상 수정 & 루틴에서 설정한 운동에 맞게 정렬
         for (SetReport setReport: setReportList) {
-            if(exerciseResultDtoList.isEmpty()) {
-                exerciseResultDtoList.add(ExerciseResultDto.builder()
-                        .execName(setReport.getExercise().getName())
-                        .imagePath(setReport.getExercise().getImagePath())
-                        .sets(1)
-                        .partList(new ArrayList<>())
-                        .setResultList(new ArrayList<>())
-                        .build());
-
-                List<MuscleActInSetLog> logList = actInSetLogRepository.findAllBySetReport(setReport);
-                List<Float> activity = new ArrayList<>();
-                for (MuscleActInSetLog log: logList)
-                    activity.add(log.getMuscleActivity());
-
-                exerciseResultDtoList.get(0).getPartList().addAll(attachPartService.getAllPartNameByExercise(setReport.getExercise()));
-                exerciseResultDtoList.get(0).getSetResultList().add(SetResultDto.builder()
-                        .setNumber(setReport.getSetNumber())
-                        .weight(setReport.getTrainWeight())
-                        .targetRep(setReport.getTargetRep())
-                        .successRep(setReport.getSuccessesRep())
-                        .muscleActivityList(activity)
-                        .build());
-            }
-            else {
-                int lastIndex = exerciseResultDtoList.size() - 1;
-                String exec = setReport.getExercise().getName();
-
-                if (!exec.equals(exerciseResultDtoList.get(lastIndex).getExecName())) {
-                    exerciseResultDtoList.add(ExerciseResultDto.builder()
-                            .execName(setReport.getExercise().getName())
-                            .imagePath(setReport.getExercise().getImagePath())
-                            .sets(1)
-                            .partList(new ArrayList<>())
-                            .setResultList(new ArrayList<>())
-                            .build());
-
-                    lastIndex = exerciseResultDtoList.size() - 1;
-
-                    List<MuscleActInSetLog> logList = actInSetLogRepository.findAllBySetReport(setReport);
-                    List<Float> activity = new ArrayList<>();
-                    for (MuscleActInSetLog log : logList)
-                        activity.add(log.getMuscleActivity());
-
-                    exerciseResultDtoList.get(lastIndex).getPartList().addAll(attachPartService.getAllPartNameByExercise(setReport.getExercise()));
-                    exerciseResultDtoList.get(lastIndex).getSetResultList().add(SetResultDto.builder()
-                            .setNumber(setReport.getSetNumber())
-                            .weight(setReport.getTrainWeight())
-                            .targetRep(setReport.getTargetRep())
-                            .successRep(setReport.getSuccessesRep())
-                            .muscleActivityList(activity)
-                            .build());
-                } else {
-                    int lastSet = exerciseResultDtoList.get(lastIndex).getSets();
-                    exerciseResultDtoList.get(lastIndex).setSets(lastSet + 1);
-
-                    List<MuscleActInSetLog> logList = actInSetLogRepository.findAllBySetReport(setReport);
-                    List<Float> activity = new ArrayList<>();
-                    for (MuscleActInSetLog log : logList)
-                        activity.add(log.getMuscleActivity());
-
-                    exerciseResultDtoList.get(lastIndex).getSetResultList().add(SetResultDto.builder()
-                            .setNumber(setReport.getSetNumber())
-                            .weight(setReport.getTrainWeight())
-                            .targetRep(setReport.getTargetRep())
-                            .successRep(setReport.getSuccessesRep())
-                            .muscleActivityList(activity)
-                            .build());
-                }
-            }
+            int index = exerciseNameList.indexOf(setReport.getExercise().getName());
+            int lastSet = exerciseResultDtoList.get(index).getSets();
+            exerciseResultDtoList.get(index).setSets(lastSet + 1);
+            List<MuscleActInSetLog> logList = actInSetLogRepository.findAllBySetReport(setReport);
+            List<Float> activity = new ArrayList<>();
+            for (MuscleActInSetLog log : logList)
+                activity.add(log.getMuscleActivity());
+            exerciseResultDtoList.get(index).getSetResultList().add(SetResultDto.builder()
+                    .setNumber(setReport.getSetNumber())
+                    .weight(setReport.getTrainWeight())
+                    .targetRep(setReport.getTargetRep())
+                    .successRep(setReport.getSuccessesRep())
+                    .muscleActivityList(activity)
+                    .build());
         }
 
         Duration performTime = Duration.between(result.get().getRoutineReport().getStartTime(), result.get().getRoutineReport().getEndTime());
