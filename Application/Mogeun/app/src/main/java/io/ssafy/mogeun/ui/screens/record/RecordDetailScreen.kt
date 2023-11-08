@@ -51,6 +51,7 @@ import io.ssafy.mogeun.R
 import io.ssafy.mogeun.model.Exercise
 import io.ssafy.mogeun.model.SetResult
 import io.ssafy.mogeun.ui.AppViewModelProvider
+import io.ssafy.mogeun.ui.screens.routine.searchRoutine.muscleIcon
 
 @Composable
 fun RecordDetailScreen(
@@ -244,18 +245,6 @@ fun GraphCard() {
 }
 
 fun getRandomEntries() = List(9) { entryOf(it, it * 10) }
-
-@Composable
-fun muscleIcon(
-    imagePath: String
-) {
-    val muscleImage = LocalContext.current.resources.getIdentifier(imagePath, "drawable", LocalContext.current.packageName)
-
-    Image(
-        painter = painterResource(id = muscleImage),
-        contentDescription = "logo",
-    )
-}
 
 @Composable
 fun IconCard(
