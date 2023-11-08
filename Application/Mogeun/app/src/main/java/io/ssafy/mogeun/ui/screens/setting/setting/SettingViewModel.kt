@@ -8,18 +8,25 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.data.KeyRepository
-import io.ssafy.mogeun.data.RoutineRepository
 import io.ssafy.mogeun.data.UserRepository
-import io.ssafy.mogeun.ui.screens.routine.searchRoutine.RoutineViewModel
-import kotlinx.coroutines.flow.first
+import io.ssafy.mogeun.model.DeleteUserResponse
+import io.ssafy.mogeun.model.GetInbodyResponse
 import kotlinx.coroutines.launch
 
 class SettingViewModel(
-    private val keyRepository: KeyRepository
+    private val keyRepository: KeyRepository,
+    private val UserRepository: UserRepository
 ) : ViewModel()  {
     fun deleteUserKey() {
         viewModelScope.launch {
             keyRepository.deleteKeyData()
+        }
+    }
+    fun deleteUser() {
+        lateinit var ret: DeleteUserResponse
+        viewModelScope.launch {
+            ret = UserRepository.deleteUser("", "")
+            Log.d("getInbody", "$ret")
         }
     }
     companion object {
@@ -27,7 +34,8 @@ class SettingViewModel(
             initializer {
                 val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as MogeunApplication)
                 val keyRepository = application.container.keyRepository
-                SettingViewModel(keyRepository)
+                val userRepository = application.container.userDataRepository
+                SettingViewModel(keyRepository, UserRepository = userRepository)
             }
         }
     }
