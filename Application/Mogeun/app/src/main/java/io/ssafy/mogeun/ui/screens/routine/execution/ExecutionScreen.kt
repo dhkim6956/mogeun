@@ -55,6 +55,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import com.patrykandpatrick.vico.compose.axis.horizontal.bottomAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.startAxis
 import com.patrykandpatrick.vico.compose.chart.Chart
@@ -63,7 +64,9 @@ import com.patrykandpatrick.vico.core.entry.entryModelOf
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.ui.AppViewModelProvider
+import io.ssafy.mogeun.ui.screens.record.RecordViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jtransforms.fft.DoubleFFT_1D
 
 
@@ -87,7 +90,7 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun ExerciseEMGScreen(){
+fun ExerciseEMGScreen(/*viewModel: ExecutionViewModel = viewModel(factory = AppViewModelProvider.Factory)*/){
     val setList: MutableList<String> by remember { mutableStateOf(mutableListOf("1세트", "2세트", "3세트", "4세트")) }
     var selectedTab by remember { mutableIntStateOf(0) }
     var lastClickTime by remember { mutableLongStateOf(0L) }
@@ -237,7 +240,10 @@ fun ExerciseEMGScreen(){
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .padding(4.dp)
-                                .clickable { isStarting = true },
+                                .clickable {
+                                    isStarting = true
+                                    //viewModel.getSet()
+                                },
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center,
                         ){
@@ -406,19 +412,30 @@ fun InfiniteItemsPicker(
                     var isEditing by remember { mutableStateOf(false) }
                     var Text by remember { mutableStateOf(String()) }
 
-                    if(isEditing){
+                    if (isEditing) {
+                        var newText by remember { mutableStateOf(Text) }
+                        val coroutineScope = rememberCoroutineScope() // CoroutineScope 생성
+
                         TextField(
-                            value = Text,
-                            onValueChange = {newText ->
-                                Text = newText
+                            value = newText,
+                            onValueChange = {
+                                newText = it
                             },
                             keyboardOptions = KeyboardOptions.Default.copy(
-                                keyboardType = KeyboardType.Text, // 텍스트 입력 모드 설정
+                                keyboardType = KeyboardType.Number, // 숫자 입력 모드 설정
                                 imeAction = androidx.compose.ui.text.input.ImeAction.Done
                             ),
                             keyboardActions = KeyboardActions(
                                 onDone = {
                                     isEditing = false
+                                    if (newText.isNotEmpty()) {
+                                        val newPosition = (items.size * 30) + newText.toInt()-1
+
+                                        // CoroutineScope 내에서 scrollToItem 호출
+                                        coroutineScope.launch {
+                                            listState.scrollToItem(newPosition)
+                                        }
+                                    }
                                 }
                             ),
                             textStyle = LocalTextStyle.current.copy(fontSize = 12.sp),
@@ -426,8 +443,7 @@ fun InfiniteItemsPicker(
                                 .fillMaxWidth()
                                 .fillMaxHeight(0.1f)
                         )
-                    }
-                    else{
+                    } else {
                         Text(
                             text = items[index],
                             modifier = Modifier
