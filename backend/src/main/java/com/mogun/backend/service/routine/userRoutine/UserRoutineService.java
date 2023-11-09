@@ -33,15 +33,15 @@ public class UserRoutineService {
                 .build();
     }
 
-    public String createRoutine(RoutineDto dto, int userKey) {
+    public int createRoutine(RoutineDto dto, int userKey) {
 
         Optional<User> user = userRepository.findById(userKey);
         if(user.isEmpty() || user.get().getIsLeaved() != 'J')
-            return "요청 오류: 등록된 회원이 아님";
+            return -1;
 
-        routineRepository.save(dto.toRoutineEntity(user.get()));
+        UserRoutine save = routineRepository.save(dto.toRoutineEntity(user.get()));
 
-        return "SUCCESS";
+        return save.getRoutineKey();
     }
 
     public String renameRoutine(RoutineDto dto) {

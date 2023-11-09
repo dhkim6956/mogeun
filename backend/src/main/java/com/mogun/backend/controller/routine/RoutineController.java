@@ -3,6 +3,7 @@ package com.mogun.backend.controller.routine;
 
 import com.mogun.backend.ApiResponse;
 import com.mogun.backend.controller.routine.request.CommonRoutineRequest;
+import com.mogun.backend.controller.routine.response.RoutineCreatedResponse;
 import com.mogun.backend.controller.routine.response.SimpleRoutineInfoResponse;
 import com.mogun.backend.service.attachPart.AttachPartService;
 import com.mogun.backend.service.routine.dto.RoutineDto;
@@ -10,6 +11,7 @@ import com.mogun.backend.service.routine.userRoutine.UserRoutineService;
 import com.mogun.backend.service.routine.userRoutinePlan.UserRoutinePlanService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -31,11 +33,17 @@ public class RoutineController {
     @PostMapping("/Create")
     public ApiResponse createRoutine(@RequestBody CommonRoutineRequest request) {
 
-        String result = routineService.createRoutine(RoutineDto.builder()
+        int result = routineService.createRoutine(RoutineDto.builder()
                 .routineName(request.getRoutineName()).build(),
                 request.getUserKey());
 
-        return ApiResponse.postAndPutResponse(result, request);
+        if(result == -1)
+            return ApiResponse.badRequest("요청 오류: 등록되지 않은 회원");
+
+        return ApiResponse.of(HttpStatus.ACCEPTED, "SUCCESS", RoutineCreatedResponse.builder()
+                .routine_key(result)
+                .routineName(request.getRoutineName())
+                .build());
     }
 
     @PutMapping("/Delete")
