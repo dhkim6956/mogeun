@@ -57,9 +57,9 @@ fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarH
         }
         composable(
             Screen.AddRoutine.route,
-            arguments = listOf(navArgument("routineName") {type = NavType.StringType})
+            arguments = listOf(navArgument("routineKey") {type = NavType.IntType})
         ) {backStackEntry ->
-            AddRoutineScreen(navController = navController, routineName = backStackEntry.arguments?.getString("routineName")) }
+            AddRoutineScreen(navController = navController, routineName = backStackEntry.arguments?.getInt("routineKey")) }
         composable(Screen.AddExercise.route) { AddExerciseScreen(navController = navController) }
 
         composable(

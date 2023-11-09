@@ -193,7 +193,7 @@ fun RoutineScreen(
 @Composable
 fun RoutineList(
     navController: NavHostController,
-    routine: GetRoutineListResponseBody,
+    routine: GetRoutineListResponseBody
 ) {
     Column(modifier = Modifier
         .background(MaterialTheme.colorScheme.onPrimary)
@@ -210,7 +210,7 @@ fun RoutineList(
                 maxLines = 1
             )
             Button(
-                onClick = { navController.navigate("addroutine/$routine") },
+                onClick = { navController.navigate("addroutine/${routine.key}") },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
             ) {
                 Image(

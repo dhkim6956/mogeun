@@ -26,7 +26,7 @@ class SettingViewModel(
         lateinit var ret: DeleteUserResponse
         viewModelScope.launch {
             ret = UserRepository.deleteUser("qqqq", "qqqq")
-            Log.d("getInbody", "$ret")
+            Log.d("deleteUser", "$ret")
         }
     }
     companion object {
