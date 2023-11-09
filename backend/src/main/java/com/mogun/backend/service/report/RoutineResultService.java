@@ -130,10 +130,12 @@ public class RoutineResultService {
                         .imagePath(setReport.getExercise().getImagePath())
                         .sets(0)
                         .partList(new ArrayList<>())
+                        .muscleImagePathList(new ArrayList<>())
                         .setResultList(new ArrayList<>())
                         .build());
 
                 exerciseResultDtoList.get(0).getPartList().addAll(attachPartService.getAllPartNameByExercise(setReport.getExercise()));
+                exerciseResultDtoList.get(0).getMuscleImagePathList().addAll(attachPartService.getPartImagePathByExercise(setReport.getExercise()));
             }
 
             // 목록의 끝부분을 가리키는 index 갱신 및 현재 세트가 무엇인지 확인
@@ -166,11 +168,13 @@ public class RoutineResultService {
                         .imagePath(setReport.getExercise().getImagePath())
                         .sets(1)
                         .partList(new ArrayList<>())
+                        .muscleImagePathList(new ArrayList<>())
                         .setResultList(new ArrayList<>())
                         .build());
 
                 lastIndex = exerciseResultDtoList.size() - 1;
                 exerciseResultDtoList.get(lastIndex).getPartList().addAll(attachPartService.getAllPartNameByExercise(setReport.getExercise()));
+                exerciseResultDtoList.get(lastIndex).getMuscleImagePathList().addAll(attachPartService.getPartImagePathByExercise(setReport.getExercise()));
 
                 exerciseResultDtoList.get(lastIndex).getSetResultList().add(SetResultDto.builder()
                         .setNumber(setReport.getSetNumber())

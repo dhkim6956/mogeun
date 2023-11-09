@@ -25,6 +25,9 @@ public class ExerciseResultDto {
     @JsonProperty("parts")
     private List<String> partList;
 
+    @JsonProperty("muscle_image_paths")
+    private List<String> muscleImagePathList;
+
     @JsonProperty("set_results")
     private List<SetResultDto> setResultList;
 }

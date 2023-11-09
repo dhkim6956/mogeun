@@ -1,7 +1,9 @@
 package com.mogun.backend.controller.routine;
 
 import com.mogun.backend.ApiResponse;
+import com.mogun.backend.controller.routine.request.AddPlanListRequest;
 import com.mogun.backend.controller.routine.request.CommonRoutineRequest;
+import com.mogun.backend.controller.routine.response.AddPlanListResponse;
 import com.mogun.backend.controller.routine.response.PlanListResponse;
 import com.mogun.backend.controller.routine.response.SimplePlanInfoResponse;
 import com.mogun.backend.service.attachPart.AttachPartService;
@@ -10,6 +12,7 @@ import com.mogun.backend.service.routine.userRoutine.UserRoutineService;
 import com.mogun.backend.service.routine.userRoutinePlan.UserRoutinePlanService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -35,6 +38,28 @@ public class PlanController {
                 .build());
 
         return ApiResponse.postAndPutResponse(result, request);
+    }
+
+    @PostMapping("/AddAll")
+    public ApiResponse addAllPlan(@RequestBody AddPlanListRequest request) {
+
+        List<Integer> success = new ArrayList<>();
+        List<Integer> fail = new ArrayList<>();
+
+        for(Integer key: request.getExecKeys()) {
+
+            if(planService.addPlan(RoutineDto.builder()
+                    .routineKey(request.getRoutineKey())
+                    .execKey(request.getRoutineKey())
+                    .setAmount(1)
+                    .build()) != "SUCCESS") {
+                fail.add(key);
+            } else {
+                success.add(key);
+            }
+        }
+
+        return ApiResponse.of(HttpStatus.ACCEPTED, "OK", AddPlanListResponse.builder().addedExec(success).failedExec(fail).build());
     }
 
     @DeleteMapping("/Remove")
