@@ -2,6 +2,7 @@ package io.ssafy.mogeun.ui
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -27,11 +28,12 @@ import io.ssafy.mogeun.ui.screens.splash.SplashScreen
 
 @Composable
 fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarHostState) {
+    val btViewModel: BluetoothViewModel = viewModel(factory = AppViewModelProvider.Factory)
     NavHost(navController, startDestination = Screen.Splash.route) {
         composable(Screen.Splash.route) { SplashScreen(navController = navController)}
         navigation(route = "Routines", startDestination = Screen.Routine.route) {
             composable(Screen.Routine.route) { RoutineScreen(navController = navController) }
-            composable(Screen.Execution.route) { ExecutionScreen() }
+            composable(Screen.Execution.route) { ExecutionScreen(viewModel = btViewModel) }
         }
         navigation(route = "Records", startDestination = Screen.Record.route) {
             composable(Screen.Record.route) { RecordScreen(navController = navController) }
@@ -69,6 +71,6 @@ fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarH
             ExplainExerciseScreen(navController = navController, data = backStackEntry.arguments?.getString("image"))
         }
         composable(Screen.SqlSample.route) { DbSampleScreen() }
-        composable(Screen.Connection.route) { ConnectionScreen(snackbarHostState = snackbarHostState) }
+        composable(Screen.Connection.route) { ConnectionScreen(viewModel = btViewModel, snackbarHostState = snackbarHostState) }
     }
 }

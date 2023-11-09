@@ -1,6 +1,5 @@
 package io.ssafy.mogeun.ui.screens.setting.connection
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,18 +21,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ssafy.mogeun.data.bluetooth.BluetoothDevice
-import io.ssafy.mogeun.ui.AppViewModelProvider
-import io.ssafy.mogeun.ui.theme.MogeunTheme
-import kotlinx.coroutines.CoroutineScope
+import io.ssafy.mogeun.ui.BluetoothViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun ConnectionScreen(viewModel: ConnectionViewModel = viewModel(factory = AppViewModelProvider.Factory), snackbarHostState: SnackbarHostState) {
+fun ConnectionScreen(viewModel: BluetoothViewModel, snackbarHostState: SnackbarHostState) {
     val state by viewModel.state.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
@@ -95,6 +90,9 @@ fun ConnectionScreen(viewModel: ConnectionViewModel = viewModel(factory = AppVie
                     }
                     Button(onClick = viewModel::stopScan) {
                         Text(text = "Stop scan")
+                    }
+                    Button(onClick = viewModel::disconnectFromDevice) {
+                        Text(text = "Disconnect")
                     }
                 }
             }
