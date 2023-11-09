@@ -45,6 +45,7 @@ object AppViewModelProvider {
         }
         initializer {
             ExecutionViewModel(
+                mogeunApplication().container.setRepository,
                 mogeunApplication().container.emgDataRepository,
                 mogeunApplication().container.bluetoothController
             )
