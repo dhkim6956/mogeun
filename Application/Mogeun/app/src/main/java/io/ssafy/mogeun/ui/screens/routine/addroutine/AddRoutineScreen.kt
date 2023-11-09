@@ -33,10 +33,21 @@ import androidx.navigation.NavHostController
 import io.ssafy.mogeun.R
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.viewmodel.compose.viewModel
+import io.ssafy.mogeun.ui.AppViewModelProvider
 
 
 @Composable
-fun AddRoutineScreen(navController: NavHostController, routineName: Int?) {
+fun AddRoutineScreen(
+    navController: NavHostController,
+    routineKey: Int?,
+    viewModel: AddRoutineViewModel= viewModel(factory = AddRoutineViewModel.Factory)
+) {
+    LaunchedEffect(Unit){
+        viewModel.getUserKey()
+        viewModel.listMyExercise(routineKey)
+    }
     val exerciseList = listOf(
         "Barbell Bench Press",
         "Dumbbell Bench Press",
@@ -52,7 +63,7 @@ fun AddRoutineScreen(navController: NavHostController, routineName: Int?) {
             .fillMaxSize()
             .padding(16.dp),
     ) {
-        Log.d("routineKey", "${routineName}")
+        Log.d("routineKey", "${routineKey}")
         LazyColumn {
             // slide_list_view
             items(exerciseList) { exercise ->

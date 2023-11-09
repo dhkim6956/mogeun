@@ -64,6 +64,6 @@ interface MogeunApiService {
     suspend fun getSet(@Body setRequest: SetRequest): SetResponse
 
     @GET("Routine/Plan/ListAll")
-    suspend fun listMyExercise(@Query("routine_key") routineKey: Int): ListMyExerciseResponse
+    suspend fun listMyExercise(@Query("routine_key") routineKey: Int?): ListMyExerciseResponse
 
 }

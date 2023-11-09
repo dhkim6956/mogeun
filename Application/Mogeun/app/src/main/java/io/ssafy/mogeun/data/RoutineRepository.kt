@@ -12,8 +12,7 @@ interface RoutineRepository{
     suspend fun addRoutine(userKey: Int?, routineMame: String): AddRoutineResponse
     suspend fun getRoutineList(user_key: String): GetRoutineListResponse
     suspend fun listAllExercise(): ListAllExerciseResponse
-
-//    suspend fun listMyExercise(): ListMyExerciseResponse
+    suspend fun listMyExercise(routineKey: Int?): ListMyExerciseResponse
 }
 
 
@@ -31,8 +30,8 @@ class NetworkRoutineRepository(
         return mogeunApiService.getRoutineList(key)
     }
 
-//    override suspend fun listMyExercise(routineKey: Int): ListMyExerciseResponse{
-//        return mogeunApiService.listMyExercise(listMyExerciseRequest(routineKey))
-//    }
+    override suspend fun listMyExercise(routineKey: Int?): ListMyExerciseResponse{
+        return mogeunApiService.listMyExercise(routineKey)
+    }
 }
 

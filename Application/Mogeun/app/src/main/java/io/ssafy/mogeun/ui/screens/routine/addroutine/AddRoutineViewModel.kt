@@ -19,14 +19,18 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.collectAsState
+import io.ssafy.mogeun.model.ListMyExerciseResponse
 
 class AddRoutineViewModel(
-    private val addRoutineRepository: RoutineRepository,
+    private val routineRepository: RoutineRepository,
     private val keyRepository: KeyRepository
 ) : ViewModel() {
     var userKey by mutableStateOf<Int?>(null)
     private val _addRoutineSuccess = MutableStateFlow(false)
     val addRoutineSuccess: StateFlow<Boolean> = _addRoutineSuccess.asStateFlow()
+
+    private val _listMyExerciseSuccess = MutableStateFlow(false)
+    val listMyExerciseSuccess: StateFlow<Boolean> = _listMyExerciseSuccess.asStateFlow()
 
     var text1 by mutableStateOf("")
 
@@ -39,7 +43,7 @@ class AddRoutineViewModel(
     fun addRoutine(userKey: Int?, routineName: String) {
         lateinit var ret: AddRoutineResponse
         viewModelScope.launch {
-            ret = addRoutineRepository.addRoutine(userKey, routineName)
+            ret = routineRepository.addRoutine(userKey, routineName)
             Log.d("addroutine", "$ret")
             if (ret.message == "SUCCESS") {
                 _addRoutineSuccess.value = true
@@ -54,14 +58,25 @@ class AddRoutineViewModel(
             updateUserKey(userKey)
         }
     }
+    fun listMyExercise(routineKey: Int?){
+        lateinit var ret: ListMyExerciseResponse
+        viewModelScope.launch{
+            ret = routineRepository.listMyExercise(routineKey)
+            Log.d("listMyexercise", "$ret")
+            if (ret.message == "SUCCESS"){
+                _listMyExerciseSuccess.value = true
+            }
+        }
+    }
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as MogeunApplication)
-                val addRoutineRepository = application.container.addRoutineRepository
+                val addRoutineRepository = application.container.routineRepository
                 val keyRepository = application.container.keyRepository
-                AddRoutineViewModel(addRoutineRepository = addRoutineRepository, keyRepository)
+                AddRoutineViewModel(routineRepository = addRoutineRepository, keyRepository)
             }
         }
     }
+
 }

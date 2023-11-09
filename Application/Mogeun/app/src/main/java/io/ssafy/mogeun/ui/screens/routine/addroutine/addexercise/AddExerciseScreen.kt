@@ -66,8 +66,7 @@ import io.ssafy.mogeun.ui.AppViewModelProvider
 @Composable
 fun AddExerciseScreen(
     navController: NavHostController,
-    viewModel: AddExerciseViewModel = viewModel(factory = AppViewModelProvider.Factory),
-//    addRoutineVeiwModel: AddRoutineViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: AddExerciseViewModel = viewModel(factory = AddExerciseViewModel.Factory),
 ) {
     val musclePartList = listOf("전체", "가슴", "등", "복근", "삼두", "승모근", "어깨", "이두", "종아리", "허벅지")
     var selectedExercises by remember { mutableStateOf(setOf<String>()) }

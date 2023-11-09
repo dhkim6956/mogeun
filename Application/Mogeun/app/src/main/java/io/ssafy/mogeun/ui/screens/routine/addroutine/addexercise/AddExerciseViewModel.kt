@@ -6,13 +6,19 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.data.KeyRepository
+import io.ssafy.mogeun.data.NetworkRoutineRepository
 import io.ssafy.mogeun.data.RoutineRepository
 import io.ssafy.mogeun.model.AddRoutineRequest
 import io.ssafy.mogeun.model.AddRoutineResponse
 import io.ssafy.mogeun.model.ListAllExerciseResponse
 import io.ssafy.mogeun.model.ListAllExerciseResponsedata
+import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,8 +26,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class AddExerciseViewModel(
-    private val listAllExerciseRepository: RoutineRepository,
-    private val keyRepository: KeyRepository
+    private val keyRepository: KeyRepository,
+    private val routineRepository: RoutineRepository
 ) : ViewModel() {
     private val _listAllExerciseSuccess = MutableStateFlow(false)
     val listAllExerciseSuccess: StateFlow<Boolean> = _listAllExerciseSuccess.asStateFlow()
@@ -53,7 +59,7 @@ class AddExerciseViewModel(
     fun listAllExercise() {
         lateinit var ret: ListAllExerciseResponse
         viewModelScope.launch {
-            ret = listAllExerciseRepository.listAllExercise()
+            ret = routineRepository.listAllExercise()
             Log.d("listAllExercise", "$ret")
 
             if (ret.message == "SUCCESS") {
@@ -69,10 +75,20 @@ class AddExerciseViewModel(
     fun addRoutine(userKey: Int, routineName: String) {
         lateinit var ret: AddRoutineResponse
         viewModelScope.launch{
-            ret = listAllExerciseRepository.addRoutine(userKey, routineName)
+            ret = routineRepository.addRoutine(userKey, routineName)
             Log.d("addRoutine", "$ret")
             if(ret.message == "SUCCESS") {
                 _addRoutineSuccess.value = true
+            }
+        }
+    }
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as MogeunApplication)
+                val routineRepository = application.container.routineRepository
+                val keyRepository = application.container.keyRepository
+                AddExerciseViewModel(routineRepository = routineRepository, keyRepository = keyRepository)
             }
         }
     }
