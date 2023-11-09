@@ -1,5 +1,7 @@
 package io.ssafy.mogeun.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -32,6 +34,7 @@ data class MonthlyResponse(
     val data: List<MonthlyRoutine>
 )
 
+@Parcelize
 @Serializable
 data class SetResult(
     @SerialName(value = "set_number")
@@ -43,8 +46,9 @@ data class SetResult(
     val successRep: Int,
     @SerialName(value = "muscle_activity")
     val muscleActivity: List<Int>
-)
+) : Parcelable
 
+@Parcelize
 @Serializable
 data class Exercise(
     @SerialName(value = "exec_name")
@@ -53,9 +57,11 @@ data class Exercise(
     val imagePath: String,
     val sets:Int,
     val parts: List<String>,
+    @SerialName(value = "muscle_image_paths")
+    val muscleImagePaths: List<String>,
     @SerialName(value = "set_results")
     val setResults: List<SetResult>
-)
+) : Parcelable
 
 @Serializable
 data class RoutineInfoData(

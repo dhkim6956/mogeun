@@ -1,5 +1,6 @@
 package io.ssafy.mogeun.ui.screens.record
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.google.gson.Gson
 import com.patrykandpatrick.vico.compose.axis.horizontal.bottomAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.startAxis
 import com.patrykandpatrick.vico.compose.chart.Chart
@@ -90,7 +92,7 @@ fun RecordDetailScreen(
             if (routineInfo != null) {
                 itemsIndexed(routineInfo.exercises) {index, item ->
                     if (item.sets > 0)
-                        RoutineExerciseCard(navController, item.execName, item.sets, item.imagePath, item.setResults)
+                        RoutineExerciseCard(navController, item)
                 }
             }
         }
@@ -256,7 +258,7 @@ fun IconCard(
     ) {
         var parts: List<String> = emptyList()
         for (exercise in exercises) {
-            parts = parts.union(exercise.parts).toList()
+            parts = parts.union(exercise.muscleImagePaths).toList()
         }
 
         Column {
@@ -267,7 +269,6 @@ fun IconCard(
                 modifier = Modifier
                     .padding(start = 7.5.dp, end = 7.5.dp)
             ) {
-                Log.d("part", parts[it])
                 muscleIcon(parts[it])
             }
         }
@@ -277,10 +278,7 @@ fun IconCard(
 @Composable
 fun RoutineExerciseCard(
     navController: NavHostController,
-    name: String,
-    sets: Int,
-    imagePath: String,
-    setResult: List<SetResult>
+    exercise: Exercise
 ) {
     Box (
         modifier = Modifier
@@ -307,27 +305,30 @@ fun RoutineExerciseCard(
                 Column (
                     modifier = Modifier.fillMaxWidth(0.4f)
                 ) {
-                    val exerciseImage = LocalContext.current.resources.getIdentifier("z_" + imagePath, "drawable", LocalContext.current.packageName)
+                    val exerciseImage = LocalContext.current.resources.getIdentifier("z_" + exercise.imagePath, "drawable", LocalContext.current.packageName)
 //                    Image(
 //                        painter = painterResource(id = exerciseImage),
 //                        contentDescription = "logo",
 //                    )
                     GifImage(imageId = exerciseImage)
-                    Text(name)
+                    Text(exercise.execName)
                 }
                 WeightGrid(
                     columns = 4,
-                    itemCount = sets,
+                    itemCount = exercise.sets,
                     modifier = Modifier
                         .padding(start = 7.5.dp, end = 7.5.dp)
                 ) {
-                    SetWeightIcon(setResult[it].weight.toInt())
+                    SetWeightIcon(exercise.setResults[it].weight.toInt())
                 }
             }
             ClickableText(
                 modifier = Modifier.align(Alignment.End),
                 text = AnnotatedString("자세히 보기"),
-                onClick = { navController.navigate("ExerciseDetail") },
+                onClick = {
+                    val exerciseDetail = Uri.encode(Gson().toJson(exercise))
+                    navController.navigate("ExerciseDetail/$exerciseDetail")
+                },
                 style = TextStyle(color = MaterialTheme.colorScheme.secondary)
             )
         }

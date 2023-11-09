@@ -1,6 +1,7 @@
 package io.ssafy.mogeun.ui.screens.record
 
 import android.os.Build.VERSION.SDK_INT
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -40,10 +41,13 @@ import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
 import coil.size.Size
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.model.Exercise
 
-@Preview
 @Composable
-fun ExerciseDetailScreen() {
+fun ExerciseDetailScreen(
+    exerciseDetail: Exercise?
+) {
+    Log.d("Exercise detail", exerciseDetail.toString())
     Column (
         modifier = Modifier
             .fillMaxSize()

@@ -8,6 +8,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import io.ssafy.mogeun.model.Exercise
+import io.ssafy.mogeun.model.ExerciseDetailType
 import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineScreen
 import io.ssafy.mogeun.ui.screens.login.LoginScreen
 import io.ssafy.mogeun.ui.screens.record.ExerciseDetailScreen
@@ -42,7 +44,13 @@ fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarH
             { backStackEntry ->
                 RecordDetailScreen(navController = navController, reportKey = backStackEntry.arguments?.getString("reportKey"))
             }
-            composable(Screen.ExerciseDetail.route) { ExerciseDetailScreen() }
+            composable(
+                Screen.ExerciseDetail.route,
+                arguments = listOf(navArgument("exerciseDetail") { type = ExerciseDetailType() })
+            )
+            { backStackEntry ->
+                ExerciseDetailScreen(exerciseDetail = backStackEntry.arguments?.getParcelable<Exercise>("exerciseDetail"))
+            }
         }
         composable(Screen.Summary.route) { SummaryScreen() }
         composable(Screen.Setting.route) { SettingScreen(navController = navController) }
