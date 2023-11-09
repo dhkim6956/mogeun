@@ -72,7 +72,6 @@ import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.YearMonth
 
-//private val exercies = generateExercises().groupBy { it.time }
 @Composable
 fun RecordScreen(navController: NavHostController) {
     Column(

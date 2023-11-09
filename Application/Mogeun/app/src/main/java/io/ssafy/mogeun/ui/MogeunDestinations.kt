@@ -52,7 +52,7 @@ enum class Screen(
     ExerciseDetail(
         route = "ExerciseDetail",
         title = "운동 상세 정보",
-        topBarState = TopBarState(visibility = true, backBtnVisibility = false),
+        topBarState = TopBarState(visibility = true, backBtnVisibility = true),
         bottomBarState = BottomBarState(true, R.drawable.icon_record, "record")
     ),
     Summary(
