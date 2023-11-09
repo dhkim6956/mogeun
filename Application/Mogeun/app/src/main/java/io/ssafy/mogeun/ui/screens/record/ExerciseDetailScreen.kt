@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.ImageLoader
@@ -72,18 +73,18 @@ fun ExerciseDetailScreen(navController: NavHostController) {
             ),
             contentAlignment = Alignment.Center
         ) {
-            Text(exercise.execName)
+            Text(exercise.execName, fontWeight = FontWeight.Bold)
         }
         GifImage(modifier = Modifier.fillMaxWidth(), imageId = exerciseImage)
-        Text("test")
+//        Text("test")
         Column (
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            repeat(3) {
-                SetDetail()
+            repeat(exercise.sets) {
+                SetDetail(it + 1, exercise.setResults[it])
             }
         }
     }
@@ -116,7 +117,10 @@ fun GifImage(
 }
 
 @Composable
-fun SetDetail() {
+fun SetDetail(
+    setNum: Int,
+    setDetail: SetResult
+) {
     var expanded by remember { mutableStateOf(false) }
     Column (
         modifier = Modifier
@@ -146,7 +150,7 @@ fun SetDetail() {
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Text("test")
+                Text(setNum.toString() + "set")
             }
             Box(
                 modifier = Modifier
@@ -161,7 +165,7 @@ fun SetDetail() {
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Text("test")
+                Text(setDetail.weight.toInt().toString() + "kg")
             }
             Box(
                 modifier = Modifier
@@ -178,16 +182,18 @@ fun SetDetail() {
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Text("test")
+                Text(setDetail.successRep.toString() + '/' + setDetail.targetRep.toString() + "rep")
             }
         }
         if (expanded)
-            MuscleActivity()
+            MuscleActivity(setDetail.muscleActivity)
     }
 }
 
 @Composable
-fun MuscleActivity() {
+fun MuscleActivity(
+    muscleActivityList: List<Int>?
+) {
     Box (
         modifier = Modifier
             .fillMaxWidth()
@@ -201,7 +207,7 @@ fun MuscleActivity() {
             columns = 2,
             itemCount = 4
         ) {
-            Box(modifier = Modifier.background(color = Color.Green))
+            SetWeightIcon(muscleActivityList?.get(it) ?: 0)
         }
     }
 }
