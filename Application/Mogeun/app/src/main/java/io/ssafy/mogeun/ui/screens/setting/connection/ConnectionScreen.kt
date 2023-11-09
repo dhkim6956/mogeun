@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.ssafy.mogeun.data.bluetooth.BluetoothDevice
+import io.ssafy.mogeun.data.bluetooth.ConnectedDevice
 import io.ssafy.mogeun.ui.BluetoothViewModel
 import kotlinx.coroutines.launch
 
@@ -40,10 +41,31 @@ fun ConnectionScreen(viewModel: BluetoothViewModel, snackbarHostState: SnackbarH
             }
         }
     }
-    LaunchedEffect(key1 = state.isConnected) {
-        if(state.isConnected) {
+    LaunchedEffect(key1 = state.isConnected[0]) {
+        if(state.isConnected[0]) {
             coroutineScope.launch {
-                snackbarHostState.showSnackbar("연결 성공")
+                snackbarHostState.showSnackbar("1번 기기 연결 성공")
+            }
+        }
+    }
+    LaunchedEffect(key1 = state.isConnected[1]) {
+        if(state.isConnected[1]) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("2번 기기 연결 성공")
+            }
+        }
+    }
+    LaunchedEffect(key1 = state.isConnected[2]) {
+        if(state.isConnected[2]) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("3번 기기 연결 성공")
+            }
+        }
+    }
+    LaunchedEffect(key1 = state.isConnected[3]) {
+        if(state.isConnected[3]) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("4번 기기 연결 성공")
             }
         }
     }
@@ -105,7 +127,7 @@ fun ConnectionScreen(viewModel: BluetoothViewModel, snackbarHostState: SnackbarH
 fun BluetoothDeviceList(
     pairedDevices: List<BluetoothDevice>,
     scannedDevices: List<BluetoothDevice>,
-    connectedDevices: List<BluetoothDevice>,
+    connectedDevices: List<ConnectedDevice>,
     onClick: (BluetoothDevice) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -125,7 +147,7 @@ fun BluetoothDeviceList(
                 text = device.name ?: "(No name)",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onClick(device) }
+//                    .clickable { onClick(device) }
                     .padding(16.dp)
             )
         }

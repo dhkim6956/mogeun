@@ -8,8 +8,7 @@ data class BluetoothUiState (
     val scannedDevices: List<BluetoothDevice> = emptyList(),
     val pairedDevices: List<BluetoothDevice> = emptyList(),
     val connectedDevices: List<ConnectedDevice> = emptyList(),
-    val isConnected: Boolean = false,
+    val isConnected: List<Boolean> = listOf(false, false, false, false),
     val isConnecting: Boolean = false,
     val errorMessage: String? = null,
-    val messages: List<BluetoothMessage> = emptyList()
 )

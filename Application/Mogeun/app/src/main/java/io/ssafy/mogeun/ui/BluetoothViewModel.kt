@@ -8,7 +8,8 @@ import io.ssafy.mogeun.data.SetRepository
 import io.ssafy.mogeun.data.bluetooth.BluetoothController
 import io.ssafy.mogeun.data.bluetooth.BluetoothDeviceDomain
 import io.ssafy.mogeun.data.bluetooth.ConnectedDevice
-import io.ssafy.mogeun.data.bluetooth.Connection1Result
+import io.ssafy.mogeun.data.bluetooth.ConnectedDeviceDomain
+import io.ssafy.mogeun.data.bluetooth.Connection0Result
 import io.ssafy.mogeun.model.SetRequest
 import io.ssafy.mogeun.model.SetResponse
 import kotlinx.coroutines.Job
@@ -58,7 +59,6 @@ class BluetoothViewModel(
             scannedDevices = scannedDevices,
             pairedDevices = pairedDevices,
             connectedDevices = connectedDevices,
-            messages = if(state.isConnected) state.messages else emptyList()
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(TIMEOUT_MILLIS), _state.value)
 
@@ -81,9 +81,6 @@ class BluetoothViewModel(
     fun connectToDevice(device: BluetoothDeviceDomain, deviceNo: Int = 0) {
         _state.update { it.copy(isConnecting = true) }
 
-
-        state.value.connectedDevices.forEach {  }
-
         deviceConnectionJob[deviceNo] = bluetoothController
             .connectToDevice(ConnectedDevice(name = device.name, address = device.address, assignedNo = deviceNo))
             .listen()
@@ -92,29 +89,14 @@ class BluetoothViewModel(
     fun disconnectFromDevice(deviceNo: Int = 0) {
         deviceConnectionJob[deviceNo]?.cancel()
         bluetoothController.closeConnection(deviceNo)
+        val bufConnected = state.value.isConnected.toMutableList()
+        bufConnected[deviceNo] = false
+
         _state.update { it.copy(
             isConnecting = false,
-            isConnected = false
+            isConnected = bufConnected.toList()
         ) }
     }
-
-//    fun waitForIncomingConnections() {
-//        _state.update { it.copy(isConnected = true) }
-//        deviceConnectionJob = bluetoothController
-//            .startBluetoothServer()
-//            .listen()
-//    }
-//
-//    fun sendMessage(message: Int) {
-//        viewModelScope.launch {
-//            val bluetoothMessage = bluetoothController.trySendMessage(message)
-//            if(bluetoothMessage != null) {
-//                _state.update { it.copy(
-//                    messages = it.messages + bluetoothMessage
-//                ) }
-//            }
-//        }
-//    }
 
     fun startScan() {
         bluetoothController.startDiscovery()
@@ -124,26 +106,29 @@ class BluetoothViewModel(
         bluetoothController.stopDiscovery()
     }
 
-    private fun Flow<Connection1Result>.listen(): Job {
+    private fun Flow<Connection0Result>.listen(): Job {
         return onEach { result ->
             when(result) {
-                is Connection1Result.ConnectionEstablished -> {
+                is Connection0Result.ConnectionEstablished -> {
+                    val bufConnected = state.value.isConnected.toMutableList()
+                    bufConnected[0] = true
                     _state.update {it.copy(
-                        isConnected = true,
+                        isConnected = bufConnected.toList(),
                         isConnecting = false,
                         errorMessage = null
                     ) }
                 }
-                is Connection1Result.TransferSucceeded -> {
-                    Log.d("bluetooth", "${result.message}")
-                    _state.update { it.copy(
-                        messages = it.messages + result.message
-                    ) }
+                is Connection0Result.TransferSucceeded -> {
+                    Log.d("bluetooth0", "${result.message}")
+
+
                 }
-                is Connection1Result.Error -> {
+                is Connection0Result.Error -> {
                     if(result.message != "errString") {
+                        val bufConnected = state.value.isConnected.toMutableList()
+                        bufConnected[0] = false
                         _state.update { it.copy(
-                            isConnected = false,
+                            isConnected = bufConnected.toList(),
                             isConnecting = false,
                             errorMessage = result.message
                         ) }
@@ -152,9 +137,11 @@ class BluetoothViewModel(
             }
         }.catch {throwable ->
             Log.d("bluetooth", "종료조건 ${throwable}")
-            bluetoothController.closeConnection(1)
+            bluetoothController.closeConnection(0)
+            val bufConnected = state.value.isConnected.toMutableList()
+            bufConnected[0] = false
             _state.update { it.copy(
-                isConnected = false,
+                isConnected = bufConnected.toList(),
                 isConnecting = false,
             ) }
         }.launchIn(viewModelScope)
