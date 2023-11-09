@@ -94,6 +94,8 @@ public class UserService {
 
         if(user.isEmpty())
             return -1;
+        if(user.get().getIsLeaved() == 'E')
+            return -2;
 
         return user.get().getUserKey();
     }
