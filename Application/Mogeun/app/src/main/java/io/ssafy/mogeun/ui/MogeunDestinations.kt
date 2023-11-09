@@ -46,7 +46,7 @@ enum class Screen(
     RecordDetail(
         route = "RecordDetail/{reportKey}",
         title = "루틴 상세 정보",
-        topBarState = TopBarState(visibility = true, backBtnVisibility = false),
+        topBarState = TopBarState(visibility = true, backBtnVisibility = true),
         bottomBarState = BottomBarState(true, R.drawable.icon_record, "record")
     ),
     ExerciseDetail(

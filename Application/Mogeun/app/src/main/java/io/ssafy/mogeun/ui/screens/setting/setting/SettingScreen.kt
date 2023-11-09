@@ -134,6 +134,10 @@ fun SettingScreen(
                 }
                 .fillMaxWidth()
                 .padding(16.dp)
+                .clickable{
+                    viewModel.deleteUser()
+                    viewModel.deleteUserKey()
+                }
             ) {
                 Box(
                     contentAlignment = Alignment.Center,

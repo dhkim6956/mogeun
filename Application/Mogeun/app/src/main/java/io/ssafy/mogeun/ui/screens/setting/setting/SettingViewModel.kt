@@ -25,7 +25,7 @@ class SettingViewModel(
     fun deleteUser() {
         lateinit var ret: DeleteUserResponse
         viewModelScope.launch {
-            ret = UserRepository.deleteUser("", "")
+            ret = UserRepository.deleteUser("qqqq", "qqqq")
             Log.d("getInbody", "$ret")
         }
     }
