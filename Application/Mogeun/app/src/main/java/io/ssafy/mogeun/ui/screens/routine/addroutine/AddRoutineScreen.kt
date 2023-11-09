@@ -1,5 +1,6 @@
 package io.ssafy.mogeun.ui.screens.routine.addroutine
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -35,7 +36,7 @@ import androidx.compose.foundation.lazy.items
 
 
 @Composable
-fun AddRoutineScreen(navController: NavHostController, routineName: String?) {
+fun AddRoutineScreen(navController: NavHostController, routineName: Int?) {
     val exerciseList = listOf(
         "Barbell Bench Press",
         "Dumbbell Bench Press",
@@ -51,6 +52,7 @@ fun AddRoutineScreen(navController: NavHostController, routineName: String?) {
             .fillMaxSize()
             .padding(16.dp),
     ) {
+        Log.d("routineKey", "${routineName}")
         LazyColumn {
             // slide_list_view
             items(exerciseList) { exercise ->
