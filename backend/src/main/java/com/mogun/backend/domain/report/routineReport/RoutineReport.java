@@ -39,7 +39,7 @@ public class RoutineReport {
     private char isAttached;
 
     // Seongmin 루틴 정렬을 위해 추가
-    @ManyToOne
-    @JoinColumn(name = "routine_key")
-    private UserRoutine userRoutine;
+//    @ManyToOne
+//    @JoinColumn(name = "routine_key")
+//    private UserRoutine userRoutine;
 }
