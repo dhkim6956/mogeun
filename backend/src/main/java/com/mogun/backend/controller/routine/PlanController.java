@@ -50,7 +50,7 @@ public class PlanController {
 
             if(planService.addPlan(RoutineDto.builder()
                     .routineKey(request.getRoutineKey())
-                    .execKey(request.getRoutineKey())
+                    .execKey(key)
                     .setAmount(1)
                     .build()) != "SUCCESS") {
                 fail.add(key);
