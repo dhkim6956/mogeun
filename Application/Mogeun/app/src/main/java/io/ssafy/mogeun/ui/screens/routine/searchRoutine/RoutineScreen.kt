@@ -210,7 +210,7 @@ fun RoutineList(
                 maxLines = 1
             )
             Button(
-                onClick = { navController.navigate("addroutine/${routine.key}") },
+                onClick = { navController.navigate("addroutine/${routine.routineKey}") },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
             ) {
                 Image(

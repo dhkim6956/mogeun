@@ -1,6 +1,7 @@
 package io.ssafy.mogeun.ui.screens.setting.setting
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -17,6 +18,8 @@ class SettingViewModel(
     private val keyRepository: KeyRepository,
     private val UserRepository: UserRepository
 ) : ViewModel()  {
+    var id = mutableStateOf<String> ("id")
+    var pw = mutableStateOf<String> ("pw")
     fun deleteUserKey() {
         viewModelScope.launch {
             keyRepository.deleteKeyData()
@@ -29,6 +32,9 @@ class SettingViewModel(
             Log.d("deleteUser", "$ret")
         }
     }
+//    fun updateId(value: String) {
+//        id = value
+//    }
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
