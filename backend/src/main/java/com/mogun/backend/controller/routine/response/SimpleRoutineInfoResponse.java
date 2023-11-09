@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class SimpleRoutineInfoResponse {
 
+    @JsonProperty("routine_key")
     private int key;
     private String name;
 
