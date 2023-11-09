@@ -6,7 +6,10 @@ import com.mogun.backend.domain.routine.userRoutine.UserRoutine;
 import com.mogun.backend.domain.routine.userRoutine.repository.UserRoutineRepository;
 import com.mogun.backend.domain.routine.userRoutinePlan.UserRoutinePlan;
 import com.mogun.backend.domain.routine.userRoutinePlan.repository.UserRoutinePlanRepository;
+import com.mogun.backend.domain.user.User;
+import com.mogun.backend.domain.user.repository.UserRepository;
 import com.mogun.backend.service.routine.dto.RoutineDto;
+import com.mogun.backend.service.routine.dto.RoutineOutlineDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +26,7 @@ public class UserRoutinePlanService {
     private final UserRoutineRepository routineRepository;
     private final UserRoutinePlanRepository planRepository;
     private final ExerciseRepository exerciseRepository;
+    private final UserRepository userRepository;
 
     public String addPlan(RoutineDto dto) {
 
@@ -71,5 +75,45 @@ public class UserRoutinePlanService {
         }
 
         return result;
+    }
+
+    public List<RoutineOutlineDto> getAllRoutineAndMuscle(RoutineDto dto) {
+
+        Optional<User> user = userRepository.findById(dto.getUserKey());
+        if(user.isEmpty())
+            return null;
+
+        List<UserRoutinePlan> planList = planRepository.findAllByUser(user.get());
+        List<RoutineOutlineDto> routineOutlineDtoList = new ArrayList<>();
+
+        for(UserRoutinePlan plan: planList) {
+            if(routineOutlineDtoList.isEmpty()) {
+                routineOutlineDtoList.add(RoutineOutlineDto.builder()
+                        .name(plan.getUserRoutine().getRoutineName())
+                        .routineKey(plan.getUserRoutine().getRoutineKey())
+                        .muscleImagePathList(new ArrayList<>())
+                        .build());
+            }
+
+            int lastIndex = routineOutlineDtoList.size() - 1;
+            UserRoutine routine = plan.getUserRoutine();
+            Exercise exec = plan.getExercise();
+
+            if(routineOutlineDtoList.get(lastIndex).getRoutineKey() == routine.getRoutineKey()) {
+                routineOutlineDtoList.get(lastIndex).getMuscleImagePathList().add(exec.getMainPart().getImagePath());
+            } else {
+                routineOutlineDtoList.add(RoutineOutlineDto.builder()
+                        .name(plan.getUserRoutine().getRoutineName())
+                        .routineKey(plan.getUserRoutine().getRoutineKey())
+                        .muscleImagePathList(new ArrayList<>())
+                        .build());
+
+                lastIndex = routineOutlineDtoList.size() - 1;
+                routineOutlineDtoList.get(lastIndex).getMuscleImagePathList().add(exec.getMainPart().getImagePath());
+            }
+
+        }
+
+        return routineOutlineDtoList;
     }
 }

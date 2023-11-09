@@ -106,9 +106,9 @@ public class UserController {
         int result = userService.signIn(request.getUserEmail(), request.getUserPassword());
 
         if(result == -1)
-            return ApiResponse.badRequest("요청 오류: 일치하지 않는 회원 정보");
+            return ApiResponse.of(HttpStatus.BAD_REQUEST, "FAILED", -1);
         else if(result == -2)
-            return ApiResponse.badRequest("요청 오류: 탈퇴한 회원");
+            return ApiResponse.of(HttpStatus.BAD_REQUEST, "FAILED", -2);
 
         return ApiResponse.of(HttpStatus.ACCEPTED, "SUCCESS", result);
     }
