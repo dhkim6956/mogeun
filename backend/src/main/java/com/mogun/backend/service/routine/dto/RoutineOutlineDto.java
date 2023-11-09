@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -19,5 +19,5 @@ public class RoutineOutlineDto {
     private String name;
 
     @JsonProperty("image_path")
-    private List<String> muscleImagePathList;
+    private Set<String> muscleImagePathList;
 }

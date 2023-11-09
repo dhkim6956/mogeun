@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -91,7 +92,7 @@ public class UserRoutinePlanService {
                 routineOutlineDtoList.add(RoutineOutlineDto.builder()
                         .name(plan.getUserRoutine().getRoutineName())
                         .routineKey(plan.getUserRoutine().getRoutineKey())
-                        .muscleImagePathList(new ArrayList<>())
+                        .muscleImagePathList(new HashSet<>())
                         .build());
             }
 
@@ -105,7 +106,7 @@ public class UserRoutinePlanService {
                 routineOutlineDtoList.add(RoutineOutlineDto.builder()
                         .name(plan.getUserRoutine().getRoutineName())
                         .routineKey(plan.getUserRoutine().getRoutineKey())
-                        .muscleImagePathList(new ArrayList<>())
+                        .muscleImagePathList(new HashSet<>())
                         .build());
 
                 lastIndex = routineOutlineDtoList.size() - 1;
