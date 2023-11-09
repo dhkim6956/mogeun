@@ -137,6 +137,7 @@ fun SettingScreen(
                 .clickable{
                     viewModel.deleteUser()
                     viewModel.deleteUserKey()
+                    navController.navigate("Splash")
                 }
             ) {
                 Box(
