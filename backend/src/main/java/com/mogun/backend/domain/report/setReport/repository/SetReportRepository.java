@@ -12,6 +12,6 @@ import java.util.List;
 @Repository
 public interface SetReportRepository extends JpaRepository<SetReport, Integer> {
 
-    @Query(value = "SELECT * FROM set_report sr WHERE sr.routine_report_key = :rrk ORDER BY exec_key", nativeQuery = true)
+    @Query(value = "SELECT * FROM set_report sr WHERE sr.routine_report_key = :rrk ORDER BY start_time", nativeQuery = true)
     List<SetReport> findAllByRoutineReport(@Param("rrk") RoutineReport report);
 }
