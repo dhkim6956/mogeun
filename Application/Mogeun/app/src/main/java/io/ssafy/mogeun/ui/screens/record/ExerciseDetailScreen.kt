@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -32,8 +30,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.GifDecoder
@@ -42,12 +40,18 @@ import coil.request.ImageRequest
 import coil.size.Size
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.model.Exercise
+import io.ssafy.mogeun.model.SetResult
 
 @Composable
-fun ExerciseDetailScreen(
-    exerciseDetail: Exercise?
-) {
-    Log.d("Exercise detail", exerciseDetail.toString())
+fun ExerciseDetailScreen(navController: NavHostController) {
+    var exercise: Exercise
+    try {
+        exercise = navController.previousBackStackEntry
+            ?.savedStateHandle?.get<Exercise>("exerciseDetail")!!
+    } catch (e: NullPointerException) {
+        exercise = Exercise("", "", 0, listOf(""), listOf(""), listOf(SetResult(0, 0f, 0, 0, listOf(0))))
+    }
+
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -59,6 +63,7 @@ fun ExerciseDetailScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
+        val exerciseImage = LocalContext.current.resources.getIdentifier("z_" + exercise.imagePath, "drawable", LocalContext.current.packageName)
         Box (modifier = Modifier
             .fillMaxWidth()
             .background(color = MaterialTheme.colorScheme.primaryContainer)
@@ -67,9 +72,9 @@ fun ExerciseDetailScreen(
             ),
             contentAlignment = Alignment.Center
         ) {
-            Text("test")
+            Text(exercise.execName)
         }
-        GifImage(modifier = Modifier.fillMaxWidth(), imageId = R.drawable.z_sit_ups)
+        GifImage(modifier = Modifier.fillMaxWidth(), imageId = exerciseImage)
         Text("test")
         Column (
             modifier = Modifier

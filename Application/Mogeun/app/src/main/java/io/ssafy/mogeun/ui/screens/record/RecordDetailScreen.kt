@@ -1,6 +1,7 @@
 package io.ssafy.mogeun.ui.screens.record
 
 import android.net.Uri
+import android.os.Bundle
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -49,6 +50,7 @@ import com.patrykandpatrick.vico.compose.chart.Chart
 import com.patrykandpatrick.vico.compose.chart.line.lineChart
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
 import com.patrykandpatrick.vico.core.entry.entryOf
+import com.patrykandpatrick.vico.core.extension.setFieldValue
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.model.Exercise
 import io.ssafy.mogeun.model.SetResult
@@ -305,12 +307,11 @@ fun RoutineExerciseCard(
                 Column (
                     modifier = Modifier.fillMaxWidth(0.4f)
                 ) {
-                    val exerciseImage = LocalContext.current.resources.getIdentifier("z_" + exercise.imagePath, "drawable", LocalContext.current.packageName)
-//                    Image(
-//                        painter = painterResource(id = exerciseImage),
-//                        contentDescription = "logo",
-//                    )
-                    GifImage(imageId = exerciseImage)
+                    val exerciseImage = LocalContext.current.resources.getIdentifier("x_" + exercise.imagePath, "drawable", LocalContext.current.packageName)
+                    Image(
+                        painter = painterResource(id = exerciseImage),
+                        contentDescription = exercise.execName,
+                    )
                     Text(exercise.execName)
                 }
                 WeightGrid(
@@ -326,8 +327,8 @@ fun RoutineExerciseCard(
                 modifier = Modifier.align(Alignment.End),
                 text = AnnotatedString("자세히 보기"),
                 onClick = {
-                    val exerciseDetail = Uri.encode(Gson().toJson(exercise))
-                    navController.navigate("ExerciseDetail/$exerciseDetail")
+                    navController.currentBackStackEntry?.savedStateHandle?.set("exerciseDetail", exercise)
+                    navController.navigate("ExerciseDetail")
                 },
                 style = TextStyle(color = MaterialTheme.colorScheme.secondary)
             )
