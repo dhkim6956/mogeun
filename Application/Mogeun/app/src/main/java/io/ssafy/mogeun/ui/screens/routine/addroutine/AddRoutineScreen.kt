@@ -42,22 +42,13 @@ import io.ssafy.mogeun.ui.AppViewModelProvider
 fun AddRoutineScreen(
     navController: NavHostController,
     routineKey: Int?,
-    viewModel: AddRoutineViewModel= viewModel(factory = AddRoutineViewModel.Factory)
+    viewModel: AddRoutineViewModel = viewModel(factory = AddRoutineViewModel.Factory)
 ) {
     LaunchedEffect(Unit){
         viewModel.getUserKey()
         viewModel.listMyExercise(routineKey)
     }
-    val exerciseList = listOf(
-        "Barbell Bench Press",
-        "Dumbbell Bench Press",
-        "Dumbbell Bench Press",
-        "Dumbbell Bench Press",
-        "Dumbbell Bench Press",
-        "Dumbbell Bench Press",
-        "Dumbbell Bench Press",
-        "Dumbbell Bench Press"
-    )
+    val exercises = viewModel.exerciseList
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -66,7 +57,7 @@ fun AddRoutineScreen(
         Log.d("routineKey", "${routineKey}")
         LazyColumn {
             // slide_list_view
-            items(exerciseList) { exercise ->
+            items(exercises) { exercise ->
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -79,7 +70,6 @@ fun AddRoutineScreen(
                         .padding(16.dp)
                 ) {
                     Column {
-                        Text(text = exercise)
                         Text(text = "exercise")
                     }
                 }

@@ -152,11 +152,6 @@ fun AddExerciseScreen(
                         modifier = Modifier.fillMaxSize(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = "Image Resource ID: ${imageResId ?: "Not available"}",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
-                        )
                         GlideImage(
                             imageModel = imageResId,
                             contentDescription = "GIF Image",
@@ -171,9 +166,7 @@ fun AddExerciseScreen(
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
-//                            Text(text = exercise.mainPart)
                         }
-
                         Icon(
                             imageVector = if (isSelected) Icons.Outlined.Star else Icons.Outlined.StarBorder,
                             contentDescription = "Localized description"
@@ -272,6 +265,7 @@ fun AlertDialogExample(
                     viewModel.userKey?.let {
                         val ret = viewModel.addRoutine(viewModel.userKey, routineName)
                         Log.d("addRoutine", "$ret")
+//                        val rett = viewModel.addAllExercise()
                         navController.popBackStack()
                     } ?: Log.e("addRoutine", "User key is null")
                 }

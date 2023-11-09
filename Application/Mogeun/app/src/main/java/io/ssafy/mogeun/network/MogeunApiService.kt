@@ -1,5 +1,7 @@
 package io.ssafy.mogeun.network
 
+import io.ssafy.mogeun.model.AddAllExerciseRequest
+import io.ssafy.mogeun.model.AddAllExerciseResponse
 import io.ssafy.mogeun.model.AddRoutineRequest
 import io.ssafy.mogeun.model.AddRoutineResponse
 import io.ssafy.mogeun.model.DeleteUserRequest
@@ -65,5 +67,8 @@ interface MogeunApiService {
 
     @GET("Routine/Plan/ListAll")
     suspend fun listMyExercise(@Query("routine_key") routineKey: Int?): ListMyExerciseResponse
+
+    @POST("Routine/Plan/AddAll")
+    suspend fun addAllExercise(@Body addAllExerciseRequest: AddAllExerciseRequest): AddAllExerciseResponse
 
 }
