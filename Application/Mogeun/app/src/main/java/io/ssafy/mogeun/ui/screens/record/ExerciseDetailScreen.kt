@@ -1,6 +1,7 @@
 package io.ssafy.mogeun.ui.screens.record
 
 import android.os.Build.VERSION.SDK_INT
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -15,8 +16,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -31,8 +30,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.GifDecoder
@@ -40,10 +40,19 @@ import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
 import coil.size.Size
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.model.Exercise
+import io.ssafy.mogeun.model.SetResult
 
-@Preview
 @Composable
-fun ExerciseDetailScreen() {
+fun ExerciseDetailScreen(navController: NavHostController) {
+    var exercise: Exercise
+    try {
+        exercise = navController.previousBackStackEntry
+            ?.savedStateHandle?.get<Exercise>("exerciseDetail")!!
+    } catch (e: NullPointerException) {
+        exercise = Exercise("", "", 0, listOf(""), listOf(""), listOf(SetResult(0, 0f, 0, 0, listOf(0))))
+    }
+
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -55,6 +64,7 @@ fun ExerciseDetailScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
+        val exerciseImage = LocalContext.current.resources.getIdentifier("z_" + exercise.imagePath, "drawable", LocalContext.current.packageName)
         Box (modifier = Modifier
             .fillMaxWidth()
             .background(color = MaterialTheme.colorScheme.primaryContainer)
@@ -63,18 +73,18 @@ fun ExerciseDetailScreen() {
             ),
             contentAlignment = Alignment.Center
         ) {
-            Text("test")
+            Text(exercise.execName, fontWeight = FontWeight.Bold)
         }
-        GifImage(modifier = Modifier.fillMaxWidth(), imageId = R.drawable.z_sit_ups)
-        Text("test")
+        GifImage(modifier = Modifier.fillMaxWidth(), imageId = exerciseImage)
+//        Text("test")
         Column (
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            repeat(3) {
-                SetDetail()
+            repeat(exercise.sets) {
+                SetDetail(it + 1, exercise.setResults[it])
             }
         }
     }
@@ -107,7 +117,10 @@ fun GifImage(
 }
 
 @Composable
-fun SetDetail() {
+fun SetDetail(
+    setNum: Int,
+    setDetail: SetResult
+) {
     var expanded by remember { mutableStateOf(false) }
     Column (
         modifier = Modifier
@@ -137,7 +150,7 @@ fun SetDetail() {
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Text("test")
+                Text(setNum.toString() + "set")
             }
             Box(
                 modifier = Modifier
@@ -152,7 +165,7 @@ fun SetDetail() {
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Text("test")
+                Text(setDetail.weight.toInt().toString() + "kg")
             }
             Box(
                 modifier = Modifier
@@ -169,16 +182,18 @@ fun SetDetail() {
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Text("test")
+                Text(setDetail.successRep.toString() + '/' + setDetail.targetRep.toString() + "rep")
             }
         }
         if (expanded)
-            MuscleActivity()
+            MuscleActivity(setDetail.muscleActivity)
     }
 }
 
 @Composable
-fun MuscleActivity() {
+fun MuscleActivity(
+    muscleActivityList: List<Int>?
+) {
     Box (
         modifier = Modifier
             .fillMaxWidth()
@@ -192,7 +207,7 @@ fun MuscleActivity() {
             columns = 2,
             itemCount = 4
         ) {
-            Box(modifier = Modifier.background(color = Color.Green))
+            SetWeightIcon(muscleActivityList?.get(it) ?: 0)
         }
     }
 }
