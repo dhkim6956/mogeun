@@ -55,6 +55,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineViewModel
 import io.ssafy.mogeun.ui.AppViewModelProvider
@@ -128,7 +130,7 @@ fun AddExerciseScreen(
             items(filteredExercises) { exercise ->
                 val isSelected = exercise.name in selectedExercises
                 val context = LocalContext.current
-                val imageResId = context.resources.getIdentifier("z_${exercise.imagePath}", "drawable", context.packageName)
+                val imageResId = context.resources.getIdentifier("x_${exercise.imagePath}", "drawable", context.packageName)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -151,6 +153,11 @@ fun AddExerciseScreen(
                         modifier = Modifier.fillMaxSize(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        Text(
+                            text = "Image Resource ID: ${imageResId ?: "Not available"}",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                         GlideImage(
                             imageModel = imageResId,
                             contentDescription = "GIF Image",
@@ -172,7 +179,7 @@ fun AddExerciseScreen(
                             imageVector = if (isSelected) Icons.Outlined.Star else Icons.Outlined.StarBorder,
                             contentDescription = "Localized description"
                         )
-                        IconButton(onClick = { navController.navigate("explainexercise/${imageResId}") }) {
+                        IconButton(onClick = { navController.navigate("explainexercise/${exercise.imagePath}") }) {
                             Icon(Icons.Outlined.ErrorOutline,
                                 contentDescription = "Localized description",
                                 modifier = Modifier.graphicsLayer(rotationZ = 180f)
@@ -248,13 +255,12 @@ fun AlertDialogExample(
         },
         text = {
             Column {
-                Text(text = dialogText)
                 Spacer(modifier = Modifier.height(8.dp)) // Spacing for better UI
                 // TextField for user to enter the routine name
                 TextField(
                     value = routineName,
                     onValueChange = { routineName = it },
-                    label = { Text("Enter routine name") }
+                    label = {}
                 )
             }
         },

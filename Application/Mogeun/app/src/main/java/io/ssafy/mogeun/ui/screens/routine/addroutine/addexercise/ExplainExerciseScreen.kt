@@ -45,6 +45,11 @@ fun ExplainExerciseScreen(navController: NavHostController, data: String?) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        Text(
+            text = "Image Resource ID: ${imageResId ?: "Not available"}",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
+        )
         GlideImage(
             imageModel = imageResId,
             contentDescription = "GIF Image",

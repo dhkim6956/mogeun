@@ -74,3 +74,33 @@ data class GetRoutineListResponseBody(
     @SerialName(value = "image_path")
     val imagePath: List<String>
 )
+
+@Serializable
+data class ListMyExerciseRequest(
+    @SerialName(value = "user_key")
+    val userKey: Int?,
+)
+
+@Serializable
+data class ListMyExerciseResponseDataExercises(
+    val key: Int,
+    val name: String,
+    val engName: String,
+    val sensingPart: List<String>
+)
+
+@Serializable
+data class ListMyExerciseResponseData(
+    val routineKey: Int,
+    val routineName: String,
+    val exercise: List<ListMyExerciseResponseDataExercises>
+)
+
+@Serializable
+data class ListMyExerciseResponse(
+    val code: Int,
+    val status: String,
+    val message: String,
+    val data: List<ListMyExerciseResponseData>
+)
+

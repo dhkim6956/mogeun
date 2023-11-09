@@ -51,6 +51,7 @@ fun AddRoutineScreen(navController: NavHostController, routineName: String?) {
             .fillMaxSize()
             .padding(16.dp),
     ) {
+        Text(text = routineName ?: "기본 루틴 이름")
         LazyColumn {
             // slide_list_view
             items(exerciseList) { exercise ->
@@ -66,6 +67,7 @@ fun AddRoutineScreen(navController: NavHostController, routineName: String?) {
                         .padding(16.dp)
                 ) {
                     Column {
+
                         Text(text = exercise)
                         Text(text = "exercise")
                     }
