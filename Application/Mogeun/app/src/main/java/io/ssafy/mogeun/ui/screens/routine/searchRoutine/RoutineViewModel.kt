@@ -78,7 +78,7 @@ class RoutineViewModel(
                 val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as MogeunApplication)
                 val UserRepository = application.container.userDataRepository
                 val keyRepository = application.container.keyRepository
-                val RoutineRepository = application.container.addRoutineRepository
+                val RoutineRepository = application.container.routineRepository
                 RoutineViewModel(UserRepository = UserRepository ,keyRepository, RoutineRepository = RoutineRepository)
             }
         }

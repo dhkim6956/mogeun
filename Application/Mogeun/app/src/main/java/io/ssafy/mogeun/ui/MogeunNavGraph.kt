@@ -42,7 +42,7 @@ fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarH
             { backStackEntry ->
                 RecordDetailScreen(navController = navController, reportKey = backStackEntry.arguments?.getString("reportKey"))
             }
-            composable(Screen.ExerciseDetail.route) { ExerciseDetailScreen() }
+            composable(Screen.ExerciseDetail.route) { ExerciseDetailScreen(navController = navController)}
         }
         composable(Screen.Summary.route) { SummaryScreen() }
         composable(Screen.Setting.route) { SettingScreen(navController = navController) }
@@ -59,7 +59,7 @@ fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarH
             Screen.AddRoutine.route,
             arguments = listOf(navArgument("routineKey") {type = NavType.IntType})
         ) {backStackEntry ->
-            AddRoutineScreen(navController = navController, routineName = backStackEntry.arguments?.getInt("routineKey")) }
+            AddRoutineScreen(navController = navController, routineKey = backStackEntry.arguments?.getInt("routineKey")) }
         composable(Screen.AddExercise.route) { AddExerciseScreen(navController = navController) }
 
         composable(

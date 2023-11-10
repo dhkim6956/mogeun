@@ -55,6 +55,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineViewModel
 import io.ssafy.mogeun.ui.AppViewModelProvider
@@ -64,8 +66,7 @@ import io.ssafy.mogeun.ui.AppViewModelProvider
 @Composable
 fun AddExerciseScreen(
     navController: NavHostController,
-    viewModel: AddExerciseViewModel = viewModel(factory = AppViewModelProvider.Factory),
-//    addRoutineVeiwModel: AddRoutineViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: AddExerciseViewModel = viewModel(factory = AddExerciseViewModel.Factory),
 ) {
     val musclePartList = listOf("전체", "가슴", "등", "복근", "삼두", "승모근", "어깨", "이두", "종아리", "허벅지")
     var selectedExercises by remember { mutableStateOf(setOf<String>()) }
@@ -128,7 +129,7 @@ fun AddExerciseScreen(
             items(filteredExercises) { exercise ->
                 val isSelected = exercise.name in selectedExercises
                 val context = LocalContext.current
-                val imageResId = context.resources.getIdentifier("z_${exercise.imagePath}", "drawable", context.packageName)
+                val imageResId = context.resources.getIdentifier("x_${exercise.imagePath}", "drawable", context.packageName)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -165,14 +166,12 @@ fun AddExerciseScreen(
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
-//                            Text(text = exercise.mainPart)
                         }
-
                         Icon(
                             imageVector = if (isSelected) Icons.Outlined.Star else Icons.Outlined.StarBorder,
                             contentDescription = "Localized description"
                         )
-                        IconButton(onClick = { navController.navigate("explainexercise/${imageResId}") }) {
+                        IconButton(onClick = { navController.navigate("explainexercise/${exercise.imagePath}") }) {
                             Icon(Icons.Outlined.ErrorOutline,
                                 contentDescription = "Localized description",
                                 modifier = Modifier.graphicsLayer(rotationZ = 180f)
@@ -248,13 +247,12 @@ fun AlertDialogExample(
         },
         text = {
             Column {
-                Text(text = dialogText)
                 Spacer(modifier = Modifier.height(8.dp)) // Spacing for better UI
                 // TextField for user to enter the routine name
                 TextField(
                     value = routineName,
                     onValueChange = { routineName = it },
-                    label = { Text("Enter routine name") }
+                    label = {}
                 )
             }
         },
@@ -267,6 +265,7 @@ fun AlertDialogExample(
                     viewModel.userKey?.let {
                         val ret = viewModel.addRoutine(viewModel.userKey, routineName)
                         Log.d("addRoutine", "$ret")
+//                        val rett = viewModel.addAllExercise()
                         navController.popBackStack()
                     } ?: Log.e("addRoutine", "User key is null")
                 }
