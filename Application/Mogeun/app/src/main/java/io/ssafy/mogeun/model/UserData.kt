@@ -123,5 +123,5 @@ data class DeleteUserResponse(
     val code: Int,
     val status: String,
     val message: String,
-    val body: String?
+    val data: String?
 )

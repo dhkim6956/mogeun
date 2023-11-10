@@ -32,13 +32,16 @@ class LoginViewModel(
     val signInSuccess: StateFlow<Boolean> = _signInSuccess.asStateFlow()
     var id by mutableStateOf("")
     var pwd by mutableStateOf("")
-    var loginError by mutableStateOf<Boolean> (false)
+    var errorSignIn by mutableStateOf(false)
 
     fun updateText1(value: String) {
         id = value
     }
     fun updateText2(value: String) {
         pwd = value
+    }
+    fun updateErrorSignIn(value: Boolean) {
+        errorSignIn = value
     }
     fun signIn() {
         lateinit var ret: SignInResponse
@@ -48,6 +51,8 @@ class LoginViewModel(
             if (ret.message == "SUCCESS") {
                 _signInSuccess.value = true
                 setUserKey(ret.data)
+            } else {
+                updateErrorSignIn(true)
             }
         }
     }
