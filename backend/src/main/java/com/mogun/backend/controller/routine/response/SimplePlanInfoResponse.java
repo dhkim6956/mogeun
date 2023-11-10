@@ -12,6 +12,9 @@ import java.util.List;
 @AllArgsConstructor
 public class SimplePlanInfoResponse {
 
+    @JsonProperty("plan_key")
+    private int planKey;
+
     @JsonProperty("exec_key")
     private int execKey;
 

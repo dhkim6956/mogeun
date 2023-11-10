@@ -63,7 +63,7 @@ public class UserRoutinePlanService {
         return ServiceStatus.okStatus();
     }
 
-    public ServiceStatus<Object> getAllPlan(RoutineDto dto) {
+    public ServiceStatus<List<RoutineDto>> getAllPlan(RoutineDto dto) {
 
         List<RoutineDto> result = new ArrayList<>();
         Optional<UserRoutine> routine = routineRepository.findById(dto.getRoutineKey());
@@ -79,7 +79,7 @@ public class UserRoutinePlanService {
                     .build());
         }
 
-        return ServiceStatus.builder()
+        return ServiceStatus.<List<RoutineDto>>builder()
                 .status(100)
                 .data(result)
                 .build();

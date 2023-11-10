@@ -6,6 +6,7 @@ import com.mogun.backend.controller.routine.request.CommonRoutineRequest;
 import com.mogun.backend.controller.routine.response.AddPlanListResponse;
 import com.mogun.backend.controller.routine.response.PlanListResponse;
 import com.mogun.backend.controller.routine.response.SimplePlanInfoResponse;
+import com.mogun.backend.domain.exercise.Exercise;
 import com.mogun.backend.service.ServiceStatus;
 import com.mogun.backend.service.attachPart.AttachPartService;
 import com.mogun.backend.service.routine.dto.RoutineDto;
@@ -76,16 +77,33 @@ public class PlanController {
     }
 
     @GetMapping("/ListAll")
-    public ApiResponse<Object> getAllPlan(@RequestParam("routine_key") int routineKey) {
+    public ApiResponse<List<SimplePlanInfoResponse>> getAllPlan(@RequestParam("routine_key") int routineKey) {
 
         ServiceStatus<RoutineDto> routineResult = routineService.getRoutine(routineKey);
         if(routineResult.getStatus() == 200)
             return ApiResponse.badRequest(routineResult.getMessage());
 
-        ServiceStatus<Object> planResult = planService.getAllPlan(RoutineDto.builder()
+        ServiceStatus<List<RoutineDto>> planResult = planService.getAllPlan(RoutineDto.builder()
                 .routineKey(routineKey)
                 .build());
+        List<RoutineDto> list = planResult.getData();
+        List<SimplePlanInfoResponse> responses = new ArrayList<>();
 
+        for(RoutineDto item: list) {
+
+            List<String> parts = attachPartService.getAllPartNameByExercise(item.getExec());
+            Exercise exec = item.getExec();
+
+            responses.add(SimplePlanInfoResponse.builder()
+                    .planKey(item.getPlanKey())
+                    .execKey(exec.getExecKey())
+                    .execName(exec.getName())
+                    .engName(exec.getEngName())
+                    .mainPart(exec.getMainPart().getPartName())
+                    .musclePart(parts)
+                    .imagePath(exec.getImagePath())
+                    .build());
+        }
 
 //        for(RoutineDto item: list) {
 
@@ -109,7 +127,7 @@ public class PlanController {
 //                .exercises(planList)
 //                .build());
 
-        return  ApiResponse.ok(planResult.getData());
+        return  ApiResponse.ok(responses);
     }
 
 }
