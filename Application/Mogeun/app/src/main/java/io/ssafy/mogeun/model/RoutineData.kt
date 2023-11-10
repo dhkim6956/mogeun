@@ -116,3 +116,26 @@ data class AddAllExerciseResponse(
     val message: String,
     val data: AddAllExerciseResponseData
 )
+
+@Serializable
+data class MyExerciseResponseData(
+    @SerialName(value = "exec_key")
+    val execKey: Int,
+    val name: String,
+    @SerialName(value = "eng_name")
+    val engName: String,
+    @SerialName(value = "sensing_part")
+    val sensingPart: List<String>,
+    @SerialName(value = "main_part")
+    val mainPart: String?,
+    @SerialName(value = "image_path")
+    val imagePath: String?
+)
+
+@Serializable
+data class MyExerciseResponse(
+    val code: Int,
+    val status: String,
+    val message: String,
+    val data: MyExerciseResponseData
+)
