@@ -17,6 +17,7 @@ import io.ssafy.mogeun.model.SignUpRequest
 import io.ssafy.mogeun.model.SignUpResponse
 import io.ssafy.mogeun.model.GetRoutineListResponse
 import io.ssafy.mogeun.model.ListMyExerciseResponse
+import io.ssafy.mogeun.model.MyExerciseResponse
 import io.ssafy.mogeun.model.SetRequest
 import io.ssafy.mogeun.model.SetResponse
 import io.ssafy.mogeun.model.UpdateUserRequest
@@ -70,5 +71,9 @@ interface MogeunApiService {
 
     @POST("Routine/Plan/AddAll")
     suspend fun addAllExercise(@Body addAllExerciseRequest: AddAllExerciseRequest): AddAllExerciseResponse
+
+    @GET("Exercise/List")
+    suspend fun myExercise(@Query("exec_key") execKey: Int?): MyExerciseResponse
+
 
 }

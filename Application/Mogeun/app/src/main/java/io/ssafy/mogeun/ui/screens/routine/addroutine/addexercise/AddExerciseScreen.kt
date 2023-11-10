@@ -171,7 +171,7 @@ fun AddExerciseScreen(
                             imageVector = if (isSelected) Icons.Outlined.Star else Icons.Outlined.StarBorder,
                             contentDescription = "Localized description"
                         )
-                        IconButton(onClick = { navController.navigate("explainexercise/${exercise.imagePath}") }) {
+                        IconButton(onClick = { navController.navigate("explainexercise/${exercise.key}") }) {
                             Icon(Icons.Outlined.ErrorOutline,
                                 contentDescription = "Localized description",
                                 modifier = Modifier.graphicsLayer(rotationZ = 180f)

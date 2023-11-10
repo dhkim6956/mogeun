@@ -8,6 +8,7 @@ import io.ssafy.mogeun.model.GetInbodyResponse
 import io.ssafy.mogeun.model.ListAllExerciseResponse
 import io.ssafy.mogeun.model.GetRoutineListResponse
 import io.ssafy.mogeun.model.ListMyExerciseResponse
+import io.ssafy.mogeun.model.MyExerciseResponse
 import io.ssafy.mogeun.network.MogeunApiService
 
 interface RoutineRepository{
@@ -16,6 +17,7 @@ interface RoutineRepository{
     suspend fun listAllExercise(): ListAllExerciseResponse
     suspend fun listMyExercise(routineKey: Int?): ListMyExerciseResponse
     suspend fun addAllExercise(routineKey: Int?, execKeys: List<Int>): AddAllExerciseResponse
+    suspend fun myExercise(execKey: Int?): MyExerciseResponse
 }
 
 
@@ -39,6 +41,10 @@ class NetworkRoutineRepository(
 
     override suspend fun addAllExercise(routineKey: Int?, execKeys: List<Int>): AddAllExerciseResponse{
         return mogeunApiService.addAllExercise(AddAllExerciseRequest(routineKey, execKeys))
+    }
+
+    override suspend fun myExercise(execKey: Int?): MyExerciseResponse {
+        return mogeunApiService.myExercise(execKey)
     }
 }
 
