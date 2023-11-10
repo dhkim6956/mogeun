@@ -43,7 +43,7 @@ public class ExerciseService {
                 .build();
     }
 
-    public ServiceStatus createExercise(ExerciseDto dto) {
+    public ServiceStatus<Object> createExercise(ExerciseDto dto) {
 
         Optional<MusclePart> musclePart = musclePartRepository.findById(dto.getPartKey());
         if(musclePart.isEmpty())

@@ -18,7 +18,7 @@ public class MusclePartService {
 
     private final MusclePartRepository musclePartRepository;
 
-    public ServiceStatus insertMusclePart(MusclePartDto dto) {
+    public ServiceStatus<Object> insertMusclePart(MusclePartDto dto) {
 
         musclePartRepository.save(dto.toMusclePartEntity());
 

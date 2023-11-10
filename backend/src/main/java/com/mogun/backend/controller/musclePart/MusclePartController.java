@@ -22,9 +22,9 @@ public class MusclePartController {
     private final MusclePartService musclePartService;
 
     @PostMapping("/Insert")
-    public ApiResponse insertMusclePart(@RequestBody MusclePartRequest request) {
+    public ApiResponse<Object> insertMusclePart(@RequestBody MusclePartRequest request) {
 
-        ServiceStatus result = musclePartService.insertMusclePart(MusclePartDto.builder()
+        ServiceStatus<Object> result = musclePartService.insertMusclePart(MusclePartDto.builder()
                 .partName(request.getPartName())
                 .imagePath(request.getImagePath())
                 .build());
@@ -33,7 +33,7 @@ public class MusclePartController {
     }
 
     @GetMapping("/ListAll")
-    public ApiResponse listAllMusclePart() {
+    public ApiResponse<Object> listAllMusclePart() {
 
         List<MusclePartResponse> responseList = new ArrayList<>();
         List<MusclePartDto> dtoList = musclePartService.listAllMusclePart();

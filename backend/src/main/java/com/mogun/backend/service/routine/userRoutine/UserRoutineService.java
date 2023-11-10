@@ -22,7 +22,7 @@ public class UserRoutineService {
     private final UserRepository userRepository;
     private final UserRoutineRepository routineRepository;
 
-    public ServiceStatus getRoutine(int routineKey) {
+    public ServiceStatus<RoutineDto> getRoutine(int routineKey) {
 
         Optional<UserRoutine> routine = routineRepository.findById(routineKey);
         if(routine.isEmpty())
@@ -33,13 +33,13 @@ public class UserRoutineService {
                 .routineName(routine.get().getRoutineName())
                 .build();
 
-        return ServiceStatus.builder()
+        return ServiceStatus.<RoutineDto>builder()
                 .status(100)
                 .data(dto)
                 .build();
     }
 
-    public ServiceStatus createRoutine(RoutineDto dto, int userKey) {
+    public ServiceStatus<UserRoutine> createRoutine(RoutineDto dto, int userKey) {
 
         Optional<User> user = userRepository.findById(userKey);
         if(user.isEmpty() || user.get().getIsLeaved() != 'J')
@@ -47,13 +47,13 @@ public class UserRoutineService {
 
         UserRoutine save = routineRepository.save(dto.toRoutineEntity(user.get()));
 
-        return  ServiceStatus.builder()
+        return  ServiceStatus.<UserRoutine>builder()
                 .status(100)
-                .data(save.getRoutineKey())
+                .data(save)
                 .build();
     }
 
-    public ServiceStatus renameRoutine(RoutineDto dto) {
+    public ServiceStatus<Object> renameRoutine(RoutineDto dto) {
 
         Optional<UserRoutine> routine = routineRepository.findById(dto.getRoutineKey());
 
@@ -64,7 +64,7 @@ public class UserRoutineService {
         return ServiceStatus.okStatus();
     }
 
-    public ServiceStatus deleteRoutine(RoutineDto dto) {
+    public ServiceStatus<Object> deleteRoutine(RoutineDto dto) {
 
         Optional<UserRoutine> routine = routineRepository.findById(dto.getRoutineKey());
 
@@ -75,7 +75,7 @@ public class UserRoutineService {
         return ServiceStatus.okStatus();
     }
 
-    public ServiceStatus getAllRoutine(int userKey) {
+    public ServiceStatus<Object> getAllRoutine(int userKey) {
 
         List<RoutineDto> dtoList = new ArrayList<>();
         Optional<User> user = userRepository.findById(userKey);

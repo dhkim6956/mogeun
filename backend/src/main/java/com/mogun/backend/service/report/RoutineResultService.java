@@ -9,9 +9,6 @@ import com.mogun.backend.domain.report.routineResult.RoutineResult;
 import com.mogun.backend.domain.report.routineResult.repository.RoutineResultRepository;
 import com.mogun.backend.domain.report.setReport.SetReport;
 import com.mogun.backend.domain.report.setReport.repository.SetReportRepository;
-import com.mogun.backend.domain.report.usedMusclePart.repository.UsedMusclePartRepository;
-import com.mogun.backend.domain.routine.userRoutinePlan.UserRoutinePlan;
-import com.mogun.backend.domain.routine.userRoutinePlan.repository.UserRoutinePlanRepository;
 import com.mogun.backend.domain.user.User;
 import com.mogun.backend.domain.user.repository.UserRepository;
 import com.mogun.backend.service.ServiceStatus;
@@ -23,7 +20,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -42,11 +38,8 @@ public class RoutineResultService {
     private final SetReportRepository setReportRepository;
     private final AttachPartService attachPartService;
     private final MuscleActInSetLogRepository actInSetLogRepository;
-    private final UsedMusclePartRepository usedMusclePartRepository;
-    //Seongmin 루틴 정렬 위해 추가
-    private final UserRoutinePlanRepository userRoutinePlanRepository;
 
-    public ServiceStatus createResult(ResultDto dto) {
+    public ServiceStatus<Object> createResult(ResultDto dto) {
 
         Optional<RoutineReport> report = reportRepository.findById(dto.getReportKey());
         if(report.isEmpty())
@@ -61,7 +54,7 @@ public class RoutineResultService {
         return ServiceStatus.okStatus();
     }
 
-    public ServiceStatus getAllInfoOfResult(ResultDto dto) {
+    public ServiceStatus<Object> getAllInfoOfResult(ResultDto dto) {
 
         Optional<RoutineResult> result = resultRepository.findById(dto.getResultKey());
         if(result.isEmpty())

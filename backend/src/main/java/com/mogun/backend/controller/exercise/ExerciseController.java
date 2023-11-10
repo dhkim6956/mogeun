@@ -26,7 +26,7 @@ public class ExerciseController {
     private final AttachPartService attachPartService;
 
     @GetMapping("/ListAll")
-    public ApiResponse getAllExercise() {
+    public ApiResponse<Object> getAllExercise() {
 
         List<SimplePlanInfoResponse> data = new ArrayList<>();
         List<Exercise> exerciseList = exerciseService.getAllExercise().getData();
@@ -47,7 +47,7 @@ public class ExerciseController {
     }
 
     @GetMapping("/List")
-    public ApiResponse getExercise(@RequestParam("exec_key") int execKey) {
+    public ApiResponse<Object> getExercise(@RequestParam("exec_key") int execKey) {
 
         ServiceStatus<Exercise> result = exerciseService.getExercise(execKey);
         if(result.getStatus() != 100)
@@ -64,9 +64,9 @@ public class ExerciseController {
     }
 
     @PostMapping("/Add")
-    public ApiResponse createExercise(@RequestBody ExerciseRequest request) {
+    public ApiResponse<Object> createExercise(@RequestBody ExerciseRequest request) {
 
-        ServiceStatus result = exerciseService.createExercise(ExerciseDto.builder()
+        ServiceStatus<Object> result = exerciseService.createExercise(ExerciseDto.builder()
                 .execName(request.getExecName())
                 .engName(request.getEngName())
                 .imagePath(request.getImagePath())

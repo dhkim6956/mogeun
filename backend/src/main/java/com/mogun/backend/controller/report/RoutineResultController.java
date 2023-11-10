@@ -27,9 +27,9 @@ public class RoutineResultController {
     private final RoutineResultService resultService;
 
     @PostMapping("/Create")
-    public ApiResponse createResult(@RequestBody CommonResultRequest request) {
+    public ApiResponse<Object> createResult(@RequestBody CommonResultRequest request) {
 
-        ServiceStatus result = resultService.createResult(ResultDto.builder()
+        ServiceStatus<Object> result = resultService.createResult(ResultDto.builder()
                 .reportKey(request.getReportKey())
                 .consumeCalorie(request.getConsumeCalorie())
                 .build());
@@ -38,9 +38,9 @@ public class RoutineResultController {
     }
 
     @GetMapping("/Routine")
-    public ApiResponse getRoutineResult(@RequestParam("user_key") int userKey, @RequestParam("routine_result_key") int resultKey) {
+    public ApiResponse<Object> getRoutineResult(@RequestParam("user_key") int userKey, @RequestParam("routine_result_key") int resultKey) {
 
-        ServiceStatus result = resultService.getAllInfoOfResult(ResultDto.builder()
+        ServiceStatus<Object> result = resultService.getAllInfoOfResult(ResultDto.builder()
                 .userKey(userKey)
                 .resultKey(resultKey)
                 .build());
@@ -56,7 +56,7 @@ public class RoutineResultController {
     }
 
     @GetMapping("/Exercise")
-    public ApiResponse getExerciseResult(@RequestParam("user_key") int userKey, @RequestParam("routine_result_key") int resultKey) {
+    public ApiResponse<Object> getExerciseResult(@RequestParam("user_key") int userKey, @RequestParam("routine_result_key") int resultKey) {
 
         List<SetResultListDto> list = resultService.getExerciseResult(ResultDto.builder()
                 .userKey(userKey)
@@ -84,7 +84,7 @@ public class RoutineResultController {
     }
 
     @GetMapping("/LastMonth")
-    public ApiResponse getLastMonthResult(@RequestParam("user_key") int userKey) {
+    public ApiResponse<Object> getLastMonthResult(@RequestParam("user_key") int userKey) {
 
         List<ResultListDto> list =  resultService.getLastMonthResult(ResultDto.builder().userKey(userKey).build());
         if(!list.isEmpty() && list.get(0).getRoutineCount() == -1)
@@ -94,7 +94,7 @@ public class RoutineResultController {
     }
 
     @GetMapping("/Monthly")
-    public ApiResponse getMonthlyResult(@RequestParam("user_key") int userKey, @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+    public ApiResponse<Object> getMonthlyResult(@RequestParam("user_key") int userKey, @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
 
         List<ResultListDto> list = resultService.getMonthlyRangeResult(ResultDto.builder()
                 .userKey(userKey)

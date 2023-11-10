@@ -20,9 +20,9 @@ public class RoutineReportController {
     private final SetReportService setReportService;
 
     @PostMapping("/Start")
-    public ApiResponse startRoutineReport(@RequestBody CommonReportRequest request) {
+    public ApiResponse<Object> startRoutineReport(@RequestBody CommonReportRequest request) {
 
-        ServiceStatus result = routineReportService.startRoutineReport(RoutineReportDto.builder()
+        ServiceStatus<Object> result = routineReportService.startRoutineReport(RoutineReportDto.builder()
                 .userKey(request.getUserKey())
                 .routineKey(request.getRoutineKey())
                 .isAttached(request.getIsAttached())
@@ -32,9 +32,9 @@ public class RoutineReportController {
     }
 
     @PutMapping("/End")
-    public ApiResponse endRoutineReport(@RequestBody CommonReportRequest request) {
+    public ApiResponse<Object> endRoutineReport(@RequestBody CommonReportRequest request) {
 
-        ServiceStatus result = routineReportService.endRoutineReport(RoutineReportDto.builder()
+        ServiceStatus<Object> result = routineReportService.endRoutineReport(RoutineReportDto.builder()
                 .reportKey(request.getRoutineReportKey())
                 .userKey(request.getUserKey())
                 .build());
@@ -43,9 +43,9 @@ public class RoutineReportController {
     }
 
     @PostMapping("/Set")
-    public ApiResponse insertSetReport(@RequestBody CommonReportRequest request) {
+    public ApiResponse<Object> insertSetReport(@RequestBody CommonReportRequest request) {
 
-        ServiceStatus result = setReportService.insertSetReport(RoutineReportDto.builder()
+        ServiceStatus<Object> result = setReportService.insertSetReport(RoutineReportDto.builder()
                 .reportKey(request.getRoutineReportKey())
                 .planKey(request.getPlanKey())
                 .setNumber(request.getSetNumber())

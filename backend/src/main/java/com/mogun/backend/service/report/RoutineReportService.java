@@ -26,7 +26,7 @@ public class RoutineReportService {
     private final UserRoutineRepository routineRepository;
     private final RoutineReportRepository routineReportRepository;
 
-    public ServiceStatus startRoutineReport(RoutineReportDto dto) {
+    public ServiceStatus<Object> startRoutineReport(RoutineReportDto dto) {
 
         Optional<User> user = userRepository.findById(dto.getUserKey());
         if(user.isEmpty())
@@ -47,7 +47,7 @@ public class RoutineReportService {
         return ServiceStatus.okStatus();
     }
 
-    public ServiceStatus endRoutineReport(RoutineReportDto dto) {
+    public ServiceStatus<Object> endRoutineReport(RoutineReportDto dto) {
 
         Optional<User> user = userRepository.findById(dto.getUserKey());
         if(user.isEmpty())

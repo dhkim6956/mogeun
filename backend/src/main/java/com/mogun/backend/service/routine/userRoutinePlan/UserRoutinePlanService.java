@@ -30,7 +30,7 @@ public class UserRoutinePlanService {
     private final ExerciseRepository exerciseRepository;
     private final UserRepository userRepository;
 
-    public ServiceStatus addPlan(RoutineDto dto) {
+    public ServiceStatus<Object> addPlan(RoutineDto dto) {
 
         Optional<UserRoutine> routine = routineRepository.findById(dto.getRoutineKey());
         if(routine.isEmpty() || routine.get().getIsDeleted() == 'Y')
@@ -45,7 +45,7 @@ public class UserRoutinePlanService {
         return ServiceStatus.okStatus();
     }
 
-    public ServiceStatus removePlan(RoutineDto dto) {
+    public ServiceStatus<Object> removePlan(RoutineDto dto) {
 
         Optional<UserRoutine> routine = routineRepository.findById(dto.getRoutineKey());
         Optional<Exercise> exercise = exerciseRepository.findById(dto.getExecKey());
@@ -63,10 +63,13 @@ public class UserRoutinePlanService {
         return ServiceStatus.okStatus();
     }
 
-    public ServiceStatus getAllPlan(RoutineDto dto) {
+    public ServiceStatus<Object> getAllPlan(RoutineDto dto) {
 
         List<RoutineDto> result = new ArrayList<>();
         Optional<UserRoutine> routine = routineRepository.findById(dto.getRoutineKey());
+        if(routine.isEmpty())
+            return ServiceStatus.errorStatus("요청 오류: 해당 루틴이 없음");
+
         List<UserRoutinePlan> planList = planRepository.findAllByUserRoutine(routine.get());
 
         for(UserRoutinePlan plan: planList) {
@@ -82,7 +85,7 @@ public class UserRoutinePlanService {
                 .build();
     }
 
-    public ServiceStatus getAllRoutineAndMuscle(RoutineDto dto) {
+    public ServiceStatus<List<RoutineOutlineDto>> getAllRoutineAndMuscle(RoutineDto dto) {
 
         Optional<User> user = userRepository.findById(dto.getUserKey());
         if(user.isEmpty())
@@ -117,7 +120,7 @@ public class UserRoutinePlanService {
             }
         }
 
-        return ServiceStatus.builder()
+        return ServiceStatus.<List<RoutineOutlineDto>>builder()
                 .status(100)
                 .data(routineOutlineDtoList)
                 .build();

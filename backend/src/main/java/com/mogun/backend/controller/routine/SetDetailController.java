@@ -27,9 +27,9 @@ public class SetDetailController {
     private final SetDetailService setDetailService;
 
     @PostMapping("/Add")
-    public ApiResponse addOneSet(@RequestBody SetRequest request) {
+    public ApiResponse<Object> addOneSet(@RequestBody SetRequest request) {
 
-        ServiceStatus result = setDetailService.addOneSetGoal(RoutineDto.builder()
+        ServiceStatus<Object> result = setDetailService.addOneSetGoal(RoutineDto.builder()
                 .planKey(request.getPlanKey())
                 .setNumber(request.getSetNumber())
                 .weight(request.getWeight())
@@ -40,7 +40,7 @@ public class SetDetailController {
     }
 
     @PostMapping("/AddAll")
-    public ApiResponse addAllSet(@RequestBody SetRequestList requestList) {
+    public ApiResponse<Object> addAllSet(@RequestBody SetRequestList requestList) {
 
         List<RoutineDto> dtoList = new ArrayList<>();
 
@@ -54,13 +54,13 @@ public class SetDetailController {
                     .build());
         }
 
-        ServiceStatus result = setDetailService.addAllSetGoal(dtoList);
+        ServiceStatus<Object> result = setDetailService.addAllSetGoal(dtoList);
 
         return ApiResponse.postAndPutResponse(result, requestList);
     }
 
     @RequestMapping("/ListAll")
-    public ApiResponse getAll(@RequestParam("plan_key") int planKey) {
+    public ApiResponse<Object> getAll(@RequestParam("plan_key") int planKey) {
 
         List<SetInfo> infoList = new ArrayList<>();
         List<SetDetail> setDetailList = setDetailService.getAllSetInfo(RoutineDto.builder()
@@ -88,17 +88,17 @@ public class SetDetailController {
     }
 
     @DeleteMapping("/Delete")
-    public ApiResponse deleteOneSet(@RequestBody CommonRoutineRequest request) {
+    public ApiResponse<Object> deleteOneSet(@RequestBody CommonRoutineRequest request) {
 
-        ServiceStatus result = setDetailService.deleteOneSet(RoutineDto.builder().setKey(request.getSetKey()).build());
+        ServiceStatus<Object> result = setDetailService.deleteOneSet(RoutineDto.builder().setKey(request.getSetKey()).build());
 
         return ApiResponse.postAndPutResponse(result, request);
     }
 
     @DeleteMapping("/DeleteAll")
-    public ApiResponse deleteAll(@RequestBody CommonRoutineRequest request) {
+    public ApiResponse<Object> deleteAll(@RequestBody CommonRoutineRequest request) {
 
-        ServiceStatus result = setDetailService.deleteAllSet(RoutineDto.builder().planKey(request.getPlanKey()).build());
+        ServiceStatus<Object> result = setDetailService.deleteAllSet(RoutineDto.builder().planKey(request.getPlanKey()).build());
 
         return ApiResponse.postAndPutResponse(result, request);
     }

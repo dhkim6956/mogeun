@@ -30,9 +30,9 @@ public class PlanController {
     private final UserRoutinePlanService planService;
 
     @PostMapping("/Add")
-    public ApiResponse addPlan(@RequestBody CommonRoutineRequest request) {
+    public ApiResponse<Object> addPlan(@RequestBody CommonRoutineRequest request) {
 
-        ServiceStatus result = planService.addPlan(RoutineDto.builder()
+        ServiceStatus<Object> result = planService.addPlan(RoutineDto.builder()
                 .routineKey(request.getRoutineKey())
                 .execKey(request.getExecKey())
                 .setAmount(request.getSets())
@@ -42,13 +42,13 @@ public class PlanController {
     }
 
     @PostMapping("/AddAll")
-    public ApiResponse addAllPlan(@RequestBody AddPlanListRequest request) {
+    public ApiResponse<Object> addAllPlan(@RequestBody AddPlanListRequest request) {
 
         List<Integer> success = new ArrayList<>();
         List<Integer> fail = new ArrayList<>();
 
         for(Integer key: request.getExecKeys()) {
-            ServiceStatus result = planService.addPlan(RoutineDto.builder()
+            ServiceStatus<Object> result = planService.addPlan(RoutineDto.builder()
                     .routineKey(request.getRoutineKey())
                     .execKey(key)
                     .setAmount(1)
@@ -65,9 +65,9 @@ public class PlanController {
     }
 
     @DeleteMapping("/Remove")
-    public ApiResponse removePlan(@RequestParam("routine_key") int routineKey, @RequestParam("exec_key") int execKey) {
+    public ApiResponse<Object> removePlan(@RequestParam("routine_key") int routineKey, @RequestParam("exec_key") int execKey) {
 
-        ServiceStatus result = planService.removePlan(RoutineDto.builder()
+        ServiceStatus<Object> result = planService.removePlan(RoutineDto.builder()
                 .routineKey(routineKey)
                 .execKey(execKey)
                 .build());
@@ -76,16 +76,13 @@ public class PlanController {
     }
 
     @GetMapping("/ListAll")
-    public ApiResponse getAllPlan(@RequestParam("routine_key") int routineKey) {
+    public ApiResponse<Object> getAllPlan(@RequestParam("routine_key") int routineKey) {
 
-        ServiceStatus routineResult = routineService.getRoutine(routineKey);
+        ServiceStatus<RoutineDto> routineResult = routineService.getRoutine(routineKey);
         if(routineResult.getStatus() == 200)
             return ApiResponse.badRequest(routineResult.getMessage());
 
-        RoutineDto dto = (RoutineDto) routineResult.getData();
-        List<SimplePlanInfoResponse> planList = new ArrayList<>();
-
-        ServiceStatus planResult = planService.getAllPlan(RoutineDto.builder()
+        ServiceStatus<Object> planResult = planService.getAllPlan(RoutineDto.builder()
                 .routineKey(routineKey)
                 .build());
 

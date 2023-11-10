@@ -22,7 +22,7 @@ public class SetReportService {
     private final RoutineReportRepository routineReportRepository;
     private final UserRoutinePlanRepository planRepository;
 
-    public ServiceStatus insertSetReport(RoutineReportDto dto) {
+    public ServiceStatus<Object> insertSetReport(RoutineReportDto dto) {
 
         Optional<RoutineReport> report = routineReportRepository.findById(dto.getReportKey());
         if(report.isEmpty())

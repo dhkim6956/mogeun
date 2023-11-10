@@ -30,7 +30,7 @@ public class SetDetailService {
     private final UserRoutineRepository routineRepository;
     private final UserRoutinePlanRepository planRepository;
 
-    public ServiceStatus addOneSetGoal(RoutineDto dto) {
+    public ServiceStatus<Object> addOneSetGoal(RoutineDto dto) {
 
         Optional<UserRoutinePlan> plan = planRepository.findById(dto.getPlanKey());
         if(plan.isEmpty())
@@ -41,7 +41,7 @@ public class SetDetailService {
         return ServiceStatus.okStatus();
     }
 
-    public ServiceStatus addAllSetGoal(List<RoutineDto> dtoList) {
+    public ServiceStatus<Object> addAllSetGoal(List<RoutineDto> dtoList) {
 
         Optional<UserRoutinePlan> plan = planRepository.findById(dtoList.get(0).getPlanKey());
         if(plan.isEmpty())
@@ -66,14 +66,14 @@ public class SetDetailService {
         return setDetailRepository.findAllByUserRoutinePlan(plan.get());
     }
 
-    public ServiceStatus deleteOneSet(RoutineDto dto) {
+    public ServiceStatus<Object> deleteOneSet(RoutineDto dto) {
 
         setDetailRepository.deleteById(dto.getSetKey());
 
         return ServiceStatus.okStatus();
     }
 
-    public ServiceStatus deleteAllSet(RoutineDto dto) {
+    public ServiceStatus<Object> deleteAllSet(RoutineDto dto) {
 
         Optional<UserRoutinePlan> plan = planRepository.findById(dto.getPlanKey());
         if(plan.isEmpty())
