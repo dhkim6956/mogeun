@@ -43,7 +43,10 @@ public class AttachPartService {
         List<AttachPart> partList = attachPartRepository.findAllByExerciseAndAttachDirection(exec, 'L');
 
         for(AttachPart item: partList) {
-            result.add(item.getMusclePart().getPartName());
+            if(item.getMuscleCategory() == 'M')
+                result.add("주 " + item.getMusclePart().getPartName());
+            else
+                result.add("부 " + item.getMusclePart().getPartName());
         }
 
         return result;

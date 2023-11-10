@@ -128,7 +128,7 @@ public class RoutineResultService {
                         .setResultList(new ArrayList<>())
                         .build());
 
-                exerciseResultDtoList.get(0).getPartList().addAll(attachPartService.getAllPartNameByExercise(setReport.getExercise()));
+                exerciseResultDtoList.get(0).getPartList().addAll(attachPartService.getPartNameByExercise(setReport.getExercise()));
                 exerciseResultDtoList.get(0).getMuscleImagePathList().addAll(attachPartService.getPartImagePathByExercise(setReport.getExercise()));
             }
 
@@ -167,7 +167,7 @@ public class RoutineResultService {
                         .build());
 
                 lastIndex = exerciseResultDtoList.size() - 1;
-                exerciseResultDtoList.get(lastIndex).getPartList().addAll(attachPartService.getAllPartNameByExercise(setReport.getExercise()));
+                exerciseResultDtoList.get(lastIndex).getPartList().addAll(attachPartService.getPartNameByExercise(setReport.getExercise()));
                 exerciseResultDtoList.get(lastIndex).getMuscleImagePathList().addAll(attachPartService.getPartImagePathByExercise(setReport.getExercise()));
 
                 exerciseResultDtoList.get(lastIndex).getSetResultList().add(SetResultDto.builder()
