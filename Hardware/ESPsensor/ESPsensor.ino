@@ -6,9 +6,9 @@ const char *pin = "1234"; // Change this to more secure PIN.
 const int interruptPin = 0;
 const int sensorInputPin = 34;
 const int ledPin = 2;
-const int deviceId = 1;
+int deviceId = 1;
 
-String device_name = "ESP32-BT-1";
+String device_name = "ESP32-BT-2";
 
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
@@ -78,8 +78,23 @@ void loop() {
 //      Serial.println(cmd);
   
       if(cmd.toInt() == 0) {
+        deviceId = 0;
         isConnected = true;
         ledState = true;
+      } else if(cmd.toInt() == 1) {
+        deviceId = 1;
+        isConnected = true;
+        ledState = true;
+      } else if(cmd.toInt() == 2) {
+        deviceId = 2;
+        isConnected = true;
+        ledState = true;
+      } else if(cmd.toInt() == 3) {
+        deviceId = 3;
+        isConnected = true;
+        ledState = true;
+      } else {
+        isConnected = false;
       }
     }  
   }

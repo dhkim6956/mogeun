@@ -1,8 +1,10 @@
 package io.ssafy.mogeun.ui
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.ssafy.mogeun.data.Emg
 import io.ssafy.mogeun.data.EmgRepository
 import io.ssafy.mogeun.data.SetRepository
 import io.ssafy.mogeun.data.bluetooth.BluetoothController
@@ -11,6 +13,7 @@ import io.ssafy.mogeun.data.bluetooth.ConnectedDevice
 import io.ssafy.mogeun.data.bluetooth.ConnectedDeviceDomain
 import io.ssafy.mogeun.data.bluetooth.Connection0Result
 import io.ssafy.mogeun.data.bluetooth.Connection1Result
+import io.ssafy.mogeun.model.BluetoothMessage
 import io.ssafy.mogeun.model.SetRequest
 import io.ssafy.mogeun.model.SetResponse
 import kotlinx.coroutines.Job
@@ -96,8 +99,13 @@ class BluetoothViewModel(
     }
 
     fun disconnectFromDevice(deviceNo: Int = 0) {
-        deviceConnectionJob[deviceNo]?.cancel()
-        bluetoothController.closeConnection(deviceNo)
+        deviceConnectionJob[0]?.cancel()
+        deviceConnectionJob[1]?.cancel()
+
+        viewModelScope.launch {
+            bluetoothController.closeConnection(0)
+            bluetoothController.closeConnection(1)
+        }
 //        val bufConnected = state.value.isConnected.toMutableList()
 //        bufConnected[deviceNo] = false
 
@@ -126,10 +134,9 @@ class BluetoothViewModel(
                     ) }
                 }
                 is Connection0Result.TransferSucceeded -> {
-                    Log.d("bluetooth", "${result.message}")
-                    Log.d("bluetooth", "${state.value.isConnected}")
-
-
+//                    Log.d("bluetooth", "${result.message}")
+//                    Log.d("bluetooth", "${state.value.isConnected}")
+                    saveData(result.message)
                 }
                 is Connection0Result.Error -> {
                     if(result.message != "errString") {
@@ -160,10 +167,9 @@ class BluetoothViewModel(
                     ) }
                 }
                 is Connection1Result.TransferSucceeded -> {
-                    Log.d("bluetooth", "${result.message}")
-                    Log.d("bluetooth", "${state.value.isConnected}")
-
-
+//                    Log.d("bluetooth", "${result.message}")
+//                    Log.d("bluetooth", "${state.value.isConnected}")
+                    saveData(result.message)
                 }
                 is Connection1Result.Error -> {
                     if(result.message != "errString") {
@@ -183,9 +189,17 @@ class BluetoothViewModel(
         }.launchIn(viewModelScope)
     }
 
+    suspend fun saveData(msg: BluetoothMessage) {
+        val emgInput = Emg(0, msg.sensorId, "unknown", msg.message, System.currentTimeMillis())
+        emgRepository.insertEmg(emgInput)
+    }
+
     override fun onCleared() {
         super.onCleared()
-        bluetoothController.release()
+        viewModelScope.launch {
+            bluetoothController.release()
+            emgRepository.deleteEmgData()
+        }
     }
 
     companion object {

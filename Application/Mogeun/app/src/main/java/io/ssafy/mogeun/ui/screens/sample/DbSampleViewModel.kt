@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.stateIn
 
 class DbSampleViewModel(private val emgRepository: EmgRepository): ViewModel() {
 
-    private val _emgInput = mutableStateOf<Emg>(Emg(0, 1, "left", 0.0, System.currentTimeMillis()))
+    private val _emgInput = mutableStateOf<Emg>(Emg(0, 1, "left", 0, System.currentTimeMillis()))
 
     val emgInput = _emgInput
 
@@ -32,7 +32,7 @@ class DbSampleViewModel(private val emgRepository: EmgRepository): ViewModel() {
         _emgInput.value = _emgInput.value.copy(sensingPart = part)
     }
 
-    fun setValue(value: Double) {
+    fun setValue(value: Int) {
         _emgInput.value = _emgInput.value.copy(value = value)
     }
 

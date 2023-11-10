@@ -47,9 +47,8 @@ interface BluetoothController {
     fun connectToDevice1(device: ConnectedDevice): Flow<Connection1Result>
 
     suspend fun trySendMessage(deviceNo: Int, message: Int): BluetoothMessage?
-    fun closeConnection(deviceNo: Int)
-
-    fun release()
+    suspend fun closeConnection(deviceNo: Int)
+    suspend fun release()
 }
 
 @SuppressLint("MissingPermission")
@@ -203,10 +202,11 @@ class AndroidBluetoothController(
                     currentClientSockets[0] = null
                     emit(Connection0Result.Error("Connection was interrupted"))
                 } finally {
-                    Log.d("bluetooth", "finally ended")
+                    Log.d("bluetooth", "Device 0 finally ended")
                 }
             }
         }.onCompletion {
+            Log.d("bluetooth", "Device 0 onCompletion")
             _connectedDevices.update { devices ->
                 devices.filter { it != device }
             }
@@ -244,7 +244,7 @@ class AndroidBluetoothController(
                     BluetoothDataTransferService(socket).also {
                         dataTransferService[1] = it
 
-                        trySendMessage(1, 0)
+                        trySendMessage(1, 1)
 
                         emitAll(
                             it.listenForIncomingMessage()
@@ -264,10 +264,11 @@ class AndroidBluetoothController(
                     currentClientSockets[1] = null
                     emit(Connection1Result.Error("Connection was interrupted"))
                 } finally {
-                    Log.d("bluetooth", "finally ended")
+                    Log.d("bluetooth", "Device 1 finally ended")
                 }
             }
         }.onCompletion {
+            Log.d("bluetooth", "Device 1 onCompletion")
             _connectedDevices.update { devices ->
                 devices.filter { it != device }
             }
@@ -281,13 +282,13 @@ class AndroidBluetoothController(
             return null
         }
 
-        if(dataTransferService == null) {
+        if(dataTransferService[deviceNo] == null) {
             return null
         }
 
         val bluetoothMessage = BluetoothMessage(
             message = message,
-            sensorId = 0,
+            sensorId = 4,
             isFromLocalUser = true
         )
 
@@ -296,14 +297,15 @@ class AndroidBluetoothController(
         return bluetoothMessage
     }
 
-    override fun closeConnection(deviceNo: Int) {
+    override suspend fun closeConnection(deviceNo: Int) {
         Log.d("bluetooth","${deviceNo + 1}번 기기 연결 종료됨")
+        trySendMessage(deviceNo, 4)
         currentClientSockets[deviceNo]?.close()
         currentClientSockets[deviceNo] = null
         updateIsConnected(deviceNo, false)
     }
 
-    override fun release() {
+    override suspend fun release() {
         context.unregisterReceiver(foundDeviceReceiver)
         context.unregisterReceiver(bluetoothStateReceiver)
         closeConnection(0)
