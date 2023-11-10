@@ -91,7 +91,7 @@ public class PlanController {
 
         for(RoutineDto item: list) {
 
-            List<String> parts = attachPartService.getAllPartNameByExercise(item.getExec());
+            List<String> parts = attachPartService.getPartNameByExercise(item.getExec());
             Exercise exec = item.getExec();
 
             responses.add(SimplePlanInfoResponse.builder()
