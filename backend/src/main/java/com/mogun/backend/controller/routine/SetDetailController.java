@@ -67,6 +67,9 @@ public class SetDetailController {
                 .planKey(planKey)
                 .build());
 
+        if(setDetailList.isEmpty())
+            return ApiResponse.ok(new ArrayList<>());
+
         if(setDetailList.get(0).getSetKey() == -1)
             return ApiResponse.badRequest("요청 오류: 등록된 적 없는 운동 계획");
 
