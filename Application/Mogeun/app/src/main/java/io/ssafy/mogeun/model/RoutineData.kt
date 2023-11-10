@@ -149,5 +149,5 @@ data class MyExerciseResponse(
     val code: Int,
     val status: String,
     val message: String,
-    val data: List<MyExerciseResponseData>
+    val data: MyExerciseResponseData
 )

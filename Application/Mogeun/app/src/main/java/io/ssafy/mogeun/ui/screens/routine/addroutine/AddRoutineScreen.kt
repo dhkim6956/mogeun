@@ -33,9 +33,13 @@ import androidx.navigation.NavHostController
 import io.ssafy.mogeun.R
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.ssafy.mogeun.model.ListMyExerciseResponseData
+import io.ssafy.mogeun.model.MyExerciseResponseData
 import io.ssafy.mogeun.ui.AppViewModelProvider
+import io.ssafy.mogeun.ui.screens.routine.searchRoutine.RoutineList
 
 
 @Composable
@@ -48,7 +52,7 @@ fun AddRoutineScreen(
         viewModel.getUserKey()
         viewModel.listMyExercise(routineKey)
     }
-    val exercises = viewModel.exerciseList
+//    val exercises = viewModel.exerciseList
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -57,24 +61,14 @@ fun AddRoutineScreen(
         Log.d("routineKey", "${routineKey}")
         LazyColumn {
             // slide_list_view
-            items(exercises) { exercise ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(88.dp)
-                        .border(
-                            width = 2.dp,
-                            color = MaterialTheme.colorScheme.primary,
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .padding(16.dp)
-                ) {
-                    Column {
-                        Text(text = "exercise")
-                    }
+            viewModel.exerciseList?.let {
+                itemsIndexed(it) { index, item ->
+                    ExerciseList(item)
                 }
-                Spacer(modifier = Modifier.height(8.dp))
             }
+//            items(exercises) { exercise ->
+//                ExerciseList()
+//            }
         }
     }
     Column(
@@ -92,4 +86,24 @@ fun AddRoutineScreen(
             }
         }
     }
+}
+
+@Composable
+fun ExerciseList(item: ListMyExerciseResponseData) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(88.dp)
+            .border(
+                width = 2.dp,
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(16.dp)
+    ) {
+        Column {
+            Text(text = "${item.name}")
+        }
+    }
+    Spacer(modifier = Modifier.height(8.dp))
 }
