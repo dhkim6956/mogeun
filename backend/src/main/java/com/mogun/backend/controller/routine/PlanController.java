@@ -6,6 +6,7 @@ import com.mogun.backend.controller.routine.request.CommonRoutineRequest;
 import com.mogun.backend.controller.routine.response.AddPlanListResponse;
 import com.mogun.backend.controller.routine.response.PlanListResponse;
 import com.mogun.backend.controller.routine.response.SimplePlanInfoResponse;
+import com.mogun.backend.service.ServiceStatus;
 import com.mogun.backend.service.attachPart.AttachPartService;
 import com.mogun.backend.service.routine.dto.RoutineDto;
 import com.mogun.backend.service.routine.userRoutine.UserRoutineService;
@@ -76,34 +77,40 @@ public class PlanController {
     @GetMapping("/ListAll")
     public ApiResponse getAllPlan(@RequestParam("routine_key") int routineKey) {
 
-        RoutineDto dto = routineService.getRoutine(routineKey);
+        ServiceStatus result = routineService.getRoutine(routineKey);
+        if(result.getStatus() == 200)
+            return ApiResponse.badRequest(result.getMessage());
+
+        RoutineDto dto = (RoutineDto) result.getData();
         List<SimplePlanInfoResponse> planList = new ArrayList<>();
 
         List<RoutineDto> list = planService.getAllPlan(RoutineDto.builder()
                 .routineKey(routineKey)
                 .build());
 
-        for(RoutineDto item: list) {
+//        for(RoutineDto item: list) {
 
 //            List<String> parts = attachPartService.getAllPartNameByExercise(item.getExec());
             // Seongmin 사용 근육 가져오기
-            List<String> parts = attachPartService.getPartNameByExercise(item.getExec());
+//            List<String> parts = attachPartService.getPartNameByExercise(item.getExec());
+//
+//            planList.add(SimplePlanInfoResponse.builder()
+//                    .execKey(item.getExec().getExecKey())
+//                    .execName(item.getExec().getName())
+//                    .imagePath(item.getExec().getImagePath())
+//                    .musclePart(parts)
+//                    .engName(item.getExec().getEngName())
+//                    .mainPart(item.getExec().getMainPart().getPartName())
+//                    .build());
+//        }
+//
+//        return ApiResponse.ok(PlanListResponse.builder()
+//                .routineKey(dto.getRoutineKey())
+//                .routineName(dto.getRoutineName())
+//                .exercises(planList)
+//                .build());
 
-            planList.add(SimplePlanInfoResponse.builder()
-                    .execKey(item.getExec().getExecKey())
-                    .execName(item.getExec().getName())
-                    .imagePath(item.getExec().getImagePath())
-                    .musclePart(parts)
-                    .engName(item.getExec().getEngName())
-                    .mainPart(item.getExec().getMainPart().getPartName())
-                    .build());
-        }
-
-        return ApiResponse.ok(PlanListResponse.builder()
-                .routineKey(dto.getRoutineKey())
-                .routineName(dto.getRoutineName())
-                .exercises(planList)
-                .build());
+        return  ApiResponse.ok(list);
     }
 
 }

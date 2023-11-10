@@ -6,6 +6,7 @@ import com.mogun.backend.controller.routine.request.CommonRoutineRequest;
 import com.mogun.backend.controller.routine.response.RoutineCreatedResponse;
 import com.mogun.backend.controller.routine.response.SimpleRoutineInfoResponse;
 import com.mogun.backend.domain.routine.userRoutinePlan.repository.UserRoutinePlanRepository;
+import com.mogun.backend.service.ServiceStatus;
 import com.mogun.backend.service.attachPart.AttachPartService;
 import com.mogun.backend.service.routine.dto.RoutineDto;
 import com.mogun.backend.service.routine.userRoutine.UserRoutineService;
@@ -85,6 +86,10 @@ public class RoutineController {
     @GetMapping("/ListAll")
     public ApiResponse getAllRoutine(@RequestParam("user_key") int userKey) {
 
-        return ApiResponse.ok(planService.getAllRoutineAndMuscle(RoutineDto.builder().userKey(userKey).build()));
+        ServiceStatus result = planService.getAllRoutineAndMuscle(RoutineDto.builder().userKey(userKey).build());
+        if(result.getStatus() == 200)
+            return ApiResponse.badRequest(result.getMessage());
+
+        return ApiResponse.ok(result.getData());
     }
 }

@@ -8,6 +8,7 @@ import com.mogun.backend.domain.routine.userRoutinePlan.UserRoutinePlan;
 import com.mogun.backend.domain.routine.userRoutinePlan.repository.UserRoutinePlanRepository;
 import com.mogun.backend.domain.user.User;
 import com.mogun.backend.domain.user.repository.UserRepository;
+import com.mogun.backend.service.ServiceStatus;
 import com.mogun.backend.service.routine.dto.RoutineDto;
 import com.mogun.backend.service.routine.dto.RoutineOutlineDto;
 import lombok.RequiredArgsConstructor;
@@ -78,43 +79,44 @@ public class UserRoutinePlanService {
         return result;
     }
 
-    public List<RoutineOutlineDto> getAllRoutineAndMuscle(RoutineDto dto) {
+    public ServiceStatus getAllRoutineAndMuscle(RoutineDto dto) {
 
         Optional<User> user = userRepository.findById(dto.getUserKey());
         if(user.isEmpty())
-            return null;
+            return ServiceStatus.errorStatus("요청 오류: 등록되지 않은 회원");
 
+        List<UserRoutine> routineList = routineRepository.findAllByUser(user.get());
         List<UserRoutinePlan> planList = planRepository.findAllByUser(user.get());
         List<RoutineOutlineDto> routineOutlineDtoList = new ArrayList<>();
 
-        for(UserRoutinePlan plan: planList) {
-            if(routineOutlineDtoList.isEmpty()) {
-                routineOutlineDtoList.add(RoutineOutlineDto.builder()
-                        .name(plan.getUserRoutine().getRoutineName())
-                        .routineKey(plan.getUserRoutine().getRoutineKey())
-                        .muscleImagePathList(new HashSet<>())
-                        .build());
-            }
+        int currentIndex = 0;
 
+        // 모든 routine에 대해 목록 item 생성
+        for(UserRoutine routine: routineList) {
+            routineOutlineDtoList.add(RoutineOutlineDto.builder()
+                    .name(routine.getRoutineName())
+                    .routineKey(routine.getRoutineKey())
+                    .muscleImagePathList(new HashSet<>())
+                    .build());
+
+            if(planList.isEmpty()) continue;
+            if(currentIndex >= planList.size()) continue;
             int lastIndex = routineOutlineDtoList.size() - 1;
-            UserRoutine routine = plan.getUserRoutine();
-            Exercise exec = plan.getExercise();
 
-            if(routineOutlineDtoList.get(lastIndex).getRoutineKey() == routine.getRoutineKey()) {
-                routineOutlineDtoList.get(lastIndex).getMuscleImagePathList().add(exec.getMainPart().getImagePath());
-            } else {
-                routineOutlineDtoList.add(RoutineOutlineDto.builder()
-                        .name(plan.getUserRoutine().getRoutineName())
-                        .routineKey(plan.getUserRoutine().getRoutineKey())
-                        .muscleImagePathList(new HashSet<>())
-                        .build());
+            while (planList.get(currentIndex).getUserRoutine().getRoutineKey() <= routine.getRoutineKey()) {
 
-                lastIndex = routineOutlineDtoList.size() - 1;
-                routineOutlineDtoList.get(lastIndex).getMuscleImagePathList().add(exec.getMainPart().getImagePath());
+                UserRoutine nowRoutine = planList.get(currentIndex).getUserRoutine();
+                if(nowRoutine.getRoutineKey() == routine.getRoutineKey())
+                    routineOutlineDtoList.get(lastIndex).getMuscleImagePathList().add(planList.get(currentIndex).getExercise().getMainPart().getImagePath());
+
+                currentIndex++;
+                if(currentIndex >= planList.size()) break;
             }
-
         }
 
-        return routineOutlineDtoList;
+        return ServiceStatus.builder()
+                .status(100)
+                .data(routineOutlineDtoList)
+                .build();
     }
 }

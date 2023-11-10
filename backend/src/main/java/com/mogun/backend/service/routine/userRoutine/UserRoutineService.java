@@ -4,6 +4,7 @@ import com.mogun.backend.domain.routine.userRoutine.UserRoutine;
 import com.mogun.backend.domain.routine.userRoutine.repository.UserRoutineRepository;
 import com.mogun.backend.domain.user.User;
 import com.mogun.backend.domain.user.repository.UserRepository;
+import com.mogun.backend.service.ServiceStatus;
 import com.mogun.backend.service.routine.dto.RoutineDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,15 +22,20 @@ public class UserRoutineService {
     private final UserRepository userRepository;
     private final UserRoutineRepository routineRepository;
 
-    public RoutineDto getRoutine(int routineKey) {
+    public ServiceStatus getRoutine(int routineKey) {
 
         Optional<UserRoutine> routine = routineRepository.findById(routineKey);
         if(routine.isEmpty())
-            return null;
+            return ServiceStatus.errorStatus("요청 오류: 등록되지 않은 루틴");
 
-        return RoutineDto.builder()
+        RoutineDto dto = RoutineDto.builder()
                 .routineKey(routine.get().getRoutineKey())
                 .routineName(routine.get().getRoutineName())
+                .build();
+
+        return ServiceStatus.builder()
+                .status(100)
+                .data(dto)
                 .build();
     }
 
@@ -66,12 +72,12 @@ public class UserRoutineService {
         return "SUCCESS";
     }
 
-    public List<RoutineDto> getAllRoutine(int userKey) {
+    public ServiceStatus getAllRoutine(int userKey) {
 
         List<RoutineDto> dtoList = new ArrayList<>();
         Optional<User> user = userRepository.findById(userKey);
         if(user.isEmpty() || user.get().getIsLeaved() != 'J')
-            return dtoList;
+            return ServiceStatus.errorStatus("요청 오류: 등록되지 않은 회원 정보");
 
         List<UserRoutine> result = routineRepository.findAllByUser(user.get());
         for(UserRoutine routine: result) {
@@ -83,6 +89,9 @@ public class UserRoutineService {
                         .build());
         }
 
-        return dtoList;
+        return ServiceStatus.builder()
+                .status(100)
+                .data(dtoList)
+                .build();
     }
 }
