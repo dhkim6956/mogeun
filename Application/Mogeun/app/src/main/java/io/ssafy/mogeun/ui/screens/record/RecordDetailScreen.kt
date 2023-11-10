@@ -38,19 +38,30 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import co.yml.charts.axis.AxisData
+import co.yml.charts.axis.DataCategoryOptions
+import co.yml.charts.axis.Gravity
+import co.yml.charts.common.model.AccessibilityConfig
+import co.yml.charts.common.model.Point
+import co.yml.charts.common.utils.DataUtils
+import co.yml.charts.ui.barchart.BarChart
+import co.yml.charts.ui.barchart.models.BarChartData
+import co.yml.charts.ui.barchart.models.BarChartType
+import co.yml.charts.ui.barchart.models.BarData
 import com.google.gson.Gson
-import com.patrykandpatrick.vico.compose.axis.horizontal.bottomAxis
-import com.patrykandpatrick.vico.compose.axis.vertical.startAxis
-import com.patrykandpatrick.vico.compose.chart.Chart
-import com.patrykandpatrick.vico.compose.chart.line.lineChart
-import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
-import com.patrykandpatrick.vico.core.entry.entryOf
-import com.patrykandpatrick.vico.core.extension.setFieldValue
+//import com.patrykandpatrick.vico.compose.axis.horizontal.bottomAxis
+//import com.patrykandpatrick.vico.compose.axis.vertical.startAxis
+//import com.patrykandpatrick.vico.compose.chart.Chart
+//import com.patrykandpatrick.vico.compose.chart.line.lineChart
+//import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
+//import com.patrykandpatrick.vico.core.entry.entryOf
+//import com.patrykandpatrick.vico.core.extension.setFieldValue
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.model.Exercise
 import io.ssafy.mogeun.model.SetResult
@@ -76,10 +87,8 @@ fun RecordDetailScreen(
     Column (
         modifier = Modifier
             .fillMaxSize()
-            .padding(
-                horizontal = 30.dp,
-                vertical = 10.dp
-            )
+            .padding(horizontal = 30.dp)
+            .padding(top = 10.dp)
             .background(color = MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -223,33 +232,81 @@ fun RoutineGraphIconCard(
             .padding(
                 top = 20.dp
             )
-            .background(color = MaterialTheme.colorScheme.background)
     ) {
-        Column (
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            GraphCard()
+        Column () {
+            GraphCard(exercises)
             IconCard(exercises)
         }
     }
 }
 
 @Composable
-fun GraphCard() {
+fun GraphCard(exercises: List<Exercise>) {
+    val maxRange = 10
+    val yStepSize = 5
+    var map: MutableMap<String, Float> = mutableMapOf<String, Float>(
+        "가슴" to 0f, "등" to 0f, "허벅지" to 0f, "어깨" to 0f, "이두" to 0f, "삼두" to 0f, "승모근" to 0f, "종아리" to 0f, "복근" to 0f, "" to 0f
+        )
+    var index = 0
+    var barChartdata: MutableList<BarData> = mutableListOf()
+
+    for (exercise in exercises) {
+        var prevPart: String = ""
+        for (part in exercise.parts) {
+            val partDetail = part.split(" ")
+            if (prevPart == "") prevPart = partDetail[1]
+            else if (prevPart == partDetail[1]) continue
+            if (partDetail[0] == "주") {
+                map[partDetail[1]] = map[partDetail[1]]!!.plus(3f)
+            }
+            else {
+                map[partDetail[1]] = map[partDetail[1]]!!.plus(1f)
+            }
+        }
+    }
+
+    for (data in map) {
+        barChartdata.add(index, BarData(Point(index.toFloat(), data.value), MaterialTheme.colorScheme.primary, data.key))
+        index++
+    }
+
+    val xAxisData = AxisData.Builder()
+        .axisStepSize(30.dp)
+        .steps(barChartdata.size - 1)
+        .topPadding(10.dp)
+        .startDrawPadding(20.dp)
+        .shouldDrawAxisLineTillEnd(true)
+        .labelData { index -> barChartdata[index].label }
+        .build()
+
+    val yAxisData = AxisData.Builder()
+        .steps(yStepSize)
+        .labelAndAxisLinePadding(20.dp)
+        .axisOffset(20.dp)
+        .labelData { index -> (index * (maxRange / yStepSize)).toString() }
+        .build()
+
+    val barChartData = BarChartData(
+        chartData = barChartdata,
+        xAxisData = xAxisData,
+        yAxisData = yAxisData,
+        showYAxis = false,
+        paddingEnd = 0.dp
+    )
+
     Box (modifier = Modifier
         .fillMaxWidth()
     ) {
-        val producer = ChartEntryModelProducer(getRandomEntries())
-        Chart(
-            chart = lineChart(),
-            chartModelProducer = producer,
-            startAxis = startAxis(),
-            bottomAxis = bottomAxis()
+        BarChart(
+            modifier = Modifier
+                .height(200.dp)
+                .padding(bottom = 10.dp),
+            barChartData = barChartData
         )
     }
 }
 
-fun getRandomEntries() = List(9) { entryOf(it, it * 10) }
+//fun getRandomEntries() = List(9) { entryOf(it, it * 10) }
 
 @Composable
 fun IconCard(
@@ -308,11 +365,17 @@ fun RoutineExerciseCard(
                     modifier = Modifier.fillMaxWidth(0.4f)
                 ) {
                     val exerciseImage = LocalContext.current.resources.getIdentifier("x_" + exercise.imagePath, "drawable", LocalContext.current.packageName)
+
                     Image(
                         painter = painterResource(id = exerciseImage),
                         contentDescription = exercise.execName,
                     )
-                    Text(exercise.execName)
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = exercise.execName,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 }
                 WeightGrid(
                     columns = 4,
