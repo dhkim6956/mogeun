@@ -22,11 +22,12 @@ public class RoutineReportController {
     @PostMapping("/Start")
     public ApiResponse<Object> startRoutineReport(@RequestBody CommonReportRequest request) {
 
-        ServiceStatus<Object> result = routineReportService.startRoutineReport(RoutineReportDto.builder()
+        ServiceStatus<Long> result = routineReportService.startRoutineReport(RoutineReportDto.builder()
                 .userKey(request.getUserKey())
                 .routineKey(request.getRoutineKey())
                 .isAttached(request.getIsAttached())
                 .build());
+        request.setReportKey(result.getData());
 
         return ApiResponse.postAndPutResponse(result, request);
     }

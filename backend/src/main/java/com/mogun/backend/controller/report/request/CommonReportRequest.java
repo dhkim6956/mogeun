@@ -21,6 +21,9 @@ public class CommonReportRequest {
     @JsonProperty("routine_key")
     private int routineKey;
 
+    @JsonProperty("report_key")
+    private Long reportKey;
+
     @JsonProperty("plan_key")
     private int planKey;
 

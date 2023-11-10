@@ -26,7 +26,7 @@ public class RoutineReportService {
     private final UserRoutineRepository routineRepository;
     private final RoutineReportRepository routineReportRepository;
 
-    public ServiceStatus<Object> startRoutineReport(RoutineReportDto dto) {
+    public ServiceStatus<Long> startRoutineReport(RoutineReportDto dto) {
 
         Optional<User> user = userRepository.findById(dto.getUserKey());
         if(user.isEmpty())
@@ -42,9 +42,12 @@ public class RoutineReportService {
         // Seongmin local time to Asia/Seoul
         dto.setStartTime(LocalDateTime.now(Clock.system(ZoneId.of("Asia/Seoul"))));
 
-        routineReportRepository.save(dto.toRoutineReportEntity(user.get(), routine.get()));
+        RoutineReport save = routineReportRepository.save(dto.toRoutineReportEntity(user.get(), routine.get()));
 
-        return ServiceStatus.okStatus();
+        return ServiceStatus.<Long>builder()
+                .status(100)
+                .data(save.getRoutineReportKey())
+                .build();
     }
 
     public ServiceStatus<Object> endRoutineReport(RoutineReportDto dto) {
