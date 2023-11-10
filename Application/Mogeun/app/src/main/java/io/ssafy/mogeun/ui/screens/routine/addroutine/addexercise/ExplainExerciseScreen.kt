@@ -35,9 +35,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 @Composable
 fun ExplainExerciseScreen(navController: NavHostController, data: String?) {
-    val imageResId: Int? = data?.let {
-        it.split(".").lastOrNull()?.toIntOrNull()
-    }
+    val context = LocalContext.current
+    val gifResId = context.resources.getIdentifier("z_${data}", "drawable", context.packageName)
 
     val apiKey = "AIzaSyBq9zFbQH6P5KXIwIUf2xuXmPoacNeT5as"
     Column(
@@ -46,7 +45,7 @@ fun ExplainExerciseScreen(navController: NavHostController, data: String?) {
             .padding(16.dp)
     ) {
         GlideImage(
-            imageModel = imageResId,
+            imageModel = gifResId,
             contentDescription = "GIF Image",
             contentScale = ContentScale.Crop,
             modifier = Modifier
