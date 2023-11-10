@@ -12,6 +12,6 @@ data class Emg (
     val deviceId: Int,
     @ColumnInfo(name = "sensing_part")
     val sensingPart: String,
-    val value: Double,
+    val value: Int,
     val time: Long
 )
