@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableStateListOf
 import io.ssafy.mogeun.model.AddAllExerciseResponse
 import io.ssafy.mogeun.model.ListAllExerciseResponsedata
 import io.ssafy.mogeun.model.ListMyExerciseResponse
+import io.ssafy.mogeun.model.ListMyExerciseResponseData
 import io.ssafy.mogeun.model.ListMyExerciseResponseDataExercises
 import io.ssafy.mogeun.model.MyExerciseResponse
 import io.ssafy.mogeun.model.MyExerciseResponseData
@@ -34,7 +35,7 @@ class AddRoutineViewModel(
     var userKey by mutableStateOf<Int?>(null)
     private val _listMyExerciseSuccess = MutableStateFlow(false)
     val listMyExerciseSuccess: StateFlow<Boolean> = _listMyExerciseSuccess.asStateFlow()
-    var exerciseList = mutableStateListOf<ListMyExerciseResponseDataExercises>()
+    var exerciseList: List<ListMyExerciseResponseData> = mutableStateListOf()
     private val _myExerciseSuccess = MutableStateFlow(false)
     val myExerciseSuccess: StateFlow<Boolean> = _myExerciseSuccess.asStateFlow()
     var exerciseExplain by mutableStateOf<MyExerciseResponseData?>(null)
@@ -60,6 +61,7 @@ class AddRoutineViewModel(
             Log.d("listMyexercise", "$ret")
             if (ret.message == "SUCCESS"){
                 _listMyExerciseSuccess.value = true
+                exerciseList = ret.data
             }
         }
     }
@@ -70,9 +72,9 @@ class AddRoutineViewModel(
             Log.d("myExercise", "$ret")
             if (ret.message == "SUCCESS"){
                 _myExerciseSuccess.value = true
-                exerciseExplain = ret.data[0]
+                exerciseExplain = ret.data
             }
-            Log.d("next", "${ret.data[0].name}")
+            Log.d("next", "${ret.data.name}")
         }
     }
     companion object {
