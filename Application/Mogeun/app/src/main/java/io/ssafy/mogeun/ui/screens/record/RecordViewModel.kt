@@ -6,12 +6,16 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.yml.charts.common.model.Point
+import co.yml.charts.ui.barchart.models.BarData
 import com.patrykandpatrick.vico.core.extension.orZero
 import io.ssafy.mogeun.data.Key
 import io.ssafy.mogeun.data.KeyRepository
 import io.ssafy.mogeun.data.RecordRepository
+import io.ssafy.mogeun.model.Exercise
 import io.ssafy.mogeun.model.MonthlyResponse
 import io.ssafy.mogeun.model.MonthlyRoutine
 import io.ssafy.mogeun.model.RoutineInfoData
@@ -36,6 +40,8 @@ class RecordViewModel(
     var routineInfo by mutableStateOf<RoutineInfoData?>(null)
 
     var userKey by mutableStateOf<Int?>(null)
+
+    var barChartdata: MutableList<BarData> = mutableListOf()
 
     fun initRecordMonthlySuccess() {
         _recordMonthlySuccess.value = false
@@ -85,11 +91,37 @@ class RecordViewModel(
                     _recordRoutineSuccess.value = true
                     routineInfo = ret.data
                 }
+
+//                updateChartData(routineInfo!!.exercises)
             }
         }
     }
 
     private fun updateUserKey(update: Int?) {
         userKey= update
+    }
+
+    private fun updateChartData(exercises: List<Exercise>) {
+        var map: MutableMap<String, Float> = mutableMapOf()
+        var index = 0
+        for (exercise in exercises) {
+            for (part in exercise.parts) {
+                val partDetail = part.split(" ")
+                if (partDetail[0] == "주") {
+                    if (map.containsKey(partDetail[1])) map[partDetail[1]] = map[partDetail[1]]!!.plus(2f)
+                    else map.put(partDetail[1], 2f)
+                }
+                else {
+                    if (map.containsKey(partDetail[1])) map[partDetail[1]] = map[partDetail[1]]!!.plus(1f)
+                    else map.put(partDetail[1], 1f)
+                }
+            }
+            index++
+        }
+
+        for (data in map) {
+            barChartdata.add(index, BarData(Point(index.toFloat(), data.value), Color.Red, data.key))
+            index++
+        }
     }
 }

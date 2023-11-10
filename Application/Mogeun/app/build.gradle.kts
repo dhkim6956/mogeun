@@ -88,6 +88,7 @@ dependencies {
     implementation("com.patrykandpatrick.vico:compose-m2:1.6.3")
     // An optional addition for `vico.compose` that creates a `ChartStyle` based on an M3 Material Theme.
     implementation("com.patrykandpatrick.vico:compose-m3:1.6.3")
+    implementation("co.yml:ycharts:2.1.0")
 
     // gif
     implementation("io.coil-kt:coil-compose:2.2.2")
