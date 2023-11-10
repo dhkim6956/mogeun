@@ -13,12 +13,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -29,13 +32,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -48,11 +54,18 @@ import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineViewModel
 fun SettingScreen(
     viewModel: SettingViewModel = viewModel(factory = SettingViewModel.Factory),
     navController: NavHostController,
+    snackbarHostState: SnackbarHostState
 ) {
     val openAlertDialog = remember { mutableStateOf(false) }
     LaunchedEffect(viewModel.deleteUserSuccess) {
         if (viewModel.deleteUserSuccess == true) {
             navController.navigate("Splash")
+            snackbarHostState.showSnackbar("탈퇴가 완료되었습니다.")
+        }
+    }
+    LaunchedEffect(viewModel.errorDeleteUser) {
+        if (viewModel.errorDeleteUser == true) {
+            snackbarHostState.showSnackbar("잘못된 정보입니다.")
         }
     }
     Column(modifier = Modifier.padding(32.dp)) {
@@ -166,12 +179,10 @@ fun SettingScreen(
                             onDismissRequest = { openAlertDialog.value = false },
                             onConfirmation = {
                                 viewModel.deleteUser()
-                                viewModel.deleteUserKey()
                                 openAlertDialog.value = false
                             },
                             dialogTitle = "회원 정보를 입력해 주세요.",
-                            icon = Icons.Default.Info,
-                            navController = navController
+                            icon = Icons.Default.Info
                         )
                     }
                 }
@@ -375,21 +386,16 @@ fun SettingScreen(
         }
     }
 }
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AlertDialogExample(
-    viewModel: SettingViewModel = viewModel(factory = SettingViewModel.Factory),
-    navController: NavHostController,
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
     dialogTitle: String,
     icon: ImageVector,
 ) {
-    val viewModel: AddRoutineViewModel = viewModel(factory = AddRoutineViewModel.Factory)
-    var routineName by remember { mutableStateOf("") }
-    LaunchedEffect(viewModel.userKey){
-        viewModel.getUserKey()
-    }
+    val viewModel: SettingViewModel = viewModel(factory = SettingViewModel.Factory)
+    val keyboardController = LocalSoftwareKeyboardController.current
     AlertDialog(
         icon = {
             Icon(icon, contentDescription = "Example Icon")
@@ -401,16 +407,28 @@ fun AlertDialogExample(
             Column {
                 Text(text = "아이디")
                 TextField(
-                    value = routineName,
-                    onValueChange = { routineName = it },
-                    label = { Text("Enter routine name") }
+                    value = viewModel.username,
+                    onValueChange = { viewModel.updateId(it) },
+                    label = { Text("Enter routine name") },
+                    keyboardActions = KeyboardActions(onDone = {
+                        keyboardController?.hide()
+                    }),
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done
+                    )
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(text = "비밀번호")
                 TextField(
-                    value = routineName,
-                    onValueChange = { routineName = it },
-                    label = { Text("Enter routine name") }
+                    value = viewModel.pw,
+                    onValueChange = { viewModel.updatePw(it) },
+                    label = { Text("Enter routine name") },
+                    keyboardActions = KeyboardActions(onDone = {
+                        keyboardController?.hide()
+                    }),
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done
+                    )
                 )
             }
         },
@@ -419,12 +437,7 @@ fun AlertDialogExample(
         },
         confirmButton = {
             TextButton(
-                onClick = {
-//                    viewModel.deleteUser()
-//                    viewModel.deleteUserKey()
-//                    navController.navigate("Splash")
-                    navController.popBackStack()
-                }
+                onClick = { onConfirmation() }
             ) {
                 Text("Confirm")
             }

@@ -23,9 +23,19 @@ class SettingViewModel(
     var username by mutableStateOf<String>("")
     var pw by mutableStateOf<String>("")
     var deleteUserSuccess by mutableStateOf(false)
+    var errorDeleteUser by mutableStateOf(false)
 
     fun updateDeleteUserSuccess(value: Boolean) {
         deleteUserSuccess = value
+    }
+    fun updateId(value: String) {
+        username = value
+    }
+    fun updatePw(value: String) {
+        pw = value
+    }
+    fun updateErrorDeleteUser(value: Boolean) {
+        errorDeleteUser = value
     }
     fun deleteUserKey() {
         viewModelScope.launch {
@@ -39,14 +49,11 @@ class SettingViewModel(
             Log.d("deleteUser", "$ret")
             if (ret.message == "SUCCESS") {
                 updateDeleteUserSuccess(true)
+                deleteUserKey()
+            } else {
+                updateErrorDeleteUser(true)
             }
         }
-    }
-    fun updateId(value: String) {
-        username = value
-    }
-    fun updatePw(value: String) {
-        pw = value
     }
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {

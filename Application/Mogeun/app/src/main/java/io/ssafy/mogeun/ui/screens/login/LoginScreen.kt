@@ -20,9 +20,11 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,15 +48,23 @@ import io.ssafy.mogeun.ui.AppViewModelProvider
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun LoginScreen(viewModel: LoginViewModel = viewModel(factory = AppViewModelProvider.Factory),navController: NavHostController) {
+fun LoginScreen(
+    viewModel: LoginViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    navController: NavHostController,
+    snackbarHostState: SnackbarHostState
+) {
 
     val signInSuccess by viewModel.signInSuccess.collectAsState()
     if(signInSuccess) {
         navController.navigate("Routine")
     }
-
     val keyboardController = LocalSoftwareKeyboardController.current
-
+    LaunchedEffect(viewModel.errorSignIn) {
+        if (viewModel.errorSignIn == true) {
+            snackbarHostState.showSnackbar("잘못된 정보입니다.")
+            viewModel.updateErrorSignIn(false)
+        }
+    }
     Column {
         Box(
             modifier = Modifier
