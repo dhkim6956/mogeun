@@ -70,9 +70,9 @@ class AddRoutineViewModel(
             Log.d("myExercise", "$ret")
             if (ret.message == "SUCCESS"){
                 _myExerciseSuccess.value = true
-                exerciseExplain = ret.data
+                exerciseExplain = ret.data[0]
             }
-            Log.d("next", "${ret.data.name}")
+            Log.d("next", "${ret.data[0].name}")
         }
     }
     companion object {

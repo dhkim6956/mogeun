@@ -80,11 +80,19 @@ data class ListMyExerciseResponseDataExercises(
 
 @Serializable
 data class ListMyExerciseResponseData(
-    @SerialName(value = "routine_key")
-    val routineKey: Int,
-    @SerialName(value = "routine_name")
-    val routineName: String,
-    val exercises: List<ListMyExerciseResponseDataExercises>
+    @SerialName(value = "plan_key")
+    val planKey: Int,
+    @SerialName(value = "exec_key")
+    val execKey: Int,
+    val name: String,
+    @SerialName(value = "eng_name")
+    val engName: String,
+    @SerialName(value = "sensing_part")
+    val sensingPart: List<String>,
+    @SerialName(value = "main_part")
+    val mainPart: String,
+    @SerialName(value = "image_path")
+    val imagePath: String
 )
 
 @Serializable
@@ -92,7 +100,7 @@ data class ListMyExerciseResponse(
     val code: Int,
     val status: String,
     val message: String,
-    val data: ListMyExerciseResponseData
+    val data: List<ListMyExerciseResponseData>
 )
 
 @Serializable
@@ -121,13 +129,15 @@ data class AddAllExerciseResponse(
 
 @Serializable
 data class MyExerciseResponseData(
+    @SerialName(value = "plan_key")
+    val planKey: Int,
     @SerialName(value = "exec_key")
     val execKey: Int,
     val name: String,
     @SerialName(value = "eng_name")
     val engName: String,
     @SerialName(value = "sensing_part")
-    val sensingPart: List<String>,
+    val sensingPart: List<String>?,
     @SerialName(value = "main_part")
     val mainPart: String?,
     @SerialName(value = "image_path")
@@ -139,5 +149,5 @@ data class MyExerciseResponse(
     val code: Int,
     val status: String,
     val message: String,
-    val data: MyExerciseResponseData
+    val data: List<MyExerciseResponseData>
 )
