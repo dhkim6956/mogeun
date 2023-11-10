@@ -50,6 +50,11 @@ fun SettingScreen(
     navController: NavHostController,
 ) {
     val openAlertDialog = remember { mutableStateOf(false) }
+    LaunchedEffect(viewModel.deleteUserSuccess) {
+        if (viewModel.deleteUserSuccess == true) {
+            navController.navigate("Splash")
+        }
+    }
     Column(modifier = Modifier.padding(32.dp)) {
         Column {
             Text(
@@ -157,14 +162,14 @@ fun SettingScreen(
             ) {
                 when {
                     openAlertDialog.value -> {
-                        io.ssafy.mogeun.ui.screens.setting.setting.AlertDialogExample(
+                        AlertDialogExample(
                             onDismissRequest = { openAlertDialog.value = false },
                             onConfirmation = {
+                                viewModel.deleteUser()
+                                viewModel.deleteUserKey()
                                 openAlertDialog.value = false
-                                println("Confirmation registered") // Add logic here to handle confirmation.
                             },
-                            dialogTitle = "루틴 이름을 설정해 주세요.",
-                            dialogText = "This is an example of an alert dialog with buttons.",
+                            dialogTitle = "회원 정보를 입력해 주세요.",
                             icon = Icons.Default.Info,
                             navController = navController
                         )
@@ -378,7 +383,6 @@ fun AlertDialogExample(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
     dialogTitle: String,
-    dialogText: String,
     icon: ImageVector,
 ) {
     val viewModel: AddRoutineViewModel = viewModel(factory = AddRoutineViewModel.Factory)

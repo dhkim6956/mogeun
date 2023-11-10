@@ -1,7 +1,9 @@
 package io.ssafy.mogeun.ui.screens.setting.setting
 
 import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -18,8 +20,13 @@ class SettingViewModel(
     private val keyRepository: KeyRepository,
     private val UserRepository: UserRepository
 ) : ViewModel()  {
-    var id = mutableStateOf<String> ("id")
-    var pw = mutableStateOf<String> ("pw")
+    var username by mutableStateOf<String>("")
+    var pw by mutableStateOf<String>("")
+    var deleteUserSuccess by mutableStateOf(false)
+
+    fun updateDeleteUserSuccess(value: Boolean) {
+        deleteUserSuccess = value
+    }
     fun deleteUserKey() {
         viewModelScope.launch {
             keyRepository.deleteKeyData()
@@ -28,13 +35,19 @@ class SettingViewModel(
     fun deleteUser() {
         lateinit var ret: DeleteUserResponse
         viewModelScope.launch {
-            ret = UserRepository.deleteUser("qqqq", "qqqq")
+            ret = UserRepository.deleteUser(username, pw)
             Log.d("deleteUser", "$ret")
+            if (ret.message == "SUCCESS") {
+                updateDeleteUserSuccess(true)
+            }
         }
     }
-//    fun updateId(value: String) {
-//        id = value
-//    }
+    fun updateId(value: String) {
+        username = value
+    }
+    fun updatePw(value: String) {
+        pw = value
+    }
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {

@@ -93,7 +93,13 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(factory = AppViewModelProv
                 value = viewModel.pwd,
                 onValueChange = { viewModel.updateText2(it) },
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(10.dp)
+                shape = RoundedCornerShape(10.dp),
+                keyboardActions = KeyboardActions(onDone = {
+                    keyboardController?.hide()
+                }),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done
+                )
             )
             Spacer(modifier = Modifier.height(32.dp))
             Button(
