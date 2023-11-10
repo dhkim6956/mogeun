@@ -34,6 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
@@ -54,6 +55,9 @@ import co.yml.charts.ui.barchart.BarChart
 import co.yml.charts.ui.barchart.models.BarChartData
 import co.yml.charts.ui.barchart.models.BarChartType
 import co.yml.charts.ui.barchart.models.BarData
+import co.yml.charts.ui.barchart.models.BarStyle
+import co.yml.charts.ui.barchart.models.SelectionHighlightData
+import co.yml.charts.ui.barchart.models.drawBarGraph
 import com.google.gson.Gson
 //import com.patrykandpatrick.vico.compose.axis.horizontal.bottomAxis
 //import com.patrykandpatrick.vico.compose.axis.vertical.startAxis
@@ -235,6 +239,11 @@ fun RoutineGraphIconCard(
     ) {
         Column () {
             GraphCard(exercises)
+            Spacer(
+                modifier = Modifier
+                    .height(5.dp)
+                    .background(color = MaterialTheme.colorScheme.primaryContainer)
+            )
             IconCard(exercises)
         }
     }
@@ -242,16 +251,16 @@ fun RoutineGraphIconCard(
 
 @Composable
 fun GraphCard(exercises: List<Exercise>) {
-    val maxRange = 10
-    val yStepSize = 5
+    val yStepSize = 9
     var map: MutableMap<String, Float> = mutableMapOf<String, Float>(
         "가슴" to 0f, "등" to 0f, "허벅지" to 0f, "어깨" to 0f, "이두" to 0f, "삼두" to 0f, "승모근" to 0f, "종아리" to 0f, "복근" to 0f, "" to 0f
         )
     var index = 0
     var barChartdata: MutableList<BarData> = mutableListOf()
+    var maxHeight = 0f
 
     for (exercise in exercises) {
-        var prevPart: String = ""
+        var prevPart = ""
         for (part in exercise.parts) {
             val partDetail = part.split(" ")
             if (prevPart == "") prevPart = partDetail[1]
@@ -266,7 +275,8 @@ fun GraphCard(exercises: List<Exercise>) {
     }
 
     for (data in map) {
-        barChartdata.add(index, BarData(Point(index.toFloat(), data.value), MaterialTheme.colorScheme.primary, data.key))
+        if (maxHeight < data.value) maxHeight = data.value
+        barChartdata.add(index, BarData(Point(index.toFloat(), data.value, data.key), MaterialTheme.colorScheme.primary, data.key))
         index++
     }
 
@@ -280,17 +290,21 @@ fun GraphCard(exercises: List<Exercise>) {
         .build()
 
     val yAxisData = AxisData.Builder()
-        .steps(yStepSize)
+        .steps(maxHeight.toInt())
         .labelAndAxisLinePadding(20.dp)
+        .labelData { index -> (index * (maxHeight / yStepSize)).toString() }
         .axisOffset(20.dp)
-        .labelData { index -> (index * (maxRange / yStepSize)).toString() }
         .build()
+
+    Log.d("yAxisData", yAxisData.toString())
 
     val barChartData = BarChartData(
         chartData = barChartdata,
         xAxisData = xAxisData,
         yAxisData = yAxisData,
         showYAxis = false,
+        barStyle = BarStyle(selectionHighlightData = null),
+        barChartType = BarChartType.VERTICAL,
         paddingEnd = 0.dp
     )
 
@@ -299,8 +313,7 @@ fun GraphCard(exercises: List<Exercise>) {
     ) {
         BarChart(
             modifier = Modifier
-                .height(200.dp)
-                .padding(bottom = 10.dp),
+                .height(200.dp),
             barChartData = barChartData
         )
     }
