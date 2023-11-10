@@ -14,6 +14,7 @@ import com.mogun.backend.domain.routine.userRoutinePlan.UserRoutinePlan;
 import com.mogun.backend.domain.routine.userRoutinePlan.repository.UserRoutinePlanRepository;
 import com.mogun.backend.domain.user.User;
 import com.mogun.backend.domain.user.repository.UserRepository;
+import com.mogun.backend.service.ServiceStatus;
 import com.mogun.backend.service.attachPart.AttachPartService;
 import com.mogun.backend.service.report.dto.*;
 import lombok.RequiredArgsConstructor;
@@ -45,38 +46,38 @@ public class RoutineResultService {
     //Seongmin 루틴 정렬 위해 추가
     private final UserRoutinePlanRepository userRoutinePlanRepository;
 
-    public String createResult(ResultDto dto) {
+    public ServiceStatus createResult(ResultDto dto) {
 
         Optional<RoutineReport> report = reportRepository.findById(dto.getReportKey());
         if(report.isEmpty())
-            return "요청 오류: 등록된 적 없는 루틴 기록";
+            return ServiceStatus.errorStatus("요청 오류: 등록된 적 없는 루틴 기록");
 
         Optional<RoutineResult> result = resultRepository.findByRoutineReport(report.get());
         if(result.isPresent())
-            return "요청 오류: 기록된 루틴 결과에 대한 재작성";
+            return ServiceStatus.errorStatus("요청 오류: 기록된 루틴 결과에 대한 재작성");
 
         resultRepository.save(dto.toRoutineResultEntity(report.get()));
 
-        return "SUCCESS";
+        return ServiceStatus.okStatus();
     }
 
-    public SummaryResultDto getAllInfoOfResult(ResultDto dto) {
+    public ServiceStatus getAllInfoOfResult(ResultDto dto) {
 
         Optional<RoutineResult> result = resultRepository.findById(dto.getResultKey());
         if(result.isEmpty())
-            return SummaryResultDto.builder()
-                    .performTime((long) -1)
+            return ServiceStatus.builder()
+                    .status(300)
                     .build();
 
         Optional<User> user = userRepository.findById(dto.getUserKey());
         if(user.isEmpty())
-            return SummaryResultDto.builder()
-                    .performTime((long) -2)
+            return ServiceStatus.builder()
+                    .status(200)
                     .build();
 
         if(!result.get().getUser().equals(user.get()))
-            return SummaryResultDto.builder()
-                    .performTime((long) -3)
+            return ServiceStatus.builder()
+                    .status(400)
                     .build();
 
         RoutineReport report = result.get().getRoutineReport();
@@ -187,13 +188,18 @@ public class RoutineResultService {
 
         Duration performTime = Duration.between(result.get().getRoutineReport().getStartTime(), result.get().getRoutineReport().getEndTime());
 
-        return SummaryResultDto.builder()
+        SummaryResultDto data = SummaryResultDto.builder()
                 .routineName(result.get().getRoutineReport().getRoutineName())
                 .routineDate(result.get().getRoutineDate())
                 .consumeCalorie(result.get().getConsumeCalorie())
                 .totalSets(setReportList.size())
                 .performTime(performTime.toMinutes())
                 .exerciseResultDtoList(exerciseResultDtoList)
+                .build();
+
+        return ServiceStatus.builder()
+                .status(100)
+                .data(data)
                 .build();
     }
 

@@ -5,6 +5,7 @@ import com.mogun.backend.controller.exercise.request.ExerciseRequest;
 import com.mogun.backend.controller.routine.response.PlanListResponse;
 import com.mogun.backend.controller.routine.response.SimplePlanInfoResponse;
 import com.mogun.backend.domain.exercise.Exercise;
+import com.mogun.backend.service.ServiceStatus;
 import com.mogun.backend.service.attachPart.AttachPartService;
 import com.mogun.backend.service.exercise.ExerciseService;
 import com.mogun.backend.service.exercise.dto.ExerciseDto;
@@ -27,12 +28,12 @@ public class ExerciseController {
     @GetMapping("/ListAll")
     public ApiResponse getAllExercise() {
 
-        List<SimplePlanInfoResponse> result = new ArrayList<>();
-        List<Exercise> exerciseList = exerciseService.getAllExercise();
+        List<SimplePlanInfoResponse> data = new ArrayList<>();
+        List<Exercise> exerciseList = exerciseService.getAllExercise().getData();
 
         for(Exercise item: exerciseList) {
 
-            result.add(SimplePlanInfoResponse.builder()
+            data.add(SimplePlanInfoResponse.builder()
                     .execKey(item.getExecKey())
                     .execName(item.getName())
                     .engName(item.getEngName())
@@ -42,20 +43,22 @@ public class ExerciseController {
                     .build());
         }
 
-        return ApiResponse.ok(result);
+        return ApiResponse.ok(data);
     }
 
     @GetMapping("/List")
     public ApiResponse getExercise(@RequestParam("exec_key") int execKey) {
 
-        Exercise exec = exerciseService.getExercise(execKey);
-        if(exec == null)
-            return ApiResponse.badRequest("요청 오류: 등록되지 않은 운동 목록");
+        ServiceStatus<Exercise> result = exerciseService.getExercise(execKey);
+        if(result.getStatus() != 100)
+            return ApiResponse.badRequest(result.getMessage());
 
+        Exercise exec = result.getData();
         return ApiResponse.ok(SimplePlanInfoResponse.builder()
                 .execKey(exec.getExecKey())
                 .execName(exec.getName())
                 .engName(exec.getEngName())
+                .imagePath(exec.getImagePath())
                 .musclePart(attachPartService.getAllPartNameByExercise(exec))
                 .build());
     }
@@ -63,7 +66,7 @@ public class ExerciseController {
     @PostMapping("/Add")
     public ApiResponse createExercise(@RequestBody ExerciseRequest request) {
 
-        String result = exerciseService.createExercise(ExerciseDto.builder()
+        ServiceStatus result = exerciseService.createExercise(ExerciseDto.builder()
                 .execName(request.getExecName())
                 .engName(request.getEngName())
                 .imagePath(request.getImagePath())

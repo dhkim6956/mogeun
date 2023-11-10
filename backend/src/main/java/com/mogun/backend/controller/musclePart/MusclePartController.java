@@ -3,6 +3,7 @@ package com.mogun.backend.controller.musclePart;
 import com.mogun.backend.ApiResponse;
 import com.mogun.backend.controller.musclePart.request.MusclePartRequest;
 import com.mogun.backend.controller.musclePart.response.MusclePartResponse;
+import com.mogun.backend.service.ServiceStatus;
 import com.mogun.backend.service.attachPart.MusclePartService;
 import com.mogun.backend.service.attachPart.dto.MusclePartDto;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class MusclePartController {
     @PostMapping("/Insert")
     public ApiResponse insertMusclePart(@RequestBody MusclePartRequest request) {
 
-        String result = musclePartService.insertMusclePart(MusclePartDto.builder()
+        ServiceStatus result = musclePartService.insertMusclePart(MusclePartDto.builder()
                 .partName(request.getPartName())
                 .imagePath(request.getImagePath())
                 .build());

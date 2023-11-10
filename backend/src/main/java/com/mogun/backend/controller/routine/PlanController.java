@@ -32,7 +32,7 @@ public class PlanController {
     @PostMapping("/Add")
     public ApiResponse addPlan(@RequestBody CommonRoutineRequest request) {
 
-        String result = planService.addPlan(RoutineDto.builder()
+        ServiceStatus result = planService.addPlan(RoutineDto.builder()
                 .routineKey(request.getRoutineKey())
                 .execKey(request.getExecKey())
                 .setAmount(request.getSets())
@@ -48,12 +48,13 @@ public class PlanController {
         List<Integer> fail = new ArrayList<>();
 
         for(Integer key: request.getExecKeys()) {
-
-            if(planService.addPlan(RoutineDto.builder()
+            ServiceStatus result = planService.addPlan(RoutineDto.builder()
                     .routineKey(request.getRoutineKey())
                     .execKey(key)
                     .setAmount(1)
-                    .build()) != "SUCCESS") {
+                    .build());
+
+            if(result.getStatus() != 100) {
                 fail.add(key);
             } else {
                 success.add(key);
@@ -66,7 +67,7 @@ public class PlanController {
     @DeleteMapping("/Remove")
     public ApiResponse removePlan(@RequestParam("routine_key") int routineKey, @RequestParam("exec_key") int execKey) {
 
-        String result = planService.removePlan(RoutineDto.builder()
+        ServiceStatus result = planService.removePlan(RoutineDto.builder()
                 .routineKey(routineKey)
                 .execKey(execKey)
                 .build());
@@ -77,16 +78,17 @@ public class PlanController {
     @GetMapping("/ListAll")
     public ApiResponse getAllPlan(@RequestParam("routine_key") int routineKey) {
 
-        ServiceStatus result = routineService.getRoutine(routineKey);
-        if(result.getStatus() == 200)
-            return ApiResponse.badRequest(result.getMessage());
+        ServiceStatus routineResult = routineService.getRoutine(routineKey);
+        if(routineResult.getStatus() == 200)
+            return ApiResponse.badRequest(routineResult.getMessage());
 
-        RoutineDto dto = (RoutineDto) result.getData();
+        RoutineDto dto = (RoutineDto) routineResult.getData();
         List<SimplePlanInfoResponse> planList = new ArrayList<>();
 
-        List<RoutineDto> list = planService.getAllPlan(RoutineDto.builder()
+        ServiceStatus planResult = planService.getAllPlan(RoutineDto.builder()
                 .routineKey(routineKey)
                 .build());
+
 
 //        for(RoutineDto item: list) {
 
@@ -110,7 +112,7 @@ public class PlanController {
 //                .exercises(planList)
 //                .build());
 
-        return  ApiResponse.ok(list);
+        return  ApiResponse.ok(planResult.getData());
     }
 
 }

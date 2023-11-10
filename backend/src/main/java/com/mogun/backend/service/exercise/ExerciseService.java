@@ -4,6 +4,7 @@ import com.mogun.backend.domain.exercise.Exercise;
 import com.mogun.backend.domain.exercise.repository.ExerciseRepository;
 import com.mogun.backend.domain.musclePart.MusclePart;
 import com.mogun.backend.domain.musclePart.repository.MusclePartRepository;
+import com.mogun.backend.service.ServiceStatus;
 import com.mogun.backend.service.exercise.dto.ExerciseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,28 +21,37 @@ public class ExerciseService {
     private final ExerciseRepository exerciseRepository;
     private final MusclePartRepository musclePartRepository;
 
-    public List<Exercise> getAllExercise() {
+    public ServiceStatus<List<Exercise>> getAllExercise() {
 
-        return exerciseRepository.findAll();
+        List<Exercise> exerciseList = exerciseRepository.findAll();
+
+        return ServiceStatus.<List<Exercise>>builder()
+                .status(100)
+                .data(exerciseList)
+                .build();
     }
 
-    public Exercise getExercise(int execKey) {
+    public ServiceStatus<Exercise> getExercise(int execKey) {
 
         Optional<Exercise> exec = exerciseRepository.findById(execKey);
-        if(exec.isEmpty()) return null;
+        if(exec.isEmpty())
+            return ServiceStatus.errorStatus("요청 오류: 해당 운동 정보가 없음");
 
-        return exec.get();
+        return ServiceStatus.<Exercise>builder()
+                .status(100)
+                .data(exec.get())
+                .build();
     }
 
-    public String createExercise(ExerciseDto dto) {
+    public ServiceStatus createExercise(ExerciseDto dto) {
 
         Optional<MusclePart> musclePart = musclePartRepository.findById(dto.getPartKey());
         if(musclePart.isEmpty())
-            return "요청 오류: DB에 등록되지 않은 근육 부위";
+            return ServiceStatus.errorStatus("요청 오류: DB에 등록되지 않은 근육 부위");
 
         dto.setPart(musclePart.get());
         exerciseRepository.save(dto.toExerciseEntity());
 
-        return "SUCCESS";
+        return ServiceStatus.okStatus();
     }
 }

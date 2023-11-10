@@ -2,6 +2,7 @@ package com.mogun.backend.controller.report;
 
 import com.mogun.backend.ApiResponse;
 import com.mogun.backend.controller.report.request.CommonReportRequest;
+import com.mogun.backend.service.ServiceStatus;
 import com.mogun.backend.service.report.RoutineReportService;
 import com.mogun.backend.service.report.SetReportService;
 import com.mogun.backend.service.report.dto.RoutineReportDto;
@@ -21,7 +22,7 @@ public class RoutineReportController {
     @PostMapping("/Start")
     public ApiResponse startRoutineReport(@RequestBody CommonReportRequest request) {
 
-        String result = routineReportService.startRoutineReport(RoutineReportDto.builder()
+        ServiceStatus result = routineReportService.startRoutineReport(RoutineReportDto.builder()
                 .userKey(request.getUserKey())
                 .routineKey(request.getRoutineKey())
                 .isAttached(request.getIsAttached())
@@ -33,7 +34,7 @@ public class RoutineReportController {
     @PutMapping("/End")
     public ApiResponse endRoutineReport(@RequestBody CommonReportRequest request) {
 
-        String result = routineReportService.endRoutineReport(RoutineReportDto.builder()
+        ServiceStatus result = routineReportService.endRoutineReport(RoutineReportDto.builder()
                 .reportKey(request.getRoutineReportKey())
                 .userKey(request.getUserKey())
                 .build());
@@ -44,7 +45,7 @@ public class RoutineReportController {
     @PostMapping("/Set")
     public ApiResponse insertSetReport(@RequestBody CommonReportRequest request) {
 
-        String result = setReportService.insertSetReport(RoutineReportDto.builder()
+        ServiceStatus result = setReportService.insertSetReport(RoutineReportDto.builder()
                 .reportKey(request.getRoutineReportKey())
                 .planKey(request.getPlanKey())
                 .setNumber(request.getSetNumber())
@@ -57,9 +58,7 @@ public class RoutineReportController {
                 .endTime(request.getEndTime())
                 .build());
 
-//        return ApiResponse.postAndPutResponse(result, request);
-        // Seongmin 단순 accept response
-        return ApiResponse.accept();
+        return ApiResponse.postAndPutResponse(result, request);
     }
 
 }

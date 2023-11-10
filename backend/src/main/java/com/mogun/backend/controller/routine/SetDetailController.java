@@ -8,6 +8,7 @@ import com.mogun.backend.controller.routine.request.SetRequest;
 import com.mogun.backend.controller.routine.request.SetRequestList;
 import com.mogun.backend.controller.routine.response.AllSetInfoResponse;
 import com.mogun.backend.domain.routine.setDetail.SetDetail;
+import com.mogun.backend.service.ServiceStatus;
 import com.mogun.backend.service.routine.dto.RoutineDto;
 import com.mogun.backend.service.routine.setDetail.SetDetailService;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class SetDetailController {
     @PostMapping("/Add")
     public ApiResponse addOneSet(@RequestBody SetRequest request) {
 
-        String result = setDetailService.addOneSetGoal(RoutineDto.builder()
+        ServiceStatus result = setDetailService.addOneSetGoal(RoutineDto.builder()
                 .planKey(request.getPlanKey())
                 .setNumber(request.getSetNumber())
                 .weight(request.getWeight())
@@ -53,7 +54,7 @@ public class SetDetailController {
                     .build());
         }
 
-        String result = setDetailService.addAllSetGoal(dtoList);
+        ServiceStatus result = setDetailService.addAllSetGoal(dtoList);
 
         return ApiResponse.postAndPutResponse(result, requestList);
     }
@@ -89,7 +90,7 @@ public class SetDetailController {
     @DeleteMapping("/Delete")
     public ApiResponse deleteOneSet(@RequestBody CommonRoutineRequest request) {
 
-        String result = setDetailService.deleteOneSet(RoutineDto.builder().setKey(request.getSetKey()).build());
+        ServiceStatus result = setDetailService.deleteOneSet(RoutineDto.builder().setKey(request.getSetKey()).build());
 
         return ApiResponse.postAndPutResponse(result, request);
     }
@@ -97,7 +98,7 @@ public class SetDetailController {
     @DeleteMapping("/DeleteAll")
     public ApiResponse deleteAll(@RequestBody CommonRoutineRequest request) {
 
-        String result = setDetailService.deleteAllSet(RoutineDto.builder().planKey(request.getPlanKey()).build());
+        ServiceStatus result = setDetailService.deleteAllSet(RoutineDto.builder().planKey(request.getPlanKey()).build());
 
         return ApiResponse.postAndPutResponse(result, request);
     }

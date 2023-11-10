@@ -2,6 +2,7 @@ package com.mogun.backend.service.attachPart;
 
 import com.mogun.backend.domain.musclePart.MusclePart;
 import com.mogun.backend.domain.musclePart.repository.MusclePartRepository;
+import com.mogun.backend.service.ServiceStatus;
 import com.mogun.backend.service.attachPart.dto.MusclePartDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,11 +18,11 @@ public class MusclePartService {
 
     private final MusclePartRepository musclePartRepository;
 
-    public String insertMusclePart(MusclePartDto dto) {
+    public ServiceStatus insertMusclePart(MusclePartDto dto) {
 
         musclePartRepository.save(dto.toMusclePartEntity());
 
-        return "SUCCESS";
+        return ServiceStatus.okStatus();
     }
 
     public List<MusclePartDto> listAllMusclePart() {

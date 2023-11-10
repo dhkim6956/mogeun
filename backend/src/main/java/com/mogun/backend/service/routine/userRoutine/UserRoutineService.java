@@ -39,37 +39,40 @@ public class UserRoutineService {
                 .build();
     }
 
-    public int createRoutine(RoutineDto dto, int userKey) {
+    public ServiceStatus createRoutine(RoutineDto dto, int userKey) {
 
         Optional<User> user = userRepository.findById(userKey);
         if(user.isEmpty() || user.get().getIsLeaved() != 'J')
-            return -1;
+            return ServiceStatus.errorStatus("요청 오류 등록되지 않거나 탈퇴한 회원");
 
         UserRoutine save = routineRepository.save(dto.toRoutineEntity(user.get()));
 
-        return save.getRoutineKey();
+        return  ServiceStatus.builder()
+                .status(100)
+                .data(save.getRoutineKey())
+                .build();
     }
 
-    public String renameRoutine(RoutineDto dto) {
+    public ServiceStatus renameRoutine(RoutineDto dto) {
 
         Optional<UserRoutine> routine = routineRepository.findById(dto.getRoutineKey());
 
         if(routine.isEmpty() || routine.get().getIsDeleted() == 'Y')
-            return "요청 오류: 등록된 루틴이 아님";
+            return ServiceStatus.errorStatus("요청 오류: 등록된 루틴이 아님");
 
         routine.get().setRoutineName(dto.getRoutineName());
-        return "SUCCESS";
+        return ServiceStatus.okStatus();
     }
 
-    public String deleteRoutine(RoutineDto dto) {
+    public ServiceStatus deleteRoutine(RoutineDto dto) {
 
         Optional<UserRoutine> routine = routineRepository.findById(dto.getRoutineKey());
 
         if(routine.isEmpty() || routine.get().getIsDeleted() == 'Y')
-            return "요청 오류: 등록된 루틴이 아님";
+            return ServiceStatus.errorStatus("요청 오류: 등록된 루틴이 아님");
 
         routine.get().setIsDeleted('Y');
-        return "SUCCESS";
+        return ServiceStatus.okStatus();
     }
 
     public ServiceStatus getAllRoutine(int userKey) {

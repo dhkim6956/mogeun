@@ -5,6 +5,7 @@ import com.mogun.backend.ApiResponse;
 import com.mogun.backend.controller.routine.request.CommonRoutineRequest;
 import com.mogun.backend.controller.routine.response.RoutineCreatedResponse;
 import com.mogun.backend.controller.routine.response.SimpleRoutineInfoResponse;
+import com.mogun.backend.domain.routine.userRoutine.UserRoutine;
 import com.mogun.backend.domain.routine.userRoutinePlan.repository.UserRoutinePlanRepository;
 import com.mogun.backend.service.ServiceStatus;
 import com.mogun.backend.service.attachPart.AttachPartService;
@@ -32,23 +33,25 @@ public class RoutineController {
     @PostMapping("/Create")
     public ApiResponse createRoutine(@RequestBody CommonRoutineRequest request) {
 
-        int result = routineService.createRoutine(RoutineDto.builder()
+        ServiceStatus result = routineService.createRoutine(RoutineDto.builder()
                 .routineName(request.getRoutineName()).build(),
                 request.getUserKey());
 
-        if(result == -1)
+        if(result.getStatus() != 100)
             return ApiResponse.badRequest("요청 오류: 등록되지 않은 회원");
 
+        UserRoutine routine = (UserRoutine) result.getData();
+
         return ApiResponse.of(HttpStatus.ACCEPTED, "SUCCESS", RoutineCreatedResponse.builder()
-                .routine_key(result)
-                .routineName(request.getRoutineName())
+                .routine_key(routine.getRoutineKey())
+                .routineName(routine.getRoutineName())
                 .build());
     }
 
     @PutMapping("/Delete")
     public ApiResponse deleteRoutine(@RequestBody CommonRoutineRequest request) {
 
-        String result = routineService.deleteRoutine(RoutineDto.builder()
+        ServiceStatus result = routineService.deleteRoutine(RoutineDto.builder()
                 .routineKey(request.getRoutineKey())
                 .build());
 
@@ -58,7 +61,7 @@ public class RoutineController {
     @PutMapping("/Rename")
     public ApiResponse renameRoutine(@RequestBody CommonRoutineRequest request) {
 
-        String result = routineService.renameRoutine(RoutineDto.builder()
+        ServiceStatus result = routineService.renameRoutine(RoutineDto.builder()
                 .routineKey(request.getRoutineKey())
                 .routineName(request.getRoutineName())
                 .build());

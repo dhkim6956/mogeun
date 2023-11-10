@@ -30,40 +30,40 @@ public class UserRoutinePlanService {
     private final ExerciseRepository exerciseRepository;
     private final UserRepository userRepository;
 
-    public String addPlan(RoutineDto dto) {
+    public ServiceStatus addPlan(RoutineDto dto) {
 
         Optional<UserRoutine> routine = routineRepository.findById(dto.getRoutineKey());
         if(routine.isEmpty() || routine.get().getIsDeleted() == 'Y')
-            return "요청 오류: 등록된 루틴이 아님";
+            return ServiceStatus.errorStatus("요청 오류: 등록된 루틴이 아님");
 
         Optional<Exercise> exec = exerciseRepository.findById(dto.getExecKey());
         if(exec.isEmpty())
-            return "요청 오류: 추가 가능한 운동이 없음";
+            return ServiceStatus.errorStatus("요청 오류: 추가 가능한 운동이 없음");
 
         planRepository.save(dto.toRoutinePlanEntity(routine.get(), exec.get()));
 
-        return "SUCCESS";
+        return ServiceStatus.okStatus();
     }
 
-    public String removePlan(RoutineDto dto) {
+    public ServiceStatus removePlan(RoutineDto dto) {
 
         Optional<UserRoutine> routine = routineRepository.findById(dto.getRoutineKey());
         Optional<Exercise> exercise = exerciseRepository.findById(dto.getExecKey());
 
         if(routine.isEmpty())
-            return  "요청 오류: 등록된 루틴이 아님";
+            return  ServiceStatus.errorStatus("요청 오류: 등록된 루틴이 아님");
         if(exercise.isEmpty())
-            return "요청 오류: 목록에 없는 운동";
+            return ServiceStatus.errorStatus("요청 오류: 목록에 없는 운동");
 
         Optional<UserRoutinePlan> plan = planRepository.findByUserRoutineAndExercise(routine.get(), exercise.get());
         if(plan.isEmpty())
-            return "요청 오류: 적합한 운동 계획이 없음";
+            return ServiceStatus.errorStatus("요청 오류: 적합한 운동 계획이 없음");
         planRepository.delete(plan.get());
 
-        return "SUCCESS";
+        return ServiceStatus.okStatus();
     }
 
-    public List<RoutineDto> getAllPlan(RoutineDto dto) {
+    public ServiceStatus getAllPlan(RoutineDto dto) {
 
         List<RoutineDto> result = new ArrayList<>();
         Optional<UserRoutine> routine = routineRepository.findById(dto.getRoutineKey());
@@ -76,7 +76,10 @@ public class UserRoutinePlanService {
                     .build());
         }
 
-        return result;
+        return ServiceStatus.builder()
+                .status(100)
+                .data(result)
+                .build();
     }
 
     public ServiceStatus getAllRoutineAndMuscle(RoutineDto dto) {

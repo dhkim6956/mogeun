@@ -8,6 +8,7 @@ import com.mogun.backend.domain.routine.userRoutinePlan.UserRoutinePlan;
 import com.mogun.backend.domain.routine.userRoutinePlan.repository.UserRoutinePlanRepository;
 import com.mogun.backend.domain.user.User;
 import com.mogun.backend.domain.user.repository.UserRepository;
+import com.mogun.backend.service.ServiceStatus;
 import com.mogun.backend.service.routine.dto.RoutineDto;
 import com.mogun.backend.service.user.dto.UserDto;
 import lombok.RequiredArgsConstructor;
@@ -29,28 +30,28 @@ public class SetDetailService {
     private final UserRoutineRepository routineRepository;
     private final UserRoutinePlanRepository planRepository;
 
-    public String addOneSetGoal(RoutineDto dto) {
+    public ServiceStatus addOneSetGoal(RoutineDto dto) {
 
         Optional<UserRoutinePlan> plan = planRepository.findById(dto.getPlanKey());
         if(plan.isEmpty())
-            return "요청 오류: 등록된 운동이 아님";
+            return ServiceStatus.errorStatus("요청 오류: 등록된 운동이 아님");
 
         setDetailRepository.save(dto.toSetDetailEntity(plan.get()));
 
-        return "SUCCESS";
+        return ServiceStatus.okStatus();
     }
 
-    public String addAllSetGoal(List<RoutineDto> dtoList) {
+    public ServiceStatus addAllSetGoal(List<RoutineDto> dtoList) {
 
         Optional<UserRoutinePlan> plan = planRepository.findById(dtoList.get(0).getPlanKey());
         if(plan.isEmpty())
-            return "요청 오류: 등록된 운동이 아님";
+            return ServiceStatus.errorStatus("요청 오류: 등록된 운동이 아님");
 
         for(RoutineDto dto: dtoList) {
             setDetailRepository.save(dto.toSetDetailEntity(plan.get()));
         }
 
-        return  "SUCCESS";
+        return ServiceStatus.okStatus();
     }
 
     public List<SetDetail> getAllSetInfo(RoutineDto dto) {
@@ -65,21 +66,21 @@ public class SetDetailService {
         return setDetailRepository.findAllByUserRoutinePlan(plan.get());
     }
 
-    public String deleteOneSet(RoutineDto dto) {
+    public ServiceStatus deleteOneSet(RoutineDto dto) {
 
         setDetailRepository.deleteById(dto.getSetKey());
 
-        return "SUCCESS";
+        return ServiceStatus.okStatus();
     }
 
-    public String deleteAllSet(RoutineDto dto) {
+    public ServiceStatus deleteAllSet(RoutineDto dto) {
 
         Optional<UserRoutinePlan> plan = planRepository.findById(dto.getPlanKey());
         if(plan.isEmpty())
-            return "요청 오류: 등록된 운동이 아님";
+            return ServiceStatus.errorStatus("요청 오류: 등록된 운동이 아님");
 
         setDetailRepository.deleteAllByUserRoutinePlan(plan.get());
 
-        return "SUCCESS";
+        return ServiceStatus.okStatus();
     }
 }
