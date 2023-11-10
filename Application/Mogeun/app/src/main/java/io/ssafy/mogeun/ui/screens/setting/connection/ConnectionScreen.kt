@@ -1,6 +1,5 @@
 package io.ssafy.mogeun.ui.screens.setting.connection
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,18 +21,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ssafy.mogeun.data.bluetooth.BluetoothDevice
-import io.ssafy.mogeun.ui.AppViewModelProvider
-import io.ssafy.mogeun.ui.theme.MogeunTheme
-import kotlinx.coroutines.CoroutineScope
+import io.ssafy.mogeun.data.bluetooth.ConnectedDevice
+import io.ssafy.mogeun.ui.BluetoothViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun ConnectionScreen(viewModel: ConnectionViewModel = viewModel(factory = AppViewModelProvider.Factory), snackbarHostState: SnackbarHostState) {
+fun ConnectionScreen(viewModel: BluetoothViewModel, snackbarHostState: SnackbarHostState) {
     val state by viewModel.state.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
@@ -45,10 +41,31 @@ fun ConnectionScreen(viewModel: ConnectionViewModel = viewModel(factory = AppVie
             }
         }
     }
-    LaunchedEffect(key1 = state.isConnected) {
-        if(state.isConnected) {
+    LaunchedEffect(key1 = state.isConnected[0]) {
+        if(state.isConnected[0]) {
             coroutineScope.launch {
-                snackbarHostState.showSnackbar("연결 성공")
+                snackbarHostState.showSnackbar("1번 기기 연결 성공")
+            }
+        }
+    }
+    LaunchedEffect(key1 = state.isConnected[1]) {
+        if(state.isConnected[1]) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("2번 기기 연결 성공")
+            }
+        }
+    }
+    LaunchedEffect(key1 = state.isConnected[2]) {
+        if(state.isConnected[2]) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("3번 기기 연결 성공")
+            }
+        }
+    }
+    LaunchedEffect(key1 = state.isConnected[3]) {
+        if(state.isConnected[3]) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("4번 기기 연결 성공")
             }
         }
     }
@@ -96,6 +113,9 @@ fun ConnectionScreen(viewModel: ConnectionViewModel = viewModel(factory = AppVie
                     Button(onClick = viewModel::stopScan) {
                         Text(text = "Stop scan")
                     }
+                    Button(onClick = viewModel::disconnectFromDevice) {
+                        Text(text = "Disconnect")
+                    }
                 }
             }
         }
@@ -107,7 +127,7 @@ fun ConnectionScreen(viewModel: ConnectionViewModel = viewModel(factory = AppVie
 fun BluetoothDeviceList(
     pairedDevices: List<BluetoothDevice>,
     scannedDevices: List<BluetoothDevice>,
-    connectedDevices: List<BluetoothDevice>,
+    connectedDevices: List<ConnectedDevice>,
     onClick: (BluetoothDevice) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -127,7 +147,7 @@ fun BluetoothDeviceList(
                 text = device.name ?: "(No name)",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onClick(device) }
+//                    .clickable { onClick(device) }
                     .padding(16.dp)
             )
         }

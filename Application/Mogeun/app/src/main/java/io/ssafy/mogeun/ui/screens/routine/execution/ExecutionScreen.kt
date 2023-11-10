@@ -64,6 +64,7 @@ import com.patrykandpatrick.vico.core.entry.entryModelOf
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.ui.AppViewModelProvider
+import io.ssafy.mogeun.ui.BluetoothViewModel
 import io.ssafy.mogeun.ui.screens.record.RecordViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -72,7 +73,7 @@ import org.jtransforms.fft.DoubleFFT_1D
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
+fun ExecutionScreen(viewModel: BluetoothViewModel) {
     val pagerState = rememberPagerState { 10 }
 
     HorizontalPager(pagerState, Modifier.fillMaxSize()) {page ->

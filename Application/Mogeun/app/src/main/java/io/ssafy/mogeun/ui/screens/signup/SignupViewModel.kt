@@ -93,7 +93,7 @@ class SignupViewModel(private val signInRepository: UserRepository): ViewModel()
         viewModelScope.launch {
             ret = signInRepository.dupEmail(id)
             Log.d("dupEmail", "$ret")
-            if(ret.data.isJoined == false) {
+            if(ret.data.joinState == "가입하지 않은 회원") {
                 updateDupEmailSuccess(true)
                 updateCheckEmail(1)
             } else {

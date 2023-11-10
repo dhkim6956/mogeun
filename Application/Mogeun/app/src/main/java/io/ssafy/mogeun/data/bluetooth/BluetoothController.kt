@@ -34,20 +34,20 @@ import java.io.IOException
 import java.util.UUID
 
 interface BluetoothController {
-    val isConnected: StateFlow<Boolean>
+    val isConnected: StateFlow<List<Boolean>>
     val scannedDevices: StateFlow<List<BluetoothDevice>>
     val pairedDevices: StateFlow<List<BluetoothDevice>>
-    val connectedDevices: StateFlow<List<BluetoothDevice>>
+    val connectedDevices: StateFlow<List<ConnectedDevice>>
     val errors: SharedFlow<String>
 
     fun startDiscovery()
     fun stopDiscovery()
 
-    fun startBluetoothServer(): Flow<ConnectionResult>
-    fun connectToDevice(device: BluetoothDevice): Flow<ConnectionResult>
+    fun connectToDevice0(device: ConnectedDevice): Flow<Connection0Result>
+    fun connectToDevice1(device: ConnectedDevice): Flow<Connection1Result>
 
-    suspend fun trySendMessage(message: Int): BluetoothMessage?
-    fun closeConnection()
+    suspend fun trySendMessage(deviceNo: Int, message: Int): BluetoothMessage?
+    fun closeConnection(deviceNo: Int)
 
     fun release()
 }
@@ -64,10 +64,10 @@ class AndroidBluetoothController(
         bluetoothManager?.adapter
     }
 
-    private var dataTransferService: BluetoothDataTransferService? = null
+    private var dataTransferService: MutableList<BluetoothDataTransferService?> = mutableListOf(null, null, null, null)
 
-    private val _isConnected = MutableStateFlow(false)
-    override val isConnected: StateFlow<Boolean>
+    private val _isConnected = MutableStateFlow(listOf(false, false, false, false))
+    override val isConnected: StateFlow<List<Boolean>>
         get() = _isConnected.asStateFlow()
 
     private val _scannedDevices = MutableStateFlow<List<BluetoothDeviceDomain>> (emptyList())
@@ -78,13 +78,16 @@ class AndroidBluetoothController(
     override val pairedDevices: StateFlow<List<BluetoothDeviceDomain>>
         get() = _pairedDevices.asStateFlow()
 
-    private val _connectedDevices = MutableStateFlow<List<BluetoothDeviceDomain>> (emptyList())
-    override val connectedDevices: StateFlow<List<BluetoothDevice>>
+    private val _connectedDevices = MutableStateFlow<List<ConnectedDeviceDomain>> (emptyList())
+    override val connectedDevices: StateFlow<List<ConnectedDeviceDomain>>
         get() = _connectedDevices.asStateFlow()
 
     private val _errors = MutableSharedFlow<String>()
     override val errors: SharedFlow<String>
         get() = _errors.asSharedFlow()
+
+    private val device0Mac = "B0:A7:32:DB:C8:46"
+    private val device1Mac = "7C:87:CE:2D:22:8E"
 
     private val foundDeviceReceiver = FoundDeviceReceiver {device ->
         _scannedDevices.update {devices->
@@ -93,9 +96,19 @@ class AndroidBluetoothController(
         }
     }
 
-    private val bluetoothStateReceiver = BluetoothStateReceiver { isConnected, bluetoothDevice ->
-        if(bluetoothAdapter?.bondedDevices?.contains(bluetoothDevice) == true) {
-            _isConnected.update { isConnected }
+    private val bluetoothStateReceiver = BluetoothStateReceiver { btIsConnected, bluetoothDevice ->
+        if (bluetoothAdapter?.bondedDevices?.contains(bluetoothDevice) == true) {
+            Log.d("bluetoothAddress", "현재 연결된 디바이스 : ${bluetoothDevice.address}")
+
+            if(bluetoothDevice.address == device0Mac) {
+                Log.d("bluetoothAddress", "1번 연결 확인")
+                updateIsConnected(0, btIsConnected)
+            }
+            if(bluetoothDevice.address == device1Mac) {
+                Log.d("bluetoothAddress", "2번 연결 확인")
+                updateIsConnected(1, btIsConnected)
+            }
+
         } else {
             CoroutineScope(Dispatchers.IO).launch {
                 _errors.tryEmit("Can't connect to a non-paired device.")
@@ -103,8 +116,8 @@ class AndroidBluetoothController(
         }
     }
 
-    private var currentServerSocket: BluetoothServerSocket? = null
-    private var currentClientSocket: BluetoothSocket? = null
+    // private var currentClientSocket: BluetoothSocket? = null
+    private var currentClientSockets: MutableList<BluetoothSocket?> = mutableListOf(null, null, null, null)
 
     init {
         updatePairedDevices()
@@ -141,50 +154,7 @@ class AndroidBluetoothController(
         bluetoothAdapter?.cancelDiscovery()
     }
 
-    override fun startBluetoothServer(): Flow<ConnectionResult> {
-        return flow {
-            if(!hasPermission(Manifest.permission.BLUETOOTH_CONNECT)) {
-                throw SecurityException("No BLUETOOTH_CONNECT permission")
-            }
-
-            currentServerSocket = bluetoothAdapter?.listenUsingRfcommWithServiceRecord(
-                "mogeun_service",
-                UUID.fromString(SERVICE_UUID)
-            )
-
-            var shouldLoop = true
-            while(shouldLoop) {
-                currentClientSocket = try {
-                    currentServerSocket?.accept()
-                }catch (e: IOException) {
-                    shouldLoop = false
-                    null
-                }
-                emit(ConnectionResult.ConnectionEstablished)
-                currentClientSocket?.let {
-                    currentServerSocket?.close()
-                    val service = BluetoothDataTransferService(it)
-                    dataTransferService = service
-
-                    emitAll(
-                        service
-                            .listenForIncomingMessage()
-                            .map { message ->
-                                if (message != null) {
-                                    ConnectionResult.TransferSucceeded(message)
-                                } else {
-                                    ConnectionResult.Error("errString")
-                                }
-                            }
-                    )
-                }
-            }
-        }.onCompletion {
-            closeConnection()
-        }.flowOn(Dispatchers.IO)
-    }
-
-    override fun connectToDevice(device: BluetoothDeviceDomain): Flow<ConnectionResult> {
+    override fun connectToDevice0(device: ConnectedDeviceDomain): Flow<Connection0Result> {
         return flow {
             if(!hasPermission(Manifest.permission.BLUETOOTH_CONNECT)) {
                 throw SecurityException("No BLUETOOTH_CONNECT permission")
@@ -193,59 +163,120 @@ class AndroidBluetoothController(
             val bluetoothDevice = bluetoothAdapter?.getRemoteDevice(device.address)
 
 
-            currentClientSocket = bluetoothDevice
+            currentClientSockets[0] = bluetoothDevice
                 ?.createRfcommSocketToServiceRecord(
                     UUID.fromString(SERVICE_UUID)
                 )
 
             stopDiscovery()
 
-            if(bluetoothAdapter?.bondedDevices?.contains(bluetoothDevice) == false) {
-
-            }
-
-
-            currentClientSocket?.let {socket ->
+            currentClientSockets[0]?.let {socket ->
                 try {
                     socket.connect()
-                    emit(ConnectionResult.ConnectionEstablished)
+                    emit(Connection0Result.ConnectionEstablished)
+                    updateIsConnected(0, true)
 
                     _connectedDevices.update {devices->
                         if(device in devices) devices else devices + device
                     }
 
                     BluetoothDataTransferService(socket).also {
-                        dataTransferService = it
+                        dataTransferService[0] = it
 
-                        trySendMessage(0)
+                        trySendMessage(0, 0)
 
                         emitAll(
                             it.listenForIncomingMessage()
                                 .map { message ->
                                     if(message != null) {
-                                        ConnectionResult.TransferSucceeded(message)
+                                        Connection0Result.TransferSucceeded(message)
                                     }
                                     else {
-                                        ConnectionResult.Error("errString")
+                                        updateIsConnected(0, false)
+                                        Connection0Result.Error("errString")
                                     }
                                 }
                         )
                     }
                 } catch (e: IOException) {
                     socket.close()
-                    currentClientSocket = null
-                    emit(ConnectionResult.Error("Connection was interrupted"))
+                    currentClientSockets[0] = null
+                    emit(Connection0Result.Error("Connection was interrupted"))
+                } finally {
+                    Log.d("bluetooth", "finally ended")
                 }
             }
         }.onCompletion {
             _connectedDevices.update { devices ->
                 devices.filter { it != device }
             }
-            closeConnection()
+            closeConnection(0)
+
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun trySendMessage(message: Int): BluetoothMessage? {
+    override fun connectToDevice1(device: ConnectedDeviceDomain): Flow<Connection1Result> {
+        return flow {
+            if(!hasPermission(Manifest.permission.BLUETOOTH_CONNECT)) {
+                throw SecurityException("No BLUETOOTH_CONNECT permission")
+            }
+
+            val bluetoothDevice = bluetoothAdapter?.getRemoteDevice(device.address)
+
+
+            currentClientSockets[1] = bluetoothDevice
+                ?.createRfcommSocketToServiceRecord(
+                    UUID.fromString(SERVICE_UUID)
+                )
+
+            stopDiscovery()
+
+            currentClientSockets[1]?.let {socket ->
+                try {
+                    socket.connect()
+                    emit(Connection1Result.ConnectionEstablished)
+                    updateIsConnected(1, true)
+
+                    _connectedDevices.update {devices->
+                        if(device in devices) devices else devices + device
+                    }
+
+                    BluetoothDataTransferService(socket).also {
+                        dataTransferService[1] = it
+
+                        trySendMessage(1, 0)
+
+                        emitAll(
+                            it.listenForIncomingMessage()
+                                .map { message ->
+                                    if(message != null) {
+                                        Connection1Result.TransferSucceeded(message)
+                                    }
+                                    else {
+                                        updateIsConnected(1, false)
+                                        Connection1Result.Error("errString")
+                                    }
+                                }
+                        )
+                    }
+                } catch (e: IOException) {
+                    socket.close()
+                    currentClientSockets[1] = null
+                    emit(Connection1Result.Error("Connection was interrupted"))
+                } finally {
+                    Log.d("bluetooth", "finally ended")
+                }
+            }
+        }.onCompletion {
+            _connectedDevices.update { devices ->
+                devices.filter { it != device }
+            }
+            closeConnection(1)
+
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun trySendMessage(deviceNo: Int, message: Int): BluetoothMessage? {
         if(!hasPermission(Manifest.permission.BLUETOOTH_CONNECT)) {
             return null
         }
@@ -260,23 +291,23 @@ class AndroidBluetoothController(
             isFromLocalUser = true
         )
 
-        dataTransferService?.sendMessage(bluetoothMessage.toByteArray())
+        dataTransferService[deviceNo]?.sendMessage(bluetoothMessage.toByteArray())
 
         return bluetoothMessage
     }
 
-    override fun closeConnection() {
-        Log.d("bluetooth","정상종료됨")
-        currentClientSocket?.close()
-        currentServerSocket?.close()
-        currentClientSocket = null
-        currentServerSocket = null
+    override fun closeConnection(deviceNo: Int) {
+        Log.d("bluetooth","${deviceNo + 1}번 기기 연결 종료됨")
+        currentClientSockets[deviceNo]?.close()
+        currentClientSockets[deviceNo] = null
+        updateIsConnected(deviceNo, false)
     }
 
     override fun release() {
         context.unregisterReceiver(foundDeviceReceiver)
         context.unregisterReceiver(bluetoothStateReceiver)
-        closeConnection()
+        closeConnection(0)
+        closeConnection(1)
     }
 
     private fun updatePairedDevices() {
@@ -293,6 +324,26 @@ class AndroidBluetoothController(
 
     private fun hasPermission(permission: String): Boolean {
         return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun updateIsConnected(deviceNo: Int, state: Boolean) {
+        if(deviceNo == 0) {
+            _isConnected.update {
+                listOf(state, isConnected.value[1], isConnected.value[2], isConnected.value[3])
+            }
+        } else if (deviceNo == 1) {
+            _isConnected.update {
+                listOf(isConnected.value[0], state, isConnected.value[2], isConnected.value[3])
+            }
+        } else if (deviceNo == 2) {
+            _isConnected.update {
+                listOf(isConnected.value[0], isConnected.value[1], state, isConnected.value[3])
+            }
+        } else if (deviceNo == 3) {
+            _isConnected.update {
+                listOf(isConnected.value[0], isConnected.value[1], isConnected.value[2], state)
+            }
+        }
     }
 
     companion object {

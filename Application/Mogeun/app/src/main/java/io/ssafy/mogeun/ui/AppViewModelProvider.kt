@@ -8,7 +8,6 @@ import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.ui.screens.login.LoginViewModel
 import io.ssafy.mogeun.ui.screens.record.RecordViewModel
 import io.ssafy.mogeun.ui.screens.sample.DbSampleViewModel
-import io.ssafy.mogeun.ui.screens.setting.connection.ConnectionViewModel
 import io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.AddExerciseViewModel
 import io.ssafy.mogeun.ui.screens.routine.execution.ExecutionViewModel
 
@@ -28,7 +27,9 @@ object AppViewModelProvider {
             )
         }
         initializer {
-            ConnectionViewModel(
+            BluetoothViewModel(
+                mogeunApplication().container.setRepository,
+                mogeunApplication().container.emgDataRepository,
                 mogeunApplication().container.bluetoothController
             )
         }

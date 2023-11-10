@@ -24,6 +24,8 @@ import io.ssafy.mogeun.model.AddAllExerciseResponse
 import io.ssafy.mogeun.model.ListAllExerciseResponsedata
 import io.ssafy.mogeun.model.ListMyExerciseResponse
 import io.ssafy.mogeun.model.ListMyExerciseResponseDataExercises
+import io.ssafy.mogeun.model.MyExerciseResponse
+import io.ssafy.mogeun.model.MyExerciseResponseData
 
 class AddRoutineViewModel(
     private val routineRepository: RoutineRepository,
@@ -36,6 +38,12 @@ class AddRoutineViewModel(
     private val _listMyExerciseSuccess = MutableStateFlow(false)
     val listMyExerciseSuccess: StateFlow<Boolean> = _listMyExerciseSuccess.asStateFlow()
     var exerciseList = mutableStateListOf<ListMyExerciseResponseDataExercises>()
+
+    private val _myExerciseSuccess = MutableStateFlow(false)
+    val myExerciseSuccess: StateFlow<Boolean> = _myExerciseSuccess.asStateFlow()
+    var exerciseExplain by mutableStateOf<MyExerciseResponseData?>(null)
+
+
 
 //    var nowRoutine by mutableStateListOf<>()
 
@@ -81,14 +89,16 @@ class AddRoutineViewModel(
             }
         }
     }
-    fun addAllExercise(routineKey: Int, routineExec: List<Int>){
-        lateinit var ret: AddAllExerciseResponse
+    fun myExercise(execKey: Int?){
+        lateinit var ret: MyExerciseResponse
         viewModelScope.launch{
-            ret = routineRepository.addAllExercise(routineKey, routineExec)
-            Log.d("listMyexercise", "$ret")
+            ret = routineRepository.myExercise(execKey)
+            Log.d("myExercise", "$ret")
             if (ret.message == "SUCCESS"){
-                _listMyExerciseSuccess.value = true
+                _myExerciseSuccess.value = true
+                exerciseExplain = ret.data
             }
+            Log.d("next", "${ret.data.name}")
         }
     }
     companion object {
