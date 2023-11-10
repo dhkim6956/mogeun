@@ -25,7 +25,6 @@ public class ExerciseDto {
         return Exercise.builder()
                 .name(execName)
                 .engName(engName)
-                .execDesc(description)
                 .imagePath(imagePath)
                 .mainPart(part)
                 .build();

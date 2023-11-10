@@ -127,7 +127,7 @@ public class PlanController {
 //                .exercises(planList)
 //                .build());
 
-        return  ApiResponse.ok(responses);
+        return ApiResponse.ok(responses);
     }
 
 }

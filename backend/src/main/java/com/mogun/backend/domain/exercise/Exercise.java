@@ -27,9 +27,6 @@ public class Exercise {
     @Column(name = "eng_name")
     private String engName;
 
-    @Column(name = "exec_desc")
-    private String execDesc;
-
     @OneToOne
     @JoinColumn(name = "part_key")
     private MusclePart mainPart;
