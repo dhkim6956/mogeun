@@ -34,18 +34,23 @@ class AddExerciseViewModel(
     private val _listAllExerciseSuccess = MutableStateFlow(false)
     val listAllExerciseSuccess: StateFlow<Boolean> = _listAllExerciseSuccess.asStateFlow()
     var exerciseList = mutableStateListOf<ListAllExerciseResponsedata>()
-
+    private val _addRoutineSuccess = MutableStateFlow(false)
+    val addRoutineSuccess: StateFlow<Boolean> = _addRoutineSuccess.asStateFlow()
     private val _addAllExerciseSuccess = MutableStateFlow(false)
     val addAllExerciseSuccess: StateFlow<Boolean> = _addAllExerciseSuccess.asStateFlow()
     var myRoutine = mutableStateListOf<AddRoutineRequest>()
     var userKey by mutableStateOf<Int?>(null)
     var nowRoutine by mutableStateOf<Int?>(null)
+    var routineKey by mutableStateOf<Int?>(null)
     fun initListAllExerciseSuccess() {
         _listAllExerciseSuccess.value = false
         exerciseList.clear()
     }
     fun updateUserKey(value: Int?) {
         userKey = value
+    }
+    fun updateRoutineKey(value: Int?) {
+        routineKey = value
     }
     fun updateNowRoutine(value: Int?){
         nowRoutine = value
@@ -69,10 +74,20 @@ class AddExerciseViewModel(
             Log.d("listAllExercise", "$ret")
             if (ret.message == "SUCCESS") {
                 _listAllExerciseSuccess.value = true
-                // 이름을 기준으로 중복을 제거합니다.
                 val uniqueExercises = ret.data.distinctBy { it.name }
                 exerciseList.clear()
                 exerciseList.addAll(uniqueExercises)
+            }
+        }
+    }
+    fun addRoutine(userKey: Int?, routineName: String) {
+        lateinit var ret: AddRoutineResponse
+        viewModelScope.launch {
+            ret = routineRepository.addRoutine(userKey, routineName)
+            Log.d("addroutine", "$ret")
+            if (ret.message == "SUCCESS") {
+                _addRoutineSuccess.value = true
+                updateRoutineKey(ret.data.routineKey)
             }
         }
     }
@@ -83,11 +98,9 @@ class AddExerciseViewModel(
             Log.d("addAllExercise", "$ret")
             if(ret.message == "SUCCESS"){
                 _addAllExerciseSuccess.value = true
-//                updateNowRoutine(ret.data.added)
             }
         }
     }
-
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {

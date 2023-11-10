@@ -41,8 +41,8 @@ import io.ssafy.mogeun.ui.AppViewModelProvider
 @Composable
 fun AddRoutineScreen(
     navController: NavHostController,
-    routineKey: Int?,
-    viewModel: AddRoutineViewModel = viewModel(factory = AddRoutineViewModel.Factory)
+    viewModel: AddRoutineViewModel = viewModel(factory = AddRoutineViewModel.Factory),
+    routineKey: Int?
 ) {
     LaunchedEffect(Unit){
         viewModel.getUserKey()

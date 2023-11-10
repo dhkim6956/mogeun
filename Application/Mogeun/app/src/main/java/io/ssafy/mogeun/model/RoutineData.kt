@@ -29,13 +29,15 @@ data class AddRoutineResponse(
 
 @Serializable
 data class ListAllExerciseResponsedata(
+    @SerialName(value = "plan_key")
+    val planKey: Int,
     @SerialName(value = "exec_key")
     val key: Int,
     val name: String,
     @SerialName(value = "eng_name")
     val engName: String,
     @SerialName(value = "sensing_part")
-    val sensingPart: String?,
+    val sensingPart: List<String>?,
     @SerialName(value = "main_part")
     val mainPart: String,
     @SerialName(value = "image_path")
@@ -97,7 +99,7 @@ data class ListMyExerciseResponse(
 data class AddAllExerciseRequest(
     @SerialName(value = "routine_key")
     val routineKey: Int?,
-    @SerialName(value = "exec_key")
+    @SerialName(value = "exec_keys")
     val execKey: List<Int>
 )
 

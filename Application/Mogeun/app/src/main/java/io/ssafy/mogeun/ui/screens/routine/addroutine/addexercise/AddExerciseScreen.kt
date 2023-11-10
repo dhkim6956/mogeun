@@ -69,24 +69,26 @@ fun AddExerciseScreen(
     viewModel: AddExerciseViewModel = viewModel(factory = AddExerciseViewModel.Factory),
 ) {
     val musclePartList = listOf("전체", "가슴", "등", "복근", "삼두", "승모근", "어깨", "이두", "종아리", "허벅지")
-    var selectedExercises by remember { mutableStateOf(setOf<String>()) }
+    var selectedExercises by remember { mutableStateOf(listOf<Int>()) }
     val openAlertDialog = remember { mutableStateOf(false) }
     val exercises = viewModel.exerciseList
-
-    val (searchText, setSearchText) = remember {
-        mutableStateOf("")
-    }
+    val (searchText, setSearchText) = remember { mutableStateOf("") }
     var selectedMusclePart by remember { mutableStateOf("전체") }
     LaunchedEffect(Unit){
         viewModel.listAllExercise()
         viewModel.getUserKey()
+    }
+    LaunchedEffect(viewModel.routineKey) {
+        if (viewModel.routineKey !== null) {
+            Log.d("routinKey", "${viewModel.routineKey}")
+            viewModel.addAllExercise(viewModel.routineKey, selectedExercises)
+        }
     }
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
             .padding(16.dp)
-
     ) {
         Spacer(modifier = Modifier.height(16.dp))
         TextField(
@@ -127,7 +129,7 @@ fun AddExerciseScreen(
                     it.name.contains(searchText, ignoreCase = true) || it.engName.contains(searchText, ignoreCase = true)
                 }
             items(filteredExercises) { exercise ->
-                val isSelected = exercise.name in selectedExercises
+                val isSelected = exercise.key in selectedExercises
                 val context = LocalContext.current
                 val imageResId = context.resources.getIdentifier("x_${exercise.imagePath}", "drawable", context.packageName)
                 Box(
@@ -142,9 +144,9 @@ fun AddExerciseScreen(
                         .padding(16.dp)
                         .clickable {
                             if (isSelected) {
-                                selectedExercises = selectedExercises - exercise.name
+                                selectedExercises = selectedExercises - exercise.key
                             } else {
-                                selectedExercises = selectedExercises + exercise.name
+                                selectedExercises = selectedExercises + exercise.key
                             }
                         }
                 ) {
@@ -233,7 +235,7 @@ fun AlertDialogExample(
     dialogText: String,
     icon: ImageVector,
 ) {
-    val viewModel: AddRoutineViewModel = viewModel(factory = AddRoutineViewModel.Factory)
+    val viewModel: AddExerciseViewModel = viewModel(factory = AddExerciseViewModel.Factory)
     var routineName by remember { mutableStateOf("") }
     LaunchedEffect(viewModel.userKey){
         viewModel.getUserKey()
@@ -265,7 +267,6 @@ fun AlertDialogExample(
                     viewModel.userKey?.let {
                         val ret = viewModel.addRoutine(viewModel.userKey, routineName)
                         Log.d("addRoutine", "$ret")
-//                        val rett = viewModel.addAllExercise()
                         navController.popBackStack()
                     } ?: Log.e("addRoutine", "User key is null")
                 }
