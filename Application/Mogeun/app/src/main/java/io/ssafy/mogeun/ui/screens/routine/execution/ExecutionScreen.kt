@@ -36,6 +36,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -76,13 +77,15 @@ import org.jtransforms.fft.DoubleFFT_1D
 fun ExecutionScreen(viewModel: BluetoothViewModel) {
     val pagerState = rememberPagerState { 10 }
 
+    val emgState by viewModel.emgState.collectAsState()
+
     HorizontalPager(pagerState, Modifier.fillMaxSize()) {page ->
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            ExerciseEMGScreen()
+            ExerciseEMGScreen(emgState)
         }
     }
 }
@@ -91,7 +94,7 @@ fun ExecutionScreen(viewModel: BluetoothViewModel) {
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun ExerciseEMGScreen(/*viewModel: ExecutionViewModel = viewModel(factory = AppViewModelProvider.Factory)*/){
+fun ExerciseEMGScreen(emgUiState: EmgUiState/*viewModel: ExecutionViewModel = viewModel(factory = AppViewModelProvider.Factory)*/){
     val setList: MutableList<String> by remember { mutableStateOf(mutableListOf("1세트", "2세트", "3세트", "4세트")) }
     var selectedTab by remember { mutableIntStateOf(0) }
     var lastClickTime by remember { mutableLongStateOf(0L) }
@@ -189,7 +192,7 @@ fun ExerciseEMGScreen(/*viewModel: ExecutionViewModel = viewModel(factory = AppV
                     .fillMaxWidth()
                     .background(Color(0xFFF7F7F7)),
             ){
-                EMGCollector(isStarting)
+                EMGCollector(emgUiState, isStarting)
             }
         }
         Box(
@@ -471,8 +474,10 @@ fun InfiniteItemsPicker(
 }
 
 //--------------------------------------------
+
+// 최신값
 @Composable
-fun EMGCollector(isStarting:Boolean) {
+fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean) {
     var signal_1 by remember { mutableStateOf(0) }
     var signal_2 by remember { mutableStateOf(0) }
     var signal_3 by remember { mutableStateOf(0) }
@@ -508,7 +513,7 @@ fun EMGCollector(isStarting:Boolean) {
                 .background(Color.Gray),
                 contentAlignment = Alignment.Center
             ){
-                Text("1 : $signal_1")
+                Text("1 : ${emgUiState.emg1?.value}")
             }
             Box(modifier = Modifier
                 .fillMaxHeight()
@@ -516,7 +521,7 @@ fun EMGCollector(isStarting:Boolean) {
                 .background(Color.Red),
                 contentAlignment = Alignment.Center
             ){
-                Text("2 : $signal_2")
+                Text("2 : ${emgUiState.emg2?.value}")
             }
         }
         Row(
@@ -546,15 +551,15 @@ fun EMGCollector(isStarting:Boolean) {
 
 //-----------------------------------------------------
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewEMGScreen(){
-    Column {
-        ExerciseEMGScreen()
-        FFT_ready(24)
-
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewEMGScreen(){
+//    Column {
+//        ExerciseEMGScreen()
+//        FFT_ready(24)
+//
+//    }
+//}
 @Composable
 //build.gradle에 //implementation ("com.github.wendykierp:JTransforms:3.1")//넣자
 fun FFT_ready(N:Int){//N은 신호의 갯수
