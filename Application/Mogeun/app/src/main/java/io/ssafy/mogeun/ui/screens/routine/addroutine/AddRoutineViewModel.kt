@@ -32,45 +32,19 @@ class AddRoutineViewModel(
     private val keyRepository: KeyRepository
 ) : ViewModel() {
     var userKey by mutableStateOf<Int?>(null)
-    private val _addRoutineSuccess = MutableStateFlow(false)
-    val addRoutineSuccess: StateFlow<Boolean> = _addRoutineSuccess.asStateFlow()
-
     private val _listMyExerciseSuccess = MutableStateFlow(false)
     val listMyExerciseSuccess: StateFlow<Boolean> = _listMyExerciseSuccess.asStateFlow()
     var exerciseList = mutableStateListOf<ListMyExerciseResponseDataExercises>()
-
     private val _myExerciseSuccess = MutableStateFlow(false)
     val myExerciseSuccess: StateFlow<Boolean> = _myExerciseSuccess.asStateFlow()
     var exerciseExplain by mutableStateOf<MyExerciseResponseData?>(null)
 
-
-
-//    var nowRoutine by mutableStateListOf<>()
-
-    var text1 by mutableStateOf("")
-    fun initListMyExerciseSuccess(){
-        _listMyExerciseSuccess.value = false
-        exerciseList.clear()
-    }
     fun updateUserKey(value: Int?) {
         userKey = value
     }
 //    fun updateNowRoutine(value: Int?){
 //        nowRoutine = value
 //    }
-    fun addRoutine(userKey: Int?, routineName: String) {
-        lateinit var ret: AddRoutineResponse
-        viewModelScope.launch {
-            ret = routineRepository.addRoutine(userKey, routineName)
-            Log.d("addroutine", "$ret")
-            if (ret.message == "SUCCESS") {
-                _addRoutineSuccess.value = true
-//                updateNowRoutine(ret.data.routineKey)
-//                Log.d("addroutine", "${ret.data.routineKey}")
-//                addAllExercise(ret.data.routineKey, nowRoutine)
-            }
-        }
-    }
     fun getUserKey() {
         viewModelScope.launch {
             val key = keyRepository.getKey().first()
