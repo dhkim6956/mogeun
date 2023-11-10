@@ -48,7 +48,7 @@ fun DbSampleScreen(viewModel: DbSampleViewModel = viewModel(factory = AppViewMod
             viewModel.setSensingPart(it)
         })
         TextField(value = "${emgInput.value}", onValueChange = {
-            viewModel.setValue(it.toDouble())
+            viewModel.setValue(it.toInt())
         })
 
         Button(onClick = {
