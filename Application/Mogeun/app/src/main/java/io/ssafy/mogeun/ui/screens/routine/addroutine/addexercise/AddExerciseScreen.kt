@@ -58,6 +58,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.skydoves.landscapist.ImageOptions
 import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineViewModel
 import io.ssafy.mogeun.ui.AppViewModelProvider
 
@@ -163,9 +164,11 @@ fun AddExerciseScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         GlideImage(
-                            imageModel = imageResId,
-                            contentDescription = "GIF Image",
-                            contentScale = ContentScale.Crop,
+                            imageModel = { imageResId },
+                            imageOptions = ImageOptions(
+                                contentDescription = "GIF Image",
+                                contentScale = ContentScale.Crop,
+                            ),
                             modifier = Modifier
                                 .height(60.dp)
                                 .width(60.dp)

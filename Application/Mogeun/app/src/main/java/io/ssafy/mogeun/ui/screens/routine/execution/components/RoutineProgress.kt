@@ -48,7 +48,7 @@ fun RoutineProgress() {
             horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.Start),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .height(60.dp)
+                .height(40.dp)
                 .fillMaxWidth()
                 .background(Color(0x22000000))
                 .padding(horizontal = 20.dp)
@@ -85,12 +85,12 @@ fun RoutineProgress() {
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
-                            .width(92.dp)
-                            .height(92.dp)
+                            .width(80.dp)
+                            .height(80.dp)
                             .background(MaterialTheme.colorScheme.primaryContainer)
                             .padding(8.dp)
                     ) {
-                        Text(text = "루틴종료", fontSize = 28.sp, textAlign = TextAlign.Center, lineHeight = 32.sp)
+                        Text(text = "루틴종료", fontSize = 24.sp, textAlign = TextAlign.Center, lineHeight = 28.sp)
                     }
                 }
             }
@@ -98,13 +98,13 @@ fun RoutineProgress() {
         Box(
             contentAlignment = Alignment.CenterStart,
             modifier = Modifier
-                .height(100.dp)
+                .height(80.dp)
                 .fillMaxWidth()
                 .background(color = MaterialTheme.colorScheme.primary)
                 .zIndex(0f)
                 .padding(horizontal = 20.dp)
         ) {
-            Text("진행 시간 : 71분 21초", color = MaterialTheme.colorScheme.onPrimary, fontSize = 28.sp)
+            Text("진행 시간 : 71분 21초", color = MaterialTheme.colorScheme.onPrimary, fontSize = 24.sp)
         }
     }
 }

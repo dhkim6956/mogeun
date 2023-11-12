@@ -44,14 +44,14 @@ class BluetoothViewModel(
 ): ViewModel() {
 
 
-    private val _routineState = MutableStateFlow(RoutineState(null))
+    private val _routineState = MutableStateFlow(RoutineState(null, false))
     val routineState = _routineState.asStateFlow()
 
     fun getPlanList(routineKey: Int) {
         Log.d("execution", "api called")
         viewModelScope.launch {
             val ret = routineRepository.listMyExercise(routineKey)
-            _routineState.value = RoutineState(ret)
+            _routineState.update { routineState -> routineState.copy(planList = ret) }
             Log.d("execution", "${ret}")
         }
     }
@@ -217,6 +217,13 @@ class BluetoothViewModel(
     suspend fun saveData(msg: BluetoothMessage) {
         val emgInput = Emg(0, msg.sensorId, "unknown", msg.message, System.currentTimeMillis())
         emgRepository.insertEmg(emgInput)
+    }
+
+    fun showBottomSheet() {
+        _routineState.update { routineState -> routineState.copy(showBottomSheet = true) }
+    }
+    fun hideBottomSheet() {
+        _routineState.update { routineState -> routineState.copy(showBottomSheet = false) }
     }
 
     override fun onCleared() {
