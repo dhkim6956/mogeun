@@ -20,6 +20,8 @@ import io.ssafy.mogeun.model.AddRoutineResponse
 import io.ssafy.mogeun.model.AddRoutineResponseData
 import io.ssafy.mogeun.model.ListAllExerciseResponse
 import io.ssafy.mogeun.model.ListAllExerciseResponsedata
+import io.ssafy.mogeun.model.ListMyExerciseResponse
+import io.ssafy.mogeun.model.ListMyExerciseResponseData
 import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,6 +44,8 @@ class AddExerciseViewModel(
     var userKey by mutableStateOf<Int?>(null)
     var nowRoutine by mutableStateOf<Int?>(null)
     var routineKey by mutableStateOf<Int?>(null)
+    var myExerciseList: List<ListMyExerciseResponseData> = mutableStateListOf()
+    var successSearch by mutableStateOf<Boolean>(false)
     fun initListAllExerciseSuccess() {
         _listAllExerciseSuccess.value = false
         exerciseList.clear()
@@ -51,6 +55,9 @@ class AddExerciseViewModel(
     }
     fun updateRoutineKey(value: Int?) {
         routineKey = value
+    }
+    fun updateSuccessSearch(value: Boolean) {
+        successSearch = value
     }
     fun getUserKey() {
         viewModelScope.launch {
@@ -93,6 +100,17 @@ class AddExerciseViewModel(
                 _addAllExerciseSuccess.value = true
             }
             Log.d("cureentRoutineKey", "${routineKey}")
+        }
+    }
+    fun listMyExercise(routineKey: Int?){
+        lateinit var ret: ListMyExerciseResponse
+        viewModelScope.launch{
+            ret = routineRepository.listMyExercise(routineKey)
+            Log.d("listMyexercise", "$ret")
+            if (ret.message == "SUCCESS"){
+                myExerciseList = ret.data
+                updateSuccessSearch(true)
+            }
         }
     }
     companion object {
