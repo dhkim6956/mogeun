@@ -67,6 +67,8 @@ import io.ssafy.mogeun.ui.AppViewModelProvider
 fun AddExerciseScreen(
     navController: NavHostController,
     viewModel: AddExerciseViewModel = viewModel(factory = AddExerciseViewModel.Factory),
+    beforeScreen: Int?,
+    currentRoutineKey: Int?
 ) {
     val musclePartList = listOf("전체", "가슴", "등", "복근", "삼두", "승모근", "어깨", "이두", "종아리", "허벅지")
     var selectedExercises by remember { mutableStateOf(listOf<Int>()) }
@@ -77,6 +79,8 @@ fun AddExerciseScreen(
     LaunchedEffect(Unit){
         viewModel.listAllExercise()
         viewModel.getUserKey()
+        Log.d("beforeScreen", "${beforeScreen}")
+        Log.d("currentRoutineKey", "${currentRoutineKey}")
     }
     LaunchedEffect(viewModel.routineKey) {
         if (viewModel.routineKey !== null) {
@@ -102,10 +106,7 @@ fun AddExerciseScreen(
                 ),
             placeholder  = {Text("검색")}
         )
-
         Spacer(modifier = Modifier.height(8.dp))
-
-        // muscle-part
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -118,10 +119,7 @@ fun AddExerciseScreen(
                 )
             }
         }
-
         Spacer(modifier = Modifier.height(8.dp))
-
-        //exercise-list
         LazyColumn {
             val filteredExercises = exercises
                 .filter { it.mainPart == selectedMusclePart || selectedMusclePart == "전체" }
@@ -201,21 +199,27 @@ fun AddExerciseScreen(
                     modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd
                 ) {
                     Button(
-                        onClick = { openAlertDialog.value = true },
+                        onClick = {
+                            if (beforeScreen == 1) {
+                                openAlertDialog.value = true
+                            } else {
+                                viewModel.addAllExercise(routineKey = currentRoutineKey, execKeys = selectedExercises)
+                                navController.navigate("AddRoutine/${currentRoutineKey}")
+                            }
+                        },
                     ) {
                         Text("선택된 운동 추가")
                     }
                 }
                 when {
                     openAlertDialog.value -> {
-                        io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.AlertDialogExample(
+                        AlertDialogExample(
                             onDismissRequest = { openAlertDialog.value = false },
                             onConfirmation = {
                                 openAlertDialog.value = false
-                                println("Confirmation registered") // Add logic here to handle confirmation.
+                                println("Confirmation registered")
                             },
                             dialogTitle = "루틴 이름을 설정해 주세요.",
-                            dialogText = "This is an example of an alert dialog with buttons.",
                             icon = Icons.Default.Info,
                             navController = navController
                         )
@@ -225,14 +229,12 @@ fun AddExerciseScreen(
         }
     }
 }
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlertDialogExample(
     navController: NavHostController,
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
     dialogTitle: String,
-    dialogText: String,
     icon: ImageVector,
 ) {
     val viewModel: AddExerciseViewModel = viewModel(factory = AddExerciseViewModel.Factory)

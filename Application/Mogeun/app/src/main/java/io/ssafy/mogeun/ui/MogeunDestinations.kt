@@ -92,7 +92,7 @@ enum class Screen(
         bottomBarState = BottomBarState(true, R.drawable.icon_setting)
     ),
     AddExercise(
-        route = "AddExercise",
+        route = "AddExercise/{beforeScreen}/{currentRoutineKey}",
         title = "운동 추가",
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
         bottomBarState = BottomBarState(true, R.drawable.icon_setting)

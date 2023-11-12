@@ -52,13 +52,6 @@ class AddExerciseViewModel(
     fun updateRoutineKey(value: Int?) {
         routineKey = value
     }
-    fun updateNowRoutine(value: Int?){
-        nowRoutine = value
-    }
-    fun initAddAllExerciseSuccess() {
-        _addAllExerciseSuccess.value = false
-        myRoutine.clear()
-    }
     fun getUserKey() {
         viewModelScope.launch {
             val key = keyRepository.getKey().first()
@@ -99,6 +92,7 @@ class AddExerciseViewModel(
             if(ret.message == "SUCCESS"){
                 _addAllExerciseSuccess.value = true
             }
+            Log.d("cureentRoutineKey", "${routineKey}")
         }
     }
     companion object {

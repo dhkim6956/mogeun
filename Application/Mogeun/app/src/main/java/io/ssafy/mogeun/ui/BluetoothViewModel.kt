@@ -16,6 +16,8 @@ import io.ssafy.mogeun.data.bluetooth.Connection1Result
 import io.ssafy.mogeun.model.BluetoothMessage
 import io.ssafy.mogeun.model.SetRequest
 import io.ssafy.mogeun.model.SetResponse
+import io.ssafy.mogeun.ui.screens.routine.execution.EmgUiState
+import io.ssafy.mogeun.ui.screens.sample.DbSampleViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -48,6 +51,27 @@ class BluetoothViewModel(
             }
         }
     }
+
+    private val _emgState = MutableStateFlow(EmgUiState())
+    val emgState: StateFlow<EmgUiState> =
+        emgRepository.getEmgStream()
+            .map {
+
+                Log.d("bluetooth", "emg value = ${it}")
+                if(it != null) {
+                    if(it.deviceId == 0) {
+                        _emgState.value.copy(emg1 = it)
+                    } else {
+                        _emgState.value.copy(emg2 = it)
+                    }
+                } else {
+                    _emgState.value.copy()
+                }
+            }.stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+                initialValue = _emgState.value
+            )
 
     private val _state = MutableStateFlow(BluetoothUiState())
     val state = combine(
