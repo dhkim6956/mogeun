@@ -17,10 +17,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -514,6 +516,12 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean) {
                 contentAlignment = Alignment.Center
             ){
                 Text("1 : ${emgUiState.emg1?.value}")
+                Box(modifier = Modifier
+                    .clip(CircleShape)
+                    .size((emgUiState.emg1?.value?:0%90/*signal 최대크기로 나누고 곱하기90*/).dp)
+                    .background(Color.White.copy(0.7f))
+                    .wrapContentSize(Alignment.Center)
+                )
             }
             Box(modifier = Modifier
                 .fillMaxHeight()
@@ -522,6 +530,12 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean) {
                 contentAlignment = Alignment.Center
             ){
                 Text("2 : ${emgUiState.emg2?.value}")
+                Box(modifier = Modifier
+                    .clip(CircleShape)
+                    .size((signal_2%90/*signal 최대크기로 나누고 곱하기90*/).dp)
+                    .background(Color.White.copy(0.7f))
+                    .wrapContentSize(Alignment.Center)
+                )
             }
         }
         Row(
