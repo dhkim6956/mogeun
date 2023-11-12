@@ -1,7 +1,10 @@
 package com.mogun.backend.domain.userLog.userBodyFatLog;
 
 import com.mogun.backend.domain.user.User;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.Clock;
@@ -9,6 +12,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 @Entity
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserBodyFatLog {
 
     @Id

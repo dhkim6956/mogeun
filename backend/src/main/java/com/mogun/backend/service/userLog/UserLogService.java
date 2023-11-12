@@ -4,16 +4,24 @@ import com.mogun.backend.domain.user.User;
 import com.mogun.backend.domain.user.repository.UserRepository;
 import com.mogun.backend.domain.userDetail.UserDetail;
 import com.mogun.backend.domain.userDetail.repository.UserDetailRepository;
+import com.mogun.backend.domain.userLog.userBodyFatLog.UserBodyFatLog;
 import com.mogun.backend.domain.userLog.userBodyFatLog.repository.UserBodyFatLogRepository;
 import com.mogun.backend.domain.userLog.userHeightLog.repository.UserHeightLogRepository;
+import com.mogun.backend.domain.userLog.userMuscleMassLog.UserMuscleMassLog;
 import com.mogun.backend.domain.userLog.userMuscleMassLog.repository.UserMuscleMassLogRepository;
 import com.mogun.backend.domain.userLog.userWeightLog.repository.UserWeightLogRepository;
 
+import com.mogun.backend.service.ServiceStatus;
+import com.mogun.backend.service.userLog.dto.SimpleBodyFatLog;
+import com.mogun.backend.service.userLog.dto.SimpleMuscleMassLog;
 import com.mogun.backend.service.userLog.dto.UserLogDto;
+import com.mogun.backend.service.userLog.dto.UserMuscleAndFatLogDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -124,5 +132,42 @@ public class UserLogService {
         }
 
         return "SUCCESS";
+    }
+
+    public ServiceStatus<UserMuscleAndFatLogDto> getLast10Logs(UserLogDto dto) {
+
+        Optional<User> user = userRepository.findById(dto.getUserKey());
+        if(user.isEmpty())
+            return ServiceStatus.errorStatus("요청 오류: 등록된 회원이 아님");
+
+        List<UserMuscleMassLog> muscleMassLogList = muscleMassLogRepository.findLast10LogByUser(user.get());
+        List<UserBodyFatLog> bodyFatLogList = bodyFatLogRepository.findLast10LogByUser(user.get());
+
+        List<SimpleBodyFatLog> fatLogs = new ArrayList<>();
+        List<SimpleMuscleMassLog> muscleLogs = new ArrayList<>();
+
+        for(UserMuscleMassLog log: muscleMassLogList) {
+
+            muscleLogs.add(SimpleMuscleMassLog.builder()
+                    .muscleMass(log.getMuscleMassAfter())
+                    .changedTime(log.getChangedTime())
+                    .build());
+        }
+        for(UserBodyFatLog log: bodyFatLogList) {
+
+            fatLogs.add(SimpleBodyFatLog.builder()
+                    .bodyFat(log.getBodyFatAfter())
+                    .changedTime(log.getChangedTime())
+                    .build());
+        }
+
+        return ServiceStatus.<UserMuscleAndFatLogDto>builder()
+                .status(100)
+                .message("SUCCESS")
+                .data(UserMuscleAndFatLogDto.builder()
+                        .muscleMassLogList(muscleLogs)
+                        .bodyFatLogList(fatLogs)
+                        .build())
+                .build();
     }
 }
