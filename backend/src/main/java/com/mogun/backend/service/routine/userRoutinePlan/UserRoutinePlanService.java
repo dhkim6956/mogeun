@@ -2,6 +2,7 @@ package com.mogun.backend.service.routine.userRoutinePlan;
 
 import com.mogun.backend.domain.exercise.Exercise;
 import com.mogun.backend.domain.exercise.repository.ExerciseRepository;
+import com.mogun.backend.domain.routine.setDetail.repository.SetDetailRepository;
 import com.mogun.backend.domain.routine.userRoutine.UserRoutine;
 import com.mogun.backend.domain.routine.userRoutine.repository.UserRoutineRepository;
 import com.mogun.backend.domain.routine.userRoutinePlan.UserRoutinePlan;
@@ -29,6 +30,7 @@ public class UserRoutinePlanService {
     private final UserRoutinePlanRepository planRepository;
     private final ExerciseRepository exerciseRepository;
     private final UserRepository userRepository;
+    private final SetDetailRepository setDetailRepository;
 
     public ServiceStatus<Object> addPlan(RoutineDto dto) {
 
@@ -41,6 +43,55 @@ public class UserRoutinePlanService {
             return ServiceStatus.errorStatus("요청 오류: 추가 가능한 운동이 없음");
 
         planRepository.save(dto.toRoutinePlanEntity(routine.get(), exec.get()));
+
+        return ServiceStatus.okStatus();
+    }
+
+    public ServiceStatus<Object> editPlan(RoutineDto dto, List<Integer> editedPlanList) {
+
+        Optional<UserRoutine> routine = routineRepository.findById(dto.getRoutineKey());
+        if(routine.isEmpty() || routine.get().getIsDeleted() == 'Y')
+            return ServiceStatus.errorStatus("요청 오류: 등록된 루틴이 아님");
+
+        List<UserRoutinePlan>  existingPlanList = planRepository.findAllByUserRoutine(routine.get());
+//        List<UserRoutinePlan> added = new ArrayList<>();
+
+//        for(UserRoutinePlan exist: existingPlanList) {
+//            int flag = 0;
+//
+//            for(int edit: editedPlanList) {
+//                if(exist.getExercise().getExecKey() == edit) {
+//                    flag = 1;
+//                    added.add()
+//                }
+//            }
+//
+//            if(flag == 1)
+//                planRepository.delete(exist);
+//        }
+//
+//        for(int edit: editedPlanList)
+//            planRepository.save(UserRoutinePlan.builder()
+//                    .userRoutine(routine.get())
+//                    .user(routine.get().getUser())
+//                    .exercise(exerciseRepository.findById(edit).get())
+//                    .setAmount(1)
+//                    .build());
+
+        for(UserRoutinePlan plan: existingPlanList) {
+            setDetailRepository.deleteAllByUserRoutinePlan(plan);
+        }
+
+        planRepository.deleteAllByUserRoutine(routine.get());
+
+        for(int edit: editedPlanList) {
+            planRepository.save(UserRoutinePlan.builder()
+                    .userRoutine(routine.get())
+                    .user(routine.get().getUser())
+                    .exercise(exerciseRepository.findById(edit).get())
+                    .setAmount(1)
+                    .build());
+        }
 
         return ServiceStatus.okStatus();
     }

@@ -1,5 +1,7 @@
 package com.mogun.backend.service.report;
 
+import com.mogun.backend.domain.attachPart.AttachPart;
+import com.mogun.backend.domain.attachPart.repository.AttachPartRepository;
 import com.mogun.backend.domain.exercise.Exercise;
 import com.mogun.backend.domain.exercise.repository.ExerciseRepository;
 import com.mogun.backend.domain.report.routineReport.RoutineReport;
@@ -13,15 +15,15 @@ import com.mogun.backend.domain.routine.userRoutinePlan.repository.UserRoutinePl
 import com.mogun.backend.domain.user.User;
 import com.mogun.backend.domain.user.repository.UserRepository;
 import com.mogun.backend.service.ServiceStatus;
-import com.mogun.backend.service.report.dto.MostPerformedDto;
-import com.mogun.backend.service.report.dto.MostSetsDto;
-import com.mogun.backend.service.report.dto.MostWeightDto;
-import com.mogun.backend.service.report.dto.RoutineReportDto;
+import com.mogun.backend.service.attachPart.AttachPartService;
+import com.mogun.backend.service.exercise.ExerciseService;
+import com.mogun.backend.service.report.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +37,7 @@ public class SetReportService {
     private final UserRoutinePlanRepository planRepository;
     private final UserRepository userRepository;
     private final ExerciseRepository exerciseRepository;
+    private final AttachPartService attachPartService;
 
     public ServiceStatus<Object> insertSetReport(RoutineReportDto dto) {
 
@@ -144,6 +147,44 @@ public class SetReportService {
                         .imagePath(exec.get().getImagePath())
                         .setCount(weightDtoList.get(0).getSet_Number())
                         .build())
+                .build();
+    }
+
+    public ServiceStatus<List<ExerciseMuscleDto>> execMuscle(RoutineReportDto dto, int option) {
+
+        List<ExerciseMuscleDto> list = new ArrayList<>();
+        Optional<User> user = userRepository.findById(dto.getUserKey());
+        if(user.isEmpty())
+            return ServiceStatus.errorStatus("요청 오류: 등록되지 않은 회원");
+
+        LocalDateTime startDate;
+        LocalDateTime now = LocalDateTime.now();
+        if(option == 1)
+            startDate = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
+        else if(option == 2)
+            startDate = LocalDateTime.of(now.getYear(), 1, 1, 0, 0, 0);
+        else if(option == 3)
+            startDate = LocalDateTime.of(now.getYear(), now.getMonth(), 1, 0, 0, 0);
+        else
+            return ServiceStatus.errorStatus("요청 오류: 올바르지 않은 날짜 옵션");
+
+        List<ExecCountInterface> countDtoList = setReportRepository.findRangedExerciseByUserAndStartDate(user.get(), startDate);
+
+        for(ExecCountInterface item: countDtoList) {
+
+            Optional<Exercise> exec = exerciseRepository.findById(item.getExec_Key());
+            List<String> parts = attachPartService.getMainSubPartNameByExercise(exec.get());
+
+            list.add(ExerciseMuscleDto.<ExerciseMuscleDto>builder()
+                    .execName(exec.get().getName())
+                    .execParts(parts)
+                    .build());
+        }
+
+        return ServiceStatus.<List<ExerciseMuscleDto>>builder()
+                .status(100)
+                .message("SUCCESS")
+                .data(list)
                 .build();
     }
 }

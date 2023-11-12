@@ -20,4 +20,6 @@ public interface UserRoutinePlanRepository extends JpaRepository<UserRoutinePlan
     @Query(value = "SELECT * FROM user_routine_plan urp WHERE urp.user_key = :user_key ORDER BY urp.routine_key", nativeQuery = true)
     List<UserRoutinePlan> findAllByUser(@Param("user_key") User user);
     Optional<UserRoutinePlan> findByUserRoutineAndExercise(UserRoutine routine, Exercise exec);
+
+    void deleteAllByUserRoutine(UserRoutine routine);
 }

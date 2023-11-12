@@ -65,6 +65,15 @@ public class PlanController {
         return ApiResponse.of(HttpStatus.ACCEPTED, "OK", AddPlanListResponse.builder().addedExec(success).failedExec(fail).build());
     }
 
+    @PutMapping("/Edit")
+    public ApiResponse<Object> editPlan(@RequestBody AddPlanListRequest request) {
+
+        ServiceStatus result = planService.editPlan(RoutineDto.builder()
+            .routineKey(request.getRoutineKey()).build(), request.getExecKeys());
+
+        return ApiResponse.postAndPutResponse(result, request);
+    }
+
     @DeleteMapping("/Remove")
     public ApiResponse<Object> removePlan(@RequestParam("routine_key") int routineKey, @RequestParam("exec_key") int execKey) {
 

@@ -4,10 +4,7 @@ import com.mogun.backend.ApiResponse;
 import com.mogun.backend.domain.report.setReport.SetReport;
 import com.mogun.backend.service.ServiceStatus;
 import com.mogun.backend.service.report.SetReportService;
-import com.mogun.backend.service.report.dto.MostPerformedDto;
-import com.mogun.backend.service.report.dto.MostSetsDto;
-import com.mogun.backend.service.report.dto.MostWeightDto;
-import com.mogun.backend.service.report.dto.RoutineReportDto;
+import com.mogun.backend.service.report.dto.*;
 import com.mogun.backend.service.userLog.UserLogService;
 import com.mogun.backend.service.userLog.dto.UserLogDto;
 import com.mogun.backend.service.userLog.dto.UserMuscleAndFatLogDto;
@@ -71,6 +68,18 @@ public class UserSummaryController {
     public ApiResponse<Object> getMostSet(@RequestParam("user_key")int userKey, @RequestParam("search_type")int option) {
 
         ServiceStatus<MostSetsDto> result = setReportService.mostSetExercise(RoutineReportDto.builder()
+                .userKey(userKey).build(), option);
+
+        if(result.getStatus() != 100)
+            return ApiResponse.badRequest(result.getMessage());
+
+        return ApiResponse.ok(result.getData());
+    }
+
+    @GetMapping("/ExerciseMuscle")
+    public ApiResponse<Object> getExecMuscle(@RequestParam("user_key")int userKey, @RequestParam("search_type")int option) {
+
+        ServiceStatus<List<ExerciseMuscleDto>> result = setReportService.execMuscle(RoutineReportDto.builder()
                 .userKey(userKey).build(), option);
 
         if(result.getStatus() != 100)
