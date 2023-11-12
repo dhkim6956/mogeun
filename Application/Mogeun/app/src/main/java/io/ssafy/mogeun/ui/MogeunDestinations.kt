@@ -32,7 +32,7 @@ enum class Screen(
         bottomBarState = BottomBarState(true, R.drawable.icon_routine, "routine")
     ),
     Execution(
-    route = "Execution",
+    route = "Execution/{routineKey}",
     title = "운동 진행",
     topBarState = TopBarState(visibility = true, backBtnVisibility = false),
     bottomBarState = BottomBarState(false)

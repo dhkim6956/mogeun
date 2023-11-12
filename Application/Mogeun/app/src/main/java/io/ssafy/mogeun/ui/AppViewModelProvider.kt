@@ -30,6 +30,7 @@ object AppViewModelProvider {
             BluetoothViewModel(
                 mogeunApplication().container.setRepository,
                 mogeunApplication().container.emgDataRepository,
+                mogeunApplication().container.routineRepository,
                 mogeunApplication().container.bluetoothController
             )
         }

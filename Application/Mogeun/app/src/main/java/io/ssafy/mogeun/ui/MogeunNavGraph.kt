@@ -33,7 +33,12 @@ fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarH
         composable(Screen.Splash.route) { SplashScreen(navController = navController)}
         navigation(route = "Routines", startDestination = Screen.Routine.route) {
             composable(Screen.Routine.route) { RoutineScreen(navController = navController) }
-            composable(Screen.Execution.route) { ExecutionScreen(viewModel = btViewModel) }
+            composable(
+                Screen.Execution.route,
+                arguments = listOf(navArgument("routineKey") {type = NavType.IntType})
+            ) { backStackEntry ->
+                ExecutionScreen(viewModel = btViewModel, routineKey = backStackEntry.arguments?.getInt("routineKey")!!)
+            }
         }
         navigation(route = "Records", startDestination = Screen.Record.route) {
             composable(Screen.Record.route) { RecordScreen(navController = navController) }

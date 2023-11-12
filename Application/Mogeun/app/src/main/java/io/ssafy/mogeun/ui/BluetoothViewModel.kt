@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.ssafy.mogeun.data.Emg
 import io.ssafy.mogeun.data.EmgRepository
+import io.ssafy.mogeun.data.RoutineRepository
 import io.ssafy.mogeun.data.SetRepository
 import io.ssafy.mogeun.data.bluetooth.BluetoothController
 import io.ssafy.mogeun.data.bluetooth.BluetoothDeviceDomain
@@ -17,6 +18,7 @@ import io.ssafy.mogeun.model.BluetoothMessage
 import io.ssafy.mogeun.model.SetRequest
 import io.ssafy.mogeun.model.SetResponse
 import io.ssafy.mogeun.ui.screens.routine.execution.EmgUiState
+import io.ssafy.mogeun.ui.screens.routine.execution.RoutineState
 import io.ssafy.mogeun.ui.screens.sample.DbSampleViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -37,18 +39,20 @@ import kotlinx.coroutines.launch
 class BluetoothViewModel(
     private val setRepository: SetRepository,
     private val emgRepository: EmgRepository,
+    private val routineRepository: RoutineRepository,
     private val bluetoothController: BluetoothController
 ): ViewModel() {
-    private val _getSetSuccess = MutableStateFlow(false)
-    val getSetSuccess: StateFlow<Boolean> = _getSetSuccess.asStateFlow()
-    fun getSet() {
-        lateinit var ret: SetResponse
+
+
+    private val _routineState = MutableStateFlow(RoutineState(null))
+    val routineState = _routineState.asStateFlow()
+
+    fun getPlanList(routineKey: Int) {
+        Log.d("execution", "api called")
         viewModelScope.launch {
-            ret = setRepository.getSet(SetRequest(1, 1, 1, 43.7F, 35, 10, 8, 12.6F, "2023-11-03T20:03:42", "2023-11-03T20:10:42"))
-            Log.d("getSet", "$ret")
-            if(ret.message == "SUCCESS") {
-                _getSetSuccess.value = true
-            }
+            val ret = routineRepository.listMyExercise(routineKey)
+            _routineState.value = RoutineState(ret)
+            Log.d("execution", "${ret}")
         }
     }
 
@@ -95,9 +99,6 @@ class BluetoothViewModel(
 
 
     init {
-//        bluetoothController.isConnected.onEach { isConnected ->
-//            _state.update { it.copy(isConnected = isConnected) }
-//        }.launchIn(viewModelScope)
 
         bluetoothController.errors.onEach { error ->
             _state.update { it.copy(
@@ -109,11 +110,11 @@ class BluetoothViewModel(
     fun connectToDevice(device: BluetoothDeviceDomain, deviceNo: Int = 0) {
         _state.update { it.copy(isConnecting = true) }
 
-        if(state.value.isConnected[0] == false) {
+        if(!state.value.isConnected[0]) {
             deviceConnectionJob[deviceNo] = bluetoothController
                 .connectToDevice0(ConnectedDevice(name = device.name, address = device.address, assignedNo = deviceNo))
                 .listen()
-        } else if(state.value.isConnected[1] == false) {
+        } else if(!state.value.isConnected[1]) {
             deviceConnectionJob[deviceNo] = bluetoothController
                 .connectToDevice1(ConnectedDevice(name = device.name, address = device.address, assignedNo = deviceNo))
                 .listen()

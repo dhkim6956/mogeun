@@ -81,7 +81,7 @@ fun AddExerciseScreen(
         viewModel.getUserKey()
         Log.d("beforeScreen", "${beforeScreen}")
         Log.d("currentRoutineKey", "${currentRoutineKey}")
-        if (currentRoutineKey !== 1) {
+        if (currentRoutineKey !== null) {
             viewModel.listMyExercise(currentRoutineKey)
         }
     }
