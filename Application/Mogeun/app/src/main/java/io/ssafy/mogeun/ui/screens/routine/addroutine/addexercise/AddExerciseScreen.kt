@@ -81,6 +81,16 @@ fun AddExerciseScreen(
         viewModel.getUserKey()
         Log.d("beforeScreen", "${beforeScreen}")
         Log.d("currentRoutineKey", "${currentRoutineKey}")
+        if (currentRoutineKey !== 1) {
+            viewModel.listMyExercise(currentRoutineKey)
+        }
+    }
+    LaunchedEffect(viewModel.successSearch) {
+        if (viewModel.successSearch == true) {
+            for (i in viewModel.myExerciseList) {
+                selectedExercises = selectedExercises + i.execKey
+            }
+        }
     }
     LaunchedEffect(viewModel.routineKey) {
         if (viewModel.routineKey !== null) {
