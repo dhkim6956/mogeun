@@ -234,7 +234,7 @@ fun RoutineList(
                 }
             }
             Button(
-                onClick = { navController.navigate(Screen.Execution.route) },
+                onClick = { navController.navigate("Execution/${routine.routineKey}") },
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(text = "루틴시작")
