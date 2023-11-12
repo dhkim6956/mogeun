@@ -1,6 +1,7 @@
 package io.ssafy.mogeun.ui.screens.summary
 
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -35,7 +37,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import co.yml.charts.axis.AxisData
@@ -51,6 +55,7 @@ import co.yml.charts.ui.linechart.model.LineType
 import co.yml.charts.ui.linechart.model.SelectionHighlightPoint
 import co.yml.charts.ui.linechart.model.SelectionHighlightPopUp
 import co.yml.charts.ui.linechart.model.ShadowUnderLine
+import io.ssafy.mogeun.R
 
 @Composable
 fun SummaryScreen() {
@@ -62,7 +67,7 @@ fun SummaryScreen() {
             )
             .background(color = MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.End
     ) {
         BodyInfoSummaryCard()
         Spacer(
@@ -71,6 +76,11 @@ fun SummaryScreen() {
                 .background(color = MaterialTheme.colorScheme.primaryContainer)
         )
         Dropdown()
+        Spacer(
+            modifier = Modifier
+                .height(5.dp)
+                .background(color = MaterialTheme.colorScheme.primaryContainer)
+        )
         ExerciseSummaryCard()
         Spacer(
             modifier = Modifier
@@ -90,18 +100,37 @@ fun Dropdown() {
     var expanded by remember { mutableStateOf(false) }
     var disabledItem by remember { mutableIntStateOf(0) }
     var item by remember { mutableStateOf(listItems[0]) }
+    var itemIconIndex by remember { mutableIntStateOf(0) }
+    var itemIconList = listOf(R.drawable.baseline_arrow_drop_down_24, R.drawable.baseline_arrow_drop_up_24)
 
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .border(
                 width = 1.dp,
-                color = MaterialTheme.colorScheme.background,
-                shape = RoundedCornerShape(16.dp)
+                color = Color.Black
             )
-            .clickable { expanded = true }
+            .padding(5.dp)
+            .clickable {
+                expanded = true
+                itemIconIndex = if (itemIconIndex == 0) 1
+                else 0
+            }
     ) {
-        Text(item)
+        Row {
+            Text(item)
+            Spacer(
+                modifier = Modifier
+                    .width(5.dp)
+                    .background(color = MaterialTheme.colorScheme.primaryContainer)
+            )
+            Image(
+                painter = painterResource(id = itemIconList[itemIconIndex]),
+                contentDescription = "dropdown",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.height(20.dp)
+            )
+        }
 
         // drop down menu
         DropdownMenu(
@@ -118,6 +147,7 @@ fun Dropdown() {
                             .show()
                         expanded = false
                         disabledItem = itemIndex
+                        item = itemValue
                     },
                     enabled = (itemIndex != disabledItem),
                     text = { Text(text = itemValue) }
