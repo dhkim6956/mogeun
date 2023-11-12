@@ -1,5 +1,6 @@
 package io.ssafy.mogeun.ui.screens.summary
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -44,6 +45,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import co.yml.charts.axis.AxisData
 import co.yml.charts.common.model.Point
+import co.yml.charts.ui.barchart.BarChart
+import co.yml.charts.ui.barchart.models.BarChartData
+import co.yml.charts.ui.barchart.models.BarChartType
+import co.yml.charts.ui.barchart.models.BarData
+import co.yml.charts.ui.barchart.models.BarStyle
 import co.yml.charts.ui.linechart.LineChart
 import co.yml.charts.ui.linechart.model.GridLines
 import co.yml.charts.ui.linechart.model.IntersectionPoint
@@ -56,6 +62,7 @@ import co.yml.charts.ui.linechart.model.SelectionHighlightPoint
 import co.yml.charts.ui.linechart.model.SelectionHighlightPopUp
 import co.yml.charts.ui.linechart.model.ShadowUnderLine
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.model.Exercise
 
 @Composable
 fun SummaryScreen() {
@@ -94,7 +101,6 @@ fun SummaryScreen() {
 @Composable
 fun Dropdown() {
     val listItems = arrayOf("전체", "올해", "이번 달")
-    val contextForToast = LocalContext.current.applicationContext
 
     // state of the menu
     var expanded by remember { mutableStateOf(false) }
@@ -137,17 +143,19 @@ fun Dropdown() {
             expanded = expanded,
             onDismissRequest = {
                 expanded = false
+                itemIconIndex = if (itemIconIndex == 0) 1
+                else 0
             }
         ) {
             // adding items
             listItems.forEachIndexed { itemIndex, itemValue ->
                 DropdownMenuItem(
                     onClick = {
-                        Toast.makeText(contextForToast, itemValue, Toast.LENGTH_SHORT)
-                            .show()
                         expanded = false
                         disabledItem = itemIndex
                         item = itemValue
+                        itemIconIndex = if (itemIconIndex == 0) 1
+                        else 0
                     },
                     enabled = (itemIndex != disabledItem),
                     text = { Text(text = itemValue) }
@@ -288,12 +296,71 @@ fun MuscleSummaryCard() {
 }
 
 @Composable
-fun MuscleSummary() {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+fun MuscleSummary(exercises: List<Exercise>) {
+    val yStepSize = 9
+    var map: MutableMap<String, Float> = mutableMapOf(
+        "가슴" to 0f, "등" to 0f, "허벅지" to 0f, "어깨" to 0f, "이두" to 0f, "삼두" to 0f, "승모근" to 0f, "종아리" to 0f, "복근" to 0f, "" to 0f
+    )
+    var index = 0
+    var barChartdata: MutableList<BarData> = mutableListOf()
+    var maxHeight = 0f
 
+    for (exercise in exercises) {
+        var prevPart = ""
+        for (part in exercise.parts) {
+            val partDetail = part.split(" ")
+            if (prevPart == "") prevPart = partDetail[1]
+            else if (prevPart == partDetail[1]) continue
+            if (partDetail[0] == "주") {
+                map[partDetail[1]] = map[partDetail[1]]!!.plus(3f)
+            }
+            else {
+                map[partDetail[1]] = map[partDetail[1]]!!.plus(1f)
+            }
+        }
+    }
+
+    for (data in map) {
+        if (maxHeight < data.value) maxHeight = data.value
+        barChartdata.add(index, BarData(Point(index.toFloat(), data.value, data.key), MaterialTheme.colorScheme.primary, data.key))
+        index++
+    }
+
+    val xAxisData = AxisData.Builder()
+        .axisStepSize(30.dp)
+        .steps(barChartdata.size - 1)
+        .topPadding(10.dp)
+        .startDrawPadding(20.dp)
+        .shouldDrawAxisLineTillEnd(true)
+        .labelData { index -> barChartdata[index].label }
+        .build()
+
+    val yAxisData = AxisData.Builder()
+        .steps(maxHeight.toInt())
+        .labelAndAxisLinePadding(20.dp)
+        .labelData { index -> (index * (maxHeight / yStepSize)).toString() }
+        .axisOffset(20.dp)
+        .build()
+
+    Log.d("yAxisData", yAxisData.toString())
+
+    val barChartData = BarChartData(
+        chartData = barChartdata,
+        xAxisData = xAxisData,
+        yAxisData = yAxisData,
+        showYAxis = false,
+        barStyle = BarStyle(selectionHighlightData = null),
+        barChartType = BarChartType.VERTICAL,
+        paddingEnd = 0.dp
+    )
+
+    Box (modifier = Modifier
+        .fillMaxWidth()
+    ) {
+        BarChart(
+            modifier = Modifier
+                .height(200.dp),
+            barChartData = barChartData
+        )
     }
 }
