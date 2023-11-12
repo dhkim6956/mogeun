@@ -23,6 +23,10 @@ public interface SetReportRepository extends JpaRepository<SetReport, Integer> {
     @Query(value = "SELECT sr.exec_key, COUNT(*) AS exec_count FROM set_report sr WHERE sr.user_key = :user_key AND sr.start_time BETWEEN :before AND NOW() AND sr.set_number = 1 GROUP BY sr.exec_key ORDER BY exec_count DESC", nativeQuery = true)
     List<ExecCountInterface> findRangedExerciseByUserAndStartDate(@Param("user_key")User user, @Param("before")LocalDateTime startDate);
 
-    @Query(value = "SELECT sr.exec_key, sr.train_weight FROM set_report sr WHERE sr.user_key = :user_key AND sr.start_time BETWEEN :before AND NOW() AND sr.set_number = 1 ORDER BY train_weight DESC", nativeQuery = true)
+    @Query(value = "SELECT sr.exec_key, sr.train_weight FROM set_report sr WHERE sr.user_key = :user_key AND sr.start_time BETWEEN :before AND NOW() AND sr.set_number = 1 ORDER BY train_weight DESC LIMIT 1", nativeQuery = true)
     List<ExecWeightInterface> findRangedWeightByUserAndStartDate(@Param("user_key")User user, @Param("before")LocalDateTime startDate);
+
+    @Query(value = "SELECT sr.exec_key, sr.set_number FROM set_report sr WHERE sr.user_key = :user_key AND sr.start_time BETWEEN :before AND NOW() ORDER BY sr.set_number DESC LIMIT 1", nativeQuery = true)
+    List<ExecSetInterface> findRangedSetByUserAndStartDate(@Param("user_key")User user, @Param("before")LocalDateTime startDate);
+
 }

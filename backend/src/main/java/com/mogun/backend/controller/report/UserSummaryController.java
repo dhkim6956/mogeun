@@ -5,6 +5,7 @@ import com.mogun.backend.domain.report.setReport.SetReport;
 import com.mogun.backend.service.ServiceStatus;
 import com.mogun.backend.service.report.SetReportService;
 import com.mogun.backend.service.report.dto.MostPerformedDto;
+import com.mogun.backend.service.report.dto.MostSetsDto;
 import com.mogun.backend.service.report.dto.MostWeightDto;
 import com.mogun.backend.service.report.dto.RoutineReportDto;
 import com.mogun.backend.service.userLog.UserLogService;
@@ -66,5 +67,15 @@ public class UserSummaryController {
         return ApiResponse.ok(result.getData());
     }
 
+    @GetMapping("/ExerciseSet")
+    public ApiResponse<Object> getMostSet(@RequestParam("user_key")int userKey, @RequestParam("search_type")int option) {
 
+        ServiceStatus<MostSetsDto> result = setReportService.mostSetExercise(RoutineReportDto.builder()
+                .userKey(userKey).build(), option);
+
+        if(result.getStatus() != 100)
+            return ApiResponse.badRequest(result.getMessage());
+
+        return ApiResponse.ok(result.getData());
+    }
 }

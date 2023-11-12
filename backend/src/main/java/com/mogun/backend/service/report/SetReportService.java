@@ -5,6 +5,7 @@ import com.mogun.backend.domain.exercise.repository.ExerciseRepository;
 import com.mogun.backend.domain.report.routineReport.RoutineReport;
 import com.mogun.backend.domain.report.routineReport.repository.RoutineReportRepository;
 import com.mogun.backend.domain.report.setReport.repository.ExecCountInterface;
+import com.mogun.backend.domain.report.setReport.repository.ExecSetInterface;
 import com.mogun.backend.domain.report.setReport.repository.ExecWeightInterface;
 import com.mogun.backend.domain.report.setReport.repository.SetReportRepository;
 import com.mogun.backend.domain.routine.userRoutinePlan.UserRoutinePlan;
@@ -13,6 +14,7 @@ import com.mogun.backend.domain.user.User;
 import com.mogun.backend.domain.user.repository.UserRepository;
 import com.mogun.backend.service.ServiceStatus;
 import com.mogun.backend.service.report.dto.MostPerformedDto;
+import com.mogun.backend.service.report.dto.MostSetsDto;
 import com.mogun.backend.service.report.dto.MostWeightDto;
 import com.mogun.backend.service.report.dto.RoutineReportDto;
 import lombok.RequiredArgsConstructor;
@@ -110,6 +112,37 @@ public class SetReportService {
                         .execName(exec.get().getName())
                         .imagePath(exec.get().getImagePath())
                         .weight(weightDtoList.get(0).getTrain_weight())
+                        .build())
+                .build();
+    }
+
+    public ServiceStatus<MostSetsDto> mostSetExercise(RoutineReportDto dto, int option) {
+
+        Optional<User> user = userRepository.findById(dto.getUserKey());
+        if(user.isEmpty())
+            return ServiceStatus.errorStatus("요청 오류: 등록되지 않은 회원");
+
+        LocalDateTime startDate;
+        LocalDateTime now = LocalDateTime.now();
+        if(option == 1)
+            startDate = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
+        else if(option == 2)
+            startDate = LocalDateTime.of(now.getYear(), 1, 1, 0, 0, 0);
+        else if(option == 3)
+            startDate = LocalDateTime.of(now.getYear(), now.getMonth(), 1, 0, 0, 0);
+        else
+            return ServiceStatus.errorStatus("요청 오류: 올바르지 않은 날짜 옵션");
+
+        List<ExecSetInterface> weightDtoList = setReportRepository.findRangedSetByUserAndStartDate(user.get(), startDate);
+        Optional<Exercise> exec = exerciseRepository.findById(weightDtoList.get(0).getExec_Key());
+
+        return ServiceStatus.<MostSetsDto>builder()
+                .status(100)
+                .message("SUCCESS")
+                .data(MostSetsDto.builder()
+                        .execName(exec.get().getName())
+                        .imagePath(exec.get().getImagePath())
+                        .setCount(weightDtoList.get(0).getSet_Number())
                         .build())
                 .build();
     }
