@@ -38,7 +38,7 @@ fun Navigation() {
     val navController: NavHostController = rememberNavController()
     val navBackStackEntry = navController.currentBackStackEntryAsState()
 
-    val screens = arrayOf(Screen.ExplainExercise, Screen.AddRoutine, Screen.RecordDetail)
+    val screens = arrayOf(Screen.ExplainExercise, Screen.AddRoutine, Screen.RecordDetail, Screen.AddExercise)
     val currentRoute = navBackStackEntry.value?.destination?.route
 
     val currentScreen = try {

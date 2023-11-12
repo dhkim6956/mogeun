@@ -67,6 +67,8 @@ import io.ssafy.mogeun.ui.AppViewModelProvider
 fun AddExerciseScreen(
     navController: NavHostController,
     viewModel: AddExerciseViewModel = viewModel(factory = AddExerciseViewModel.Factory),
+    beforeScreen: Int?,
+    currentRoutineKey: Int?
 ) {
     val musclePartList = listOf("전체", "가슴", "등", "복근", "삼두", "승모근", "어깨", "이두", "종아리", "허벅지")
     var selectedExercises by remember { mutableStateOf(listOf<Int>()) }
@@ -77,6 +79,8 @@ fun AddExerciseScreen(
     LaunchedEffect(Unit){
         viewModel.listAllExercise()
         viewModel.getUserKey()
+        Log.d("beforeScreen", "${beforeScreen}")
+        Log.d("currentRoutineKey", "${currentRoutineKey}")
     }
     LaunchedEffect(viewModel.routineKey) {
         if (viewModel.routineKey !== null) {
@@ -195,7 +199,14 @@ fun AddExerciseScreen(
                     modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd
                 ) {
                     Button(
-                        onClick = { openAlertDialog.value = true },
+                        onClick = {
+                            if (beforeScreen == 1) {
+                                openAlertDialog.value = true
+                            } else {
+                                viewModel.addAllExercise(routineKey = currentRoutineKey, execKeys = selectedExercises)
+                                navController.navigate("AddRoutine/${currentRoutineKey}")
+                            }
+                        },
                     ) {
                         Text("선택된 운동 추가")
                     }
