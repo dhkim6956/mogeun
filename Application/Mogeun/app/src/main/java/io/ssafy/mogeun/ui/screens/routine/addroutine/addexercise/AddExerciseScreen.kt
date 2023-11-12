@@ -102,10 +102,7 @@ fun AddExerciseScreen(
                 ),
             placeholder  = {Text("검색")}
         )
-
         Spacer(modifier = Modifier.height(8.dp))
-
-        // muscle-part
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -118,10 +115,7 @@ fun AddExerciseScreen(
                 )
             }
         }
-
         Spacer(modifier = Modifier.height(8.dp))
-
-        //exercise-list
         LazyColumn {
             val filteredExercises = exercises
                 .filter { it.mainPart == selectedMusclePart || selectedMusclePart == "전체" }
@@ -208,14 +202,13 @@ fun AddExerciseScreen(
                 }
                 when {
                     openAlertDialog.value -> {
-                        io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.AlertDialogExample(
+                        AlertDialogExample(
                             onDismissRequest = { openAlertDialog.value = false },
                             onConfirmation = {
                                 openAlertDialog.value = false
-                                println("Confirmation registered") // Add logic here to handle confirmation.
+                                println("Confirmation registered")
                             },
                             dialogTitle = "루틴 이름을 설정해 주세요.",
-                            dialogText = "This is an example of an alert dialog with buttons.",
                             icon = Icons.Default.Info,
                             navController = navController
                         )
@@ -225,14 +218,12 @@ fun AddExerciseScreen(
         }
     }
 }
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlertDialogExample(
     navController: NavHostController,
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
     dialogTitle: String,
-    dialogText: String,
     icon: ImageVector,
 ) {
     val viewModel: AddExerciseViewModel = viewModel(factory = AddExerciseViewModel.Factory)

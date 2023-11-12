@@ -34,18 +34,13 @@ class AddRoutineViewModel(
 ) : ViewModel() {
     var userKey by mutableStateOf<Int?>(null)
     private val _listMyExerciseSuccess = MutableStateFlow(false)
-    val listMyExerciseSuccess: StateFlow<Boolean> = _listMyExerciseSuccess.asStateFlow()
     var exerciseList: List<ListMyExerciseResponseData> = mutableStateListOf()
     private val _myExerciseSuccess = MutableStateFlow(false)
-    val myExerciseSuccess: StateFlow<Boolean> = _myExerciseSuccess.asStateFlow()
     var exerciseExplain by mutableStateOf<MyExerciseResponseData?>(null)
 
     fun updateUserKey(value: Int?) {
         userKey = value
     }
-//    fun updateNowRoutine(value: Int?){
-//        nowRoutine = value
-//    }
     fun getUserKey() {
         viewModelScope.launch {
             val key = keyRepository.getKey().first()
