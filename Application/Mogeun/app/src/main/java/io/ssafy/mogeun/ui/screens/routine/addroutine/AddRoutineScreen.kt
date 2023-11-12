@@ -57,16 +57,17 @@ fun AddRoutineScreen(
     viewModel: AddRoutineViewModel = viewModel(factory = AddRoutineViewModel.Factory),
     routineKey: Int?
 ) {
+    val beforeScreen = 2
     LaunchedEffect(Unit){
         viewModel.getUserKey()
         viewModel.listMyExercise(routineKey)
+        Log.d("AddRoutineScreenRoutineKey", "${routineKey}")
     }
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
     ) {
-        Log.d("routineKey", "${routineKey}")
         LazyColumn {
             // slide_list_view
             viewModel.exerciseList?.let {
@@ -85,7 +86,7 @@ fun AddRoutineScreen(
             modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd
         ) {
             Button(
-                onClick = { navController.navigate("addexercise") }
+                onClick = { navController.navigate("addexercise/${beforeScreen}/${routineKey}") }
             ) {
                 Text("운동 추가")
             }

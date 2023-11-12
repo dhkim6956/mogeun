@@ -53,6 +53,7 @@ fun RoutineScreen(
     viewModel: RoutineViewModel = viewModel(factory = RoutineViewModel.Factory),
     navController: NavHostController
 ) {
+    val beforeScreen = 1
     LaunchedEffect(Unit) {
         viewModel.getUserKey()
     }
@@ -173,7 +174,7 @@ fun RoutineScreen(
         .fillMaxSize()
         .padding(start = 30.dp, bottom = 30.dp), contentAlignment = Alignment.BottomStart) {
         Button(
-            onClick = { navController.navigate("addexercise") },
+            onClick = { navController.navigate("addexercise/${beforeScreen}/1") },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
             shape = RoundedCornerShape(10.dp)
         ) {
@@ -195,6 +196,7 @@ fun RoutineList(
     navController: NavHostController,
     routine: GetRoutineListResponseBody
 ) {
+    val beforeScreen = 1
     Column(modifier = Modifier
         .background(MaterialTheme.colorScheme.onPrimary)
         .padding(top = 20.dp)) {
