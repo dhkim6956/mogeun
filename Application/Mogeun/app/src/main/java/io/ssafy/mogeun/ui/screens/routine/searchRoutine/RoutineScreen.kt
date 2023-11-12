@@ -174,7 +174,7 @@ fun RoutineScreen(
         .fillMaxSize()
         .padding(start = 30.dp, bottom = 30.dp), contentAlignment = Alignment.BottomStart) {
         Button(
-            onClick = { navController.navigate("addexercise/${beforeScreen}/1") },
+            onClick = { navController.navigate("addexercise/${beforeScreen}/3") },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
             shape = RoundedCornerShape(10.dp)
         ) {
