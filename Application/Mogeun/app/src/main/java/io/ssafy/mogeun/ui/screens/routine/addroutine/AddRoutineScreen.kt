@@ -6,11 +6,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,8 +36,15 @@ import io.ssafy.mogeun.R
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ErrorOutline
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.skydoves.landscapist.glide.GlideImage
 import io.ssafy.mogeun.model.ListMyExerciseResponseData
 import io.ssafy.mogeun.model.MyExerciseResponseData
 import io.ssafy.mogeun.ui.AppViewModelProvider
@@ -52,7 +61,6 @@ fun AddRoutineScreen(
         viewModel.getUserKey()
         viewModel.listMyExercise(routineKey)
     }
-//    val exercises = viewModel.exerciseList
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -63,12 +71,9 @@ fun AddRoutineScreen(
             // slide_list_view
             viewModel.exerciseList?.let {
                 itemsIndexed(it) { index, item ->
-                    ExerciseList(item)
+                    ExerciseList(item, navController)
                 }
             }
-//            items(exercises) { exercise ->
-//                ExerciseList()
-//            }
         }
     }
     Column(
@@ -87,9 +92,10 @@ fun AddRoutineScreen(
         }
     }
 }
-
 @Composable
-fun ExerciseList(item: ListMyExerciseResponseData) {
+fun ExerciseList(item: ListMyExerciseResponseData, navController:NavHostController) {
+    val context = LocalContext.current
+    val imageResId = context.resources.getIdentifier("x_${item.imagePath}", "drawable", context.packageName)
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -101,8 +107,36 @@ fun ExerciseList(item: ListMyExerciseResponseData) {
             )
             .padding(16.dp)
     ) {
-        Column {
-            Text(text = "${item.name}")
+        Row(modifier = Modifier.fillMaxWidth()) {
+            GlideImage(
+                imageModel = imageResId,
+                contentDescription = "GIF Image",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .height(60.dp)
+                    .width(60.dp)
+            )
+            Column {
+                Text(text = "${item.name}")
+                Row {
+                    for (i in item.sensingPart) {
+                        Text(text = i)
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
+                }
+            }
+            Column(
+                horizontalAlignment = Alignment.End,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                IconButton(onClick = { navController.navigate("explainexercise/${item.execKey}") }) {
+                    Icon(
+                        Icons.Outlined.ErrorOutline,
+                        contentDescription = "Localized description",
+                        modifier = Modifier.graphicsLayer(rotationZ = 180f)
+                    )
+                }
+            }
         }
     }
     Spacer(modifier = Modifier.height(8.dp))
