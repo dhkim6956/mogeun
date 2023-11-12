@@ -38,7 +38,7 @@ import androidx.compose.ui.zIndex
 import io.ssafy.mogeun.ui.theme.MogeunTheme
 
 @Composable
-fun RoutineProgress() {
+fun RoutineProgress(page: Int, execCnt: Int) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -54,7 +54,7 @@ fun RoutineProgress() {
                 .padding(horizontal = 20.dp)
                 .zIndex(1f)
         ) {
-            Text(text = "< 2 / 4 >", fontSize = 20.sp)
+            Text(text = "< $page / $execCnt >", fontSize = 20.sp)
             ElevatedAssistChip(
                 onClick = {  },
                 label = { Text("운동 추가") },
@@ -115,7 +115,7 @@ fun PreviewRoutineProgress() {
     MogeunTheme {
         Column (Modifier.fillMaxSize()) {
             Box(modifier = Modifier.weight(1f))
-            RoutineProgress()
+            RoutineProgress(1, 4)
         }
     }
 }

@@ -21,9 +21,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -37,19 +39,32 @@ import io.ssafy.mogeun.ui.components.ElevatedGif
 import io.ssafy.mogeun.ui.screens.routine.execution.components.ExerciseProgress
 import io.ssafy.mogeun.ui.screens.routine.execution.components.RoutineProgress
 import io.ssafy.mogeun.ui.screens.routine.execution.components.SensorBottomSheet
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navController: NavHostController) {
     val emgState by viewModel.emgState.collectAsState()
-
+    val btState by viewModel.btState.collectAsState()
     val routineState by viewModel.routineState.collectAsState()
+
+    val coroutineScope = rememberCoroutineScope()
 
     Log.d("execution", "${routineKey ?: "null"}")
 
     LaunchedEffect(Unit) {
         viewModel.getPlanList(routineKey)
+        viewModel.subscribe()
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.unsubscribe()
+            coroutineScope.launch {
+                viewModel.deleteEmgData()
+            }
+        }
     }
 
     if(routineState.planList == null) {
@@ -64,7 +79,8 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
             )
         }
     } else {
-        val pagerState = rememberPagerState { routineState.planList!!.data.size }
+        val routineSize = routineState.planList!!.data.size
+        val pagerState = rememberPagerState { routineSize }
         Column {
             HorizontalPager(
                 pagerState,
@@ -114,9 +130,9 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
                     }
                 }
             }
-            RoutineProgress()
+            RoutineProgress(pagerState.currentPage + 1, routineSize)
 
-            SensorBottomSheet(state = routineState.showBottomSheet, hide = viewModel::hideBottomSheet, navToConnection = {navController.navigate("Connection")})
+            SensorBottomSheet(state = routineState.showBottomSheet, hide = viewModel::hideBottomSheet, navToConnection = {navController.navigate("Connection")}, btState = btState)
         }
     }
 }

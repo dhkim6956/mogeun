@@ -11,5 +11,5 @@ data class EmgUiState (
 
 data class RoutineState(
     val planList: ListMyExerciseResponse? = null,
-    val showBottomSheet: Boolean = false
+    val showBottomSheet: Boolean = false,
 )

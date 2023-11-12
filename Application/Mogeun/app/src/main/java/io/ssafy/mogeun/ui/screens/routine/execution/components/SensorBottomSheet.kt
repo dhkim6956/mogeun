@@ -32,11 +32,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.ui.BluetoothUiState
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SensorBottomSheet(state: Boolean, hide: () -> Unit, navToConnection: () -> Unit) {
+fun SensorBottomSheet(state: Boolean, hide: () -> Unit, navToConnection: () -> Unit, btState: BluetoothUiState) {
     val sheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -155,7 +156,7 @@ fun SensorBottomSheet(state: Boolean, hide: () -> Unit, navToConnection: () -> U
                                     painter = painterResource(id = R.drawable.heart_rate),
                                     null,
                                     Modifier.fillMaxSize(0.7f),
-                                    colorFilter = ColorFilter.tint(Color(0xff00ff54))
+                                    colorFilter = if(btState.isConnected[0]) ColorFilter.tint(Color(0xff00ff54)) else ColorFilter.tint(Color(0xffff0054))
                                 )
                             }
                             Divider(
@@ -172,7 +173,8 @@ fun SensorBottomSheet(state: Boolean, hide: () -> Unit, navToConnection: () -> U
                                 Image(
                                     painter = painterResource(id = R.drawable.heart_rate),
                                     null,
-                                    Modifier.fillMaxSize(0.7f)
+                                    Modifier.fillMaxSize(0.7f),
+                                    colorFilter = if(btState.isConnected[1]) ColorFilter.tint(Color(0xff00ff54)) else ColorFilter.tint(Color(0xffff0054))
                                 )
                             }
                         }
