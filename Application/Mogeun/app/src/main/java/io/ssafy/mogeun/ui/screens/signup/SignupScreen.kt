@@ -45,13 +45,11 @@ fun SignupScreen(
     val inputForm = viewModel.inputForm
     val firstText = viewModel.firstText
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    Column {
         Box(
             modifier = Modifier
                 .height(200.dp)
-                .fillMaxSize()
+                .fillMaxWidth()
                 .background(
                     color = MaterialTheme.colorScheme.primary
                 ),
@@ -118,7 +116,9 @@ fun Essential(
     Column(
         modifier = Modifier
             .padding(start = 28.dp, top = 28.dp, end = 28.dp)
-            .verticalScroll(rememberScrollState())) {
+            .verticalScroll(rememberScrollState())
+            .fillMaxHeight()
+    ) {
         Text(text = "아이디")
         Row {
             TextField(
@@ -262,8 +262,11 @@ fun Inbody(
             }
         }
     }
-
-    Column(modifier = Modifier.padding(28.dp)) {
+    Column(
+        modifier = Modifier
+            .padding(28.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
         Text(text = "키")
         TextField(
             value = heightText,
