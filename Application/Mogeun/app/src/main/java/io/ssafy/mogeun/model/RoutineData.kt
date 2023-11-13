@@ -161,6 +161,20 @@ data class MyExerciseResponse(
 @Serializable
 data class UpdateRoutineRequest(
     @SerialName(value = "routine_key")
+    val routineKey: Int?,
+    @SerialName(value = "exec_keys")
+    val execKeys: List<Int>
+)
+@Serializable
+data class UpdateRoutineResponse(
+    val code: Int,
+    val status: String,
+    val message: String,
+    val data: UpdateRoutineResponseData
+)
+@Serializable
+data class UpdateRoutineResponseData(
+    @SerialName(value = "routine_key")
     val routineKey: Int,
     @SerialName(value = "exec_keys")
     val execKeys: List<Int>

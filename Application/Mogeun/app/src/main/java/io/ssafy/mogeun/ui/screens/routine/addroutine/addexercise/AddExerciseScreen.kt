@@ -213,7 +213,7 @@ fun AddExerciseScreen(
                             if (beforeScreen == 1) {
                                 openAlertDialog.value = true
                             } else {
-                                viewModel.addAllExercise(routineKey = currentRoutineKey, execKeys = selectedExercises)
+                                viewModel.updateRoutine(routineKey = currentRoutineKey, execKeys = selectedExercises)
                                 navController.navigate("AddRoutine/${currentRoutineKey}")
                             }
                         },
