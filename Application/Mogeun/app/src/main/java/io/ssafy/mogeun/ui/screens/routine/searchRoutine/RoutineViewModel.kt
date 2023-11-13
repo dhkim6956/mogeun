@@ -20,6 +20,9 @@ import io.ssafy.mogeun.model.GetInbodyResponse
 import io.ssafy.mogeun.model.GetRoutineListResponse
 import io.ssafy.mogeun.model.UpdateRoutineNameResponse
 import io.ssafy.mogeun.ui.screens.signup.SignupViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -34,6 +37,7 @@ class RoutineViewModel(
     var tmp by mutableStateOf<GetRoutineListResponse?>(null)
     var username by mutableStateOf<String?>(null)
     var routinename by mutableStateOf<String?>(null)
+    var newRoutineName = mutableStateOf<String> ("")
 
     fun updateMuscleMass(value: Double?) {
         muscleMass = value
@@ -46,6 +50,9 @@ class RoutineViewModel(
     }
     fun updateUsername(value: String?) {
         username = value
+    }
+    fun updateRoutineName(value: String) {
+        newRoutineName.value = value
     }
     fun getInbody() {
         lateinit var ret: GetInbodyResponse
@@ -76,12 +83,13 @@ class RoutineViewModel(
     }
     fun updateRoutineName(index: Int, newName: String) {
         lateinit var ret: UpdateRoutineNameResponse
-        Log.d("updateRoutineName", "$ret")
         viewModelScope.launch {
             tmp?.let { response ->
                 val routineKey = response.data.getOrNull(index)?.routineKey
                 if (routineKey != null) {
-                    val ret = RoutineRepository.updateRoutineName(routineKey, routinename)
+                    ret = RoutineRepository.updateRoutineName(routineKey, newName)
+                    Log.d("updateRoutineName", "$ret")
+                    getRoutineList()
                 }
             }
         }
