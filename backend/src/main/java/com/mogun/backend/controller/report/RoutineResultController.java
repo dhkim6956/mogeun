@@ -58,19 +58,15 @@ public class RoutineResultController {
     @GetMapping("/Exercise")
     public ApiResponse<Object> getExerciseResult(@RequestParam("user_key") int userKey, @RequestParam("routine_result_key") int resultKey) {
 
-        List<SetResultListDto> list = resultService.getExerciseResult(ResultDto.builder()
+        ServiceStatus<List<SetResultListDto>> result = resultService.getExerciseResult(ResultDto.builder()
                 .userKey(userKey)
                 .resultKey(resultKey)
                 .build());
 
-        if(list.get(0).getStatus() == -1)
-            return ApiResponse.badRequest("요청 오류: 등록된 회원이 아님");
-        else if(list.get(0).getStatus() == -2)
-            return ApiResponse.badRequest("요청 오류: 해당 루틴 기록이 없음");
-        else if(list.get(0).getStatus() == -3)
-            return ApiResponse.badRequest("요청 오류: 루틴 기록을 소유한 회원과 요청 회원이 불일치");
+        if(result.getStatus() != 100)
+            return ApiResponse.badRequest(result.getMessage());
 
-
+        List<SetResultListDto> list = result.getData();
         List<ExerciseResultResponse> responses = new ArrayList<>();
         for(SetResultListDto item: list) {
             responses.add(ExerciseResultResponse.builder()

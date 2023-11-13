@@ -196,30 +196,21 @@ public class RoutineResultService {
                 .build();
     }
 
-    public List<SetResultListDto> getExerciseResult(ResultDto dto) {
+    public ServiceStatus<List<SetResultListDto>> getExerciseResult(ResultDto dto) {
 
         List<SetResultListDto> list = new ArrayList<>();
         Optional<User> user = userRepository.findById(dto.getUserKey());
         if(user.isEmpty()) {
-            list.add(SetResultListDto.builder()
-                    .status(-1)
-                    .build());
-            return list;
+            return ServiceStatus.errorStatus("요청 오류: 등록된 회원이 아님");
         }
 
         Optional<RoutineResult> result = resultRepository.findById(dto.getResultKey());
         if(result.isEmpty()) {
-            list.add(SetResultListDto.builder()
-                    .status(-2)
-                    .build());
-            return list;
+            return ServiceStatus.errorStatus("요청 오류: 해당 루틴 기록이 없음");
         }
 
         if(!user.get().equals(result.get().getUser())) {
-            list.add(SetResultListDto.builder()
-                    .status(-3)
-                    .build());
-            return list;
+            return ServiceStatus.errorStatus("요청 오류: 루틴 기록을 소유한 회원과 요청 회원이 불일치");
         }
 
         List<SetReport> setReportList = setReportRepository.findAllByRoutineReport(result.get().getRoutineReport());
@@ -259,7 +250,11 @@ public class RoutineResultService {
             }
         }
 
-        return list;
+        return ServiceStatus.<List<SetResultListDto>>builder()
+                .status(100)
+                .message("SUCCESS")
+                .data(list)
+                .build();
     }
 
     public List<ResultListDto> getLastMonthResult(ResultDto dto) {
