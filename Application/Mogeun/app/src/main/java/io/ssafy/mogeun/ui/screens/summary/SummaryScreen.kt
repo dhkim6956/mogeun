@@ -46,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import co.yml.charts.axis.AxisData
+import co.yml.charts.common.extensions.isNotNull
 import co.yml.charts.common.model.Point
 import co.yml.charts.ui.barchart.BarChart
 import co.yml.charts.ui.barchart.models.BarChartData
@@ -129,7 +130,6 @@ data class BodyLog(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BodyInfoSummaryCard(bodyInfo: BodyInfo?) {
-
     val bodyFatChangeLog = bodyInfo?.bodyFatChangeLog
     var bodyFatLog: MutableList<BodyLog> = mutableListOf()
     var index = 0
@@ -209,54 +209,55 @@ fun BodyInfoSummaryCard(bodyInfo: BodyInfo?) {
 
 @Composable
 fun BodyInfoSummary(bodyLog: MutableList<BodyLog>) {
-    Log.d("bodyLog", bodyLog.toString())
-    if (bodyLog.isEmpty()) {
-        bodyLog.add(0, BodyLog(0, ""))
+    if (bodyLog.isNullOrEmpty()) {
+        Text("운동 기록이 없습니다.")
     }
-    Column(modifier = Modifier.fillMaxWidth()) {
-        val style = LineGraphStyle(
-            visibility = LinearGraphVisibility(
-                isHeaderVisible = true,
-                isXAxisLabelVisible = false,
-                isYAxisLabelVisible = true,
-                isCrossHairVisible = false
-            ),
-            colors = LinearGraphColors(
-                lineColor = MaterialTheme.colorScheme.primary,
-                pointColor = MaterialTheme.colorScheme.primary,
-                clickHighlightColor = MaterialTheme.colorScheme.inversePrimary,
-                fillGradient = null
-            ),
-            height = 200.dp,
-            yAxisLabelPosition = LabelPosition.LEFT
-        )
-        val clickedValue: MutableState<Pair<Any, Any>?> =
-            remember { mutableStateOf(null) }
+    else {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            val style = LineGraphStyle(
+                visibility = LinearGraphVisibility(
+                    isHeaderVisible = true,
+                    isXAxisLabelVisible = false,
+                    isYAxisLabelVisible = true,
+                    isCrossHairVisible = false
+                ),
+                colors = LinearGraphColors(
+                    lineColor = MaterialTheme.colorScheme.primary,
+                    pointColor = MaterialTheme.colorScheme.primary,
+                    clickHighlightColor = MaterialTheme.colorScheme.inversePrimary,
+                    fillGradient = null
+                ),
+                height = 200.dp,
+                yAxisLabelPosition = LabelPosition.LEFT
+            )
+            val clickedValue: MutableState<Pair<Any, Any>?> =
+                remember { mutableStateOf(null) }
 
-        Row(
-            modifier = Modifier
-                .padding(10.dp)
-                .height(20.dp)
-        ) {
-            clickedValue.value?.let {
-                Text(
-                    text = "${it.first}: ${it.second}kg",
-                    fontWeight = FontWeight.SemiBold
-                )
+            Row(
+                modifier = Modifier
+                    .padding(10.dp)
+                    .height(30.dp)
+            ) {
+                clickedValue.value?.let {
+                    Text(
+                        text = "${it.first}: ${it.second}kg",
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
             }
+            LineGraph(
+                xAxisData = bodyLog.map {
+                    GraphData.String(it.log)
+                },
+                yAxisData = bodyLog.map {
+                    it.num
+                },
+                style = style,
+                onPointClicked = {
+                    clickedValue.value = it
+                }
+            )
         }
-        LineGraph(
-            xAxisData = bodyLog.map {
-                GraphData.String(it.log)
-            },
-            yAxisData = bodyLog.map {
-                it.num
-            },
-            style = style,
-            onPointClicked = {
-                clickedValue.value = it
-            }
-        )
     }
 }
 
@@ -269,73 +270,92 @@ data class SummaryCard(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ExerciseSummaryCard(
-    mostPerformedExercise: MostPerformedExercise,
-    mostWeightedExercise: MostWeightedExercise,
-    mostSetExercise: MostSetExercise
+    mostPerformedExercise: MostPerformedExercise?,
+    mostWeightedExercise: MostWeightedExercise?,
+    mostSetExercise: MostSetExercise?
 ) {
-    val SummaryCardList = listOf(
-        SummaryCard(mostPerformedExercise.execName, mostPerformedExercise.imagePath, mostPerformedExercise.performed),
-        SummaryCard(mostWeightedExercise.execName, mostWeightedExercise.imagePath, mostWeightedExercise.weight.toInt()),
-        SummaryCard(mostSetExercise.execName, mostSetExercise.imagePath, mostSetExercise.set)
-    )
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.background,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .border(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(
-                vertical = 10.dp,
-                horizontal = 10.dp
+    if (mostPerformedExercise.isNotNull() && mostWeightedExercise.isNotNull() && mostSetExercise.isNotNull()) {
+        val SummaryCardList = listOf(
+            SummaryCard(
+                mostPerformedExercise!!.execName,
+                mostPerformedExercise!!.imagePath,
+                mostPerformedExercise!!.performed
             ),
-        contentAlignment = Alignment.Center
-    ) {
-        val pagerState = rememberPagerState(pageCount = {
-            3
-        })
-        val nameList = listOf("가장 많이 한 운동", "가장 높은 무게를 기록한 운동", "가장 많은 세트를 수행한 운동")
-
-        Column {
-            Row(
-                Modifier
-                    .wrapContentHeight()
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                val coroutineScope = rememberCoroutineScope()
-
-                Text(
-                    text = "<",
-                    modifier = Modifier
-                        .clickable { coroutineScope.launch {
-                            // Call scroll to on pagerState
-                            if (pagerState.currentPage > 0)
-                                pagerState.animateScrollToPage(pagerState.currentPage - 1)
-                        } }
+            SummaryCard(
+                mostWeightedExercise!!.execName,
+                mostWeightedExercise!!.imagePath,
+                mostWeightedExercise!!.weight.toInt()
+            ),
+            SummaryCard(mostSetExercise!!.execName,
+                mostSetExercise.imagePath,
+                mostSetExercise.set)
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = RoundedCornerShape(16.dp)
                 )
-                Text(nameList[pagerState.currentPage])
-                Text(
-                    text = ">",
-                    modifier = Modifier
-                        .clickable { coroutineScope.launch {
-                            // Call scroll to on pagerState
-                            if (pagerState.currentPage < 2)
-                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                        } }
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(16.dp)
                 )
-            }
-            HorizontalPager(state = pagerState) { page ->
-                // Our page content
-                ExerciseSummary(page, SummaryCardList[page])
+                .padding(
+                    vertical = 10.dp,
+                    horizontal = 10.dp
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            val pagerState = rememberPagerState(pageCount = {
+                3
+            })
+            val nameList = listOf("가장 많이 한 운동", "가장 높은 무게를 기록한 운동", "가장 많은 세트를 수행한 운동")
+
+            Column {
+                Row(
+                    Modifier
+                        .wrapContentHeight()
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    val coroutineScope = rememberCoroutineScope()
+
+                    Text(
+                        text = "<",
+                        modifier = Modifier
+                            .clickable {
+                                coroutineScope.launch {
+                                    // Call scroll to on pagerState
+                                    if (pagerState.currentPage > 0)
+                                        pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                                }
+                            }
+                    )
+                    Text(nameList[pagerState.currentPage])
+                    Text(
+                        text = ">",
+                        modifier = Modifier
+                            .clickable {
+                                coroutineScope.launch {
+                                    // Call scroll to on pagerState
+                                    if (pagerState.currentPage < 2)
+                                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                }
+                            }
+                    )
+                }
+                HorizontalPager(state = pagerState) { page ->
+                    // Our page content
+                    ExerciseSummary(page, SummaryCardList[page])
+                }
             }
         }
+    }
+    else {
+        Text("운동 기록이 없습니다.")
     }
 }
 
@@ -365,26 +385,29 @@ fun ExerciseSummary(
 }
 
 @Composable
-fun MuscleSummaryCard(muscleInfoList: List<PerformedMuscleInfo>) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.background,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .border(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(
-                vertical = 10.dp,
-                horizontal = 10.dp
-            ),
-        contentAlignment = Alignment.Center
-    ) {
-        MuscleSummary(muscleInfoList)
+fun MuscleSummaryCard(muscleInfoList: List<PerformedMuscleInfo>?) {
+    if (muscleInfoList.isNullOrEmpty()) Text("운동 기록이 없습니다.")
+    else {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .padding(
+                    vertical = 10.dp,
+                    horizontal = 10.dp
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            MuscleSummary(muscleInfoList!!)
+        }
     }
 }
 
