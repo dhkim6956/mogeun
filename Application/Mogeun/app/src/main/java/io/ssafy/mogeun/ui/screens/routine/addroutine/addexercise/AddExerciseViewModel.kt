@@ -22,6 +22,7 @@ import io.ssafy.mogeun.model.ListAllExerciseResponse
 import io.ssafy.mogeun.model.ListAllExerciseResponsedata
 import io.ssafy.mogeun.model.ListMyExerciseResponse
 import io.ssafy.mogeun.model.ListMyExerciseResponseData
+import io.ssafy.mogeun.model.UpdateRoutineResponse
 import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -96,6 +97,17 @@ class AddExerciseViewModel(
         viewModelScope.launch{
             ret = routineRepository.addAllExercise(routineKey, execKeys)
             Log.d("addAllExercise", "$ret")
+            if(ret.message == "SUCCESS"){
+                _addAllExerciseSuccess.value = true
+            }
+            Log.d("cureentRoutineKey", "${routineKey}")
+        }
+    }
+    fun updateRoutine(routineKey: Int?, execKeys: List<Int>){
+        lateinit var ret: UpdateRoutineResponse
+        viewModelScope.launch{
+            ret = routineRepository.updateRoutine(routineKey, execKeys)
+            Log.d("updateRoutine", "$ret")
             if(ret.message == "SUCCESS"){
                 _addAllExerciseSuccess.value = true
             }

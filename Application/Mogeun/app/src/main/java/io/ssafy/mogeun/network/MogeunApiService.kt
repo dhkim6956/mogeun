@@ -21,6 +21,8 @@ import io.ssafy.mogeun.model.MyExerciseResponse
 import io.ssafy.mogeun.model.SetOfRoutineResponse
 import io.ssafy.mogeun.model.SetRequest
 import io.ssafy.mogeun.model.SetResponse
+import io.ssafy.mogeun.model.UpdateRoutineRequest
+import io.ssafy.mogeun.model.UpdateRoutineResponse
 import io.ssafy.mogeun.model.UpdateUserRequest
 import io.ssafy.mogeun.model.UpdateUserResponse
 import retrofit2.http.Body
@@ -75,6 +77,9 @@ interface MogeunApiService {
 
     @GET("Exercise/List")
     suspend fun myExercise(@Query("exec_key") execKey: Int?): MyExerciseResponse
+
+    @PUT("Routine/Plan/Edit")
+    suspend fun updateRoutine(@Body updateRoutineRequest: UpdateRoutineRequest): UpdateRoutineResponse
 
     @GET("Routine/Set/ListAll")
     suspend fun getSetOfRoutine(@Query("plan_key") planKey: Int): SetOfRoutineResponse

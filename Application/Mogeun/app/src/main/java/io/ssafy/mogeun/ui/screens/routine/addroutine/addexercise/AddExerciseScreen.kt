@@ -27,6 +27,7 @@ import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
@@ -97,6 +98,7 @@ fun AddExerciseScreen(
         if (viewModel.routineKey !== null) {
             Log.d("routinKey", "${viewModel.routineKey}")
             viewModel.addAllExercise(viewModel.routineKey, selectedExercises)
+            navController.navigate("Routine")
         }
     }
     Column(
@@ -199,12 +201,11 @@ fun AddExerciseScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp),
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(20.dp),
             contentAlignment = Alignment.BottomEnd,
         ) {
             if (selectedExercises.isNotEmpty()) {
@@ -212,12 +213,17 @@ fun AddExerciseScreen(
                     modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd
                 ) {
                     Button(
+                        shape = RoundedCornerShape(10.dp),
+                        elevation = ButtonDefaults.buttonElevation(
+                            defaultElevation = 10.dp,
+                            pressedElevation = 0.dp,
+                        ),
                         onClick = {
                             if (beforeScreen == 1) {
                                 openAlertDialog.value = true
                             } else {
-                                viewModel.addAllExercise(routineKey = currentRoutineKey, execKeys = selectedExercises)
-                                navController.navigate("AddRoutine/${currentRoutineKey}")
+                                viewModel.updateRoutine(routineKey = currentRoutineKey, execKeys = selectedExercises)
+                                navController.popBackStack()
                             }
                         },
                     ) {
@@ -264,8 +270,7 @@ fun AlertDialogExample(
         },
         text = {
             Column {
-                Spacer(modifier = Modifier.height(8.dp)) // Spacing for better UI
-                // TextField for user to enter the routine name
+                Spacer(modifier = Modifier.height(8.dp))
                 TextField(
                     value = routineName,
                     onValueChange = { routineName = it },
@@ -282,7 +287,6 @@ fun AlertDialogExample(
                     viewModel.userKey?.let {
                         val ret = viewModel.addRoutine(viewModel.userKey, routineName)
                         Log.d("addRoutine", "$ret")
-                        navController.popBackStack()
                     } ?: Log.e("addRoutine", "User key is null")
                 }
             ) {
