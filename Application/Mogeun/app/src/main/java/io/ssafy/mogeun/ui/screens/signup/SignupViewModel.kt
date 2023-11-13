@@ -14,7 +14,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.patrykandpatrick.vico.compose.axis.horizontal.topAxis
 import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.data.UserRepository
 import io.ssafy.mogeun.model.DupEmailResponse

@@ -4,23 +4,16 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import co.yml.charts.common.model.Point
 import co.yml.charts.ui.barchart.models.BarData
-import com.patrykandpatrick.vico.core.extension.orZero
-import io.ssafy.mogeun.data.Key
 import io.ssafy.mogeun.data.KeyRepository
 import io.ssafy.mogeun.data.RecordRepository
-import io.ssafy.mogeun.model.Exercise
 import io.ssafy.mogeun.model.MonthlyResponse
 import io.ssafy.mogeun.model.MonthlyRoutine
 import io.ssafy.mogeun.model.RoutineInfoData
 import io.ssafy.mogeun.model.RoutineResponse
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -78,12 +71,7 @@ class RecordViewModel(
     }
 
     fun recordRoutine(reportKey: String) {
-        viewModelScope.launch {
-            val key = keyRepository.getKey().first()
-            val userKey = key?.userKey
-            Log.d("getUserKey", "사용자 키: $userKey")
-            updateUserKey(userKey)
-        }
+        getUserKey()
 
         if (userKey !== null) {
             lateinit var ret: RoutineResponse
@@ -95,8 +83,6 @@ class RecordViewModel(
                     _recordRoutineSuccess.value = true
                     routineInfo = ret.data
                 }
-
-//                updateChartData(routineInfo!!.exercises)
             }
         }
     }

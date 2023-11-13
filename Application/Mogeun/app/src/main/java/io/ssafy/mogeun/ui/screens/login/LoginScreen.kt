@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -53,7 +55,6 @@ fun LoginScreen(
     navController: NavHostController,
     snackbarHostState: SnackbarHostState
 ) {
-
     val signInSuccess by viewModel.signInSuccess.collectAsState()
     if(signInSuccess) {
         navController.navigate("Routine")
@@ -65,7 +66,9 @@ fun LoginScreen(
             viewModel.updateErrorSignIn(false)
         }
     }
-    Column {
+    Column(
+        modifier = Modifier.verticalScroll(rememberScrollState())
+    ) {
         Box(
             modifier = Modifier
                 .height(330.dp)
@@ -95,7 +98,8 @@ fun LoginScreen(
                 }),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done
-                )
+                ),
+                maxLines = 1
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = "비밀번호")
@@ -109,7 +113,8 @@ fun LoginScreen(
                 }),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done
-                )
+                ),
+                maxLines = 1
             )
             Spacer(modifier = Modifier.height(32.dp))
             Button(
