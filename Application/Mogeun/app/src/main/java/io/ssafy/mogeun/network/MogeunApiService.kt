@@ -18,6 +18,7 @@ import io.ssafy.mogeun.model.SignUpResponse
 import io.ssafy.mogeun.model.GetRoutineListResponse
 import io.ssafy.mogeun.model.ListMyExerciseResponse
 import io.ssafy.mogeun.model.MyExerciseResponse
+import io.ssafy.mogeun.model.SetOfRoutineResponse
 import io.ssafy.mogeun.model.SetRequest
 import io.ssafy.mogeun.model.SetResponse
 import io.ssafy.mogeun.model.UpdateRoutineNameRequest
@@ -82,6 +83,8 @@ interface MogeunApiService {
     @PUT("Routine/Plan/Edit")
     suspend fun updateRoutine(@Body updateRoutineRequest: UpdateRoutineRequest): UpdateRoutineResponse
 
+    @GET("Routine/Set/ListAll")
+    suspend fun getSetOfRoutine(@Query("plan_key") planKey: Int): SetOfRoutineResponse
     @PUT("Routine/Rename")
     suspend fun updateRoutineName(@Body updateRoutineNameRequest: UpdateRoutineNameRequest): UpdateRoutineNameResponse
 

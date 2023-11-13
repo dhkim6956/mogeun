@@ -1,25 +1,24 @@
 package io.ssafy.mogeun.ui
 
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.ssafy.mogeun.data.Emg
 import io.ssafy.mogeun.data.EmgRepository
+import io.ssafy.mogeun.data.ExecutionRepository
 import io.ssafy.mogeun.data.RoutineRepository
-import io.ssafy.mogeun.data.SetRepository
 import io.ssafy.mogeun.data.bluetooth.BluetoothController
 import io.ssafy.mogeun.data.bluetooth.BluetoothDeviceDomain
 import io.ssafy.mogeun.data.bluetooth.ConnectedDevice
-import io.ssafy.mogeun.data.bluetooth.ConnectedDeviceDomain
 import io.ssafy.mogeun.data.bluetooth.Connection0Result
 import io.ssafy.mogeun.data.bluetooth.Connection1Result
 import io.ssafy.mogeun.model.BluetoothMessage
-import io.ssafy.mogeun.model.SetRequest
-import io.ssafy.mogeun.model.SetResponse
+import io.ssafy.mogeun.model.SetOfRoutineDetail
+import io.ssafy.mogeun.model.SetOfRoutineResponse
+import io.ssafy.mogeun.model.SetOfRoutineResponseData
 import io.ssafy.mogeun.ui.screens.routine.execution.EmgUiState
 import io.ssafy.mogeun.ui.screens.routine.execution.RoutineState
-import io.ssafy.mogeun.ui.screens.sample.DbSampleViewModel
+import io.ssafy.mogeun.ui.screens.routine.execution.SetOfPlan
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,45 +33,80 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 
 class BluetoothViewModel(
-    private val setRepository: SetRepository,
+    private val executionRepository: ExecutionRepository,
     private val emgRepository: EmgRepository,
     private val routineRepository: RoutineRepository,
     private val bluetoothController: BluetoothController
 ): ViewModel() {
-
-
-    private val _routineState = MutableStateFlow(RoutineState(null, false))
+    private val _routineState = MutableStateFlow(RoutineState(null, showBottomSheet = false))
     val routineState = _routineState.asStateFlow()
 
     fun getPlanList(routineKey: Int) {
-        Log.d("execution", "api called")
         viewModelScope.launch {
             val ret = routineRepository.listMyExercise(routineKey)
             _routineState.update { routineState -> routineState.copy(planList = ret) }
-            Log.d("execution", "${ret}")
+        }
+    }
+
+    fun getSetOfRoutine(planKey: Int) {
+        Log.d("execution", "api called")
+        if(!routineState.value.requestedPlan.contains(planKey)) {
+            _routineState.update { routineState -> routineState.copy(requestedPlan = routineState.requestedPlan + planKey) }
+
+            viewModelScope.launch {
+                val ret = executionRepository.getSetOfRoutine(planKey)
+                if(ret.data == null)
+                {
+                    _routineState.update { routineState -> routineState.copy(planDetails = routineState.planDetails + SetOfPlan(planKey, true, listOf(
+                        SetOfRoutineDetail(1, 55, 10),
+                        SetOfRoutineDetail(2, 60, 8),
+                        SetOfRoutineDetail(3, 65, 6)
+                    ))) }
+                } else {
+                    _routineState.update { routineState -> routineState.copy(planDetails = routineState.planDetails + SetOfPlan(planKey, false, ret.data.setDetails)) }
+                    Log.d("execution", "${ret}")
+                }
+            }
         }
     }
 
     private val _emgState = MutableStateFlow(EmgUiState())
-    val emgState: StateFlow<EmgUiState> =
-        emgRepository.getEmgStream()
-            .map {
-                if(it != null) {
-                    if(it.deviceId == 0) {
-                        _emgState.update { emgUiState -> emgUiState.copy(emg1 = it) }
-                    } else {
-                        _emgState.update { emgUiState -> emgUiState.copy(emg2 = it) }
-                    }
-                }
-                _emgState.value.copy()
-            }.stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-                initialValue = _emgState.value
-            )
+    val emgState = _emgState.asStateFlow()
+//    val emgState: StateFlow<EmgUiState> =
+//        emgRepository.getEmgStream()
+//            .map {
+//                if(it != null) {
+//                    if(it.deviceId == 0) {
+//                        _emgState.update { emgUiState ->
+//                            val bufValue = abs(it.value)
+//                            val bufList = if(emgUiState.emg1List.size < 80) emgUiState.emg1List + bufValue else emgUiState.emg1List.subList(1, 80) + bufValue
+//                            emgUiState.copy(
+//                                emg1 = it,
+//                                emg1List = bufList,
+//                                emg1Avg = bufList.average()
+//                        ) }
+//
+//                    } else {
+//                        _emgState.update { emgUiState ->
+//                            val bufValue = abs(it.value)
+//                            val bufList = if(emgUiState.emg2List.size < 80) emgUiState.emg2List + bufValue else emgUiState.emg2List.subList(1, 80) + bufValue
+//                            emgUiState.copy(
+//                                emg2 = it,
+//                                emg2List = bufList,
+//                                emg2Avg = bufList.average()
+//                            ) }
+//                    }
+//                }
+//                _emgState.value.copy()
+//            }.stateIn(
+//                viewModelScope,
+//                SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+//                initialValue = _emgState.value
+//            )
 
     private val _btState = MutableStateFlow(BluetoothUiState())
     val btState = combine(
@@ -158,7 +192,35 @@ class BluetoothViewModel(
                 is Connection0Result.TransferSucceeded -> {
 //                    Log.d("bluetooth", "${result.message}")
 //                    Log.d("bluetooth", "${state.value.isConnected}")
-                    saveData(result.message)
+
+                    if(result.message.sensorId == 0) {
+                        _emgState.update { emgUiState ->
+                            val bufValue = abs(result.message.message)
+                            val bufList = if(emgUiState.emg1List.size < 80) emgUiState.emg1List + bufValue else emgUiState.emg1List.subList(1, 80) + bufValue
+                            val avg = bufList.average()
+                            emgUiState.copy(
+                                emg1 = Emg(0, result.message.sensorId, "unknown", result.message.message, System.currentTimeMillis()),
+                                emg1List = bufList,
+                                emg1Avg = avg,
+                                emg1Max = if(emgUiState.emg1Max < avg && emgUiState.emg1Max < 1600) avg.toInt() else emgUiState.emg1Max
+                            )
+                        }
+                    } else {
+                        _emgState.update { emgUiState ->
+                            val bufValue = abs(result.message.message)
+                            val bufList = if(emgUiState.emg2List.size < 80) emgUiState.emg2List + bufValue else emgUiState.emg2List.subList(1, 80) + bufValue
+                            val avg = bufList.average()
+                            emgUiState.copy(
+                                emg2 = Emg(0, result.message.sensorId, "unknown", result.message.message, System.currentTimeMillis()),
+                                emg2List = bufList,
+                                emg2Avg = avg,
+                                emg2Max = if(emgUiState.emg2Max < avg && emgUiState.emg2Max < 1600) avg.toInt() else emgUiState.emg2Max
+                            )
+                        }
+                    }
+                    viewModelScope.launch {
+                        saveData(result.message)
+                    }
                 }
                 is Connection0Result.Error -> {
                     if(result.message != "errString") {

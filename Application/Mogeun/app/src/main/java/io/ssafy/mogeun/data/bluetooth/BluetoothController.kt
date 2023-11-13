@@ -85,8 +85,8 @@ class AndroidBluetoothController(
     override val errors: SharedFlow<String>
         get() = _errors.asSharedFlow()
 
-    private val device0Mac = "B0:A7:32:DB:C8:46"
-    private val device1Mac = "7C:87:CE:2D:22:8E"
+    private var device0Mac = "B0:A7:32:DB:C8:46"
+    private var device1Mac = "7C:87:CE:2D:22:8E"
 
     private val foundDeviceReceiver = FoundDeviceReceiver {device ->
         _scannedDevices.update {devices->
@@ -175,6 +175,8 @@ class AndroidBluetoothController(
                     emit(Connection0Result.ConnectionEstablished)
                     updateIsConnected(0, true)
 
+                    device0Mac = device.address
+
                     _connectedDevices.update {devices->
                         if(device in devices) devices else devices + device
                     }
@@ -236,6 +238,8 @@ class AndroidBluetoothController(
                     socket.connect()
                     emit(Connection1Result.ConnectionEstablished)
                     updateIsConnected(1, true)
+
+                    device1Mac = device.address
 
                     _connectedDevices.update {devices->
                         if(device in devices) devices else devices + device

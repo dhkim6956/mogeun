@@ -57,8 +57,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.model.GetRoutineListResponseBody
-import io.ssafy.mogeun.ui.Screen
-import io.ssafy.mogeun.ui.screens.signup.SignupViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -189,7 +187,11 @@ fun RoutineScreen(
         Button(
             onClick = { navController.navigate("addexercise/${beforeScreen}/3") },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-            shape = RoundedCornerShape(10.dp)
+            shape = RoundedCornerShape(10.dp),
+            elevation = ButtonDefaults.buttonElevation(
+                defaultElevation = 10.dp,
+                pressedElevation = 0.dp,
+            ),
         ) {
             Row {
                 Image(
@@ -230,7 +232,8 @@ fun RoutineList(
     val beforeScreen = 1
     Column(modifier = Modifier
         .background(MaterialTheme.colorScheme.onPrimary)
-        .padding(top = 20.dp)) {
+        .padding(top = 20.dp)
+    ) {
         Row(modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 10.dp),
@@ -240,7 +243,8 @@ fun RoutineList(
                 text = routine.name?: "name",
                 modifier = Modifier.padding(start = 12.dp, top = 12.dp),
                 fontSize = 24.sp,
-                maxLines = 1
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             val sheetState = rememberModalBottomSheetState()
             val scope = rememberCoroutineScope()
@@ -355,7 +359,11 @@ fun RoutineList(
             }
             Button(
                 onClick = { navController.navigate("Execution/${routine.routineKey}") },
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 10.dp,
+                    pressedElevation = 0.dp,
+                ),
             ) {
                 Text(text = "루틴시작")
             }
