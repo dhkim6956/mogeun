@@ -44,6 +44,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import io.ssafy.mogeun.model.ListMyExerciseResponseData
 import io.ssafy.mogeun.model.MyExerciseResponseData
@@ -110,9 +111,11 @@ fun ExerciseList(item: ListMyExerciseResponseData, navController:NavHostControll
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             GlideImage(
-                imageModel = imageResId,
-                contentDescription = "GIF Image",
-                contentScale = ContentScale.Crop,
+                imageModel = { imageResId },
+                imageOptions = ImageOptions(
+                    contentDescription = "GIF Image",
+                    contentScale = ContentScale.Crop,
+                ),
                 modifier = Modifier
                     .height(60.dp)
                     .width(60.dp)

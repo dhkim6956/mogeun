@@ -29,7 +29,7 @@ enum class Screen(
         route = "Routine",
         title = "루틴",
         topBarState = TopBarState(visibility = true, backBtnVisibility = false),
-        bottomBarState = BottomBarState(true, R.drawable.icon_routine, "routine")
+        bottomBarState = BottomBarState(true, R.drawable.icon_routine, "Routine")
     ),
     Execution(
     route = "Execution/{routineKey}",
@@ -41,37 +41,37 @@ enum class Screen(
         route = "Record",
         title = "기록",
         topBarState = TopBarState(visibility = true, backBtnVisibility = false),
-        bottomBarState = BottomBarState(true, R.drawable.icon_record, "record")
+        bottomBarState = BottomBarState(true, R.drawable.icon_record, "Record")
     ),
     RecordDetail(
         route = "RecordDetail/{reportKey}",
         title = "루틴 상세 정보",
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
-        bottomBarState = BottomBarState(true, R.drawable.icon_record, "record")
+        bottomBarState = BottomBarState(true, R.drawable.icon_record, "Record")
     ),
     ExerciseDetail(
         route = "ExerciseDetail",
         title = "운동 상세 정보",
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
-        bottomBarState = BottomBarState(true, R.drawable.icon_record, "record")
+        bottomBarState = BottomBarState(true, R.drawable.icon_record, "Record")
     ),
     Summary(
         route = "Summary",
         title = "요약",
         topBarState = TopBarState(visibility = true, backBtnVisibility = false),
-        bottomBarState = BottomBarState(true, R.drawable.icon_summary, "summary")
+        bottomBarState = BottomBarState(true, R.drawable.icon_summary, "Summary")
     ),
     Setting(
         route = "Setting",
         title = "설정",
         topBarState = TopBarState(visibility = true, backBtnVisibility = false),
-        bottomBarState = BottomBarState(true, R.drawable.icon_setting, "setting")
+        bottomBarState = BottomBarState(true, R.drawable.icon_setting, "Setting")
     ),
     User(
         route = "User",
         title = "유저 정보 변경",
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
-        bottomBarState = BottomBarState(true, originRoute = "setting")
+        bottomBarState = BottomBarState(true, originRoute = "Setting")
     ),
     Login(
         route = "Login",
@@ -89,19 +89,19 @@ enum class Screen(
         route = "AddRoutine/{routineKey}",
         title = "루틴 관리",
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
-        bottomBarState = BottomBarState(true, R.drawable.icon_setting)
+        bottomBarState = BottomBarState(true, R.drawable.icon_setting, "Routine")
     ),
     AddExercise(
         route = "AddExercise/{beforeScreen}/{currentRoutineKey}",
         title = "운동 추가",
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
-        bottomBarState = BottomBarState(true, R.drawable.icon_setting)
+        bottomBarState = BottomBarState(true, R.drawable.icon_setting, "Routine")
     ),
     ExplainExercise(
         route = "ExplainExercise/{image}",
         title = "운동 설명",
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
-        bottomBarState = BottomBarState(true, R.drawable.icon_setting)
+        bottomBarState = BottomBarState(true, R.drawable.icon_setting, "Routine")
     ),
     SqlSample(
         route = "SqlSample",
@@ -113,7 +113,7 @@ enum class Screen(
         route = "Connection",
         title = "기기 연결",
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
-        bottomBarState = BottomBarState(true)
+        bottomBarState = BottomBarState(false)
     )
 }
 

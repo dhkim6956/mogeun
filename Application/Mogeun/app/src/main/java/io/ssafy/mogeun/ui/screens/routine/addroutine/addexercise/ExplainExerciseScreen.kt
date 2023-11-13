@@ -27,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import io.ssafy.mogeun.model.VideoItem
 import io.ssafy.mogeun.network.YouTubeApiService
@@ -70,13 +71,14 @@ fun ExplainExerciseScreen(
             Spacer(modifier = Modifier.height(8.dp))
         }
         GlideImage(
-            imageModel = gifResId,
-            contentDescription = "GIF Image",
-            contentScale = ContentScale.Crop,
+            imageModel = { gifResId },
+            imageOptions = ImageOptions(
+                contentDescription = "GIF Image",
+                contentScale = ContentScale.Crop,
+            ),
             modifier = Modifier
                 .height(350.dp)
                 .width(350.dp)
-                .align(Alignment.CenterHorizontally)
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = myExerciseName, fontSize = 20.sp, fontWeight = FontWeight.Bold)

@@ -103,9 +103,11 @@ fun BottomBar(navController: NavHostController, currentScreen: Screen) {
                 NavigationBarItem(
                     selected = currentScreen.bottomBarState.originRoute == screen.route,
                     onClick = {
-                        navController.navigate(screen.route) {
-                            popUpTo(navController.graph.startDestinationId)
-                            launchSingleTop = true
+                        if(currentScreen.route != screen.route) {
+                            navController.navigate(screen.route) {
+                                popUpTo(navController.graph.startDestinationId)
+                                launchSingleTop = true
+                            }
                         }
                     },
                     icon = { Image(imageVector = ImageVector.vectorResource(id = screen.bottomBarState.vectorId!!), contentDescription = screen.route) },

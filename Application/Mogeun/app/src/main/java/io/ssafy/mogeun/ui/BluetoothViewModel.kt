@@ -44,14 +44,14 @@ class BluetoothViewModel(
 ): ViewModel() {
 
 
-    private val _routineState = MutableStateFlow(RoutineState(null))
+    private val _routineState = MutableStateFlow(RoutineState(null, false))
     val routineState = _routineState.asStateFlow()
 
     fun getPlanList(routineKey: Int) {
         Log.d("execution", "api called")
         viewModelScope.launch {
             val ret = routineRepository.listMyExercise(routineKey)
-            _routineState.value = RoutineState(ret)
+            _routineState.update { routineState -> routineState.copy(planList = ret) }
             Log.d("execution", "${ret}")
         }
     }
@@ -60,39 +60,36 @@ class BluetoothViewModel(
     val emgState: StateFlow<EmgUiState> =
         emgRepository.getEmgStream()
             .map {
-
-                Log.d("bluetooth", "emg value = ${it}")
                 if(it != null) {
                     if(it.deviceId == 0) {
-                        _emgState.value.copy(emg1 = it)
+                        _emgState.update { emgUiState -> emgUiState.copy(emg1 = it) }
                     } else {
-                        _emgState.value.copy(emg2 = it)
+                        _emgState.update { emgUiState -> emgUiState.copy(emg2 = it) }
                     }
-                } else {
-                    _emgState.value.copy()
                 }
+                _emgState.value.copy()
             }.stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
                 initialValue = _emgState.value
             )
 
-    private val _state = MutableStateFlow(BluetoothUiState())
-    val state = combine(
+    private val _btState = MutableStateFlow(BluetoothUiState())
+    val btState = combine(
         bluetoothController.scannedDevices,
         bluetoothController.pairedDevices,
         bluetoothController.connectedDevices,
         bluetoothController.isConnected,
-        _state
-    ) { scannedDevices, pairedDevices, connectedDevices, isConnected, state ->
+        _btState
+    ) { scannedDevices, pairedDevices, connectedDevices, isConnected, btState ->
 
-        state.copy(
+        btState.copy(
             scannedDevices = scannedDevices,
             pairedDevices = pairedDevices,
             connectedDevices = connectedDevices,
             isConnected = isConnected
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(TIMEOUT_MILLIS), _state.value)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(TIMEOUT_MILLIS), _btState.value)
 
     private var deviceConnectionJob: Array<Job?> = arrayOf(null, null, null, null)
 
@@ -101,20 +98,20 @@ class BluetoothViewModel(
     init {
 
         bluetoothController.errors.onEach { error ->
-            _state.update { it.copy(
+            _btState.update { it.copy(
                 errorMessage = error
             ) }
         }.launchIn(viewModelScope)
     }
 
     fun connectToDevice(device: BluetoothDeviceDomain, deviceNo: Int = 0) {
-        _state.update { it.copy(isConnecting = true) }
+        _btState.update { it.copy(isConnecting = true) }
 
-        if(!state.value.isConnected[0]) {
+        if(!btState.value.isConnected[0]) {
             deviceConnectionJob[deviceNo] = bluetoothController
                 .connectToDevice0(ConnectedDevice(name = device.name, address = device.address, assignedNo = deviceNo))
                 .listen()
-        } else if(!state.value.isConnected[1]) {
+        } else if(!btState.value.isConnected[1]) {
             deviceConnectionJob[deviceNo] = bluetoothController
                 .connectToDevice1(ConnectedDevice(name = device.name, address = device.address, assignedNo = deviceNo))
                 .listen()
@@ -134,7 +131,7 @@ class BluetoothViewModel(
 //        val bufConnected = state.value.isConnected.toMutableList()
 //        bufConnected[deviceNo] = false
 
-        _state.update { it.copy(
+        _btState.update { it.copy(
             isConnecting = false,
 //            isConnected = bufConnected.toList()
         ) }
@@ -153,7 +150,7 @@ class BluetoothViewModel(
         return onEach { result ->
             when(result) {
                 is Connection0Result.ConnectionEstablished -> {
-                    _state.update {it.copy(
+                    _btState.update {it.copy(
                         isConnecting = false,
                         errorMessage = null
                     ) }
@@ -165,7 +162,7 @@ class BluetoothViewModel(
                 }
                 is Connection0Result.Error -> {
                     if(result.message != "errString") {
-                        _state.update { it.copy(
+                        _btState.update { it.copy(
                             isConnecting = false,
                             errorMessage = result.message
                         ) }
@@ -175,7 +172,7 @@ class BluetoothViewModel(
         }.catch {throwable ->
             Log.d("bluetooth", "종료조건 ${throwable}")
             bluetoothController.closeConnection(0)
-            _state.update { it.copy(
+            _btState.update { it.copy(
                 isConnecting = false,
             ) }
         }.launchIn(viewModelScope)
@@ -186,7 +183,7 @@ class BluetoothViewModel(
         return onEach { result ->
             when(result) {
                 is Connection1Result.ConnectionEstablished -> {
-                    _state.update {it.copy(
+                    _btState.update {it.copy(
                         isConnecting = false,
                         errorMessage = null
                     ) }
@@ -194,11 +191,14 @@ class BluetoothViewModel(
                 is Connection1Result.TransferSucceeded -> {
 //                    Log.d("bluetooth", "${result.message}")
 //                    Log.d("bluetooth", "${state.value.isConnected}")
-                    saveData(result.message)
+                    if(btState.value.subscribe)
+                    {
+                        saveData(result.message)
+                    }
                 }
                 is Connection1Result.Error -> {
                     if(result.message != "errString") {
-                        _state.update { it.copy(
+                        _btState.update { it.copy(
                             isConnecting = false,
                             errorMessage = result.message
                         ) }
@@ -208,7 +208,7 @@ class BluetoothViewModel(
         }.catch {throwable ->
             Log.d("bluetooth", "종료조건 ${throwable}")
             bluetoothController.closeConnection(1)
-            _state.update { it.copy(
+            _btState.update { it.copy(
                 isConnecting = false,
             ) }
         }.launchIn(viewModelScope)
@@ -217,6 +217,25 @@ class BluetoothViewModel(
     suspend fun saveData(msg: BluetoothMessage) {
         val emgInput = Emg(0, msg.sensorId, "unknown", msg.message, System.currentTimeMillis())
         emgRepository.insertEmg(emgInput)
+    }
+
+    suspend fun deleteEmgData() {
+        emgRepository.deleteEmgData()
+    }
+
+    fun subscribe() {
+        _btState.update { bluetoothUiState -> bluetoothUiState.copy(subscribe = true) }
+    }
+
+    fun unsubscribe() {
+        _btState.update { bluetoothUiState -> bluetoothUiState.copy(subscribe = false) }
+    }
+
+    fun showBottomSheet() {
+        _routineState.update { routineState -> routineState.copy(showBottomSheet = true) }
+    }
+    fun hideBottomSheet() {
+        _routineState.update { routineState -> routineState.copy(showBottomSheet = false) }
     }
 
     override fun onCleared() {
