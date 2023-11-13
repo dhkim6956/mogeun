@@ -68,7 +68,7 @@ public class SetDetailController {
                 .build());
 
         if(setDetailList.isEmpty())
-            return ApiResponse.ok(new ArrayList<>());
+            return ApiResponse.badRequest("No data for this parameter");
 
         if(setDetailList.get(0).getSetKey() == -1)
             return ApiResponse.badRequest("요청 오류: 등록된 적 없는 운동 계획");
