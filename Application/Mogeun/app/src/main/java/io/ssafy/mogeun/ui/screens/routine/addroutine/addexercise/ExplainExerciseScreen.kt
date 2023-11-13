@@ -31,6 +31,7 @@ import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import io.ssafy.mogeun.model.VideoItem
 import io.ssafy.mogeun.network.YouTubeApiService
+import io.ssafy.mogeun.ui.components.ElevatedGif
 import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineViewModel
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -55,7 +56,6 @@ fun ExplainExerciseScreen(
     }
     var myExerciseName = viewModel.exerciseExplain?.name ?: "기본값"
     val gifResId = context.resources.getIdentifier("z_${viewModel.exerciseExplain?.imagePath}", "drawable", context.packageName)
-
     val apiKey = "AIzaSyBq9zFbQH6P5KXIwIUf2xuXmPoacNeT5as"
     Column(
         modifier = Modifier
@@ -64,22 +64,23 @@ fun ExplainExerciseScreen(
     ) {
         if (data != null) {
             Text(
-                text = myExerciseName, // 여기서 data 변수를 사용
+                text = myExerciseName,
                 fontSize = 16.sp,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             Spacer(modifier = Modifier.height(8.dp))
         }
-        GlideImage(
-            imageModel = { gifResId },
-            imageOptions = ImageOptions(
-                contentDescription = "GIF Image",
-                contentScale = ContentScale.Crop,
-            ),
-            modifier = Modifier
-                .height(350.dp)
-                .width(350.dp)
-        )
+        viewModel.exerciseExplain?.let { ElevatedGif(it.imagePath, modifier = Modifier.height(350.dp).width(350.dp)) }
+//        GlideImage(
+//            imageModel = { gifResId },
+//            imageOptions = ImageOptions(
+//                contentDescription = "GIF Image",
+//                contentScale = ContentScale.Crop,
+//            ),
+//            modifier = Modifier
+//                .height(350.dp)
+//                .width(350.dp)
+//        )
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = myExerciseName, fontSize = 20.sp, fontWeight = FontWeight.Bold)
         YouTubeVideoList(apiKey = apiKey, query = myExerciseName)

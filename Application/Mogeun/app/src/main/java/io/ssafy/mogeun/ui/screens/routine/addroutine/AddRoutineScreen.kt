@@ -87,9 +87,10 @@ fun AddRoutineScreen(
             modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd
         ) {
             Button(
+                shape = RoundedCornerShape(10.dp),
                 onClick = { navController.navigate("addexercise/${beforeScreen}/${routineKey}") }
             ) {
-                Text("운동 추가")
+                Text("운동 추가/삭제")
             }
         }
     }

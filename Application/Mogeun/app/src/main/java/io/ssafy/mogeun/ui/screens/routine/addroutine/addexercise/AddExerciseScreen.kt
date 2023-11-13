@@ -213,6 +213,7 @@ fun AddExerciseScreen(
                     modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd
                 ) {
                     Button(
+                        shape = RoundedCornerShape(10.dp),
                         onClick = {
                             if (beforeScreen == 1) {
                                 openAlertDialog.value = true

@@ -155,7 +155,7 @@ data class MyExerciseResponseData(
     @SerialName(value = "main_part")
     val mainPart: String?,
     @SerialName(value = "image_path")
-    val imagePath: String?
+    val imagePath: String
 )
 
 @Serializable
