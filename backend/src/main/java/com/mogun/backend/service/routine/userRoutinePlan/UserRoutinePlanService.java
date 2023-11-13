@@ -82,8 +82,11 @@ public class UserRoutinePlanService {
             if(flag == 0)
                 added.add(edit);
         }
-        for(UserRoutinePlan del: deleted)
+        for(UserRoutinePlan del: deleted) {
+            setDetailRepository.deleteAllByUserRoutinePlan(del);
             planRepository.delete(del);
+        }
+
         for(Integer add: added)
             planRepository.save(UserRoutinePlan.builder()
                     .userRoutine(routine.get())

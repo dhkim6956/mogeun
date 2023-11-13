@@ -37,7 +37,6 @@ public class UserLogController {
                 .weightAfter(request.getWeight())
                 .build());
 
-
         return ApiResponse.postAndPutResponse(result, request);
     }
 
