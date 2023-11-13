@@ -48,14 +48,18 @@ class RecordViewModel(
         recordList.clear()
     }
 
-    fun recordMonthly(date: String) {
-        // Get userKey
+    private fun getUserKey() {
         viewModelScope.launch {
             val key = keyRepository.getKey().first()
             val userKey = key?.userKey
             Log.d("getUserKey", "사용자 키: $userKey")
             updateUserKey(userKey)
         }
+    }
+
+    fun recordMonthly(date: String) {
+        // Get userKey
+        getUserKey()
 
         if (userKey !== null) {
             lateinit var ret: MonthlyResponse
@@ -99,29 +103,5 @@ class RecordViewModel(
 
     private fun updateUserKey(update: Int?) {
         userKey= update
-    }
-
-    private fun updateChartData(exercises: List<Exercise>) {
-        var map: MutableMap<String, Float> = mutableMapOf()
-        var index = 0
-        for (exercise in exercises) {
-            for (part in exercise.parts) {
-                val partDetail = part.split(" ")
-                if (partDetail[0] == "주") {
-                    if (map.containsKey(partDetail[1])) map[partDetail[1]] = map[partDetail[1]]!!.plus(2f)
-                    else map.put(partDetail[1], 2f)
-                }
-                else {
-                    if (map.containsKey(partDetail[1])) map[partDetail[1]] = map[partDetail[1]]!!.plus(1f)
-                    else map.put(partDetail[1], 1f)
-                }
-            }
-            index++
-        }
-
-        for (data in map) {
-            barChartdata.add(index, BarData(Point(index.toFloat(), data.value), Color.Red, data.key))
-            index++
-        }
     }
 }

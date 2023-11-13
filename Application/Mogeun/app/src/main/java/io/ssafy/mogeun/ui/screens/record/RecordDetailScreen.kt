@@ -238,12 +238,12 @@ fun RoutineGraphIconCard(
             )
     ) {
         Column () {
-            GraphCard(exercises)
-            Spacer(
-                modifier = Modifier
-                    .height(5.dp)
-                    .background(color = MaterialTheme.colorScheme.primaryContainer)
-            )
+//            GraphCard(exercises)
+//            Spacer(
+//                modifier = Modifier
+//                    .height(5.dp)
+//                    .background(color = MaterialTheme.colorScheme.primaryContainer)
+//            )
             IconCard(exercises)
         }
     }
