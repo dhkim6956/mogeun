@@ -1,7 +1,7 @@
 package io.ssafy.mogeun.ui.screens.summary
 
 import android.util.Log
-import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,33 +16,34 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+import androidx.lifecycle.viewmodel.compose.viewModel
 import co.yml.charts.axis.AxisData
 import co.yml.charts.common.model.Point
 import co.yml.charts.ui.barchart.BarChart
@@ -50,22 +51,29 @@ import co.yml.charts.ui.barchart.models.BarChartData
 import co.yml.charts.ui.barchart.models.BarChartType
 import co.yml.charts.ui.barchart.models.BarData
 import co.yml.charts.ui.barchart.models.BarStyle
-import co.yml.charts.ui.linechart.LineChart
-import co.yml.charts.ui.linechart.model.GridLines
-import co.yml.charts.ui.linechart.model.IntersectionPoint
-import co.yml.charts.ui.linechart.model.Line
-import co.yml.charts.ui.linechart.model.LineChartData
-import co.yml.charts.ui.linechart.model.LinePlotData
-import co.yml.charts.ui.linechart.model.LineStyle
-import co.yml.charts.ui.linechart.model.LineType
-import co.yml.charts.ui.linechart.model.SelectionHighlightPoint
-import co.yml.charts.ui.linechart.model.SelectionHighlightPopUp
-import co.yml.charts.ui.linechart.model.ShadowUnderLine
+import com.jaikeerthick.composable_graphs.color.LinearGraphColors
+import com.jaikeerthick.composable_graphs.composables.LineGraph
+import com.jaikeerthick.composable_graphs.data.GraphData
+import com.jaikeerthick.composable_graphs.style.LabelPosition
+import com.jaikeerthick.composable_graphs.style.LineGraphStyle
+import com.jaikeerthick.composable_graphs.style.LinearGraphVisibility
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.model.BodyInfo
 import io.ssafy.mogeun.model.Exercise
+import io.ssafy.mogeun.model.SetResult
+import io.ssafy.mogeun.ui.AppViewModelProvider
+import kotlinx.coroutines.launch
 
 @Composable
-fun SummaryScreen() {
+fun SummaryScreen(viewModel: SummaryViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
+    // 요약 페이지 구성을 위한 api 통신
+    val summaryBodyInfoSuccess by viewModel.summaryBodyInfoSuccess.collectAsState()
+    if (!summaryBodyInfoSuccess) {
+        LaunchedEffect(viewModel.userKey) {
+            viewModel.summaryBody()
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -76,7 +84,7 @@ fun SummaryScreen() {
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.End
     ) {
-        BodyInfoSummaryCard()
+        BodyInfoSummaryCard(viewModel.summaryBodyInfo)
         Spacer(
             modifier = Modifier
                 .height(10.dp)
@@ -98,75 +106,9 @@ fun SummaryScreen() {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun Dropdown() {
-    val listItems = arrayOf("전체", "올해", "이번 달")
-
-    // state of the menu
-    var expanded by remember { mutableStateOf(false) }
-    var disabledItem by remember { mutableIntStateOf(0) }
-    var item by remember { mutableStateOf(listItems[0]) }
-    var itemIconIndex by remember { mutableIntStateOf(0) }
-    var itemIconList = listOf(R.drawable.baseline_arrow_drop_down_24, R.drawable.baseline_arrow_drop_up_24)
-
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .border(
-                width = 1.dp,
-                color = Color.Black
-            )
-            .padding(5.dp)
-            .clickable {
-                expanded = true
-                itemIconIndex = if (itemIconIndex == 0) 1
-                else 0
-            }
-    ) {
-        Row {
-            Text(item)
-            Spacer(
-                modifier = Modifier
-                    .width(5.dp)
-                    .background(color = MaterialTheme.colorScheme.primaryContainer)
-            )
-            Image(
-                painter = painterResource(id = itemIconList[itemIconIndex]),
-                contentDescription = "dropdown",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.height(20.dp)
-            )
-        }
-
-        // drop down menu
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = {
-                expanded = false
-                itemIconIndex = if (itemIconIndex == 0) 1
-                else 0
-            }
-        ) {
-            // adding items
-            listItems.forEachIndexed { itemIndex, itemValue ->
-                DropdownMenuItem(
-                    onClick = {
-                        expanded = false
-                        disabledItem = itemIndex
-                        item = itemValue
-                        itemIconIndex = if (itemIconIndex == 0) 1
-                        else 0
-                    },
-                    enabled = (itemIndex != disabledItem),
-                    text = { Text(text = itemValue) }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun BodyInfoSummaryCard() {
+fun BodyInfoSummaryCard(bodyInfo: BodyInfo?) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -185,57 +127,95 @@ fun BodyInfoSummaryCard() {
             ),
         contentAlignment = Alignment.Center
     ) {
-        BodyInfoSummary()
+        val pagerState = rememberPagerState(pageCount = {
+            2
+        })
+        val nameList = listOf("체지방 변화량", "골격근 변화량")
+
+        Column {
+            Row(
+                Modifier
+                    .wrapContentHeight()
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                val coroutineScope = rememberCoroutineScope()
+
+                Text(
+                    text = "<",
+                    modifier = Modifier
+                        .clickable { coroutineScope.launch {
+                            // Call scroll to on pagerState
+                            pagerState.animateScrollToPage(0)
+                        } }
+                )
+                Text(nameList[pagerState.currentPage])
+                Text(
+                    text = ">",
+                    modifier = Modifier
+                        .clickable { coroutineScope.launch {
+                            // Call scroll to on pagerState
+                            pagerState.animateScrollToPage(1)
+                        } }
+                )
+            }
+            HorizontalPager(state = pagerState) { page ->
+                // Our page content
+                BodyInfoSummary(page)
+            }
+        }
     }
 }
 
 @Composable
-fun BodyInfoSummary() {
-    val pointsData: List<Point> =
-        listOf(Point(0f, 40f), Point(1f, 90f), Point(2f, 0f), Point(3f, 60f), Point(4f, 10f))
-    val steps = pointsData.size
-
-    val xAxisData = AxisData.Builder()
-        .axisStepSize(50.dp)
-        .steps(steps - 1)
-        .labelData { "2023-11-12" }
-        .labelAndAxisLinePadding(15.dp)
-        .build()
-
-    val yAxisData = AxisData.Builder()
-        .steps(steps)
-        .labelAndAxisLinePadding(20.dp)
-        .labelData { i ->
-            val yScale = 100 / steps
-            (i * yScale).toString()
-        }.build()
-
-    val lineChartData = LineChartData(
-        linePlotData = LinePlotData(
-            lines = listOf(
-                Line(
-                    dataPoints = pointsData,
-                    LineStyle(lineType = LineType.Straight()),
-                    IntersectionPoint(),
-                    SelectionHighlightPoint(),
-                    ShadowUnderLine(),
-                    SelectionHighlightPopUp()
-                )
+fun BodyInfoSummary(index: Int) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        val style = LineGraphStyle(
+            visibility = LinearGraphVisibility(
+                isHeaderVisible = true,
+                isXAxisLabelVisible = false,
+                isYAxisLabelVisible = true,
+                isCrossHairVisible = false
             ),
-        ),
-        xAxisData = xAxisData,
-        backgroundColor = Color.White
-    )
+            colors = LinearGraphColors(
+                lineColor = MaterialTheme.colorScheme.primary,
+                pointColor = MaterialTheme.colorScheme.primary,
+                clickHighlightColor = MaterialTheme.colorScheme.inversePrimary,
+                fillGradient = null
+            ),
+            height = 200.dp,
+            yAxisLabelPosition = LabelPosition.LEFT
+        )
+        val clickedValue: MutableState<Pair<Any, Any>?> =
+            remember { mutableStateOf(null) }
 
-    LineChart(
-        modifier = Modifier
-            .height(200.dp)
-            .fillMaxWidth()
-            .background(color = MaterialTheme.colorScheme.background),
-        lineChartData = lineChartData
-    )
+        Row(
+            modifier = Modifier
+                .padding(10.dp)
+                .height(20.dp)
+        ) {
+            clickedValue.value?.let {
+                Text(
+                    text = "${it.first}: ${it.second}kg",
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        }
+        LineGraph(
+            xAxisData = listOf("2023-11-13", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat").map {
+                GraphData.String(it)
+            }, // xAxisData : List<GraphData>, and GraphData accepts both Number and String types
+            yAxisData = listOf(200, 40, 60, 450, 700, 30, 50),
+            style = style,
+            onPointClicked = {
+                clickedValue.value = it
+            }
+        )
+    }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ExerciseSummaryCard() {
     Box(
@@ -256,18 +236,69 @@ fun ExerciseSummaryCard() {
             ),
         contentAlignment = Alignment.Center
     ) {
-        BodyInfoSummary()
+        val pagerState = rememberPagerState(pageCount = {
+            3
+        })
+        val nameList = listOf("가장 많이 한 운동", "가장 높은 무게를 기록한 운동", "가장 많은 세트를 수행한 운동")
+
+        Column {
+            Row(
+                Modifier
+                    .wrapContentHeight()
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                val coroutineScope = rememberCoroutineScope()
+
+                Text(
+                    text = "<",
+                    modifier = Modifier
+                        .clickable { coroutineScope.launch {
+                            // Call scroll to on pagerState
+                            if (pagerState.currentPage > 0)
+                                pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                        } }
+                )
+                Text(nameList[pagerState.currentPage])
+                Text(
+                    text = ">",
+                    modifier = Modifier
+                        .clickable { coroutineScope.launch {
+                            // Call scroll to on pagerState
+                            if (pagerState.currentPage < 2)
+                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                        } }
+                )
+            }
+            HorizontalPager(state = pagerState) { page ->
+                // Our page content
+                ExerciseSummary(nameList[page])
+            }
+        }
     }
 }
 
 @Composable
-fun ExerciseSummary() {
+fun ExerciseSummary(
+    name: String
+) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-
+        Image(
+            modifier = Modifier.fillMaxWidth(0.3f),
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = "logo",
+            contentScale = ContentScale.Crop
+        )
+        Column(modifier = Modifier.padding(start = 10.dp)) {
+            Text(text = "test")
+            Text(text = name + " = " + "test")
+        }
     }
 }
 
@@ -291,7 +322,9 @@ fun MuscleSummaryCard() {
             ),
         contentAlignment = Alignment.Center
     ) {
-        BodyInfoSummary()
+        MuscleSummary(listOf(Exercise("test", "test", 1, listOf("주 등", "부 어깨"), listOf("test"), listOf(
+            SetResult(1,1f, 1, 1, null)
+        ))))
     }
 }
 
@@ -362,5 +395,72 @@ fun MuscleSummary(exercises: List<Exercise>) {
                 .height(200.dp),
             barChartData = barChartData
         )
+    }
+}
+
+@Composable
+fun Dropdown() {
+    val listItems = arrayOf("전체", "올해", "이번 달")
+
+    // state of the menu
+    var expanded by remember { mutableStateOf(false) }
+    var disabledItem by remember { mutableIntStateOf(0) }
+    var item by remember { mutableStateOf(listItems[0]) }
+    var itemIconIndex by remember { mutableIntStateOf(0) }
+    var itemIconList = listOf(R.drawable.baseline_arrow_drop_down_24, R.drawable.baseline_arrow_drop_up_24)
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .border(
+                width = 1.dp,
+                color = Color.Black
+            )
+            .padding(5.dp)
+            .clickable {
+                expanded = true
+                itemIconIndex = if (itemIconIndex == 0) 1
+                else 0
+            }
+    ) {
+        Row {
+            Text(item)
+            Spacer(
+                modifier = Modifier
+                    .width(5.dp)
+                    .background(color = MaterialTheme.colorScheme.primaryContainer)
+            )
+            Image(
+                painter = painterResource(id = itemIconList[itemIconIndex]),
+                contentDescription = "dropdown",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.height(20.dp)
+            )
+        }
+
+        // drop down menu
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = {
+                expanded = false
+                itemIconIndex = if (itemIconIndex == 0) 1
+                else 0
+            }
+        ) {
+            // adding items
+            listItems.forEachIndexed { itemIndex, itemValue ->
+                DropdownMenuItem(
+                    onClick = {
+                        expanded = false
+                        disabledItem = itemIndex
+                        item = itemValue
+                        itemIconIndex = if (itemIconIndex == 0) 1
+                        else 0
+                    },
+                    enabled = (itemIndex != disabledItem),
+                    text = { Text(text = itemValue) }
+                )
+            }
+        }
     }
 }
