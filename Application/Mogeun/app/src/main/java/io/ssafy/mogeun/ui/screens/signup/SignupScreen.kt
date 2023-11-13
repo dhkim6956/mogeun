@@ -134,7 +134,8 @@ fun Essential(
                 }),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done
-                )
+                ),
+                maxLines = 1
             )
             Spacer(modifier = Modifier.width(16.dp))
             Button(
@@ -160,7 +161,8 @@ fun Essential(
             }),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done
-            )
+            ),
+            maxLines = 1
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = "비밀 번호 확인")
@@ -174,7 +176,8 @@ fun Essential(
             }),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done
-            )
+            ),
+            maxLines = 1
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = "닉네임")
@@ -188,7 +191,8 @@ fun Essential(
             }),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done
-            )
+            ),
+            maxLines = 1
         )
         Spacer(modifier = Modifier.height(12.dp))
         Preview_MultipleRadioButtons()
@@ -286,7 +290,8 @@ fun Inbody(
             ),
             keyboardActions = KeyboardActions(onDone = {
                 keyboardController?.hide()
-            })
+            }),
+            maxLines = 1
         )
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -309,7 +314,8 @@ fun Inbody(
             ),
             keyboardActions = KeyboardActions(onDone = {
                 keyboardController?.hide()
-            })
+            }),
+            maxLines = 1
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "골격근량")
@@ -331,7 +337,8 @@ fun Inbody(
             ),
             keyboardActions = KeyboardActions(onDone = {
                 keyboardController?.hide()
-            })
+            }),
+            maxLines = 1
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "체지방")
@@ -353,7 +360,8 @@ fun Inbody(
             ),
             keyboardActions = KeyboardActions(onDone = {
                 keyboardController?.hide()
-            })
+            }),
+            maxLines = 1
         )
     }
     Scaffold(
