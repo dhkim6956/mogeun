@@ -71,7 +71,8 @@ fun ExplainExerciseScreen(
             fontSize = 28.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            fontWeight = FontWeight.Bold)
+            fontWeight = FontWeight.Bold
+        )
         YouTubeVideoList(apiKey = apiKey, query = myExerciseName)
     }
 }

@@ -44,6 +44,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
@@ -127,7 +128,11 @@ fun ExerciseList(item: ListMyExerciseResponseData, navController:NavHostControll
                     .width(60.dp)
             )
             Column {
-                Text(text = "${item.name}")
+                Text(
+                    text = "${item.name}",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
                 Row {
                     for (i in item.sensingPart) {
                         Text(text = i)

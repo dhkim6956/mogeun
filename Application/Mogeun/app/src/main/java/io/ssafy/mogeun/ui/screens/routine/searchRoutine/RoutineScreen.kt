@@ -1,6 +1,5 @@
 package io.ssafy.mogeun.ui.screens.routine.searchRoutine
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,11 +23,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -45,8 +39,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.model.GetRoutineListResponseBody
-import io.ssafy.mogeun.ui.Screen
-import io.ssafy.mogeun.ui.screens.signup.SignupViewModel
 
 @Composable
 fun RoutineScreen(
@@ -203,7 +195,8 @@ fun RoutineList(
     val beforeScreen = 1
     Column(modifier = Modifier
         .background(MaterialTheme.colorScheme.onPrimary)
-        .padding(top = 20.dp)) {
+        .padding(top = 20.dp)
+    ) {
         Row(modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 10.dp),
@@ -213,7 +206,8 @@ fun RoutineList(
                 text = routine.name,
                 modifier = Modifier.padding(start = 12.dp, top = 12.dp),
                 fontSize = 24.sp,
-                maxLines = 1
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             Button(
                 onClick = { navController.navigate("addroutine/${routine.routineKey}") },
