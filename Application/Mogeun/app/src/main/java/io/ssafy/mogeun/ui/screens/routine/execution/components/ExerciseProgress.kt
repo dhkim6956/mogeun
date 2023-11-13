@@ -480,10 +480,10 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean) {
                 .background(Color.Gray),
                 contentAlignment = Alignment.Center
             ){
-                Text("1 : ${emgUiState.emg1?.value}")
+                Text("1 : ${emgUiState.emg1Avg}")
                 Box(modifier = Modifier
                     .clip(CircleShape)
-                    .size((emgUiState.emg1?.value?:0%90/*signal 최대크기로 나누고 곱하기90*/).dp)
+                    .size((emgUiState.emg1Avg / emgUiState.emg1Max * 90).dp)
                     .background(Color.White.copy(0.7f))
                     .wrapContentSize(Alignment.Center)
                 )
@@ -494,10 +494,10 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean) {
                 .background(Color.Red),
                 contentAlignment = Alignment.Center
             ){
-                Text("2 : ${emgUiState.emg2?.value}")
+                Text("2 : ${emgUiState.emg2Avg}")
                 Box(modifier = Modifier
                     .clip(CircleShape)
-                    .size((signal_2%90/*signal 최대크기로 나누고 곱하기90*/).dp)
+                    .size((emgUiState.emg2Avg / emgUiState.emg2Max * 90).dp)
                     .background(Color.White.copy(0.7f))
                     .wrapContentSize(Alignment.Center)
                 )
@@ -514,7 +514,7 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean) {
                 .background(Color.Red),
                 contentAlignment = Alignment.Center
             ){
-                Text("3 : $signal_3")
+                Text("3 : ${emgUiState.emg1?.value}")
             }
             Box(modifier = Modifier
                 .fillMaxHeight()

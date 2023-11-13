@@ -18,6 +18,7 @@ interface AppContainer {
     val routineRepository: RoutineRepository
     val setRepository: SetRepository
     val summaryRepository: SummaryRepository
+    val executionRepository: ExecutionRepository
 }
 
 class DefaultAppContainer(private val context: Context): AppContainer {
@@ -62,5 +63,8 @@ class DefaultAppContainer(private val context: Context): AppContainer {
 
     override val summaryRepository: SummaryRepository by lazy {
         NetworkSummaryRepository(retrofitService)
+    }
+    override val executionRepository: ExecutionRepository by lazy {
+        NetworkExecutionRepository(retrofitService)
     }
 }

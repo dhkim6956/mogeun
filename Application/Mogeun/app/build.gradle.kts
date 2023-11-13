@@ -90,9 +90,7 @@ dependencies {
 
     implementation(platform("com.google.firebase:firebase-bom:32.5.0"))
     implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation ("com.github.bumptech.glide:glide:4.12.0")
-    annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
-    implementation ("com.github.skydoves:landscapist-glide:1.5.0")
+    implementation ("com.github.skydoves:landscapist-glide:2.2.12")
     implementation("androidx.compose.material:material-icons-extended")
 
     // retrofit

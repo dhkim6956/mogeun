@@ -18,6 +18,7 @@ import io.ssafy.mogeun.data.UserRepository
 import io.ssafy.mogeun.model.DupEmailResponse
 import io.ssafy.mogeun.model.GetInbodyResponse
 import io.ssafy.mogeun.model.GetRoutineListResponse
+import io.ssafy.mogeun.model.UpdateRoutineNameResponse
 import io.ssafy.mogeun.ui.screens.signup.SignupViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -32,6 +33,7 @@ class RoutineViewModel(
     var userKey by mutableStateOf<Int?>(null)
     var tmp by mutableStateOf<GetRoutineListResponse?>(null)
     var username by mutableStateOf<String?>(null)
+    var routinename by mutableStateOf<String?>(null)
 
     fun updateMuscleMass(value: Double?) {
         muscleMass = value
@@ -70,6 +72,18 @@ class RoutineViewModel(
             val userKey = key?.userKey
             Log.d("getUserKey", "사용자 키: $userKey")
             updateUserKey(userKey)
+        }
+    }
+    fun updateRoutineName(index: Int, newName: String) {
+        lateinit var ret: UpdateRoutineNameResponse
+        Log.d("updateRoutineName", "$ret")
+        viewModelScope.launch {
+            tmp?.let { response ->
+                val routineKey = response.data.getOrNull(index)?.routineKey
+                if (routineKey != null) {
+                    val ret = RoutineRepository.updateRoutineName(routineKey, routinename)
+                }
+            }
         }
     }
     companion object {

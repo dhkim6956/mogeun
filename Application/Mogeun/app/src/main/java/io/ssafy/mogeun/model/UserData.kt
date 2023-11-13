@@ -108,7 +108,20 @@ data class UpdateUserResponse(
     val code: Int,
     val status: String,
     val message: String,
-    val data: String?
+    val data: UpdateUserResponseData
+)
+@Serializable
+data class UpdateUserResponseData(
+    @SerialName(value = "user_key")
+    val userKey: Int,
+    @SerialName(value = "user_name")
+    val userName: String,
+    val weight: Double,
+    val height: Double,
+    @SerialName(value = "muscle_mass")
+    val muscleMass: Double,
+    @SerialName(value = "body_fat")
+    val bodyFat: Double
 )
 
 @Serializable

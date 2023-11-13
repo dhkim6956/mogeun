@@ -11,4 +11,5 @@ data class BluetoothUiState (
     val isConnected: List<Boolean> = listOf(false, false, false, false),
     val isConnecting: Boolean = false,
     val errorMessage: String? = null,
+    val subscribe: Boolean = false,
 )

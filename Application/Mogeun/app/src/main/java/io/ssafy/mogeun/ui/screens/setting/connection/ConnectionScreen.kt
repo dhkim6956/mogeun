@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ConnectionScreen(viewModel: BluetoothViewModel, snackbarHostState: SnackbarHostState) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.btState.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
 

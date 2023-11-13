@@ -29,7 +29,7 @@ object AppViewModelProvider {
         }
         initializer {
             BluetoothViewModel(
-                mogeunApplication().container.setRepository,
+                mogeunApplication().container.executionRepository,
                 mogeunApplication().container.emgDataRepository,
                 mogeunApplication().container.routineRepository,
                 mogeunApplication().container.bluetoothController
@@ -44,14 +44,6 @@ object AppViewModelProvider {
             AddExerciseViewModel(
                 mogeunApplication().container.keyRepository,
                 mogeunApplication().container.routineRepository
-
-            )
-        }
-        initializer {
-            ExecutionViewModel(
-                mogeunApplication().container.setRepository,
-                mogeunApplication().container.emgDataRepository,
-                mogeunApplication().container.bluetoothController
             )
         }
         initializer {
