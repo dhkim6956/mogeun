@@ -9,6 +9,8 @@ import io.ssafy.mogeun.model.ListAllExerciseResponse
 import io.ssafy.mogeun.model.GetRoutineListResponse
 import io.ssafy.mogeun.model.ListMyExerciseResponse
 import io.ssafy.mogeun.model.MyExerciseResponse
+import io.ssafy.mogeun.model.UpdateRoutineRequest
+import io.ssafy.mogeun.model.UpdateRoutineResponse
 import io.ssafy.mogeun.network.MogeunApiService
 
 interface RoutineRepository{
@@ -18,6 +20,7 @@ interface RoutineRepository{
     suspend fun listMyExercise(routineKey: Int?): ListMyExerciseResponse
     suspend fun addAllExercise(routineKey: Int?, execKeys: List<Int>): AddAllExerciseResponse
     suspend fun myExercise(execKey: Int?): MyExerciseResponse
+    suspend fun updateRoutine(routineKey: Int?, execKeys: List<Int>): UpdateRoutineResponse
 }
 
 
@@ -45,6 +48,9 @@ class NetworkRoutineRepository(
 
     override suspend fun myExercise(execKey: Int?): MyExerciseResponse {
         return mogeunApiService.myExercise(execKey)
+    }
+    override suspend fun updateRoutine(routineKey: Int?, execKeys: List<Int>): UpdateRoutineResponse {
+        return mogeunApiService.updateRoutine(UpdateRoutineRequest(routineKey, execKeys))
     }
 }
 
