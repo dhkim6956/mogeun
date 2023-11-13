@@ -132,7 +132,7 @@ fun AddExerciseScreen(
         Spacer(modifier = Modifier.height(8.dp))
         LazyColumn {
             val filteredExercises = exercises
-                .filter { it.mainPart == selectedMusclePart || selectedMusclePart == "전체" }
+                .filter { it.mainPart.partName == selectedMusclePart || selectedMusclePart == "전체" }
                 .filter {
                     it.name.contains(searchText, ignoreCase = true) || it.engName.contains(searchText, ignoreCase = true)
                 }
