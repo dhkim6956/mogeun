@@ -54,21 +54,21 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
 
     Log.d("execution", "${routineKey ?: "null"}")
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(routineKey) {
         viewModel.getPlanList(routineKey)
-        viewModel.subscribe()
     }
 
-    DisposableEffect(Unit) {
-        onDispose {
-            viewModel.unsubscribe()
-            coroutineScope.launch {
-                viewModel.deleteEmgData()
-            }
-        }
-    }
+//    DisposableEffect(Unit) {
+//        onDispose {
+//            viewModel.unsubscribe()
+//            coroutineScope.launch {
+//                viewModel.deleteEmgData()
+//            }
+//        }
+//    }
 
     if(routineState.planList == null) {
+
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize()
@@ -84,14 +84,16 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
         val pagerState = rememberPagerState { routineSize }
 
         LaunchedEffect(pagerState.currentPage) {
-            viewModel.getSetOfRoutine(routineState.planList!!.data[pagerState.currentPage].planKey)
+            viewModel.getSetOfRoutine()
         }
 
         if(routineState.planDetails.isNotEmpty()) {
 
             LaunchedEffect(Unit) {
-                coroutineScope.launch {
-                    viewModel.runTimer()
+                if(elapsedTime.minute == 0 && elapsedTime.second == 0) {
+                    coroutineScope.launch {
+                        viewModel.runTimer()
+                    }
                 }
             }
 
@@ -140,7 +142,7 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
                             modifier = Modifier
                                 .fillMaxSize()
                         ) {
-                            ExerciseProgress(emgState)
+                            ExerciseProgress(emgState, routineState.planDetails[page].setOfRoutineDetail, {}, {})
                         }
                     }
                 }

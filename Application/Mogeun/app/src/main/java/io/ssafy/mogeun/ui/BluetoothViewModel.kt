@@ -57,23 +57,24 @@ class BluetoothViewModel(
         }
     }
 
-    fun getSetOfRoutine(planKey: Int) {
-        Log.d("execution", "api called")
-        if(!routineState.value.requestedPlan.contains(planKey)) {
-            _routineState.update { routineState -> routineState.copy(requestedPlan = routineState.requestedPlan + planKey) }
+    fun getSetOfRoutine() {
+        routineState.value.planList!!.data.forEach { plan ->
+            val planKey = plan.planKey
+            if(!routineState.value.requestedPlan.contains(planKey)) {
+                _routineState.update { routineState -> routineState.copy(requestedPlan = routineState.requestedPlan + planKey) }
 
-            viewModelScope.launch {
-                val ret = executionRepository.getSetOfRoutine(planKey)
-                if(ret.data == null)
-                {
-                    _routineState.update { routineState -> routineState.copy(planDetails = routineState.planDetails + SetOfPlan(planKey, true, listOf(
-                        SetOfRoutineDetail(1, 55, 10),
-                        SetOfRoutineDetail(2, 60, 8),
-                        SetOfRoutineDetail(3, 65, 6)
-                    ))) }
-                } else {
-                    _routineState.update { routineState -> routineState.copy(planDetails = routineState.planDetails + SetOfPlan(planKey, false, ret.data.setDetails)) }
-                    Log.d("execution", "${ret}")
+                viewModelScope.launch {
+                    val ret = executionRepository.getSetOfRoutine(planKey)
+                    if(ret.data == null)
+                    {
+                        _routineState.update { routineState -> routineState.copy(planDetails = routineState.planDetails + SetOfPlan(planKey, true, listOf(
+                            SetOfRoutineDetail(1, 55, 10),
+                            SetOfRoutineDetail(2, 60, 8),
+                            SetOfRoutineDetail(3, 65, 6)
+                        ))) }
+                    } else {
+                        _routineState.update { routineState -> routineState.copy(planDetails = routineState.planDetails + SetOfPlan(planKey, false, ret.data.setDetails)) }
+                    }
                 }
             }
         }
@@ -220,25 +221,13 @@ class BluetoothViewModel(
                     if(result.message.sensorId == 0) {
                         _emgState.update { emgUiState ->
                             val bufValue = abs(result.message.message)
-                            val bufList = if(emgUiState.emg1List.size < 80) emgUiState.emg1List + bufValue else emgUiState.emg1List.subList(1, 80) + bufValue
+                            val bufList = if(bufValue > 1500) emgUiState.emg1List else {if(emgUiState.emg1List.size < 80) emgUiState.emg1List + bufValue else emgUiState.emg1List.subList(1, 80) + bufValue}
                             val avg = bufList.average()
                             emgUiState.copy(
                                 emg1 = Emg(0, result.message.sensorId, "unknown", result.message.message, System.currentTimeMillis()),
                                 emg1List = bufList,
                                 emg1Avg = avg,
-                                emg1Max = if(emgUiState.emg1Max < avg && emgUiState.emg1Max < 1600) avg.toInt() else emgUiState.emg1Max
-                            )
-                        }
-                    } else {
-                        _emgState.update { emgUiState ->
-                            val bufValue = abs(result.message.message)
-                            val bufList = if(emgUiState.emg2List.size < 80) emgUiState.emg2List + bufValue else emgUiState.emg2List.subList(1, 80) + bufValue
-                            val avg = bufList.average()
-                            emgUiState.copy(
-                                emg2 = Emg(0, result.message.sensorId, "unknown", result.message.message, System.currentTimeMillis()),
-                                emg2List = bufList,
-                                emg2Avg = avg,
-                                emg2Max = if(emgUiState.emg2Max < avg && emgUiState.emg2Max < 1600) avg.toInt() else emgUiState.emg2Max
+                                emg1Max = if(emgUiState.emg1Max < avg) avg.toInt() else emgUiState.emg1Max
                             )
                         }
                     }
@@ -277,8 +266,20 @@ class BluetoothViewModel(
                 is Connection1Result.TransferSucceeded -> {
 //                    Log.d("bluetooth", "${result.message}")
 //                    Log.d("bluetooth", "${state.value.isConnected}")
-                    if(btState.value.subscribe)
-                    {
+                    if(result.message.sensorId == 1) {
+                        _emgState.update { emgUiState ->
+                            val bufValue = abs(result.message.message)
+                            val bufList = if(bufValue > 1500) emgUiState.emg2List else {if(emgUiState.emg2List.size < 80) emgUiState.emg2List + bufValue else emgUiState.emg2List.subList(1, 80) + bufValue}
+                            val avg = bufList.average()
+                            emgUiState.copy(
+                                emg2 = Emg(0, result.message.sensorId, "unknown", result.message.message, System.currentTimeMillis()),
+                                emg2List = bufList,
+                                emg2Avg = avg,
+                                emg2Max = if(emgUiState.emg2Max < avg) avg.toInt() else emgUiState.emg2Max
+                            )
+                        }
+                    }
+                    viewModelScope.launch {
                         saveData(result.message)
                     }
                 }
