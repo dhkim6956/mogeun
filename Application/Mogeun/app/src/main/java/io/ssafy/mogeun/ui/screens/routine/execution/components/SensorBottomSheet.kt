@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.ui.BluetoothUiState
+import io.ssafy.mogeun.ui.screens.routine.execution.ElapsedTime
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

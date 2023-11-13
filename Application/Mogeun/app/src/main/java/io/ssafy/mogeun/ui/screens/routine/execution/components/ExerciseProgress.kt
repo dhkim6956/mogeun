@@ -51,6 +51,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.patrykandpatrick.vico.compose.axis.horizontal.bottomAxis
@@ -60,6 +61,7 @@ import com.patrykandpatrick.vico.compose.chart.line.lineChart
 import com.patrykandpatrick.vico.core.entry.entryModelOf
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.ui.screens.routine.execution.EmgUiState
+import io.ssafy.mogeun.ui.theme.MogeunTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jtransforms.fft.DoubleFFT_1D
@@ -593,10 +595,16 @@ fun FFT_ready(N:Int){//N은 신호의 갯수
         startAxis = startAxis(),
         bottomAxis = bottomAxis(),//주파수(Hz) = k / N * 샘플링 주파수(Hz)
     )
-
 }
 
 
+@Preview
+@Composable
+fun fftPreview() {
+    MogeunTheme {
+        FFT_ready(N = 80)
+    }
+}
 
 
 val preWeight = 50 //이전에 사용한 무계 가져오기

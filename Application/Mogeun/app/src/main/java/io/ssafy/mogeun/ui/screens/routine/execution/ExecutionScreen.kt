@@ -48,6 +48,7 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
     val emgState by viewModel.emgState.collectAsState()
     val btState by viewModel.btState.collectAsState()
     val routineState by viewModel.routineState.collectAsState()
+    val elapsedTime by viewModel.elaspedTime.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -86,58 +87,67 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
             viewModel.getSetOfRoutine(routineState.planList!!.data[pagerState.currentPage].planKey)
         }
 
-        Column {
-            HorizontalPager(
-                pagerState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) { page ->
-                val plan = routineState.planList!!.data[page]
-                val imgPath = plan.imagePath
-                Column {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .padding(12.dp)
-                    ) {
-                        ElevatedGif(imgPath = imgPath,
-                            Modifier
-                                .width(300.dp)
-                                .height(200.dp))
-                    }
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(60.dp)
-                    ) {
-                        Text("${plan.name}", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                        FilledTonalIconButton(
-                            onClick = viewModel::showBottomSheet,
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier
-                                .width(44.dp)
-                                .height(44.dp)
-                        ){
-                            Icon(painter = painterResource(id = R.drawable.heart_rate), null, modifier = Modifier.fillMaxSize(0.8f))
-                        }
-                    }
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .fillMaxSize()
-                    ) {
-                        ExerciseProgress(emgState)
-                    }
+        if(routineState.planDetails.isNotEmpty()) {
+
+            LaunchedEffect(Unit) {
+                coroutineScope.launch {
+                    viewModel.runTimer()
                 }
             }
-            RoutineProgress(pagerState.currentPage + 1, routineSize)
 
-            SensorBottomSheet(state = routineState.showBottomSheet, hide = viewModel::hideBottomSheet, navToConnection = {navController.navigate("Connection")}, btState = btState, sensingPart = routineState.planList!!.data[pagerState.currentPage].mainPart.imagePath)
+            Column {
+                HorizontalPager(
+                    pagerState,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                ) { page ->
+                    val plan = routineState.planList!!.data[page]
+                    val imgPath = plan.imagePath
+                    Column {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .padding(12.dp)
+                        ) {
+                            ElevatedGif(imgPath = imgPath,
+                                Modifier
+                                    .width(300.dp)
+                                    .height(200.dp))
+                        }
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceAround,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(60.dp)
+                        ) {
+                            Text("${plan.name}", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                            FilledTonalIconButton(
+                                onClick = viewModel::showBottomSheet,
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier
+                                    .width(44.dp)
+                                    .height(44.dp)
+                            ){
+                                Icon(painter = painterResource(id = R.drawable.heart_rate), null, modifier = Modifier.fillMaxSize(0.8f))
+                            }
+                        }
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .fillMaxSize()
+                        ) {
+                            ExerciseProgress(emgState)
+                        }
+                    }
+                }
+                RoutineProgress(pagerState.currentPage + 1, routineSize, elapsedTime)
+
+                SensorBottomSheet(state = routineState.showBottomSheet, hide = viewModel::hideBottomSheet, navToConnection = {navController.navigate("Connection")}, btState = btState, sensingPart = routineState.planList!!.data[pagerState.currentPage].mainPart.imagePath)
+            }
         }
     }
 }
