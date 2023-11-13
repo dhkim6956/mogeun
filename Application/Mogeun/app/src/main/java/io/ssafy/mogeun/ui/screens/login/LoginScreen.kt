@@ -98,7 +98,8 @@ fun LoginScreen(
                 }),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done
-                )
+                ),
+                maxLines = 1
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = "비밀번호")
@@ -112,7 +113,8 @@ fun LoginScreen(
                 }),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done
-                )
+                ),
+                maxLines = 1
             )
             Spacer(modifier = Modifier.height(32.dp))
             Button(
