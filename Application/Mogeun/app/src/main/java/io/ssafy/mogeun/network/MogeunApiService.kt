@@ -4,6 +4,7 @@ import io.ssafy.mogeun.model.AddAllExerciseRequest
 import io.ssafy.mogeun.model.AddAllExerciseResponse
 import io.ssafy.mogeun.model.AddRoutineRequest
 import io.ssafy.mogeun.model.AddRoutineResponse
+import io.ssafy.mogeun.model.BodyInfoResponse
 import io.ssafy.mogeun.model.DeleteUserRequest
 import io.ssafy.mogeun.model.DeleteUserResponse
 import io.ssafy.mogeun.model.DupEmailResponse
@@ -17,7 +18,11 @@ import io.ssafy.mogeun.model.SignUpRequest
 import io.ssafy.mogeun.model.SignUpResponse
 import io.ssafy.mogeun.model.GetRoutineListResponse
 import io.ssafy.mogeun.model.ListMyExerciseResponse
+import io.ssafy.mogeun.model.MostPerformedExerciseResponse
+import io.ssafy.mogeun.model.MostSetExerciseResponse
+import io.ssafy.mogeun.model.MostWeightedExerciseResponse
 import io.ssafy.mogeun.model.MyExerciseResponse
+import io.ssafy.mogeun.model.PerformedMuscleInfoResponse
 import io.ssafy.mogeun.model.SetRequest
 import io.ssafy.mogeun.model.SetResponse
 import io.ssafy.mogeun.model.UpdateUserRequest
@@ -75,5 +80,18 @@ interface MogeunApiService {
     @GET("Exercise/List")
     suspend fun myExercise(@Query("exec_key") execKey: Int?): MyExerciseResponse
 
+    @GET("Summary/LastLogs")
+    suspend fun summaryBodyInfo(@Query("user_key") userKey: String): BodyInfoResponse
 
+    @GET("Summary/ExerciseMuscle")
+    suspend fun summaryPerformedMuscle(@Query("user_key") userKey: String, @Query("search_type") searchType: String): PerformedMuscleInfoResponse
+
+    @GET("Summary/ExerciseMost")
+    suspend fun summaryExerciseMost(@Query("user_key") userKey: String, @Query("search_type") searchType: String): MostPerformedExerciseResponse
+
+    @GET("Summary/ExerciseWeight")
+    suspend fun summaryExerciseWeight(@Query("user_key") userKey: String, @Query("search_type") searchType: String): MostWeightedExerciseResponse
+
+    @GET("Summary/ExerciseSet")
+    suspend fun summaryExerciseSet(@Query("user_key") userKey: String, @Query("search_type") searchType: String): MostSetExerciseResponse
 }

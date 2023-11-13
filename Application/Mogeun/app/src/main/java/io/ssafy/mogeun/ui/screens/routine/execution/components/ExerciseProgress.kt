@@ -53,11 +53,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.patrykandpatrick.vico.compose.axis.horizontal.bottomAxis
-import com.patrykandpatrick.vico.compose.axis.vertical.startAxis
-import com.patrykandpatrick.vico.compose.chart.Chart
-import com.patrykandpatrick.vico.compose.chart.line.lineChart
-import com.patrykandpatrick.vico.core.entry.entryModelOf
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.ui.screens.routine.execution.EmgUiState
 import kotlinx.coroutines.delay
@@ -585,15 +580,6 @@ fun FFT_ready(N:Int){//N은 신호의 갯수
     }
 
     val avrNumbers = average.map { it as Number }.toTypedArray()
-    val chartEntryModel = entryModelOf(*avrNumbers)
-
-    Chart(
-        chart = lineChart(),
-        model = chartEntryModel,
-        startAxis = startAxis(),
-        bottomAxis = bottomAxis(),//주파수(Hz) = k / N * 샘플링 주파수(Hz)
-    )
-
 }
 
 
