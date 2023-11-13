@@ -54,44 +54,59 @@ public class UserRoutinePlanService {
             return ServiceStatus.errorStatus("요청 오류: 등록된 루틴이 아님");
 
         List<UserRoutinePlan>  existingPlanList = planRepository.findAllByUserRoutine(routine.get());
-//        List<UserRoutinePlan> added = new ArrayList<>();
 
-//        for(UserRoutinePlan exist: existingPlanList) {
-//            int flag = 0;
-//
-//            for(int edit: editedPlanList) {
-//                if(exist.getExercise().getExecKey() == edit) {
-//                    flag = 1;
-//                    added.add()
-//                }
-//            }
-//
-//            if(flag == 1)
-//                planRepository.delete(exist);
+        // 방안 1. 삭제할 plan과 새로 등록할 plan을 구별 후 작업
+        List<UserRoutinePlan> deleted = new ArrayList<>();
+        List<Integer> added = new ArrayList<>();
+
+        for(UserRoutinePlan plan: existingPlanList) {
+            int flag = 0;
+            for(Integer edit: editedPlanList) {
+                if(plan.getExercise().getExecKey() == edit) {
+                    flag = 1;
+                    break;
+                }
+            }
+            if(flag == 0)
+                deleted.add(plan);
+        }
+
+        for(Integer edit: editedPlanList) {
+            int flag = 0;
+            for(UserRoutinePlan plan: existingPlanList) {
+                if(plan.getExercise().getExecKey() == edit) {
+                    flag = 1;
+                    break;
+                }
+            }
+            if(flag == 0)
+                added.add(edit);
+        }
+        for(UserRoutinePlan del: deleted)
+            planRepository.delete(del);
+        for(Integer add: added)
+            planRepository.save(UserRoutinePlan.builder()
+                    .userRoutine(routine.get())
+                    .user(routine.get().getUser())
+                    .exercise(exerciseRepository.findById(add).get())
+                    .setAmount(1)
+                    .build());
+
+        // 방안 2. 완전 삭제 후 재등록
+//        for(UserRoutinePlan plan: existingPlanList) {
+//            setDetailRepository.deleteAllByUserRoutinePlan(plan);
 //        }
 //
-//        for(int edit: editedPlanList)
+//        planRepository.deleteAllByUserRoutine(routine.get());
+//
+//        for(int edit: editedPlanList) {
 //            planRepository.save(UserRoutinePlan.builder()
 //                    .userRoutine(routine.get())
 //                    .user(routine.get().getUser())
 //                    .exercise(exerciseRepository.findById(edit).get())
 //                    .setAmount(1)
 //                    .build());
-
-        for(UserRoutinePlan plan: existingPlanList) {
-            setDetailRepository.deleteAllByUserRoutinePlan(plan);
-        }
-
-        planRepository.deleteAllByUserRoutine(routine.get());
-
-        for(int edit: editedPlanList) {
-            planRepository.save(UserRoutinePlan.builder()
-                    .userRoutine(routine.get())
-                    .user(routine.get().getUser())
-                    .exercise(exerciseRepository.findById(edit).get())
-                    .setAmount(1)
-                    .build());
-        }
+//        }
 
         return ServiceStatus.okStatus();
     }
