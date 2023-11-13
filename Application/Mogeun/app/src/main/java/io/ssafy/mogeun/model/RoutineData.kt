@@ -26,7 +26,13 @@ data class AddRoutineResponse(
     val message: String,
     val data: AddRoutineResponseData
 )
-
+@Serializable
+data class ListAllExerciseResponsedatamainPart(
+    @SerialName(value = "part_name")
+    val partName: String,
+    @SerialName(value = "image_path")
+    val imagePath: String
+)
 @Serializable
 data class ListAllExerciseResponsedata(
     @SerialName(value = "plan_key")
@@ -39,7 +45,7 @@ data class ListAllExerciseResponsedata(
     @SerialName(value = "sensing_part")
     val sensingPart: List<String>?,
     @SerialName(value = "main_part")
-    val mainPart: String,
+    val mainPart: ListAllExerciseResponsedatamainPart,
     @SerialName(value = "image_path")
     val imagePath: String
 )
@@ -150,4 +156,12 @@ data class MyExerciseResponse(
     val status: String,
     val message: String,
     val data: MyExerciseResponseData
+)
+
+@Serializable
+data class UpdateRoutineRequest(
+    @SerialName(value = "routine_key")
+    val routineKey: Int,
+    @SerialName(value = "exec_keys")
+    val execKeys: List<Int>
 )
