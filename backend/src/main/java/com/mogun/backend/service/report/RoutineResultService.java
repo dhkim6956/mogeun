@@ -257,17 +257,15 @@ public class RoutineResultService {
                 .build();
     }
 
-    public List<ResultListDto> getLastMonthResult(ResultDto dto) {
+    public ServiceStatus<List<ResultListDto>> getLastMonthResult(ResultDto dto) {
 
         List<ResultListDto> list = new ArrayList<>();
         Optional<User> user = userRepository.findById(dto.getUserKey());
         if(user.isEmpty()) {
-            list.add(ResultListDto.builder().routineCount(-1).build());
-            return list;
+            return ServiceStatus.errorStatus("요청 오류: 등록된 회원이 아님");
         }
 
         LocalDate lastDate = LocalDate.now().minusMonths(1);
-
         List<RoutineResult> results = resultRepository.findAllByFromRoutineDateAndUser(lastDate, user.get());
 
         for(RoutineResult result: results) {
@@ -306,17 +304,20 @@ public class RoutineResultService {
                         .build());
             }
         }
-        return list;
+        return ServiceStatus.<List<ResultListDto>>builder()
+                .status(100)
+                .message("SUCCESS")
+                .data(list)
+                .build();
     }
 
-    public List<ResultListDto> getMonthlyRangeResult(ResultDto dto) {
+    public ServiceStatus<List<ResultListDto>> getMonthlyRangeResult(ResultDto dto) {
 
         List<ResultListDto> list = new ArrayList<>();
 
         Optional<User> user = userRepository.findById(dto.getUserKey());
         if(user.isEmpty()) {
-            list.add(ResultListDto.builder().routineCount(-1).build());
-            return list;
+            return ServiceStatus.errorStatus("요청 오류: 등록된 회원이 아님");
         }
 
         LocalDate startDate = dto.getDate().with(firstDayOfMonth());
@@ -360,6 +361,10 @@ public class RoutineResultService {
                         .build());
             }
         }
-        return list;
+        return ServiceStatus.<List<ResultListDto>>builder()
+                .status(100)
+                .message("SUCCESS")
+                .data(list)
+                .build();
     }
 }

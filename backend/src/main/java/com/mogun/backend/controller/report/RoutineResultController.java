@@ -82,24 +82,24 @@ public class RoutineResultController {
     @GetMapping("/LastMonth")
     public ApiResponse<Object> getLastMonthResult(@RequestParam("user_key") int userKey) {
 
-        List<ResultListDto> list =  resultService.getLastMonthResult(ResultDto.builder().userKey(userKey).build());
-        if(!list.isEmpty() && list.get(0).getRoutineCount() == -1)
-            return ApiResponse.badRequest("요청 오류: 등록된 회원이 아님");
+        ServiceStatus<List<ResultListDto>> result =  resultService.getLastMonthResult(ResultDto.builder().userKey(userKey).build());
+        if(result.getStatus() != 100)
+            return ApiResponse.badRequest(result.getMessage());
 
-        return  ApiResponse.ok(list);
+        return  ApiResponse.ok(result.getData());
     }
 
     @GetMapping("/Monthly")
     public ApiResponse<Object> getMonthlyResult(@RequestParam("user_key") int userKey, @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
 
-        List<ResultListDto> list = resultService.getMonthlyRangeResult(ResultDto.builder()
+        ServiceStatus<List<ResultListDto>> result = resultService.getMonthlyRangeResult(ResultDto.builder()
                 .userKey(userKey)
                 .date(date)
                 .build());
 
-        if(!list.isEmpty() && list.get(0).getRoutineCount() == -1)
-            return ApiResponse.badRequest("요청 오류: 등록된 회원이 아님");
+        if(result.getStatus() != 100)
+            return ApiResponse.badRequest(result.getMessage());
 
-        return  ApiResponse.ok(list);
+        return  ApiResponse.ok(result.getData());
     }
 }
