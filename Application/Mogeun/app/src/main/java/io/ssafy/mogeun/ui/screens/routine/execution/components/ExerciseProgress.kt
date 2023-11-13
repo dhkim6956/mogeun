@@ -1,3 +1,5 @@
+@file:Suppress("IMPLICIT_CAST_TO_ANY")
+
 package io.ssafy.mogeun.ui.screens.routine.execution.components
 
 import android.annotation.SuppressLint
@@ -477,28 +479,42 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean) {
             Box(modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth(0.5f)
-                .background(Color.Gray),
+                .background(Color.White),
                 contentAlignment = Alignment.Center
             ){
-                Text("1 : ${emgUiState.emg1Avg}")
+                Text("Lv. ${(emgUiState.emg1Avg / 90) + 1}")
                 Box(modifier = Modifier
                     .clip(CircleShape)
-                    .size((emgUiState.emg1Avg / emgUiState.emg1Max * 90).dp)
-                    .background(Color.White.copy(0.7f))
+                    .size((emgUiState.emg1Avg % 90).dp)
+                    .background(
+                        when((emgUiState.emg1Avg / 90).toInt()){
+                            0 -> Color.White.copy(0.7f)
+                            1 -> Color.Red.copy(0.7f)
+                            2 -> Color.Green.copy(0.7f)
+                            else -> Color.Blue.copy(0.7f)
+                        }
+                    )
                     .wrapContentSize(Alignment.Center)
                 )
             }
             Box(modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth()
-                .background(Color.Red),
+                .background(Color.White),
                 contentAlignment = Alignment.Center
             ){
-                Text("2 : ${emgUiState.emg2Avg}")
+                Text("Lv. ${(emgUiState.emg2Avg / 90) + 1}")
                 Box(modifier = Modifier
                     .clip(CircleShape)
-                    .size((emgUiState.emg2Avg / emgUiState.emg2Max * 90).dp)
-                    .background(Color.White.copy(0.7f))
+                    .size((emgUiState.emg2Avg % 90).dp)
+                    .background(
+                        when((emgUiState.emg2Avg / 90).toInt()){
+                            0 -> Color.White.copy(0.7f)
+                            1 -> Color.Red.copy(0.7f)
+                            2 -> Color.Green.copy(0.7f)
+                            else -> Color.Blue.copy(0.7f)
+                        }
+                    )
                     .wrapContentSize(Alignment.Center)
                 )
             }
@@ -511,18 +527,18 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean) {
             Box(modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth(0.5f)
-                .background(Color.Red),
+                .background(Color(0xFFDDE2FD)),
                 contentAlignment = Alignment.Center
             ){
-                Text("3 : ${emgUiState.emg1?.value}")
+                Text("${emgUiState.emg1Avg % 90}")
             }
             Box(modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth()
-                .background(Color.Gray),
+                .background(Color(0xFFDDE2FD)),
                 contentAlignment = Alignment.Center
             ){
-                Text("4 : $signal_4")
+                Text("${emgUiState.emg2Avg % 90}")
             }
         }
     }
