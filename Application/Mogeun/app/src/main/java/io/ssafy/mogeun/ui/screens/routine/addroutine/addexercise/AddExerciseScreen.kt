@@ -97,6 +97,7 @@ fun AddExerciseScreen(
         if (viewModel.routineKey !== null) {
             Log.d("routinKey", "${viewModel.routineKey}")
             viewModel.addAllExercise(viewModel.routineKey, selectedExercises)
+            navController.navigate("Routine")
         }
     }
     Column(
@@ -282,7 +283,7 @@ fun AlertDialogExample(
                     viewModel.userKey?.let {
                         val ret = viewModel.addRoutine(viewModel.userKey, routineName)
                         Log.d("addRoutine", "$ret")
-                        navController.popBackStack()
+//                        navController.popBackStack()
                     } ?: Log.e("addRoutine", "User key is null")
                 }
             ) {
