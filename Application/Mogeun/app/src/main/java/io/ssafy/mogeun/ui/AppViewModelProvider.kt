@@ -9,7 +9,6 @@ import io.ssafy.mogeun.ui.screens.login.LoginViewModel
 import io.ssafy.mogeun.ui.screens.record.RecordViewModel
 import io.ssafy.mogeun.ui.screens.sample.DbSampleViewModel
 import io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.AddExerciseViewModel
-import io.ssafy.mogeun.ui.screens.routine.execution.ExecutionViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory {
@@ -28,7 +27,7 @@ object AppViewModelProvider {
         }
         initializer {
             BluetoothViewModel(
-                mogeunApplication().container.setRepository,
+                mogeunApplication().container.executionRepository,
                 mogeunApplication().container.emgDataRepository,
                 mogeunApplication().container.routineRepository,
                 mogeunApplication().container.bluetoothController
@@ -43,14 +42,6 @@ object AppViewModelProvider {
             AddExerciseViewModel(
                 mogeunApplication().container.keyRepository,
                 mogeunApplication().container.routineRepository
-
-            )
-        }
-        initializer {
-            ExecutionViewModel(
-                mogeunApplication().container.setRepository,
-                mogeunApplication().container.emgDataRepository,
-                mogeunApplication().container.bluetoothController
             )
         }
     }

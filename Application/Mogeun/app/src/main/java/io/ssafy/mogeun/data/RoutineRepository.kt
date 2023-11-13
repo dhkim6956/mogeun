@@ -9,6 +9,7 @@ import io.ssafy.mogeun.model.ListAllExerciseResponse
 import io.ssafy.mogeun.model.GetRoutineListResponse
 import io.ssafy.mogeun.model.ListMyExerciseResponse
 import io.ssafy.mogeun.model.MyExerciseResponse
+import io.ssafy.mogeun.model.SetOfRoutineResponse
 import io.ssafy.mogeun.model.UpdateRoutineRequest
 import io.ssafy.mogeun.model.UpdateRoutineResponse
 import io.ssafy.mogeun.network.MogeunApiService

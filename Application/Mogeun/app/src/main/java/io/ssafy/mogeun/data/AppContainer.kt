@@ -17,7 +17,7 @@ interface AppContainer {
     val keyRepository: KeyRepository
     val routineRepository: RoutineRepository
     val setRepository: SetRepository
-
+    val executionRepository: ExecutionRepository
 }
 
 class DefaultAppContainer(private val context: Context): AppContainer {
@@ -56,12 +56,11 @@ class DefaultAppContainer(private val context: Context): AppContainer {
         AndroidBluetoothController(context)
     }
 
-
-
     override val setRepository: SetRepository by lazy {
         NetworkSetRepository(retrofitService)
     }
 
-
-
+    override val executionRepository: ExecutionRepository by lazy {
+        NetworkExecutionRepository(retrofitService)
+    }
 }

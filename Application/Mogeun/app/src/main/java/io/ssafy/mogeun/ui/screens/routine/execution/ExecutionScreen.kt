@@ -81,6 +81,11 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
     } else {
         val routineSize = routineState.planList!!.data.size
         val pagerState = rememberPagerState { routineSize }
+
+        LaunchedEffect(pagerState.currentPage) {
+            viewModel.getSetOfRoutine(routineState.planList!!.data[pagerState.currentPage].planKey)
+        }
+
         Column {
             HorizontalPager(
                 pagerState,
