@@ -5,6 +5,7 @@ import com.mogun.backend.controller.routine.request.AddPlanListRequest;
 import com.mogun.backend.controller.routine.request.CommonRoutineRequest;
 import com.mogun.backend.controller.routine.response.AddPlanListResponse;
 import com.mogun.backend.controller.routine.response.PlanListResponse;
+import com.mogun.backend.controller.routine.response.SimpleMusclePartResponse;
 import com.mogun.backend.controller.routine.response.SimplePlanInfoResponse;
 import com.mogun.backend.domain.exercise.Exercise;
 import com.mogun.backend.service.ServiceStatus;
@@ -108,7 +109,10 @@ public class PlanController {
                     .execKey(exec.getExecKey())
                     .execName(exec.getName())
                     .engName(exec.getEngName())
-                    .mainPart(exec.getMainPart().getPartName())
+                    .mainPart(SimpleMusclePartResponse.builder()
+                            .partName(exec.getMainPart().getPartName())
+                            .imagePath(exec.getMainPart().getImagePath())
+                            .build())
                     .musclePart(parts)
                     .imagePath(exec.getImagePath())
                     .build());

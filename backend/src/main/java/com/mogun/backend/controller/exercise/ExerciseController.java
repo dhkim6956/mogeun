@@ -3,6 +3,7 @@ package com.mogun.backend.controller.exercise;
 import com.mogun.backend.ApiResponse;
 import com.mogun.backend.controller.exercise.request.ExerciseRequest;
 import com.mogun.backend.controller.routine.response.PlanListResponse;
+import com.mogun.backend.controller.routine.response.SimpleMusclePartResponse;
 import com.mogun.backend.controller.routine.response.SimplePlanInfoResponse;
 import com.mogun.backend.domain.exercise.Exercise;
 import com.mogun.backend.service.ServiceStatus;
@@ -37,7 +38,10 @@ public class ExerciseController {
                     .execKey(item.getExecKey())
                     .execName(item.getName())
                     .engName(item.getEngName())
-                    .mainPart(item.getMainPart().getPartName())
+                    .mainPart(SimpleMusclePartResponse.builder()
+                            .partName(item.getMainPart().getPartName())
+                            .imagePath(item.getMainPart().getImagePath())
+                            .build())
                     .imagePath(item.getImagePath())
 //                    .musclePart(attachPartService.getAllPartNameByExercise(item))
                     .build());

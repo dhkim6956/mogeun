@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class SimplePlanInfoResponse {
     private List<String> musclePart;
 
     @JsonProperty("main_part")
-    private String mainPart;
+    private SimpleMusclePartResponse mainPart;
 
     @JsonProperty("image_path")
     private String imagePath;
