@@ -105,6 +105,6 @@ public class UserController {
         if(result.getStatus() != 100)
             return ApiResponse.badRequest(result.getMessage());
 
-        return ApiResponse.of(HttpStatus.ACCEPTED, "SUCCESS", result);
+        return ApiResponse.of(HttpStatus.ACCEPTED, "SUCCESS", result.getData());
     }
 }
