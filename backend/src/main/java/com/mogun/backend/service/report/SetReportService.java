@@ -75,6 +75,8 @@ public class SetReportService {
             return ServiceStatus.errorStatus("요청 오류: 올바르지 않은 날짜 옵션");
 
         List<ExecCountInterface> countDtoList = setReportRepository.findRangedExerciseByUserAndStartDate(user.get(), startDate);
+        if(countDtoList.isEmpty())
+            return ServiceStatus.errorStatus("요청 오류: 해당 조건에 부합하는 세트 기록이 없음");
         Optional<Exercise> exec = exerciseRepository.findById(countDtoList.get(0).getExec_Key());
 
         return ServiceStatus.<MostPerformedDto>builder()
@@ -106,6 +108,8 @@ public class SetReportService {
             return ServiceStatus.errorStatus("요청 오류: 올바르지 않은 날짜 옵션");
 
         List<ExecWeightInterface> weightDtoList = setReportRepository.findRangedWeightByUserAndStartDate(user.get(), startDate);
+        if(weightDtoList.isEmpty())
+            return ServiceStatus.errorStatus("요청 오류: 해당 조건에 부합하는 세트 기록이 없음");
         Optional<Exercise> exec = exerciseRepository.findById(weightDtoList.get(0).getExec_Key());
 
         return ServiceStatus.<MostWeightDto>builder()
@@ -137,6 +141,9 @@ public class SetReportService {
             return ServiceStatus.errorStatus("요청 오류: 올바르지 않은 날짜 옵션");
 
         List<ExecSetInterface> weightDtoList = setReportRepository.findRangedSetByUserAndStartDate(user.get(), startDate);
+        if(weightDtoList.isEmpty())
+            return ServiceStatus.errorStatus("요청 오류: 해당 조건에 부합하는 세트 기록이 없음");
+
         Optional<Exercise> exec = exerciseRepository.findById(weightDtoList.get(0).getExec_Key());
 
         return ServiceStatus.<MostSetsDto>builder()
@@ -169,6 +176,8 @@ public class SetReportService {
             return ServiceStatus.errorStatus("요청 오류: 올바르지 않은 날짜 옵션");
 
         List<ExecCountInterface> countDtoList = setReportRepository.findRangedExerciseByUserAndStartDate(user.get(), startDate);
+        if(countDtoList.isEmpty())
+            return ServiceStatus.errorStatus("요청 오류: 해당 조건에 부합하는 세트 기록이 없음");
 
         for(ExecCountInterface item: countDtoList) {
 

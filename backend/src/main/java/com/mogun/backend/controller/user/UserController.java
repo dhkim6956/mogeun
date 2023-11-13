@@ -26,7 +26,6 @@ public class UserController {
 
     @GetMapping("/isJoined")
     public ApiResponse<IsJoinedResponse> isJoined(@RequestParam String email) {
-        boolean res = true;
 
         char joinState = userService.isJoined(email);
         if(joinState == 'J')
