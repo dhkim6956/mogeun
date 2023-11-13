@@ -218,7 +218,7 @@ fun AddExerciseScreen(
                                 openAlertDialog.value = true
                             } else {
                                 viewModel.updateRoutine(routineKey = currentRoutineKey, execKeys = selectedExercises)
-                                navController.navigate("AddRoutine/${currentRoutineKey}")
+                                navController.popBackStack()
                             }
                         },
                     ) {
@@ -265,8 +265,7 @@ fun AlertDialogExample(
         },
         text = {
             Column {
-                Spacer(modifier = Modifier.height(8.dp)) // Spacing for better UI
-                // TextField for user to enter the routine name
+                Spacer(modifier = Modifier.height(8.dp))
                 TextField(
                     value = routineName,
                     onValueChange = { routineName = it },
@@ -283,7 +282,6 @@ fun AlertDialogExample(
                     viewModel.userKey?.let {
                         val ret = viewModel.addRoutine(viewModel.userKey, routineName)
                         Log.d("addRoutine", "$ret")
-//                        navController.popBackStack()
                     } ?: Log.e("addRoutine", "User key is null")
                 }
             ) {
