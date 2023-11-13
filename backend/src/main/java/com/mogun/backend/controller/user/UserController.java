@@ -6,6 +6,7 @@ import com.mogun.backend.controller.user.request.ChangePasswordRequest;
 import com.mogun.backend.controller.user.request.ExitRequest;
 import com.mogun.backend.controller.user.request.SignInRequest;
 import com.mogun.backend.controller.user.response.UserDetailResponse;
+import com.mogun.backend.service.ServiceStatus;
 import com.mogun.backend.service.user.UserService;
 import com.mogun.backend.service.user.dto.UserDto;
 import com.mogun.backend.controller.user.request.UserJoinRequest;
@@ -46,8 +47,8 @@ public class UserController {
     }
 
     @PostMapping("/Enroll")
-    public ApiResponse enrollUser(@RequestBody UserJoinRequest userJoinRequest) {
-        String result = userService.joinUser(UserDto.builder()
+    public ApiResponse<Object> enrollUser(@RequestBody UserJoinRequest userJoinRequest) {
+        ServiceStatus<Object> result = userService.joinUser(UserDto.builder()
                 .email(userJoinRequest.getUserEmail())
                 .password(userJoinRequest.getUserPassword())
                 .name(userJoinRequest.getUserName())
@@ -59,56 +60,50 @@ public class UserController {
                 .build()
         );
 
-        if(result == "SUCCESS")
-            return ApiResponse.of(HttpStatus.ACCEPTED, "등록 완료", userJoinRequest);
-        else
-            return ApiResponse.badRequest(result);
+        return ApiResponse.postAndPutResponse(result, userJoinRequest);
     }
 
     @PostMapping("/Exit")
-    public ApiResponse exitUser(@RequestBody ExitRequest exitRequest) {
+    public ApiResponse<Object> exitUser(@RequestBody ExitRequest exitRequest) {
 
-        String result = userService.exitUser(exitRequest.getUserId(), exitRequest.getUserPassword());
+        ServiceStatus<Object> result = userService.exitUser(exitRequest.getUserId(), exitRequest.getUserPassword());
 
-        if(result != "SUCCESS")
-            return ApiResponse.badRequest(result);
-        else
-            return ApiResponse.of(HttpStatus.ACCEPTED, result, null);
+        return ApiResponse.postAndPutResponse(result, exitRequest);
     }
 
     @PostMapping("/Change/Password")
-    public ApiResponse changePassword(@RequestBody ChangePasswordRequest pwdReq) {
+    public ApiResponse<Object> changePassword(@RequestBody ChangePasswordRequest pwdReq) {
 
-        String result = userService.changePassword(pwdReq.getEmail(), pwdReq.getOldPassword(), pwdReq.getNewPassword());
-        if(result != "SUCCESS")
-            return ApiResponse.badRequest(result);
-        else
-            return ApiResponse.of(HttpStatus.ACCEPTED, result, null);
+        ServiceStatus<Object> result = userService.changePassword(pwdReq.getEmail(), pwdReq.getOldPassword(), pwdReq.getNewPassword());
+
+        return ApiResponse.postAndPutResponse(result, pwdReq);
     }
 
     @GetMapping("/Detail")
-    public ApiResponse getUserDetail(@RequestParam("user_key") int userKey) {
+    public ApiResponse<Object> getUserDetail(@RequestParam("user_key") int userKey) {
 
-        UserDto result = userService.getUserDetail(userKey);
+        ServiceStatus<UserDto> result = userService.getUserDetail(userKey);
+
+        if(result.getStatus() != 100)
+            return ApiResponse.badRequest(result.getMessage());
+        UserDto data = result.getData();
 
         return ApiResponse.ok(UserDetailResponse.builder()
-                .userName(result.getName())
-                .height(result.getHeight())
-                .weight(result.getWeight())
-                .muscleMass(result.getMuscleMass())
-                .bodyFat(result.getBodyFat())
+                .userName(data.getName())
+                .height(data.getHeight())
+                .weight(data.getWeight())
+                .muscleMass(data.getMuscleMass())
+                .bodyFat(data.getBodyFat())
                 .build());
     }
 
     @PostMapping("/SignIn")
-    public ApiResponse signIn(@RequestBody SignInRequest request) {
+    public ApiResponse<Object> signIn(@RequestBody SignInRequest request) {
 
-        int result = userService.signIn(request.getUserEmail(), request.getUserPassword());
+        ServiceStatus<Object> result = userService.signIn(request.getUserEmail(), request.getUserPassword());
 
-        if(result == -1)
-            return ApiResponse.of(HttpStatus.BAD_REQUEST, "FAILED", -1);
-        else if(result == -2)
-            return ApiResponse.of(HttpStatus.BAD_REQUEST, "FAILED", -2);
+        if(result.getStatus() != 100)
+            return ApiResponse.badRequest(result.getMessage());
 
         return ApiResponse.of(HttpStatus.ACCEPTED, "SUCCESS", result);
     }
