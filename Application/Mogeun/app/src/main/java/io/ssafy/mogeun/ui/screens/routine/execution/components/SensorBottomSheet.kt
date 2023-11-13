@@ -1,5 +1,6 @@
 package io.ssafy.mogeun.ui.screens.routine.execution.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -37,9 +39,14 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SensorBottomSheet(state: Boolean, hide: () -> Unit, navToConnection: () -> Unit, btState: BluetoothUiState) {
+fun SensorBottomSheet(state: Boolean, hide: () -> Unit, navToConnection: () -> Unit, btState: BluetoothUiState, sensingPart: String) {
     val sheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
+
+    val context = LocalContext.current
+    val leftResId = context.resources.getIdentifier("${sensingPart}_l", "drawable", context.packageName)
+    val rightResId = context.resources.getIdentifier("${sensingPart}_r", "drawable", context.packageName)
+
 
     if (state) {
         ModalBottomSheet(
@@ -116,7 +123,7 @@ fun SensorBottomSheet(state: Boolean, hide: () -> Unit, navToConnection: () -> U
                                     .weight(1f)
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.y_abs_l),
+                                    painter = painterResource(id = leftResId),
                                     null,
                                     Modifier.fillMaxSize(0.7f)
                                 )
@@ -133,7 +140,7 @@ fun SensorBottomSheet(state: Boolean, hide: () -> Unit, navToConnection: () -> U
                                     .weight(1f)
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.y_abs_r),
+                                    painter = painterResource(id = rightResId),
                                     null,
                                     Modifier.fillMaxSize(0.7f)
                                 )

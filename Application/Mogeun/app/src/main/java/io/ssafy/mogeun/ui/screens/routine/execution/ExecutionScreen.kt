@@ -132,7 +132,7 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
             }
             RoutineProgress(pagerState.currentPage + 1, routineSize)
 
-            SensorBottomSheet(state = routineState.showBottomSheet, hide = viewModel::hideBottomSheet, navToConnection = {navController.navigate("Connection")}, btState = btState)
+            SensorBottomSheet(state = routineState.showBottomSheet, hide = viewModel::hideBottomSheet, navToConnection = {navController.navigate("Connection")}, btState = btState, sensingPart = routineState.planList!!.data[pagerState.currentPage].mainPart.imagePath)
         }
     }
 }

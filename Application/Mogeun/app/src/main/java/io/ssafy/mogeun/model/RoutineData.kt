@@ -85,6 +85,14 @@ data class ListMyExerciseResponseDataExercises(
 )
 
 @Serializable
+data class MainPartInfo(
+    @SerialName(value = "part_name")
+    val partName: String,
+    @SerialName(value = "image_path")
+    val imagePath: String
+)
+
+@Serializable
 data class ListMyExerciseResponseData(
     @SerialName(value = "plan_key")
     val planKey: Int,
@@ -96,7 +104,7 @@ data class ListMyExerciseResponseData(
     @SerialName(value = "sensing_part")
     val sensingPart: List<String>,
     @SerialName(value = "main_part")
-    val mainPart: String,
+    val mainPart: MainPartInfo,
     @SerialName(value = "image_path")
     val imagePath: String
 )
