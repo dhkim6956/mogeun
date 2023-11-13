@@ -5,6 +5,8 @@ import io.ssafy.mogeun.model.AddAllExerciseResponse
 import io.ssafy.mogeun.model.AddRoutineRequest
 import io.ssafy.mogeun.model.AddRoutineResponse
 import io.ssafy.mogeun.model.BodyInfoResponse
+import io.ssafy.mogeun.model.DeleteRoutineRequest
+import io.ssafy.mogeun.model.DeleteRoutineResponse
 import io.ssafy.mogeun.model.DeleteUserRequest
 import io.ssafy.mogeun.model.DeleteUserResponse
 import io.ssafy.mogeun.model.DupEmailResponse
@@ -92,6 +94,8 @@ interface MogeunApiService {
     suspend fun getSetOfRoutine(@Query("plan_key") planKey: Int): SetOfRoutineResponse
     @PUT("Routine/Rename")
     suspend fun updateRoutineName(@Body updateRoutineNameRequest: UpdateRoutineNameRequest): UpdateRoutineNameResponse
+    @PUT("Routine/Delete")
+    suspend fun deleteRoutine(@Body deleteRoutineRequest: DeleteRoutineRequest): DeleteRoutineResponse
 
     @GET("Summary/LastLogs")
     suspend fun summaryBodyInfo(@Query("user_key") userKey: String): BodyInfoResponse

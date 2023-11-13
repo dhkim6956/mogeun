@@ -1,5 +1,6 @@
 package io.ssafy.mogeun.ui.screens.routine.searchRoutine
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -40,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
@@ -215,11 +217,7 @@ fun RoutineList(
     viewModel: RoutineViewModel = viewModel(factory = RoutineViewModel.Factory)
 
 ) {
-    var routineName by remember { mutableStateOf("") }
     val openAlertDialog = remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
-
     LaunchedEffect(Unit) {
         viewModel.getUserKey()
     }
@@ -250,7 +248,6 @@ fun RoutineList(
             val scope = rememberCoroutineScope()
             var showBottomSheet by remember { mutableStateOf(false) }
             Button(
-//                onClick = { navController.navigate("addroutine/${routine.routineKey}") },
                 onClick = { showBottomSheet = true },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
             ) {
@@ -268,15 +265,9 @@ fun RoutineList(
                     ) {
                         Button(
                             onClick = {
-                                scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                    if (!sheetState.isVisible) {
-                                        showBottomSheet = false
-                                    }
-                                }
+                                showBottomSheet = false
                                 openAlertDialog.value = true
-//                                viewModel.updateRoutineName(index)
                             },
-
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(50.dp)
@@ -287,30 +278,9 @@ fun RoutineList(
                                 fontWeight = FontWeight.Bold
                             )
                         }
-                        if (openAlertDialog.value) {
-                            AlertDialogExample(
-                                routineName = routineName,
-                                onRoutineNameChange = { newName -> routineName = newName },
-                                onConfirmation = {
-                                    println("Confirmation registered")
-                                },
-                                dialogTitle = "루틴 이름을 설정해 주세요.",
-                                onDismissRequest = { /*openAlertDialog.value = false*/ },
-                                icon = Icons.Default.Info,
-                                index = index,
-                                navController = navController,
-                                viewModel = viewModel
-                            )
-                        }
                         Spacer(modifier = Modifier.height(5.dp))
                         Button(
-                            onClick = {
-                                scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                    if (!sheetState.isVisible) {
-                                        showBottomSheet = false
-                                    }
-                                }
-                            },
+                            onClick = { navController.navigate("addroutine/${routine.routineKey}") },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(50.dp)
@@ -344,6 +314,23 @@ fun RoutineList(
                         Spacer(modifier = Modifier.height(20.dp))
                     }
                 }
+            }
+        }
+        when {
+            openAlertDialog.value -> {
+                AlertDialogExample(
+                    onConfirmation = {
+                        Log.d("routineName", "${viewModel.newRoutineName.value}")
+                        viewModel.updateRoutineName(index, viewModel.newRoutineName.value)
+                        openAlertDialog.value = false
+                    },
+                    dialogTitle = "루틴 이름을 설정해 주세요.",
+                    onDismissRequest = {
+                        openAlertDialog.value = false
+                    },
+                    icon = Icons.Default.Info,
+                    index = index,
+                )
             }
         }
         Row(
@@ -388,34 +375,22 @@ fun muscleIcon(imagePath: String) {
             painter = painterResource(id = image),
             contentDescription = imagePath,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.height(32.dp).width(32.dp)
+            modifier = Modifier
+                .height(32.dp)
+                .width(32.dp)
         )
     }
     Spacer(modifier = Modifier.width(10.dp))
 }
 @Composable
 fun AlertDialogExample(
-    navController: NavHostController,
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
     dialogTitle: String,
     icon: ImageVector,
     index : Int,
-    routineName: String,
-    onRoutineNameChange: (String) -> Unit,
-    viewModel: RoutineViewModel
 ) {
     val viewModel: RoutineViewModel = viewModel(factory = RoutineViewModel.Factory)
-    var routineName by remember { mutableStateOf("") }
-    val scope = rememberCoroutineScope()
-    LaunchedEffect(viewModel.userKey){
-        viewModel.getUserKey()
-    }
-    TextField(
-        value = routineName,
-        onValueChange = onRoutineNameChange,
-        // ...
-    )
     AlertDialog(
         icon = {
             Icon(icon, contentDescription = "Example Icon")
@@ -424,31 +399,32 @@ fun AlertDialogExample(
             Text(text = dialogTitle)
         },
         text = {
-            Column {
-                Spacer(modifier = Modifier.height(8.dp)) // Spacing for better UI
-                // TextField for user to enter the routine name
-                TextField(
-                    value = routineName,
-                    onValueChange = onRoutineNameChange,
-                    label = {}
-                )
-            }
+            TextField(
+                value = viewModel.newRoutineName.value,
+                onValueChange = {
+                    viewModel.updateRoutineName(it)
+                }
+            )
         },
-        onDismissRequest = onDismissRequest,
+        onDismissRequest = {
+            onDismissRequest()
+        },
         confirmButton = {
             TextButton(
                 onClick = {
-                    scope.launch { // 코루틴 빌더 사용
-                        viewModel.updateRoutineName(index, routineName)
-                        onConfirmation()
-                    }
+                    onConfirmation()
+
                 }
             ) {
                 Text("Confirm")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismissRequest) {
+            TextButton(
+                onClick = {
+                    onDismissRequest()
+                }
+            ) {
                 Text("Dismiss")
             }
         }

@@ -220,3 +220,15 @@ data class UpdateRoutineNameResponse(
     val message: String,
     val data: UpdateRoutineNameResponseData
 )
+@Serializable
+data class DeleteRoutineRequest(
+    @SerialName(value = "routine_key")
+    val routineKey: Int
+)
+@Serializable
+data class DeleteRoutineResponse(
+    val code: Int,
+    val status: String,
+    @SerialName(value = "err_message")
+    val errMessage: String
+)
