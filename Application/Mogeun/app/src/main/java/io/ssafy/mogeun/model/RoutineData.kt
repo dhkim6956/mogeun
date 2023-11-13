@@ -70,7 +70,7 @@ data class GetRoutineListResponse(
 data class GetRoutineListResponseBody(
     @SerialName(value = "routine_key")
     val routineKey: Int,
-    val name: String,
+    val name: String?,
     @SerialName(value = "image_path")
     val imagePath: List<String>
 )
@@ -186,4 +186,37 @@ data class UpdateRoutineResponseData(
     val routineKey: Int,
     @SerialName(value = "exec_keys")
     val execKeys: List<Int>
+)
+@Serializable
+data class UpdateRoutineNameRequest(
+    @SerialName(value = "routine_key")
+    val routineKey: Int?,
+    @SerialName(value = "routine_name")
+    val routineName: String?
+)
+@Serializable
+data class UpdateRoutineNameResponseData(
+    @SerialName(value = "user_key")
+    val userKey: Int,
+    @SerialName(value = "user_email")
+    val userEmail: String?,
+    @SerialName(value = "routine_name")
+    val routineName: String?,
+    @SerialName(value = "routine_key")
+    val routineKey: Int?,
+    @SerialName(value = "exec_key")
+    val execKey: Int,
+    @SerialName(value = "total_sets")
+    val totalSets: Int,
+    @SerialName(value = "plan_key")
+    val planKey: Int,
+    @SerialName(value = "set_key")
+    val setKey: Int
+)
+@Serializable
+data class UpdateRoutineNameResponse(
+    val code: Int,
+    val status: String,
+    val message: String,
+    val data: UpdateRoutineNameResponseData
 )
