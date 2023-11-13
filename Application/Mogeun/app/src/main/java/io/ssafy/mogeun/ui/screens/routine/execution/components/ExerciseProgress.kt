@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -66,14 +67,14 @@ import org.jtransforms.fft.DoubleFFT_1D
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun ExerciseProgress(emgUiState: EmgUiState, planInfo: List<SetOfRoutineDetail>, addSet: () -> Unit, removeSet: (Int) -> Unit, setWeight: (Int) -> Unit, setRep: (Int) -> Unit){
+fun ExerciseProgress(emgUiState: EmgUiState, planInfo: List<SetOfRoutineDetail>, addSet: () -> Unit, removeSet: (Int) -> Unit, setWeight: (Int, Int) -> Unit, setRep: (Int, Int) -> Unit){
 
     val totalSet = planInfo.size
     val setCntList = (1..totalSet).map { it }
 
     var selectedTab by remember { mutableIntStateOf(0) }
-    var lastClickTime by remember { mutableLongStateOf(0L) }
-    val debounceDuration = 300 //0.1초
+
+
     //시작 종료
     var isStarting by remember { mutableStateOf(false) }
 
@@ -103,8 +104,8 @@ fun ExerciseProgress(emgUiState: EmgUiState, planInfo: List<SetOfRoutineDetail>,
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight()
-                    .padding(0.dp),
-                contentAlignment = Alignment.TopEnd
+                    .padding(horizontal = 4.dp, vertical = 0.dp),
+                contentAlignment = Alignment.CenterEnd
             ){
                 Button(onClick = {
                     addSet()
@@ -147,10 +148,10 @@ fun ExerciseProgress(emgUiState: EmgUiState, planInfo: List<SetOfRoutineDetail>,
                 contentAlignment = Alignment.Center
             ){
                 DateSelectionSection(
-                    onWeightChosen = { setWeight(it.toInt()) },
-                    onRepChosen = {setRep(it.toInt())},
-                    preWeight = 50,
-                    preRep = 50
+                    onWeightChosen = { setWeight(selectedTab + 1, it.toInt()) },
+                    onRepChosen = {setRep(selectedTab + 1, it.toInt())},
+                    preWeight = planInfo[selectedTab].weight,
+                    preRep = planInfo[selectedTab].targetRep
                 )
             }
             Box(
@@ -355,10 +356,22 @@ fun InfiniteItemsPicker(
     // 얼마나 내렸는지 기억
     val listState = rememberLazyListState(firstIndex)
     val currentValue = remember { mutableStateOf("") }
+    val previousValue = remember { mutableStateOf("$firstIndex")}
+
+    LaunchedEffect(key1 = firstIndex) {
+        if (firstIndex.toString() != currentValue.value) {
+            val newPosition = (items.size * 30) + firstIndex
+
+            listState.scrollToItem(newPosition)
+        }
+    }
 
     LaunchedEffect(key1 = !listState.isScrollInProgress) {
-        onItemSelected(currentValue.value)
-        listState.animateScrollToItem(index = listState.firstVisibleItemIndex)
+        if(previousValue.value != currentValue.value) {
+            onItemSelected(currentValue.value)
+            listState.animateScrollToItem(index = listState.firstVisibleItemIndex)
+            previousValue.value = currentValue.value
+        }
     }
 
     Box(modifier = Modifier

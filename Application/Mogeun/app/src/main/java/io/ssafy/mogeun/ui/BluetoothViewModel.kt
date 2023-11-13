@@ -2,13 +2,17 @@ package io.ssafy.mogeun.ui
 
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.ssafy.mogeun.data.Emg
 import io.ssafy.mogeun.data.EmgRepository
 import io.ssafy.mogeun.data.ExecutionRepository
+import io.ssafy.mogeun.data.Key
+import io.ssafy.mogeun.data.KeyRepository
 import io.ssafy.mogeun.data.RoutineRepository
 import io.ssafy.mogeun.data.bluetooth.BluetoothController
 import io.ssafy.mogeun.data.bluetooth.BluetoothDeviceDomain
@@ -32,6 +36,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -45,8 +50,19 @@ class BluetoothViewModel(
     private val executionRepository: ExecutionRepository,
     private val emgRepository: EmgRepository,
     private val routineRepository: RoutineRepository,
-    private val bluetoothController: BluetoothController
+    private val bluetoothController: BluetoothController,
+    private val keyRepository: KeyRepository,
 ): ViewModel() {
+
+    var userKey by mutableIntStateOf(0)
+    fun getUserKey() {
+        viewModelScope.launch {
+            val key = keyRepository.getKey().first()
+            val userKey = key?.userKey
+            Log.d("execution", "사용자 키: $userKey")
+        }
+    }
+
     private val _routineState = MutableStateFlow(RoutineState(null, showBottomSheet = false))
     val routineState = _routineState.asStateFlow()
 
@@ -88,14 +104,12 @@ class BluetoothViewModel(
                     setOfPlan
                 }
             }
-            Log.d("update", "${changedPlanDetails[0].setOfRoutineDetail}")
 
             routineState.copy(planDetails = changedPlanDetails)
         }
     }
 
     fun removeSet(planKey: Int, setIdx: Int) {
-        Log.d("update", "removeSet : $planKey")
         _routineState.update { routineState ->
             var newIdx = 1
             val changedPlanDetails = routineState.planDetails.map { setOfPlan ->
@@ -105,9 +119,60 @@ class BluetoothViewModel(
                     setOfPlan
                 }
             }
-            Log.d("update", "${changedPlanDetails[0].setOfRoutineDetail}")
 
             routineState.copy(planDetails = changedPlanDetails)
+        }
+    }
+
+    fun setWeight(planKey: Int, setIdx: Int, weight: Int) {
+        _routineState.update { routineState ->
+            val changedPlanDetails = routineState.planDetails.map { setOfPlan ->
+                if(setOfPlan.planKey == planKey) {
+                    setOfPlan.copy(valueChanged = true, setOfRoutineDetail = setOfPlan.setOfRoutineDetail.map { setOfRoutineDetail -> if(setOfRoutineDetail.setNumber == setIdx) setOfRoutineDetail.copy(weight = weight) else setOfRoutineDetail } )
+                } else {
+                    setOfPlan
+                }
+            }
+
+            routineState.copy(planDetails = changedPlanDetails)
+        }
+    }
+
+    fun setRep(planKey: Int, setIdx: Int, rep: Int) {
+        _routineState.update { routineState ->
+            val changedPlanDetails = routineState.planDetails.map { setOfPlan ->
+                if(setOfPlan.planKey == planKey) {
+                    setOfPlan.copy(valueChanged = true, setOfRoutineDetail = setOfPlan.setOfRoutineDetail.map { setOfRoutineDetail -> if(setOfRoutineDetail.setNumber == setIdx) setOfRoutineDetail.copy(targetRep = rep) else setOfRoutineDetail } )
+                } else {
+                    setOfPlan
+                }
+            }
+
+            routineState.copy(planDetails = changedPlanDetails)
+        }
+    }
+
+    suspend fun startRoutine(routineKey: Int, isAttached: String = "Y") {
+        _routineState.update { routineState -> routineState.copy(onProcess = true) }
+
+        viewModelScope.launch {
+            Log.d("execution", "$userKey")
+            val ret = executionRepository.startRoutine(userKey, routineKey, isAttached)
+            Log.d("execution", "$ret")
+            _routineState.update { routineState -> routineState.copy(reportKey = ret.data!!.reportKey) }
+        }
+    }
+
+    fun endRoutine() {
+        val reportKey = routineState.value.reportKey
+//        _routineState.update { routineState -> routineState.copy(onProcess = false, reportKey = null) }
+        Log.d("execution", "$reportKey")
+
+        viewModelScope.launch {
+            val ret = executionRepository.endRoutine(userKey, reportKey!!)
+
+
+            Log.d("execution", "${ret}")
         }
     }
 

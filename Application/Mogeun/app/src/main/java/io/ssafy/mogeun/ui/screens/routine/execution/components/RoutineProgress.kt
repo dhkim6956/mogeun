@@ -1,6 +1,7 @@
 package io.ssafy.mogeun.ui.screens.routine.execution.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,7 +35,7 @@ import androidx.compose.ui.zIndex
 import io.ssafy.mogeun.ui.screens.routine.execution.ElapsedTime
 
 @Composable
-fun RoutineProgress(page: Int, execCnt: Int, elapsedTime: ElapsedTime) {
+fun RoutineProgress(page: Int, execCnt: Int, elapsedTime: ElapsedTime, endRoutine: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -85,6 +86,9 @@ fun RoutineProgress(page: Int, execCnt: Int, elapsedTime: ElapsedTime) {
                             .height(80.dp)
                             .background(MaterialTheme.colorScheme.primaryContainer)
                             .padding(8.dp)
+                            .clickable {
+                                endRoutine()
+                            }
                     ) {
                         Text(text = "루틴종료", fontSize = 24.sp, textAlign = TextAlign.Center, lineHeight = 28.sp)
                     }

@@ -39,6 +39,7 @@ import io.ssafy.mogeun.ui.components.ElevatedGif
 import io.ssafy.mogeun.ui.screens.routine.execution.components.ExerciseProgress
 import io.ssafy.mogeun.ui.screens.routine.execution.components.RoutineProgress
 import io.ssafy.mogeun.ui.screens.routine.execution.components.SensorBottomSheet
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -51,6 +52,18 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
     val elapsedTime by viewModel.elaspedTime.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            viewModel.getUserKey()
+        }
+    }
+
+    LaunchedEffect(viewModel.userKey) {
+        if (!routineState.onProcess) {
+            viewModel.startRoutine(routineKey)
+        }
+    }
 
     LaunchedEffect(routineKey) {
         viewModel.getPlanList(routineKey)
@@ -140,11 +153,18 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
                             modifier = Modifier
                                 .fillMaxSize()
                         ) {
-                            ExerciseProgress(emgState, routineState.planDetails[page].setOfRoutineDetail, {viewModel.addSet(plan.planKey)}, {idx -> viewModel.removeSet(plan.planKey, idx)}, {}, {})
+                            ExerciseProgress(
+                                emgState,
+                                routineState.planDetails[page].setOfRoutineDetail,
+                                {viewModel.addSet(plan.planKey)},
+                                {idx -> viewModel.removeSet(plan.planKey, idx)},
+                                {idx, weight -> viewModel.setWeight(plan.planKey, idx, weight)},
+                                {idx, rep -> viewModel.setRep(plan.planKey, idx, rep)}
+                            )
                         }
                     }
                 }
-                RoutineProgress(pagerState.currentPage + 1, routineSize, elapsedTime)
+                RoutineProgress(pagerState.currentPage + 1, routineSize, elapsedTime, {viewModel.endRoutine()})
 
                 SensorBottomSheet(state = routineState.showBottomSheet, hide = viewModel::hideBottomSheet, navToConnection = {navController.navigate("Connection")}, btState = btState, sensingPart = routineState.planList!!.data[pagerState.currentPage].mainPart.imagePath)
             }

@@ -10,24 +10,27 @@ import io.ssafy.mogeun.model.DeleteRoutineResponse
 import io.ssafy.mogeun.model.DeleteUserRequest
 import io.ssafy.mogeun.model.DeleteUserResponse
 import io.ssafy.mogeun.model.DupEmailResponse
+import io.ssafy.mogeun.model.EndRoutineRequest
 import io.ssafy.mogeun.model.GetInbodyResponse
-import io.ssafy.mogeun.model.ListAllExerciseResponse
-import io.ssafy.mogeun.model.MonthlyResponse
-import io.ssafy.mogeun.model.RoutineResponse
-import io.ssafy.mogeun.model.SignInRequest
-import io.ssafy.mogeun.model.SignInResponse
-import io.ssafy.mogeun.model.SignUpRequest
-import io.ssafy.mogeun.model.SignUpResponse
 import io.ssafy.mogeun.model.GetRoutineListResponse
+import io.ssafy.mogeun.model.ListAllExerciseResponse
 import io.ssafy.mogeun.model.ListMyExerciseResponse
+import io.ssafy.mogeun.model.MonthlyResponse
 import io.ssafy.mogeun.model.MostPerformedExerciseResponse
 import io.ssafy.mogeun.model.MostSetExerciseResponse
 import io.ssafy.mogeun.model.MostWeightedExerciseResponse
 import io.ssafy.mogeun.model.MyExerciseResponse
-import io.ssafy.mogeun.model.SetOfRoutineResponse
 import io.ssafy.mogeun.model.PerformedMuscleInfoResponse
+import io.ssafy.mogeun.model.RoutineExecutionResponse
+import io.ssafy.mogeun.model.RoutineResponse
+import io.ssafy.mogeun.model.SetOfRoutineResponse
 import io.ssafy.mogeun.model.SetRequest
 import io.ssafy.mogeun.model.SetResponse
+import io.ssafy.mogeun.model.SignInRequest
+import io.ssafy.mogeun.model.SignInResponse
+import io.ssafy.mogeun.model.SignUpRequest
+import io.ssafy.mogeun.model.SignUpResponse
+import io.ssafy.mogeun.model.StartRoutineRequest
 import io.ssafy.mogeun.model.UpdateRoutineNameRequest
 import io.ssafy.mogeun.model.UpdateRoutineNameResponse
 import io.ssafy.mogeun.model.UpdateRoutineRequest
@@ -111,4 +114,10 @@ interface MogeunApiService {
 
     @GET("Summary/ExerciseSet")
     suspend fun summaryExerciseSet(@Query("user_key") userKey: String, @Query("search_type") searchType: String): MostSetExerciseResponse
+
+    @POST("Report/Routine/Start")
+    suspend fun startRoutine(@Body startRoutineRequest: StartRoutineRequest): RoutineExecutionResponse
+
+    @PUT("Report/Routine/End")
+    suspend fun endRoutine(@Body endRoutineRequest: EndRoutineRequest): RoutineExecutionResponse
 }
