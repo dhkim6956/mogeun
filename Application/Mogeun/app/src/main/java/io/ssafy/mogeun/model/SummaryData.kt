@@ -33,7 +33,7 @@ data class BodyInfoResponse(
     val code: Int,
     val status: String,
     val message: String,
-    val data: BodyInfo
+    val data: BodyInfo?
 )
 
 @Serializable
@@ -48,7 +48,7 @@ data class PerformedMuscleInfoResponse(
     val code: Int,
     val status: String,
     val message: String,
-    val data: List<PerformedMuscleInfo>
+    val data: List<PerformedMuscleInfo>?
 )
 
 @Serializable
@@ -66,7 +66,7 @@ data class MostPerformedExerciseResponse(
     val code: Int,
     val status: String,
     val message: String,
-    val data: MostPerformedExercise
+    val data: MostPerformedExercise?
 )
 
 @Serializable
@@ -83,7 +83,7 @@ data class MostWeightedExerciseResponse(
     val code: Int,
     val status: String,
     val message: String,
-    val data: MostWeightedExercise
+    val data: MostWeightedExercise?
 )
 
 @Serializable
@@ -101,5 +101,5 @@ data class MostSetExerciseResponse(
     val code: Int,
     val status: String,
     val message: String,
-    val data: MostSetExercise
+    val data: MostSetExercise?
 )
