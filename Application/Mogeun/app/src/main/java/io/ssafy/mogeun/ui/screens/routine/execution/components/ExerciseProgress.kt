@@ -66,13 +66,11 @@ import org.jtransforms.fft.DoubleFFT_1D
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun ExerciseProgress(emgUiState: EmgUiState, planInfo: List<SetOfRoutineDetail>, setWeight: (Int) -> Unit, setRep: (Int) -> Unit){
+fun ExerciseProgress(emgUiState: EmgUiState, planInfo: List<SetOfRoutineDetail>, addSet: () -> Unit, removeSet: (Int) -> Unit, setWeight: (Int) -> Unit, setRep: (Int) -> Unit){
 
     val totalSet = planInfo.size
-    Log.d("debug", "totalSet = $totalSet")
     val setCntList = (1..totalSet).map { it }
 
-    val setList: MutableList<String> by remember { mutableStateOf(mutableListOf("1세트", "2세트", "3세트", "4세트")) }
     var selectedTab by remember { mutableIntStateOf(0) }
     var lastClickTime by remember { mutableLongStateOf(0L) }
     val debounceDuration = 300 //0.1초
@@ -98,7 +96,6 @@ fun ExerciseProgress(emgUiState: EmgUiState, planInfo: List<SetOfRoutineDetail>,
                 contentAlignment = Alignment.TopStart
             ){
                 ScrollableTabRow(setCntList.map { "$it 세트" }, selectedTab, onTabClick = { index ->
-                    Log.d("debug", "index = $index")
                     selectedTab = index
                 })
             }
@@ -110,15 +107,7 @@ fun ExerciseProgress(emgUiState: EmgUiState, planInfo: List<SetOfRoutineDetail>,
                 contentAlignment = Alignment.TopEnd
             ){
                 Button(onClick = {
-//                    val currentTime = System.currentTimeMillis()
-//                    if(currentTime - lastClickTime > debounceDuration){
-//                        if(setList.size<9){
-//                            val newItem = "${setList.size+1}세트"
-//                            setList.add(newItem)
-//                            selectedTab = setList.size - 1
-//                            lastClickTime = currentTime
-//                        }
-//                    }
+                    addSet()
                 },
                     modifier = Modifier
                         .width(120.dp)
@@ -193,14 +182,8 @@ fun ExerciseProgress(emgUiState: EmgUiState, planInfo: List<SetOfRoutineDetail>,
                         .fillMaxHeight()
                         .background(color = Color.White)
                         .clickable {
-//                            val currentTime = System.currentTimeMillis()
-//                            if (currentTime - lastClickTime > debounceDuration) {
-//                                if (setList.size > 1) {
-//                                    setList.removeLast()
-//                                    selectedTab = setList.size - 1
-//                                }
-//                                lastClickTime = currentTime
-//                            }
+                            if (selectedTab == totalSet - 1) selectedTab = totalSet - 2
+                            removeSet(selectedTab + 1)
                         },
                 ){
                     Text(
@@ -269,6 +252,7 @@ private fun ScrollableTabRow(
     onTabClick: (Int) -> Unit
 ) {
     androidx.compose.material3.ScrollableTabRow(
+        containerColor = Color(0xFFDFEAFF),
         selectedTabIndex = selectedTab,
         modifier = Modifier
             .fillMaxWidth()
@@ -281,10 +265,11 @@ private fun ScrollableTabRow(
                 onClick = {
                     onTabClick(index)
                 },
+                selectedContentColor = MaterialTheme.colorScheme.primary,
+                unselectedContentColor = Color.Black,
                 modifier = Modifier
                     .fillMaxHeight()
                     .size(20.dp, 36.dp)
-                    .background(color = Color(0xFFDFEAFF))
             ) {
                 Text(text = text, fontSize = 14.sp)
             }

@@ -25,7 +25,7 @@ data class RoutineState(
     val planList: ListMyExerciseResponse? = null,
     val planDetails: List<SetOfPlan> = listOf(),
     val showBottomSheet: Boolean = false,
-    val requestedPlan: List<Int> = listOf()
+    val planDetailsRequested: Boolean = false
 )
 
 data class ElapsedTime(

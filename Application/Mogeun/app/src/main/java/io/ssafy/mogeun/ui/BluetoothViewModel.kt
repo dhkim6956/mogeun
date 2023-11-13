@@ -58,25 +58,56 @@ class BluetoothViewModel(
     }
 
     fun getSetOfRoutine() {
-        routineState.value.planList!!.data.forEach { plan ->
-            val planKey = plan.planKey
-            if(!routineState.value.requestedPlan.contains(planKey)) {
-                _routineState.update { routineState -> routineState.copy(requestedPlan = routineState.requestedPlan + planKey) }
+        _routineState.update { routineState -> routineState.copy(planDetailsRequested = true) }
 
-                viewModelScope.launch {
-                    val ret = executionRepository.getSetOfRoutine(planKey)
-                    if(ret.data == null)
-                    {
-                        _routineState.update { routineState -> routineState.copy(planDetails = routineState.planDetails + SetOfPlan(planKey, true, listOf(
-                            SetOfRoutineDetail(1, 55, 10),
-                            SetOfRoutineDetail(2, 60, 8),
-                            SetOfRoutineDetail(3, 65, 6)
-                        ))) }
-                    } else {
-                        _routineState.update { routineState -> routineState.copy(planDetails = routineState.planDetails + SetOfPlan(planKey, false, ret.data.setDetails)) }
-                    }
+        viewModelScope.launch {
+            routineState.value.planList!!.data.forEach { plan ->
+                val planKey = plan.planKey
+
+                val ret = executionRepository.getSetOfRoutine(planKey)
+                if(ret.data == null)
+                {
+                    _routineState.update { routineState -> routineState.copy(planDetails = routineState.planDetails + SetOfPlan(planKey, true, listOf(
+                        SetOfRoutineDetail(1, 55, 10),
+                        SetOfRoutineDetail(2, 60, 8),
+                        SetOfRoutineDetail(3, 65, 6)
+                    ))) }
+                } else {
+                    _routineState.update { routineState -> routineState.copy(planDetails = routineState.planDetails + SetOfPlan(planKey, false, ret.data.setDetails)) }
                 }
             }
+        }
+    }
+
+    fun addSet(planKey: Int) {
+        _routineState.update { routineState ->
+            val changedPlanDetails = routineState.planDetails.map { setOfPlan ->
+                if (setOfPlan.planKey == planKey) {
+                    setOfPlan.copy(valueChanged = true, setOfRoutineDetail = setOfPlan.setOfRoutineDetail + setOfPlan.setOfRoutineDetail.last().copy(setNumber = setOfPlan.setOfRoutineDetail.size + 1))
+                } else {
+                    setOfPlan
+                }
+            }
+            Log.d("update", "${changedPlanDetails[0].setOfRoutineDetail}")
+
+            routineState.copy(planDetails = changedPlanDetails)
+        }
+    }
+
+    fun removeSet(planKey: Int, setIdx: Int) {
+        Log.d("update", "removeSet : $planKey")
+        _routineState.update { routineState ->
+            var newIdx = 1
+            val changedPlanDetails = routineState.planDetails.map { setOfPlan ->
+                if (setOfPlan.planKey == planKey && setOfPlan.setOfRoutineDetail.size > 1) {
+                    setOfPlan.copy(valueChanged = true, setOfRoutineDetail = setOfPlan.setOfRoutineDetail.filter { setOfRoutineDetail -> setOfRoutineDetail.setNumber != setIdx }.map { setOfRoutineDetail -> setOfRoutineDetail.copy(setNumber = newIdx++) })
+                } else {
+                    setOfPlan
+                }
+            }
+            Log.d("update", "${changedPlanDetails[0].setOfRoutineDetail}")
+
+            routineState.copy(planDetails = changedPlanDetails)
         }
     }
 

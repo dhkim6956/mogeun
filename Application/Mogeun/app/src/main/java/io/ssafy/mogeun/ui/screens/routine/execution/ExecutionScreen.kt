@@ -52,8 +52,6 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
 
     val coroutineScope = rememberCoroutineScope()
 
-    Log.d("execution", "${routineKey ?: "null"}")
-
     LaunchedEffect(routineKey) {
         viewModel.getPlanList(routineKey)
     }
@@ -84,7 +82,7 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
         val pagerState = rememberPagerState { routineSize }
 
         LaunchedEffect(pagerState.currentPage) {
-            viewModel.getSetOfRoutine()
+            if(!routineState.planDetailsRequested) viewModel.getSetOfRoutine()
         }
 
         if(routineState.planDetails.isNotEmpty()) {
@@ -142,7 +140,7 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
                             modifier = Modifier
                                 .fillMaxSize()
                         ) {
-                            ExerciseProgress(emgState, routineState.planDetails[page].setOfRoutineDetail, {}, {})
+                            ExerciseProgress(emgState, routineState.planDetails[page].setOfRoutineDetail, {viewModel.addSet(plan.planKey)}, {idx -> viewModel.removeSet(plan.planKey, idx)}, {}, {})
                         }
                     }
                 }
