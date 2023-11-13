@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -62,27 +63,15 @@ fun ExplainExerciseScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        if (data != null) {
-            Text(
-                text = myExerciseName,
-                fontSize = 16.sp,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-        }
         viewModel.exerciseExplain?.let { ElevatedGif(it.imagePath, modifier = Modifier.height(350.dp).width(350.dp)) }
-//        GlideImage(
-//            imageModel = { gifResId },
-//            imageOptions = ImageOptions(
-//                contentDescription = "GIF Image",
-//                contentScale = ContentScale.Crop,
-//            ),
-//            modifier = Modifier
-//                .height(350.dp)
-//                .width(350.dp)
-//        )
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = myExerciseName, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+        Text(
+            text = myExerciseName,
+            modifier = Modifier.padding(start = 16.dp),
+            fontSize = 28.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            fontWeight = FontWeight.Bold)
         YouTubeVideoList(apiKey = apiKey, query = myExerciseName)
     }
 }
