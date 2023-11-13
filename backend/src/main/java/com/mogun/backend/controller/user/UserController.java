@@ -103,7 +103,7 @@ public class UserController {
         ServiceStatus<Object> result = userService.signIn(request.getUserEmail(), request.getUserPassword());
 
         if(result.getStatus() != 100)
-            return ApiResponse.badRequest(result.getMessage());
+            return ApiResponse.of(HttpStatus.BAD_REQUEST, "FAILED", -1);
 
         return ApiResponse.of(HttpStatus.ACCEPTED, "SUCCESS", result.getData());
     }
