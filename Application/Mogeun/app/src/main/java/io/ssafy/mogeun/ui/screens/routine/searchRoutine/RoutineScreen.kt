@@ -176,7 +176,11 @@ fun RoutineScreen(
         Button(
             onClick = { navController.navigate("addexercise/${beforeScreen}/3") },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-            shape = RoundedCornerShape(10.dp)
+            shape = RoundedCornerShape(10.dp),
+            elevation = ButtonDefaults.buttonElevation(
+                defaultElevation = 10.dp,
+                pressedElevation = 0.dp,
+            ),
         ) {
             Row {
                 Image(
@@ -235,7 +239,11 @@ fun RoutineList(
             }
             Button(
                 onClick = { navController.navigate("Execution/${routine.routineKey}") },
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 10.dp,
+                    pressedElevation = 0.dp,
+                ),
             ) {
                 Text(text = "루틴시작")
             }
