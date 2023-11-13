@@ -40,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -60,6 +61,10 @@ import com.jaikeerthick.composable_graphs.style.LinearGraphVisibility
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.model.BodyInfo
 import io.ssafy.mogeun.model.Exercise
+import io.ssafy.mogeun.model.MostPerformedExercise
+import io.ssafy.mogeun.model.MostSetExercise
+import io.ssafy.mogeun.model.MostWeightedExercise
+import io.ssafy.mogeun.model.PerformedMuscleInfo
 import io.ssafy.mogeun.model.SetResult
 import io.ssafy.mogeun.ui.AppViewModelProvider
 import kotlinx.coroutines.launch
@@ -67,10 +72,14 @@ import kotlinx.coroutines.launch
 @Composable
 fun SummaryScreen(viewModel: SummaryViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
     // 요약 페이지 구성을 위한 api 통신
-    val summaryBodyInfoSuccess by viewModel.summaryBodyInfoSuccess.collectAsState()
-    if (!summaryBodyInfoSuccess) {
+    val summaryExerciseSetSuccess by viewModel.summaryExerciseSetSuccess.collectAsState()
+    if (!summaryExerciseSetSuccess) {
         LaunchedEffect(viewModel.userKey) {
             viewModel.summaryBody()
+            viewModel.summaryPerformedMuscle()
+            viewModel.summaryExerciseMost()
+            viewModel.summaryExerciseWeight()
+            viewModel.summaryExerciseSet()
         }
     }
 
@@ -84,31 +93,61 @@ fun SummaryScreen(viewModel: SummaryViewModel = viewModel(factory = AppViewModel
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.End
     ) {
-        BodyInfoSummaryCard(viewModel.summaryBodyInfo)
-        Spacer(
-            modifier = Modifier
-                .height(10.dp)
-                .background(color = MaterialTheme.colorScheme.primaryContainer)
-        )
-        Dropdown()
-        Spacer(
-            modifier = Modifier
-                .height(5.dp)
-                .background(color = MaterialTheme.colorScheme.primaryContainer)
-        )
-        ExerciseSummaryCard()
-        Spacer(
-            modifier = Modifier
-                .height(10.dp)
-                .background(color = MaterialTheme.colorScheme.primaryContainer)
-        )
-        MuscleSummaryCard()
+        if (summaryExerciseSetSuccess) {
+            BodyInfoSummaryCard(viewModel.summaryBodyInfo)
+            Spacer(
+                modifier = Modifier
+                    .height(10.dp)
+                    .background(color = MaterialTheme.colorScheme.primaryContainer)
+            )
+            Dropdown(viewModel)
+            Spacer(
+                modifier = Modifier
+                    .height(5.dp)
+                    .background(color = MaterialTheme.colorScheme.primaryContainer)
+            )
+            ExerciseSummaryCard(
+                viewModel.summaryExerciseMost[viewModel.itemIndex.value],
+                viewModel.summaryExerciseWeight[viewModel.itemIndex.value],
+                viewModel.summaryExerciseSet[viewModel.itemIndex.value]
+            )
+            Spacer(
+                modifier = Modifier
+                    .height(10.dp)
+                    .background(color = MaterialTheme.colorScheme.primaryContainer)
+            )
+            MuscleSummaryCard(viewModel.summaryPerformedMuscle[viewModel.itemIndex.value])
+        }
     }
 }
+
+data class BodyLog(
+    val num: Number,
+    val log: String
+)
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BodyInfoSummaryCard(bodyInfo: BodyInfo?) {
+
+    val bodyFatChangeLog = bodyInfo?.bodyFatChangeLog
+    var bodyFatLog: MutableList<BodyLog> = mutableListOf()
+    var index = 0
+    bodyFatChangeLog?.map {
+        bodyFatLog.add(index, BodyLog(it.bodyFat.toInt(), it.changedTime.split("T")[0]))
+        index++
+    }
+
+    val muscleMassChangeLog = bodyInfo?.muscleMassChangeLog
+    var muscleMassLog: MutableList<BodyLog> = mutableListOf()
+    index = 0
+    muscleMassChangeLog?.map {
+        muscleMassLog.add(index, BodyLog(it.muscleMass.toInt(), it.changedTime.split("T")[0]))
+        index++
+    }
+
+    val bodyLogList = listOf(bodyFatLog, muscleMassLog)
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -162,14 +201,18 @@ fun BodyInfoSummaryCard(bodyInfo: BodyInfo?) {
             }
             HorizontalPager(state = pagerState) { page ->
                 // Our page content
-                BodyInfoSummary(page)
+                BodyInfoSummary(bodyLogList[page])
             }
         }
     }
 }
 
 @Composable
-fun BodyInfoSummary(index: Int) {
+fun BodyInfoSummary(bodyLog: MutableList<BodyLog>) {
+    Log.d("bodyLog", bodyLog.toString())
+    if (bodyLog.isEmpty()) {
+        bodyLog.add(0, BodyLog(0, ""))
+    }
     Column(modifier = Modifier.fillMaxWidth()) {
         val style = LineGraphStyle(
             visibility = LinearGraphVisibility(
@@ -203,10 +246,12 @@ fun BodyInfoSummary(index: Int) {
             }
         }
         LineGraph(
-            xAxisData = listOf("2023-11-13", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat").map {
-                GraphData.String(it)
-            }, // xAxisData : List<GraphData>, and GraphData accepts both Number and String types
-            yAxisData = listOf(200, 40, 60, 450, 700, 30, 50),
+            xAxisData = bodyLog.map {
+                GraphData.String(it.log)
+            },
+            yAxisData = bodyLog.map {
+                it.num
+            },
             style = style,
             onPointClicked = {
                 clickedValue.value = it
@@ -215,9 +260,24 @@ fun BodyInfoSummary(index: Int) {
     }
 }
 
+data class SummaryCard(
+    val execName: String,
+    val imagePath: String,
+    val num: Number
+)
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ExerciseSummaryCard() {
+fun ExerciseSummaryCard(
+    mostPerformedExercise: MostPerformedExercise,
+    mostWeightedExercise: MostWeightedExercise,
+    mostSetExercise: MostSetExercise
+) {
+    val SummaryCardList = listOf(
+        SummaryCard(mostPerformedExercise.execName, mostPerformedExercise.imagePath, mostPerformedExercise.performed),
+        SummaryCard(mostWeightedExercise.execName, mostWeightedExercise.imagePath, mostWeightedExercise.weight.toInt()),
+        SummaryCard(mostSetExercise.execName, mostSetExercise.imagePath, mostSetExercise.set)
+    )
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -273,7 +333,7 @@ fun ExerciseSummaryCard() {
             }
             HorizontalPager(state = pagerState) { page ->
                 // Our page content
-                ExerciseSummary(nameList[page])
+                ExerciseSummary(page, SummaryCardList[page])
             }
         }
     }
@@ -281,29 +341,31 @@ fun ExerciseSummaryCard() {
 
 @Composable
 fun ExerciseSummary(
-    name: String
+    page: Int,
+    summaryCard: SummaryCard
 ) {
+    val cardNameList = listOf("수행한 횟수", "최고 기록", "수행한 세트")
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val exerciseImage = LocalContext.current.resources.getIdentifier("x_" + summaryCard.imagePath, "drawable", LocalContext.current.packageName)
         Image(
             modifier = Modifier.fillMaxWidth(0.3f),
-            painter = painterResource(id = R.drawable.logo),
-            contentDescription = "logo",
-            contentScale = ContentScale.Crop
+            painter = painterResource(exerciseImage),
+            contentDescription = summaryCard.imagePath
         )
         Column(modifier = Modifier.padding(start = 10.dp)) {
-            Text(text = "test")
-            Text(text = name + " = " + "test")
+            Text(text = summaryCard.execName)
+            Text(text = cardNameList[page] + " = " + summaryCard.num.toString())
         }
     }
 }
 
 @Composable
-fun MuscleSummaryCard() {
+fun MuscleSummaryCard(muscleInfoList: List<PerformedMuscleInfo>) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -322,14 +384,12 @@ fun MuscleSummaryCard() {
             ),
         contentAlignment = Alignment.Center
     ) {
-        MuscleSummary(listOf(Exercise("test", "test", 1, listOf("주 등", "부 어깨"), listOf("test"), listOf(
-            SetResult(1,1f, 1, 1, null)
-        ))))
+        MuscleSummary(muscleInfoList)
     }
 }
 
 @Composable
-fun MuscleSummary(exercises: List<Exercise>) {
+fun MuscleSummary(exercises: List<PerformedMuscleInfo>) {
     val yStepSize = 9
     var map: MutableMap<String, Float> = mutableMapOf(
         "가슴" to 0f, "등" to 0f, "허벅지" to 0f, "어깨" to 0f, "이두" to 0f, "삼두" to 0f, "승모근" to 0f, "종아리" to 0f, "복근" to 0f, "" to 0f
@@ -358,6 +418,8 @@ fun MuscleSummary(exercises: List<Exercise>) {
         barChartdata.add(index, BarData(Point(index.toFloat(), data.value, data.key), MaterialTheme.colorScheme.primary, data.key))
         index++
     }
+
+    Log.d("barChartdata", barChartdata.toString())
 
     val xAxisData = AxisData.Builder()
         .axisStepSize(30.dp)
@@ -399,7 +461,7 @@ fun MuscleSummary(exercises: List<Exercise>) {
 }
 
 @Composable
-fun Dropdown() {
+fun Dropdown(viewModel: SummaryViewModel) {
     val listItems = arrayOf("전체", "올해", "이번 달")
 
     // state of the menu
@@ -454,6 +516,7 @@ fun Dropdown() {
                         expanded = false
                         disabledItem = itemIndex
                         item = itemValue
+                        viewModel.itemIndex.value = itemIndex
                         itemIconIndex = if (itemIconIndex == 0) 1
                         else 0
                     },
