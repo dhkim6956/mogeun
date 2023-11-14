@@ -138,6 +138,8 @@ public class UserRoutinePlanService {
         Optional<UserRoutine> routine = routineRepository.findById(dto.getRoutineKey());
         if(routine.isEmpty())
             return ServiceStatus.errorStatus("요청 오류: 해당 루틴이 없음");
+        if(routine.get().getIsDeleted() == 'Y')
+            return ServiceStatus.errorStatus("요청 오류: 삭제된 루틴");
 
         List<UserRoutinePlan> planList = planRepository.findAllByUserRoutine(routine.get());
 

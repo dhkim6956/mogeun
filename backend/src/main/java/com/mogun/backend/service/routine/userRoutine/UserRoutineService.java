@@ -32,6 +32,8 @@ public class UserRoutineService {
         Optional<UserRoutine> routine = routineRepository.findById(routineKey);
         if(routine.isEmpty())
             return ServiceStatus.errorStatus("요청 오류: 등록되지 않은 루틴");
+        if(routine.get().getIsDeleted() == 'Y')
+            return ServiceStatus.errorStatus("요청 오류: 삭제된 루틴");
 
         RoutineDto dto = RoutineDto.builder()
                 .routineKey(routine.get().getRoutineKey())
