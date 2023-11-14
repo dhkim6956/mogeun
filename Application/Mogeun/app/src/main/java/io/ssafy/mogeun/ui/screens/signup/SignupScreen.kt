@@ -142,6 +142,7 @@ fun Essential(
                 onClick = {
                     val ret = viewModel.dupEmail()
                     Log.d("signIn", "$ret")
+                    keyboardController?.hide()
                 },
                 modifier = Modifier.width(100.dp),
                 shape = RoundedCornerShape(10.dp)
@@ -271,7 +272,7 @@ fun Inbody(
             .padding(28.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        Text(text = "키")
+        Text(text = "키 (cm)")
         TextField(
             value = heightText,
             onValueChange = {
@@ -295,7 +296,7 @@ fun Inbody(
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "몸무게")
+        Text(text = "몸무게 (kg)")
         TextField(
             value = weightText,
             onValueChange = {
@@ -318,7 +319,7 @@ fun Inbody(
             maxLines = 1
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "골격근량")
+        Text(text = "골격근량 (kg)")
         TextField(
             value = muscleMassText,
             onValueChange = {
@@ -341,7 +342,7 @@ fun Inbody(
             maxLines = 1
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "체지방")
+        Text(text = "체지방 (kg)")
         TextField(
             value = bodyFatText,
             onValueChange = {
