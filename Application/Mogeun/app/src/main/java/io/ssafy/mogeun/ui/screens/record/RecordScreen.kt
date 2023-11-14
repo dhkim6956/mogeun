@@ -130,6 +130,7 @@ fun CalenderUI(
             selection = null
             viewModel.initRecordMonthlySuccess()
         }
+
         SimpleCalendarTitle(
             modifier = Modifier.padding(vertical = 10.dp, horizontal = 8.dp),
             currentMonth = visibleMonth.yearMonth,
@@ -170,9 +171,15 @@ fun CalenderUI(
     ) {
         val date = selection?.date
         val routineLists = routines[date.toString()].orEmpty()
+        var reportKeyList: MutableList<Int> = mutableListOf()
+        for (record in viewModel.recordList) {
+            for (routine in record.routineReports) {
+                reportKeyList.add(routine.key)
+            }
+        }
         if (!routineLists.isEmpty()) {
             items(items = routineLists[0].routineReports) { routineReport ->
-                RoutineRecord(navController, routineReport.startTime, routineReport.endTime, routineReport.routineName, routineReport.key)
+                RoutineRecord(navController, routineReport.startTime, routineReport.endTime, routineReport.routineName, routineReport.key, reportKeyList)
             }
         }
     }
@@ -319,7 +326,8 @@ fun RoutineRecord(
     routineStartTime: String,
     routineEndTime: String,
     routineName: String,
-    reportKey: Int
+    reportKey: Int,
+    reportKeyList: List<Int>
 ) {
     Box (
         modifier = Modifier
@@ -353,7 +361,10 @@ fun RoutineRecord(
             }
             ClickableText(
                 text = AnnotatedString("자세히 보기") ,
-                onClick = { navController.navigate("RecordDetail/${reportKey}") },
+                onClick = {
+                    navController.currentBackStackEntry?.savedStateHandle?.set("reportKeyList", reportKeyList)
+                    navController.navigate("RecordDetail/${reportKey}")
+                },
                 style = TextStyle(color = MaterialTheme.colorScheme.secondary)
             )
         }

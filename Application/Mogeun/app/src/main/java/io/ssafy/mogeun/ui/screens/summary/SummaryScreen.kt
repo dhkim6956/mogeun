@@ -140,23 +140,23 @@ data class BodyLog(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BodyInfoSummaryCard(bodyInfo: BodyInfo?) {
-    val bodyFatChangeLog = bodyInfo?.bodyFatChangeLog
+    val bodyFatChangeLog = bodyInfo?.bodyFatChangeLog?.reversed()
     var bodyFatLog: MutableList<BodyLog> = mutableListOf()
     var index = 0
     bodyFatChangeLog?.map {
         val time = it.changedTime.split("T")[0]
         val timeSplit = time.split("-")
-        bodyFatLog.add(index, BodyLog(it.bodyFat.toInt(), timeSplit[0] + "년 " + timeSplit[1] + "월 " + timeSplit[2] + "일"))
+        bodyFatLog.add(index, BodyLog(it.bodyFat, timeSplit[0] + "년 " + timeSplit[1] + "월 " + timeSplit[2] + "일"))
         index++
     }
 
-    val muscleMassChangeLog = bodyInfo?.muscleMassChangeLog
+    val muscleMassChangeLog = bodyInfo?.muscleMassChangeLog?.reversed()
     var muscleMassLog: MutableList<BodyLog> = mutableListOf()
     index = 0
     muscleMassChangeLog?.map {
         val time = it.changedTime.split("T")[0]
         val timeSplit = time.split("-")
-        muscleMassLog.add(index, BodyLog(it.muscleMass.toInt(), timeSplit[0] + "년 " + timeSplit[1] + "월 " + timeSplit[2] + "일"))
+        muscleMassLog.add(index, BodyLog(it.muscleMass, timeSplit[0] + "년 " + timeSplit[1] + "월 " + timeSplit[2] + "일"))
         index++
     }
 
