@@ -95,9 +95,18 @@ class RoutineViewModel(
             }
         }
     }
-    fun deleteRoutine() {
+    fun deleteRoutine(index: Int) {
         lateinit var ret: DeleteRoutineResponse
-
+        viewModelScope.launch {
+            tmp?.let { response ->
+                val routineKey = response.data.getOrNull(index)?.routineKey
+                if (routineKey != null) {
+                    ret = RoutineRepository.deleteRoutine(routineKey)
+                    Log.d("deleteRoutine", "$ret")
+                    getRoutineList()
+                }
+            }
+        }
     }
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
