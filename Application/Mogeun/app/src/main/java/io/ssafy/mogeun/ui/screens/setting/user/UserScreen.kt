@@ -88,7 +88,7 @@ fun UserScreen(
             TextField(
                 value = viewModel.height.toString(),
                 onValueChange = {
-                    viewModel.updateHeight(it.toDouble())
+                    viewModel.updateHeight(it)
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
@@ -104,7 +104,7 @@ fun UserScreen(
             TextField(
                 value = viewModel.weight.toString(),
                 onValueChange = {
-                    viewModel.updateWeight(it.toDouble())
+                    viewModel.updateWeight(it)
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
@@ -120,7 +120,7 @@ fun UserScreen(
             TextField(
                 value = viewModel.muscleMass.toString(),
                 onValueChange = {
-                    viewModel.updateMuscleMass(it.toDouble())
+                    viewModel.updateMuscleMass(it)
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
@@ -136,7 +136,7 @@ fun UserScreen(
             TextField(
                 value = viewModel.bodyFat.toString(),
                 onValueChange = {
-                    viewModel.updateBodyFat(it.toDouble())
+                    viewModel.updateBodyFat(it)
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,

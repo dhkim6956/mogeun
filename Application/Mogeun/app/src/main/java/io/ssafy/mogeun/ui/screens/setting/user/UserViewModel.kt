@@ -2,6 +2,7 @@ package io.ssafy.mogeun.ui.screens.setting.user
 
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -25,10 +26,10 @@ class UserViewModel(
 ): ViewModel() {
     var userKey by mutableStateOf<Int?>(null)
     var nickname by mutableStateOf<String>("nickname")
-    var height by mutableStateOf<Double>(0.0)
-    var weight by mutableStateOf<Double>(0.0)
-    var muscleMass by mutableStateOf<Double>(0.0)
-    var bodyFat by mutableStateOf<Double>(0.0)
+    var height by mutableStateOf<String?>(null)
+    var weight by mutableStateOf<String?>(null)
+    var muscleMass by mutableStateOf<String?>(null)
+    var bodyFat by mutableStateOf<String?>(null)
 
     fun updateUserKey(value: Int?) {
         userKey = value
@@ -36,16 +37,16 @@ class UserViewModel(
     fun updateNickname(value: String) {
         nickname = value
     }
-    fun updateHeight(value: Double) {
+    fun updateHeight(value: String?) {
         height = value
     }
-    fun updateWeight(value: Double) {
+    fun updateWeight(value: String?) {
         weight = value
     }
-    fun updateMuscleMass(value: Double) {
+    fun updateMuscleMass(value: String?) {
         muscleMass = value
     }
-    fun updateBodyFat(value: Double) {
+    fun updateBodyFat(value: String?) {
         bodyFat = value
     }
     fun getInbody() {
@@ -53,11 +54,11 @@ class UserViewModel(
         viewModelScope.launch {
             ret = UserRepository.getInbody(userKey.toString())
             Log.d("getInbody", "$ret")
-            updateMuscleMass(ret.data.muscleMass)
-            updateBodyFat(ret.data.bodyFat)
+            updateMuscleMass(ret.data.muscleMass.toString())
+            updateBodyFat(ret.data.bodyFat.toString())
             updateNickname(ret.data.userName)
-            updateHeight(ret.data.height)
-            updateWeight(ret.data.weight)
+            updateHeight(ret.data.height.toString())
+            updateWeight(ret.data.weight.toString())
         }
     }
     fun updateUser() {
@@ -66,10 +67,10 @@ class UserViewModel(
             ret = UserRepository.updateUser(
                 userKey,
                 nickname,
-                height,
-                weight,
-                muscleMass,
-                bodyFat
+                height?.toDouble(),
+                weight?.toDouble(),
+                muscleMass?.toDouble(),
+                bodyFat?.toDouble()
             )
             Log.d("updateUser", "$ret")
         }
