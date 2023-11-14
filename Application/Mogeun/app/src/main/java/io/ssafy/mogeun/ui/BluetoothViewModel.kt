@@ -226,7 +226,7 @@ class BluetoothViewModel(
     }
 
     fun endSet(planKey: Int, setIdx: Int) {
-        _routineState.update { routineState -> routineState.copy(inProgress = true) }
+        _routineState.update { routineState -> routineState.copy(inProgress = false) }
 
         val reportKey = routineState.value.reportKey
         val plan = routineState.value.planDetails.find { setOfPlan -> setOfPlan.planKey == planKey }
@@ -239,12 +239,13 @@ class BluetoothViewModel(
             CoroutineScope(Dispatchers.IO).launch {
                 val setEmgList1 = emgRepository.getEmgData(startTime, endTime).filter { it.deviceId == 0 }.map { it.value }
 
-                val fatigue1 = FFT_ready(setEmgList1)
+                if (setEmgList1.isNotEmpty()) {
+                    val fatigue1 = FFT_ready(setEmgList1)
 
-                Log.d("fatigue", "$fatigue1")
+                    Log.d("fatigue", "$fatigue1")
 
-//                Log.d("avg", "${setEmgList1.average()}")
-                _muscleavg.update { fatigue1 }
+                    _muscleavg.update { fatigue1 }
+                }
             }
         }
     }

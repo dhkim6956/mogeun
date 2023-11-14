@@ -35,6 +35,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -112,9 +113,7 @@ fun ExerciseProgress(
                     .fillMaxHeight(),
                 contentAlignment = Alignment.TopStart
             ){
-                ScrollableTabRow(setCntList.map { "$it 세트" }, selectedTab, onTabClick = { index ->
-                    selectedTab = index
-                })
+                ScrollableTabRow(setCntList.map { "$it 세트" }, selectedTab, { index -> selectedTab = index }, inProgress)
             }
             Box(
                 modifier = Modifier
@@ -193,20 +192,34 @@ fun ExerciseProgress(
                 horizontalArrangement = Arrangement.Center,
             )
             {
-                Box(
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxWidth(0.3f)
+//                        .fillMaxHeight()
+//                        .background(color = Color.White)
+//                        .clickable {
+//                            if (selectedTab == totalSet - 1) selectedTab = totalSet - 2
+//                            removeSet(selectedTab + 1)
+//                        },
+//                ){
+//                    Text(
+//                        text = "세트 삭제",
+//                        modifier = Modifier.align(Alignment.Center),
+//                    )
+//                }
+                TextButton(
+                    enabled = !inProgress,
+                    onClick = {
+                        if (selectedTab == totalSet - 1) selectedTab = totalSet - 2
+                        removeSet(selectedTab + 1)
+                              },
                     modifier = Modifier
                         .fillMaxWidth(0.3f)
                         .fillMaxHeight()
                         .background(color = Color.White)
-                        .clickable {
-                            if (selectedTab == totalSet - 1) selectedTab = totalSet - 2
-                            removeSet(selectedTab + 1)
-                        },
-                ){
-                    Text(
-                        text = "세트 삭제",
-                        modifier = Modifier.align(Alignment.Center),
-                    )
+
+                ) {
+                    Text(text = "세트 삭제")
                 }
                 Box(modifier = Modifier
                     .fillMaxSize()
@@ -242,7 +255,7 @@ fun ExerciseProgress(
                                 .padding(start = 4.dp, top = 4.dp, bottom = 4.dp, end = 8.dp)
                                 .clickable {
                                     endSet(selectedTab + 1)
-                                           },
+                                },
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center,
                         ){
@@ -267,7 +280,8 @@ fun ExerciseProgress(
 private fun ScrollableTabRow(
     tabs: List<String>,
     selectedTab: Int,
-    onTabClick: (Int) -> Unit
+    onTabClick: (Int) -> Unit,
+    inProgress: Boolean,
 ) {
     androidx.compose.material3.ScrollableTabRow(
         containerColor = Color(0xFFDFEAFF),
@@ -279,6 +293,7 @@ private fun ScrollableTabRow(
     ) {
         tabs.forEachIndexed { index, text ->
             Tab(
+                enabled = !inProgress,
                 selected = selectedTab == index,
                 onClick = {
                     onTabClick(index)

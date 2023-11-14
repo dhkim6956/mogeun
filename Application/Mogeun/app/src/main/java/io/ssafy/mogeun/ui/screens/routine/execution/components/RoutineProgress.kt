@@ -35,7 +35,7 @@ import androidx.compose.ui.zIndex
 import io.ssafy.mogeun.ui.screens.routine.execution.ElapsedTime
 
 @Composable
-fun RoutineProgress(page: Int, execCnt: Int, elapsedTime: ElapsedTime, endRoutine: () -> Unit) {
+fun RoutineProgress(page: Int, execCnt: Int, elapsedTime: ElapsedTime, endRoutine: () -> Unit, inProgress: Boolean) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -53,6 +53,7 @@ fun RoutineProgress(page: Int, execCnt: Int, elapsedTime: ElapsedTime, endRoutin
         ) {
             Text(text = "< $page / $execCnt >", fontSize = 20.sp)
             ElevatedAssistChip(
+                enabled = !inProgress,
                 onClick = {  },
                 label = { Text("운동 추가") },
                 leadingIcon = {
@@ -84,10 +85,10 @@ fun RoutineProgress(page: Int, execCnt: Int, elapsedTime: ElapsedTime, endRoutin
                         modifier = Modifier
                             .width(80.dp)
                             .height(80.dp)
-                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .background(if (inProgress) Color.LightGray else MaterialTheme.colorScheme.primaryContainer)
                             .padding(8.dp)
                             .clickable {
-                                endRoutine()
+                                if(!inProgress) endRoutine()
                             }
                     ) {
                         Text(text = "루틴종료", fontSize = 24.sp, textAlign = TextAlign.Center, lineHeight = 28.sp)
