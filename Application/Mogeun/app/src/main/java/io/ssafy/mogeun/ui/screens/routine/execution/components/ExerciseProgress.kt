@@ -61,24 +61,34 @@ import io.ssafy.mogeun.R
 import io.ssafy.mogeun.model.SetOfRoutineDetail
 import io.ssafy.mogeun.ui.screens.routine.execution.EmgUiState
 import io.ssafy.mogeun.ui.screens.routine.execution.SetOfPlan
+import io.ssafy.mogeun.ui.screens.routine.execution.SetProgress
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import okhttp3.internal.wait
 import org.jtransforms.fft.DoubleFFT_1D
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 fun ExerciseProgress(
     emgUiState: EmgUiState,
-    planInfo: List<SetOfRoutineDetail>,
+    planInfo: List<SetProgress>,
     addSet: () -> Unit,
     removeSet: (Int) -> Unit,
     setWeight: (Int, Int) -> Unit,
-    setRep: (Int, Int) -> Unit
+    setRep: (Int, Int) -> Unit,
+    startSet: (Int) -> Unit,
+    addCnt: (Int) -> Unit,
+    endSet: (Int) -> Unit,
+    inProgress: Boolean,
+    muscleAverage: Double
 ){
     val totalSet = planInfo.size
     val setCntList = (1..totalSet).map { it }
 
     var selectedTab by remember { mutableIntStateOf(0) }
+
+    val setProgress = planInfo[selectedTab]
 
 
     //시작 종료
@@ -156,7 +166,7 @@ fun ExerciseProgress(
                 DateSelectionSection(
                     onWeightChosen = { setWeight(selectedTab + 1, it.toInt()) },
                     onRepChosen = {setRep(selectedTab + 1, it.toInt())},
-                    preWeight = planInfo[selectedTab].weight,
+                    preWeight = planInfo[selectedTab].targetWeight,
                     preRep = planInfo[selectedTab].targetRep
                 )
             }
@@ -166,7 +176,7 @@ fun ExerciseProgress(
                     .fillMaxWidth()
                     .background(Color(0xFFF7F7F7)),
             ){
-                EMGCollector(emgUiState, isStarting)
+                EMGCollector(emgUiState, isStarting, setProgress, {addCnt(selectedTab + 1)}, inProgress, muscleAverage)
             }
         }
         Box(
@@ -213,8 +223,7 @@ fun ExerciseProgress(
                                 .fillMaxHeight()
                                 .padding(4.dp)
                                 .clickable {
-                                    isStarting = true
-                                    //viewModel.getSet()
+                                    startSet(selectedTab + 1)
                                 },
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center,
@@ -231,7 +240,9 @@ fun ExerciseProgress(
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .padding(start = 4.dp, top = 4.dp, bottom = 4.dp, end = 8.dp)
-                                .clickable { isStarting = false },
+                                .clickable {
+                                    endSet(selectedTab + 1)
+                                           },
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center,
                         ){
@@ -469,14 +480,36 @@ fun InfiniteItemsPicker(
 
 // 최신값
 @Composable
-fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean) {
+fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgress, addCnt: () -> Unit, inProgress: Boolean, muscleAverage: Double) {
     var signal_1 by remember { mutableStateOf(0) }
     var signal_2 by remember { mutableStateOf(0) }
     var signal_3 by remember { mutableStateOf(0) }
     var signal_4 by remember { mutableStateOf(0) }
 
+    var lastLev by remember { mutableStateOf(0)}
+    var lastTime by remember { mutableStateOf<Long>(0)}
+    var currentLev by remember { mutableStateOf(0) }
+
     // CoroutineScope을 만듭니다.
     val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(emgUiState.emg1Avg) {
+        if(inProgress) {
+            val curTime = System.currentTimeMillis()
+
+            if(curTime - lastTime >= 500) {
+                Log.d("cnt", "currentLev: $currentLev, lastLev: $lastLev, avg: ${emgUiState.emg1Avg}")
+                currentLev = ((emgUiState.emg1Avg / 90) + 1).toInt()
+                if (currentLev >= 3 && lastLev < 3) {
+                    addCnt()
+                    Log.d("cnt", "triggered")
+                }
+                lastLev = currentLev
+
+                lastTime = curTime
+            }
+        }
+    }
 
     LaunchedEffect(isStarting) {
         while (isStarting) {
@@ -553,7 +586,7 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean) {
                 .background(Color(0xFFDDE2FD)),
                 contentAlignment = Alignment.Center
             ){
-                Text(String.format("%.3f", emgUiState.emg1Avg % 90))
+                Text(String.format("개수 : ${planInfo.successRep}", emgUiState.emg1Avg % 90))
             }
             Box(modifier = Modifier
                 .fillMaxHeight()
@@ -561,7 +594,8 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean) {
                 .background(Color(0xFFDDE2FD)),
                 contentAlignment = Alignment.Center
             ){
-                Text(String.format("%.3f", emgUiState.emg2Avg % 90))
+                Log.d("avg", "$muscleAverage")
+                Text("${String.format("%.3f", muscleAverage)}")
             }
         }
     }

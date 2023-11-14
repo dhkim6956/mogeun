@@ -15,10 +15,20 @@ data class EmgUiState (
     val emg2Max: Int = 0
 )
 
+data class SetProgress(
+    val setNumber: Int,
+    val targetWeight: Int,
+    val targetRep: Int,
+    val successRep: Int = 0,
+    val muscleAvg: Double? = null,
+    val muscleFatigue: Double? = null,
+    val startTime: Long? = null
+)
+
 data class SetOfPlan(
     val planKey: Int,
     val valueChanged: Boolean,
-    val setOfRoutineDetail: List<SetOfRoutineDetail>
+    val setOfRoutineDetail: List<SetProgress>,
 )
 
 data class RoutineState(
@@ -27,7 +37,8 @@ data class RoutineState(
     val showBottomSheet: Boolean = false,
     val planDetailsRequested: Boolean = false,
     val onProcess: Boolean = false,
-    val reportKey: Int? = null
+    val reportKey: Int? = null,
+    val inProgress: Boolean = false
 )
 
 data class ElapsedTime(

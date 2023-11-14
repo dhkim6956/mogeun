@@ -1,5 +1,6 @@
 package io.ssafy.mogeun.ui.screens.routine.execution
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,6 +39,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
+import androidx.navigation.navOptions
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.ui.BluetoothViewModel
 import io.ssafy.mogeun.ui.components.AlertDialogCustom
@@ -57,9 +60,13 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
     val routineState by viewModel.routineState.collectAsState()
     val elapsedTime by viewModel.elaspedTime.collectAsState()
 
+    val muscleavg by viewModel.muscleavg.collectAsState()
+
     var openEndDialog by remember { mutableStateOf(false) }
 
-    val coroutineScope = rememberCoroutineScope()
+    BackHandler {
+        openEndDialog = true
+    }
 
     LaunchedEffect(Unit) {
         val ret = async {
@@ -95,15 +102,6 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
         }
 
         if(routineState.planDetails.isNotEmpty()) {
-
-            LaunchedEffect(Unit) {
-                if(elapsedTime.minute == 0 && elapsedTime.second == 0) {
-                    coroutineScope.launch {
-                        viewModel.runTimer()
-                    }
-                }
-            }
-
             Column {
                 HorizontalPager(
                     pagerState,
@@ -155,7 +153,12 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
                                 {viewModel.addSet(plan.planKey)},
                                 {idx -> viewModel.removeSet(plan.planKey, idx)},
                                 {idx, weight -> viewModel.setWeight(plan.planKey, idx, weight)},
-                                {idx, rep -> viewModel.setRep(plan.planKey, idx, rep)}
+                                {idx, rep -> viewModel.setRep(plan.planKey, idx, rep)},
+                                {idx -> viewModel.startSet(plan.planKey, idx)},
+                                {idx -> viewModel.addCnt(plan.planKey, idx)},
+                                {idx -> viewModel.endSet(plan.planKey, idx)},
+                                routineState.inProgress,
+                                muscleavg
                             )
                         }
                     }
@@ -177,7 +180,10 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
                 onConfirmation = {
                     openEndDialog = false
                     viewModel.endRoutine()
-                    navController.navigate("RecordDetail/${routineState.reportKey}")
+                    navController.navigate("RecordDetail/${routineState.reportKey}",) {
+                        popUpTo(navController.graph.startDestinationId)
+                        launchSingleTop = true
+                    }
                                  },
                 dialogTitle = "오늘의 루틴 종료",
                 dialogText = "현재까지의 진행상황을 기록하고 운동을 종료합니다.",

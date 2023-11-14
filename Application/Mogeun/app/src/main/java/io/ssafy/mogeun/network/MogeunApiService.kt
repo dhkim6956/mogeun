@@ -5,6 +5,8 @@ import io.ssafy.mogeun.model.AddAllExerciseResponse
 import io.ssafy.mogeun.model.AddRoutineRequest
 import io.ssafy.mogeun.model.AddRoutineResponse
 import io.ssafy.mogeun.model.BodyInfoResponse
+import io.ssafy.mogeun.model.ClearPlanRequest
+import io.ssafy.mogeun.model.ClearPlanResponse
 import io.ssafy.mogeun.model.DeleteRoutineRequest
 import io.ssafy.mogeun.model.DeleteRoutineResponse
 import io.ssafy.mogeun.model.DeleteUserRequest
@@ -23,7 +25,11 @@ import io.ssafy.mogeun.model.MyExerciseResponse
 import io.ssafy.mogeun.model.PerformedMuscleInfoResponse
 import io.ssafy.mogeun.model.RoutineExecutionResponse
 import io.ssafy.mogeun.model.RoutineResponse
+import io.ssafy.mogeun.model.SetExecutionRequest
+import io.ssafy.mogeun.model.SetExecutionResponse
 import io.ssafy.mogeun.model.SetOfRoutineResponse
+import io.ssafy.mogeun.model.SetPlanRequest
+import io.ssafy.mogeun.model.SetPlanResponse
 import io.ssafy.mogeun.model.SetRequest
 import io.ssafy.mogeun.model.SetResponse
 import io.ssafy.mogeun.model.SignInRequest
@@ -38,6 +44,7 @@ import io.ssafy.mogeun.model.UpdateRoutineResponse
 import io.ssafy.mogeun.model.UpdateUserRequest
 import io.ssafy.mogeun.model.UpdateUserResponse
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -120,4 +127,13 @@ interface MogeunApiService {
 
     @PUT("Report/Routine/End")
     suspend fun endRoutine(@Body endRoutineRequest: EndRoutineRequest): RoutineExecutionResponse
+
+    @POST("Report/Routine/Set")
+    suspend fun reportSet(@Body setExecutionRequest: SetExecutionRequest): SetExecutionResponse
+
+    @DELETE("Routine/Set/DeleteAll")
+    suspend fun deletePlan(@Body clearPlanRequest: ClearPlanRequest): ClearPlanResponse
+
+    @POST("Routine/Set/AddAll")
+    suspend fun setPlan(@Body setPlanRequest: SetPlanRequest): SetPlanResponse
 }
