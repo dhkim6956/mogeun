@@ -30,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -172,8 +173,10 @@ fun Essential(
             keyboardActions = KeyboardActions(onDone = {
                 keyboardController?.hide()
             }),
+            visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Done
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Password
             ),
             maxLines = 1
         )
@@ -184,11 +187,13 @@ fun Essential(
             onValueChange = viewModel::updateCheckingPassword,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp),
+            visualTransformation = PasswordVisualTransformation(),
             keyboardActions = KeyboardActions(onDone = {
                 keyboardController?.hide()
             }),
             keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Done
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Password
             ),
             maxLines = 1
         )
@@ -229,7 +234,7 @@ fun Essential(
                         onClick = {
                             if(viewModel.checkEmail == 1 && viewModel.password == viewModel.checkingPassword && viewModel.nickname !== "" && viewModel.selectedGender !== "") {
                                 viewModel.updateInputForm(2)
-                                viewModel.updateFirstText("인바디를")
+                                viewModel.updateFirstText("신체정보를")
                             } else {
                                 viewModel.updateRightInformation(true)
                             }

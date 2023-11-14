@@ -84,11 +84,11 @@ fun UserScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "신장")
+            Text(text = "신장 (cm)")
             TextField(
                 value = viewModel.height.toString(),
                 onValueChange = {
-                    viewModel.updateHeight(it.toDouble())
+                    viewModel.updateHeight(it)
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
@@ -100,11 +100,11 @@ fun UserScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "체중")
+            Text(text = "체중 (kg)")
             TextField(
                 value = viewModel.weight.toString(),
                 onValueChange = {
-                    viewModel.updateWeight(it.toDouble())
+                    viewModel.updateWeight(it)
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
@@ -116,11 +116,11 @@ fun UserScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "골격근량")
+            Text(text = "골격근량 (kg)")
             TextField(
                 value = viewModel.muscleMass.toString(),
                 onValueChange = {
-                    viewModel.updateMuscleMass(it.toDouble())
+                    viewModel.updateMuscleMass(it)
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
@@ -132,11 +132,11 @@ fun UserScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "체지방량")
+            Text(text = "체지방량 (kg)")
             TextField(
                 value = viewModel.bodyFat.toString(),
                 onValueChange = {
-                    viewModel.updateBodyFat(it.toDouble())
+                    viewModel.updateBodyFat(it)
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
