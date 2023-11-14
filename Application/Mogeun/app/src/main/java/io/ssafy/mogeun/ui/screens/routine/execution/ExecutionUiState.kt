@@ -27,3 +27,9 @@ data class RoutineState(
     val showBottomSheet: Boolean = false,
     val requestedPlan: List<Int> = listOf()
 )
+
+data class ElapsedTime(
+    val startTime: Long,
+    val minute: Int,
+    val second: Int,
+)

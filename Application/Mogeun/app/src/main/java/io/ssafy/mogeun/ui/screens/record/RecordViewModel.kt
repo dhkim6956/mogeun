@@ -60,7 +60,7 @@ class RecordViewModel(
                 ret = recordRepository.recordMonthly(userKey.toString(), date)
                 Log.d("recordMonthly", "$ret")
 
-                if(ret.message == "SUCCESS") {
+                if (ret.status == "OK") {
                     _recordMonthlySuccess.value = true
                     for (record in ret.data) {
                         recordList.add(record)
@@ -79,7 +79,7 @@ class RecordViewModel(
                 ret = recordRepository.recordRoutine(userKey.toString(), reportKey)
                 Log.d("recordRoutine", "$ret")
 
-                if (ret.message == "SUCCESS") {
+                if (ret.status == "OK") {
                     _recordRoutineSuccess.value = true
                     routineInfo = ret.data
                 }

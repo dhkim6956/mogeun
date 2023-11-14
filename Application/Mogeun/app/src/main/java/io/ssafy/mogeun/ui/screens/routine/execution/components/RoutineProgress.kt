@@ -35,10 +35,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import io.ssafy.mogeun.ui.screens.routine.execution.ElapsedTime
 import io.ssafy.mogeun.ui.theme.MogeunTheme
 
 @Composable
-fun RoutineProgress(page: Int, execCnt: Int) {
+fun RoutineProgress(page: Int, execCnt: Int, elapsedTime: ElapsedTime) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -104,18 +105,7 @@ fun RoutineProgress(page: Int, execCnt: Int) {
                 .zIndex(0f)
                 .padding(horizontal = 20.dp)
         ) {
-            Text("진행 시간 : 71분 21초", color = MaterialTheme.colorScheme.onPrimary, fontSize = 24.sp)
-        }
-    }
-}
-
-@Preview(showBackground = true, widthDp = 430, heightDp = 932)
-@Composable
-fun PreviewRoutineProgress() {
-    MogeunTheme {
-        Column (Modifier.fillMaxSize()) {
-            Box(modifier = Modifier.weight(1f))
-            RoutineProgress(1, 4)
+            Text("진행 시간 : ${elapsedTime.minute}분 ${elapsedTime.second}초", color = MaterialTheme.colorScheme.onPrimary, fontSize = 24.sp)
         }
     }
 }

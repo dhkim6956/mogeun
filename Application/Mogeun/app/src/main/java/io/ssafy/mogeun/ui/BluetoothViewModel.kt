@@ -1,6 +1,9 @@
 package io.ssafy.mogeun.ui
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.ssafy.mogeun.data.Emg
@@ -16,10 +19,12 @@ import io.ssafy.mogeun.model.BluetoothMessage
 import io.ssafy.mogeun.model.SetOfRoutineDetail
 import io.ssafy.mogeun.model.SetOfRoutineResponse
 import io.ssafy.mogeun.model.SetOfRoutineResponseData
+import io.ssafy.mogeun.ui.screens.routine.execution.ElapsedTime
 import io.ssafy.mogeun.ui.screens.routine.execution.EmgUiState
 import io.ssafy.mogeun.ui.screens.routine.execution.RoutineState
 import io.ssafy.mogeun.ui.screens.routine.execution.SetOfPlan
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -71,6 +76,21 @@ class BluetoothViewModel(
                     Log.d("execution", "${ret}")
                 }
             }
+        }
+    }
+
+    val _elaspedTime = MutableStateFlow(ElapsedTime(System.currentTimeMillis(), 0, 0))
+    val elaspedTime = _elaspedTime.asStateFlow()
+
+    var terminateTimer by mutableStateOf(false)
+
+    suspend fun runTimer() {
+        _elaspedTime.update { elapsedTime -> elapsedTime.copy(startTime = System.currentTimeMillis()) }
+        while (!terminateTimer) {
+            delay(1000)
+            val now = System.currentTimeMillis()
+            val offset = (now - elaspedTime.value.startTime).toInt() / 1000
+            _elaspedTime.update { elapsedTime -> elapsedTime.copy(minute = offset / 60, second = offset % 60) }
         }
     }
 
@@ -130,12 +150,16 @@ class BluetoothViewModel(
 
 
     init {
-
         bluetoothController.errors.onEach { error ->
             _btState.update { it.copy(
                 errorMessage = error
             ) }
         }.launchIn(viewModelScope)
+
+
+        viewModelScope.launch {
+            runTimer()
+        }
     }
 
     fun connectToDevice(device: BluetoothDeviceDomain, deviceNo: Int = 0) {
