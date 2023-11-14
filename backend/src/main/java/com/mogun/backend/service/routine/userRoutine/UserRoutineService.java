@@ -1,7 +1,10 @@
 package com.mogun.backend.service.routine.userRoutine;
 
+import com.mogun.backend.domain.routine.setDetail.repository.SetDetailRepository;
 import com.mogun.backend.domain.routine.userRoutine.UserRoutine;
 import com.mogun.backend.domain.routine.userRoutine.repository.UserRoutineRepository;
+import com.mogun.backend.domain.routine.userRoutinePlan.UserRoutinePlan;
+import com.mogun.backend.domain.routine.userRoutinePlan.repository.UserRoutinePlanRepository;
 import com.mogun.backend.domain.user.User;
 import com.mogun.backend.domain.user.repository.UserRepository;
 import com.mogun.backend.service.ServiceStatus;
@@ -21,6 +24,8 @@ public class UserRoutineService {
 
     private final UserRepository userRepository;
     private final UserRoutineRepository routineRepository;
+    private final UserRoutinePlanRepository planRepository;
+    private final SetDetailRepository setDetailRepository;
 
     public ServiceStatus<RoutineDto> getRoutine(int routineKey) {
 
@@ -67,9 +72,15 @@ public class UserRoutineService {
     public ServiceStatus<Object> deleteRoutine(RoutineDto dto) {
 
         Optional<UserRoutine> routine = routineRepository.findById(dto.getRoutineKey());
-
         if(routine.isEmpty() || routine.get().getIsDeleted() == 'Y')
             return ServiceStatus.errorStatus("요청 오류: 등록된 루틴이 아님");
+
+        List<UserRoutinePlan> planList = planRepository.findAllByUserRoutine(routine.get());
+        for(UserRoutinePlan plan: planList) {
+
+            setDetailRepository.deleteAllByUserRoutinePlan(plan);
+            planRepository.delete(plan);
+        }
 
         routine.get().setIsDeleted('Y');
         return ServiceStatus.okStatus();
