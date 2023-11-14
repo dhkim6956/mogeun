@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -42,9 +43,6 @@ public class CommonReportRequest {
     @JsonProperty("set_number")
     private int setNumber;
 
-    @JsonProperty("muscle_avg")
-    private float muscleAverage;
-
     @JsonProperty("weight")
     private int weight;
 
@@ -54,7 +52,6 @@ public class CommonReportRequest {
     @JsonProperty("success_rep")
     private int successRepeat;
 
-    @JsonProperty("muscle_fatigue")
-    private float muscleFatigue;
-
+    @JsonProperty("muscle_acts")
+    private List<MuscleActReportRequest> actList;
 }

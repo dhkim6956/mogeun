@@ -26,5 +26,8 @@ public class SetResultDto {
     private int successRep;
 
     @JsonProperty("muscle_activity")
-    private List<Float> muscleActivityList;
+    private List<Double> muscleActivityList;
+
+    @JsonProperty("muscle_fatigue")
+    private List<Double> muscleFatigueList;
 }

@@ -45,12 +45,8 @@ public class RoutineResultController {
                 .resultKey(resultKey)
                 .build());
 
-        if(result.getStatus() == 300)
-            return ApiResponse.badRequest("요청 오류: 해당 루틴 기록이 없음");
-        else if(result.getStatus() == 200)
-            return ApiResponse.badRequest("요청 오류: 등록된 회원이 아님");
-        else if(result.getStatus() == 400)
-            return ApiResponse.badRequest("요청 오류: 루틴 기록을 소유한 회원과 요청 회원이 불일치");
+        if(result.getStatus() != 100)
+            return ApiResponse.badRequest(result.getMessage());
 
         return ApiResponse.ok(result.getData());
     }

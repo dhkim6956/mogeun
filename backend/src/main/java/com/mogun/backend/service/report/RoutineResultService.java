@@ -58,20 +58,14 @@ public class RoutineResultService {
 
         Optional<RoutineResult> result = resultRepository.findById(dto.getResultKey());
         if(result.isEmpty())
-            return ServiceStatus.builder()
-                    .status(300)
-                    .build();
+            return ServiceStatus.errorStatus("요청 오류: 해당 루틴 기록이 없음");
 
         Optional<User> user = userRepository.findById(dto.getUserKey());
         if(user.isEmpty())
-            return ServiceStatus.builder()
-                    .status(200)
-                    .build();
+            return ServiceStatus.errorStatus("요청 오류: 등록된 회원이 아님");
 
         if(!result.get().getUser().equals(user.get()))
-            return ServiceStatus.builder()
-                    .status(400)
-                    .build();
+            return ServiceStatus.errorStatus("요청 오류: 루틴 기록을 소유한 회원과 요청 회원이 불일치");
 
         RoutineReport report = result.get().getRoutineReport();
         List<SetReport> setReportList = setReportRepository.findAllByRoutineReport(report);
@@ -139,8 +133,15 @@ public class RoutineResultService {
 
             // 현재 setReport의 운동이 exDtoList에 포함되어 있는지 검사
             for(ExerciseResultDto resultDto: exerciseResultDtoList) {
-
+                List<Double> actList = new ArrayList<>();
+                List<Double> fatgList = new ArrayList<>();
                 if(exec.getName().equals(resultDto.getExecName())) {
+
+                    List<MuscleActInSetLog> setLogList = actInSetLogRepository.findAllBySetReport(setReport);
+                    for(MuscleActInSetLog log: setLogList) {
+                        actList.add(log.getMuscleActivity());
+                        fatgList.add(log.getMuscleFatigue());
+                    }
 
                     resultDto.setSets(resultDto.getSets() + 1);
                     resultDto.getSetResultList().add(SetResultDto.builder()
@@ -148,6 +149,8 @@ public class RoutineResultService {
                             .targetRep(setReport.getTargetRep())
                             .successRep(setReport.getSuccessesRep())
                             .weight(setReport.getTrainWeight())
+                            .muscleActivityList(actList)
+                            .muscleFatigueList(fatgList)
                             .build());
                     flag = 1;
                     break;
@@ -170,11 +173,21 @@ public class RoutineResultService {
                 exerciseResultDtoList.get(lastIndex).getPartList().addAll(attachPartService.getMainSubPartNameByExercise(setReport.getExercise()));
                 exerciseResultDtoList.get(lastIndex).getMuscleImagePathList().addAll(attachPartService.getPartImagePathByExercise(setReport.getExercise()));
 
+                List<Double> actList = new ArrayList<>();
+                List<Double> fatgList = new ArrayList<>();
+                List<MuscleActInSetLog> setLogList = actInSetLogRepository.findAllBySetReport(setReport);
+                for(MuscleActInSetLog log: setLogList) {
+                    actList.add(log.getMuscleActivity());
+                    fatgList.add(log.getMuscleFatigue());
+                }
+
                 exerciseResultDtoList.get(lastIndex).getSetResultList().add(SetResultDto.builder()
                         .setNumber(setReport.getSetNumber())
                         .targetRep(setReport.getTargetRep())
                         .successRep(setReport.getSuccessesRep())
                         .weight(setReport.getTrainWeight())
+                        .muscleActivityList(actList)
+                        .muscleFatigueList(fatgList)
                         .build());
             }
         }
@@ -234,7 +247,8 @@ public class RoutineResultService {
                         .build());
             } else {
                 List<MuscleActInSetLog> logList = actInSetLogRepository.findAllBySetReport(report);
-                List<Float> activity = new ArrayList<>();
+                List<Double> activity = new ArrayList<>();
+                List<Double> fatigue = new ArrayList<>();
                 for (MuscleActInSetLog log: logList)
                     activity.add(log.getMuscleActivity());
 
@@ -245,6 +259,7 @@ public class RoutineResultService {
                                 .targetRep(report.getTargetRep())
                                 .successRep(report.getSuccessesRep())
                                 .muscleActivityList(activity)
+                                .muscleFatigueList(fatigue)
                                 .build()
                 );
             }

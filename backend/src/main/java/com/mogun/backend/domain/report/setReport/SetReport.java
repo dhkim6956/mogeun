@@ -38,12 +38,6 @@ public class SetReport {
     @Column(name = "set_number")
     private int setNumber;
 
-    @Column(name = "muscle_avg")
-    private float muscleAverage;
-
-    @Column(name = "muscle_fatigue")
-    private float muscleFatigue;
-
     @Column(name = "train_weight")
     private float trainWeight;
 

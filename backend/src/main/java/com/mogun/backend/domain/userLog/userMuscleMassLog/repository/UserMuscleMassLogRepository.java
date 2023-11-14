@@ -12,6 +12,6 @@ import java.util.List;
 @Repository
 public interface UserMuscleMassLogRepository extends JpaRepository<UserMuscleMassLog, Long> {
 
-    @Query(value = "SELECT * FROM user_muscle_mass_log ml WHERE ml.user_key = :user_key ORDER BY ml.changed_time LIMIT 10", nativeQuery = true)
+    @Query(value = "SELECT * FROM user_muscle_mass_log ml WHERE ml.user_key = :user_key ORDER BY ml.changed_time DESC LIMIT 10", nativeQuery = true)
     List<UserMuscleMassLog> findLast10LogByUser(@Param("user_key")User user);
 }

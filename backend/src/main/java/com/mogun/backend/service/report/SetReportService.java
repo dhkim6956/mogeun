@@ -4,8 +4,11 @@ import com.mogun.backend.domain.attachPart.AttachPart;
 import com.mogun.backend.domain.attachPart.repository.AttachPartRepository;
 import com.mogun.backend.domain.exercise.Exercise;
 import com.mogun.backend.domain.exercise.repository.ExerciseRepository;
+import com.mogun.backend.domain.report.muscleActInSet.MuscleActInSetLog;
+import com.mogun.backend.domain.report.muscleActInSet.repository.MuscleActInSetLogRepository;
 import com.mogun.backend.domain.report.routineReport.RoutineReport;
 import com.mogun.backend.domain.report.routineReport.repository.RoutineReportRepository;
+import com.mogun.backend.domain.report.setReport.SetReport;
 import com.mogun.backend.domain.report.setReport.repository.ExecCountInterface;
 import com.mogun.backend.domain.report.setReport.repository.ExecSetInterface;
 import com.mogun.backend.domain.report.setReport.repository.ExecWeightInterface;
@@ -38,6 +41,8 @@ public class SetReportService {
     private final UserRepository userRepository;
     private final ExerciseRepository exerciseRepository;
     private final AttachPartService attachPartService;
+    private final AttachPartRepository attachPartRepository;
+    private final MuscleActInSetLogRepository actInSetLogRepository;
 
     public ServiceStatus<Object> insertSetReport(RoutineReportDto dto) {
 
@@ -52,7 +57,20 @@ public class SetReportService {
         if(!report.get().getUser().equals(plan.get().getUser()))
             return ServiceStatus.errorStatus("요청 오류: 로그 요청 회원과 루틴 소유 회원 불일치");
 
-        setReportRepository.save(dto.toSetReportEntity(report.get(), plan.get().getExercise()));
+        SetReport save = setReportRepository.save(dto.toSetReportEntity(report.get(), plan.get().getExercise()));
+        System.out.println(save.getSetReportKey());
+
+        List<MuscleActsDto> dtoList = dto.getActsDtoList();
+        for(MuscleActsDto act: dtoList) {
+            Optional<AttachPart> sensing = attachPartRepository.findMainPartByExercise(save.getExercise());
+            actInSetLogRepository.save(MuscleActInSetLog.builder()
+                    .setReport(save)
+                    .sensorNumber(act.getSensorNumber())
+                    .musclePart(sensing.get().getMusclePart())
+                    .muscleActivity(act.getMuscleAverage())
+                    .muscleFatigue(act.getMuscleFatigue())
+                    .build());
+        }
 
         return ServiceStatus.okStatus();
     }

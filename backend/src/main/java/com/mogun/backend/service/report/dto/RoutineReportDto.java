@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -30,8 +31,7 @@ public class RoutineReportDto {
     private int weight;
     private int targetRep;
     private int successRep;
-    private float muscleAverage;
-    private float muscleFatigue;
+    private List<MuscleActsDto> actsDtoList;
 
     public RoutineReport toRoutineReportEntity(User user, UserRoutine routine) {
 
@@ -50,8 +50,6 @@ public class RoutineReportDto {
                 .user(report.getUser())
                 .exercise(exec)
                 .setNumber(setNumber)
-                .muscleAverage(muscleAverage)
-                .muscleFatigue(muscleFatigue)
                 .trainWeight(weight)
                 .targetRep(targetRep)
                 .successesRep(successRep)

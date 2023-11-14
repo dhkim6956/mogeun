@@ -4,20 +4,20 @@ import com.mogun.backend.domain.musclePart.MusclePart;
 import com.mogun.backend.domain.report.routineReport.RoutineReport;
 import com.mogun.backend.domain.report.setReport.SetReport;
 import com.mogun.backend.domain.user.User;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class MuscleActInSetLog implements Serializable {
 
     @Id
+    @GeneratedValue
     @Column(name = "set_act_key")
     private Long setLogKey;
 
@@ -33,6 +33,9 @@ public class MuscleActInSetLog implements Serializable {
     private int sensorNumber;
 
     @Column(name = "muscle_activity")
-    private float muscleActivity;
+    private double muscleActivity;
+
+    @Column(name = "muscle_fatigue")
+    private double muscleFatigue;
 
 }

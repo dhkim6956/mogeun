@@ -12,6 +12,6 @@ import java.util.List;
 @Repository
 public interface UserBodyFatLogRepository extends JpaRepository<UserBodyFatLog, Long> {
 
-    @Query(value = "SELECT * FROM user_body_fat_log fl WHERE fl.user_key = :user_key ORDER BY fl.changed_time LIMIT 10", nativeQuery = true)
+    @Query(value = "SELECT * FROM user_body_fat_log fl WHERE fl.user_key = :user_key ORDER BY fl.changed_time DESC LIMIT 10", nativeQuery = true)
     List<UserBodyFatLog> findLast10LogByUser(@Param("user_key") User user);
 }
