@@ -53,7 +53,6 @@ class UserViewModel(
         lateinit var ret: GetInbodyResponse
         viewModelScope.launch {
             ret = UserRepository.getInbody(userKey.toString())
-            Log.d("getInbody", "$ret")
             updateMuscleMass(ret.data.muscleMass.toString())
             updateBodyFat(ret.data.bodyFat.toString())
             updateNickname(ret.data.userName)
@@ -72,14 +71,12 @@ class UserViewModel(
                 muscleMass?.toDouble(),
                 bodyFat?.toDouble()
             )
-            Log.d("updateUser", "$ret")
         }
     }
     fun getUserKey() {
         viewModelScope.launch {
             val key = keyRepository.getKey().first()
             val userKey = key?.userKey
-            Log.d("getUserKey", "사용자 키: $userKey")
             updateUserKey(userKey)
         }
     }

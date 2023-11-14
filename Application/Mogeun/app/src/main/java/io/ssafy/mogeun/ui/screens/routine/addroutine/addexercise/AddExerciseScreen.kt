@@ -227,20 +227,15 @@ fun AddExerciseScreen(
                             }
                         },
                     ) {
-                        Text("선택된 운동 추가")
+                        Text("변경사항 적용")
                     }
                 }
                 when {
                     openAlertDialog.value -> {
                         AlertDialogExample(
                             onDismissRequest = { openAlertDialog.value = false },
-                            onConfirmation = {
-                                openAlertDialog.value = false
-                                println("Confirmation registered")
-                            },
                             dialogTitle = "루틴 이름을 설정해 주세요.",
                             icon = Icons.Default.Info,
-                            navController = navController
                         )
                     }
                 }
@@ -250,9 +245,7 @@ fun AddExerciseScreen(
 }
 @Composable
 fun AlertDialogExample(
-    navController: NavHostController,
     onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
     dialogTitle: String,
     icon: ImageVector,
 ) {
@@ -286,11 +279,10 @@ fun AlertDialogExample(
                 onClick = {
                     viewModel.userKey?.let {
                         val ret = viewModel.addRoutine(viewModel.userKey, routineName)
-                        Log.d("addRoutine", "$ret")
                     } ?: Log.e("addRoutine", "User key is null")
                 }
             ) {
-                Text("Confirm")
+                Text("확인")
             }
         },
         dismissButton = {
@@ -299,7 +291,7 @@ fun AlertDialogExample(
                     onDismissRequest()
                 }
             ) {
-                Text("Dismiss")
+                Text("취소")
             }
         }
     )
