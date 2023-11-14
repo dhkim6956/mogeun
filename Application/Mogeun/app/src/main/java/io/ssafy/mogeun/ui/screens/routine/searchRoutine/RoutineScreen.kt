@@ -271,7 +271,8 @@ fun RoutineList(
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(50.dp)
+                                .height(50.dp),
+                            shape = RoundedCornerShape(10.dp)
                         ) {
                             Text(
                                 text = "이름 변경",
@@ -284,7 +285,8 @@ fun RoutineList(
                             onClick = { navController.navigate("addroutine/${routine.routineKey}") },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(50.dp)
+                                .height(50.dp),
+                            shape = RoundedCornerShape(10.dp)
                         ) {
                             Spacer(modifier = Modifier.width(5.dp))
                             Text(
@@ -301,7 +303,8 @@ fun RoutineList(
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(50.dp)
+                                .height(50.dp),
+                            shape = RoundedCornerShape(10.dp)
                         ) {
                             Text(
                                 text = "루틴 삭제",
