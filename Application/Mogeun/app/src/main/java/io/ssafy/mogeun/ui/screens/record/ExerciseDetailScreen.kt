@@ -1,7 +1,6 @@
 package io.ssafy.mogeun.ui.screens.record
 
 import android.os.Build.VERSION.SDK_INT
-import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -39,9 +38,9 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
 import coil.size.Size
-import io.ssafy.mogeun.R
 import io.ssafy.mogeun.model.Exercise
 import io.ssafy.mogeun.model.SetResult
+
 
 @Composable
 fun ExerciseDetailScreen(navController: NavHostController) {
@@ -50,7 +49,7 @@ fun ExerciseDetailScreen(navController: NavHostController) {
         exercise = navController.previousBackStackEntry
             ?.savedStateHandle?.get<Exercise>("exerciseDetail")!!
     } catch (e: NullPointerException) {
-        exercise = Exercise("", "", 0, listOf(""), listOf(""), listOf(SetResult(0, 0f, 0, 0, listOf(0))))
+        exercise = Exercise("", "", 0, listOf(""), listOf(""), listOf(SetResult(0, 0f, 0, 0, listOf(0f), listOf(0f))))
     }
 
     Column (
@@ -84,7 +83,7 @@ fun ExerciseDetailScreen(navController: NavHostController) {
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             repeat(exercise.sets) {
-                SetDetail(it + 1, exercise.setResults[it])
+                SetDetail(it + 1, exercise.setResults[it], exercise.parts)
             }
         }
     }
@@ -119,9 +118,12 @@ fun GifImage(
 @Composable
 fun SetDetail(
     setNum: Int,
-    setDetail: SetResult
+    setDetail: SetResult,
+    parts: List<String>
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val part = parts.get(0).split(" ")[1]
+
     Column (
         modifier = Modifier
             .animateContentSize(
@@ -186,13 +188,49 @@ fun SetDetail(
             }
         }
         if (expanded)
-            MuscleActivity(setDetail.muscleActivity)
+            MuscleInfo(setDetail.muscleActivity, setDetail.muscleFatigue, part)
+    }
+}
+
+@Composable
+fun MuscleInfo(
+    muscleActivityList: List<Float>?,
+    muscleFatigueList: List<Float>?,
+    part: String
+) {
+    Box (
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = 30.dp,
+                vertical = 10.dp
+            )
+            .background(color = MaterialTheme.colorScheme.background),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            repeat(2) {
+                Column {
+                    if (it == 0)
+                        Text("왼쪽 $part")
+                    else
+                        Text("오른쪽 $part")
+                    if (muscleActivityList?.size!! > 0)
+                        Text("근활성도: " + muscleActivityList?.get(it).toString() ?: "")
+                    if (muscleFatigueList?.size!! > 0)
+                        Text("근피로도: " + muscleFatigueList?.get(it).toString() ?: "")
+                }
+            }
+        }
     }
 }
 
 @Composable
 fun MuscleActivity(
-    muscleActivityList: List<Int>?
+    muscleActivityList: List<Float>?
 ) {
     Box (
         modifier = Modifier
@@ -203,12 +241,7 @@ fun MuscleActivity(
             )
             .background(color = MaterialTheme.colorScheme.background)
     ) {
-        MuscleActivityGrid(
-            columns = 2,
-            itemCount = 4
-        ) {
-            SetWeightIcon(muscleActivityList?.get(it) ?: 0)
-        }
+
     }
 }
 
