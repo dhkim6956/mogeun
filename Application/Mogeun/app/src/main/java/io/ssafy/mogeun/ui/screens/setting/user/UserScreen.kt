@@ -2,6 +2,8 @@ package io.ssafy.mogeun.ui.screens.setting.user
 
 import android.graphics.drawable.shapes.Shape
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -42,7 +45,7 @@ fun UserScreen(
     navController: NavHostController
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-
+    val focusManager = LocalFocusManager.current
     LaunchedEffect(Unit) {
         viewModel.getUserKey()
     }
@@ -51,7 +54,16 @@ fun UserScreen(
             viewModel.getInbody()
         }
     }
-    Column {
+    Column(
+        modifier = Modifier.clickable(
+            interactionSource = remember {
+                MutableInteractionSource()
+            },
+            indication = null
+        ) {
+            focusManager.clearFocus()
+        }
+    ) {
         Column(
             modifier = Modifier
                 .padding(start = 48.dp, top = 24.dp, end = 48.dp)
@@ -72,11 +84,11 @@ fun UserScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "신장")
+            Text(text = "신장 (cm)")
             TextField(
                 value = viewModel.height.toString(),
                 onValueChange = {
-                    viewModel.updateHeight(it.toDouble())
+                    viewModel.updateHeight(it)
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
@@ -88,11 +100,11 @@ fun UserScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "체중")
+            Text(text = "체중 (kg)")
             TextField(
                 value = viewModel.weight.toString(),
                 onValueChange = {
-                    viewModel.updateWeight(it.toDouble())
+                    viewModel.updateWeight(it)
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
@@ -104,11 +116,11 @@ fun UserScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "골격근량")
+            Text(text = "골격근량 (kg)")
             TextField(
                 value = viewModel.muscleMass.toString(),
                 onValueChange = {
-                    viewModel.updateMuscleMass(it.toDouble())
+                    viewModel.updateMuscleMass(it)
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
@@ -120,11 +132,11 @@ fun UserScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "체지방량")
+            Text(text = "체지방량 (kg)")
             TextField(
                 value = viewModel.bodyFat.toString(),
                 onValueChange = {
-                    viewModel.updateBodyFat(it.toDouble())
+                    viewModel.updateBodyFat(it)
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,

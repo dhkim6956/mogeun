@@ -3,6 +3,8 @@ package io.ssafy.mogeun.ui.screens.signup
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
@@ -22,11 +24,13 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,8 +48,17 @@ fun SignupScreen(
 ) {
     val inputForm = viewModel.inputForm
     val firstText = viewModel.firstText
-
-    Column {
+    val focusManager = LocalFocusManager.current
+    Column(
+        modifier = Modifier.clickable(
+            interactionSource = remember {
+                MutableInteractionSource()
+            },
+            indication = null
+        ) {
+            focusManager.clearFocus()
+        }
+    ) {
         Box(
             modifier = Modifier
                 .height(200.dp)
@@ -142,6 +155,7 @@ fun Essential(
                 onClick = {
                     val ret = viewModel.dupEmail()
                     Log.d("signIn", "$ret")
+                    keyboardController?.hide()
                 },
                 modifier = Modifier.width(100.dp),
                 shape = RoundedCornerShape(10.dp)
@@ -159,8 +173,10 @@ fun Essential(
             keyboardActions = KeyboardActions(onDone = {
                 keyboardController?.hide()
             }),
+            visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Done
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Password
             ),
             maxLines = 1
         )
@@ -171,11 +187,13 @@ fun Essential(
             onValueChange = viewModel::updateCheckingPassword,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp),
+            visualTransformation = PasswordVisualTransformation(),
             keyboardActions = KeyboardActions(onDone = {
                 keyboardController?.hide()
             }),
             keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Done
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Password
             ),
             maxLines = 1
         )
@@ -216,7 +234,7 @@ fun Essential(
                         onClick = {
                             if(viewModel.checkEmail == 1 && viewModel.password == viewModel.checkingPassword && viewModel.nickname !== "" && viewModel.selectedGender !== "") {
                                 viewModel.updateInputForm(2)
-                                viewModel.updateFirstText("인바디를")
+                                viewModel.updateFirstText("신체정보를")
                             } else {
                                 viewModel.updateRightInformation(true)
                             }
@@ -271,7 +289,7 @@ fun Inbody(
             .padding(28.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        Text(text = "키")
+        Text(text = "키 (cm)")
         TextField(
             value = heightText,
             onValueChange = {
@@ -295,7 +313,7 @@ fun Inbody(
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "몸무게")
+        Text(text = "몸무게 (kg)")
         TextField(
             value = weightText,
             onValueChange = {
@@ -318,7 +336,7 @@ fun Inbody(
             maxLines = 1
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "골격근량")
+        Text(text = "골격근량 (kg)")
         TextField(
             value = muscleMassText,
             onValueChange = {
@@ -341,7 +359,7 @@ fun Inbody(
             maxLines = 1
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "체지방")
+        Text(text = "체지방 (kg)")
         TextField(
             value = bodyFatText,
             onValueChange = {

@@ -178,7 +178,9 @@ fun RoutineScreen(
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             viewModel.tmp?.let {
                 itemsIndexed(it.data) { index, item ->
-                    RoutineList(navController, item, index)
+                    if (item.imagePath.size !== 0){
+                        RoutineList(navController, item, index)
+                    }
                 }
             }
         }
@@ -215,7 +217,6 @@ fun RoutineList(
     routine: GetRoutineListResponseBody,
     index: Int,
     viewModel: RoutineViewModel = viewModel(factory = RoutineViewModel.Factory)
-
 ) {
     val openAlertDialog = remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
@@ -270,7 +271,8 @@ fun RoutineList(
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(50.dp)
+                                .height(50.dp),
+                            shape = RoundedCornerShape(10.dp)
                         ) {
                             Text(
                                 text = "이름 변경",
@@ -283,7 +285,8 @@ fun RoutineList(
                             onClick = { navController.navigate("addroutine/${routine.routineKey}") },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(50.dp)
+                                .height(50.dp),
+                            shape = RoundedCornerShape(10.dp)
                         ) {
                             Spacer(modifier = Modifier.width(5.dp))
                             Text(
@@ -295,15 +298,13 @@ fun RoutineList(
                         Spacer(modifier = Modifier.height(5.dp))
                         Button(
                             onClick = {
-                                scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                    if (!sheetState.isVisible) {
-                                        showBottomSheet = false
-                                    }
-                                }
+                                showBottomSheet = false
+                                viewModel.deleteRoutine(index)
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(50.dp)
+                                .height(50.dp),
+                            shape = RoundedCornerShape(10.dp)
                         ) {
                             Text(
                                 text = "루틴 삭제",
@@ -320,7 +321,6 @@ fun RoutineList(
             openAlertDialog.value -> {
                 AlertDialogExample(
                     onConfirmation = {
-                        Log.d("routineName", "${viewModel.newRoutineName.value}")
                         viewModel.updateRoutineName(index, viewModel.newRoutineName.value)
                         openAlertDialog.value = false
                     },
@@ -329,7 +329,6 @@ fun RoutineList(
                         openAlertDialog.value = false
                     },
                     icon = Icons.Default.Info,
-                    index = index,
                 )
             }
         }
@@ -337,7 +336,9 @@ fun RoutineList(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-            Row(modifier = Modifier.width(200.dp)) {
+            Row(
+                modifier = Modifier.width(200.dp)
+            ) {
                 LazyRow() {
                     items(routine.imagePath) { target ->
                         muscleIcon(target)
@@ -345,7 +346,9 @@ fun RoutineList(
                 }
             }
             Button(
-                onClick = { navController.navigate("Execution/${routine.routineKey}") },
+                onClick = {
+                    navController.navigate("Execution/${routine.routineKey}")
+                },
                 shape = RoundedCornerShape(12.dp),
                 elevation = ButtonDefaults.buttonElevation(
                     defaultElevation = 10.dp,
@@ -355,7 +358,9 @@ fun RoutineList(
                 Text(text = "루틴시작")
             }
         }
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(
+            modifier = Modifier.height(10.dp)
+        )
     }
 }
 @Composable
@@ -380,7 +385,9 @@ fun muscleIcon(imagePath: String) {
                 .width(32.dp)
         )
     }
-    Spacer(modifier = Modifier.width(10.dp))
+    Spacer(
+        modifier = Modifier.width(10.dp)
+    )
 }
 @Composable
 fun AlertDialogExample(
@@ -388,7 +395,6 @@ fun AlertDialogExample(
     onConfirmation: () -> Unit,
     dialogTitle: String,
     icon: ImageVector,
-    index : Int,
 ) {
     val viewModel: RoutineViewModel = viewModel(factory = RoutineViewModel.Factory)
     AlertDialog(
@@ -413,7 +419,6 @@ fun AlertDialogExample(
             TextButton(
                 onClick = {
                     onConfirmation()
-
                 }
             ) {
                 Text("Confirm")
