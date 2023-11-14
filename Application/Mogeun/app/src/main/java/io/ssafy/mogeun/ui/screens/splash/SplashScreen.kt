@@ -47,12 +47,13 @@ fun SplashScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(350.dp),
+                .height(370.dp)
+                .padding(top = 60.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Image(
-                painter = painterResource(id = R.drawable.logo),
+                painter = painterResource(id = R.drawable.applogo),
                 contentDescription = "logo",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -60,12 +61,13 @@ fun SplashScreen(
                 alignment = Alignment.Center
             )
         }
+        Spacer(modifier = Modifier.height(60.dp))
         Text(
             text = "모근",
-            color = MaterialTheme.colorScheme.primary,
+            color = MaterialTheme.colorScheme.surfaceTint,
             fontSize = 64.sp
         )
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(40.dp))
         Text(
             text = "건강한 몸에",
             fontSize = 24.sp

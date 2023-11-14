@@ -321,7 +321,6 @@ fun RoutineList(
             openAlertDialog.value -> {
                 AlertDialogExample(
                     onConfirmation = {
-                        Log.d("routineName", "${viewModel.newRoutineName.value}")
                         viewModel.updateRoutineName(index, viewModel.newRoutineName.value)
                         openAlertDialog.value = false
                     },
@@ -330,7 +329,6 @@ fun RoutineList(
                         openAlertDialog.value = false
                     },
                     icon = Icons.Default.Info,
-                    index = index,
                 )
             }
         }
@@ -338,7 +336,9 @@ fun RoutineList(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-            Row(modifier = Modifier.width(200.dp)) {
+            Row(
+                modifier = Modifier.width(200.dp)
+            ) {
                 LazyRow() {
                     items(routine.imagePath) { target ->
                         muscleIcon(target)
@@ -346,7 +346,9 @@ fun RoutineList(
                 }
             }
             Button(
-                onClick = { navController.navigate("Execution/${routine.routineKey}") },
+                onClick = {
+                    navController.navigate("Execution/${routine.routineKey}")
+                },
                 shape = RoundedCornerShape(12.dp),
                 elevation = ButtonDefaults.buttonElevation(
                     defaultElevation = 10.dp,
@@ -356,7 +358,9 @@ fun RoutineList(
                 Text(text = "루틴시작")
             }
         }
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(
+            modifier = Modifier.height(10.dp)
+        )
     }
 }
 @Composable
@@ -381,7 +385,9 @@ fun muscleIcon(imagePath: String) {
                 .width(32.dp)
         )
     }
-    Spacer(modifier = Modifier.width(10.dp))
+    Spacer(
+        modifier = Modifier.width(10.dp)
+    )
 }
 @Composable
 fun AlertDialogExample(
@@ -389,7 +395,6 @@ fun AlertDialogExample(
     onConfirmation: () -> Unit,
     dialogTitle: String,
     icon: ImageVector,
-    index : Int,
 ) {
     val viewModel: RoutineViewModel = viewModel(factory = RoutineViewModel.Factory)
     AlertDialog(
@@ -414,7 +419,6 @@ fun AlertDialogExample(
             TextButton(
                 onClick = {
                     onConfirmation()
-
                 }
             ) {
                 Text("Confirm")
