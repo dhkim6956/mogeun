@@ -178,7 +178,9 @@ fun RoutineScreen(
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             viewModel.tmp?.let {
                 itemsIndexed(it.data) { index, item ->
-                    RoutineList(navController, item, index)
+                    if (item.imagePath.size !== 0){
+                        RoutineList(navController, item, index)
+                    }
                 }
             }
         }
@@ -215,7 +217,6 @@ fun RoutineList(
     routine: GetRoutineListResponseBody,
     index: Int,
     viewModel: RoutineViewModel = viewModel(factory = RoutineViewModel.Factory)
-
 ) {
     val openAlertDialog = remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
@@ -295,11 +296,8 @@ fun RoutineList(
                         Spacer(modifier = Modifier.height(5.dp))
                         Button(
                             onClick = {
-                                scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                    if (!sheetState.isVisible) {
-                                        showBottomSheet = false
-                                    }
-                                }
+                                showBottomSheet = false
+                                viewModel.deleteRoutine(index)
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
