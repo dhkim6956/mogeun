@@ -54,13 +54,12 @@ class BluetoothViewModel(
     private val keyRepository: KeyRepository,
 ): ViewModel() {
 
-    var userKey by mutableIntStateOf(0)
-    fun getUserKey() {
-        viewModelScope.launch {
-            val key = keyRepository.getKey().first()
-            val userKey = key?.userKey
-            Log.d("execution", "사용자 키: $userKey")
-        }
+    var userKey by mutableStateOf<Int?>(null)
+    suspend fun getUserKey(): Int? {
+        val key = keyRepository.getKey().first()
+        userKey = key?.userKey
+        Log.d("execution", "사용자 키: $userKey")
+        return userKey
     }
 
     private val _routineState = MutableStateFlow(RoutineState(null, showBottomSheet = false))
@@ -157,7 +156,7 @@ class BluetoothViewModel(
 
         viewModelScope.launch {
             Log.d("execution", "$userKey")
-            val ret = executionRepository.startRoutine(userKey, routineKey, isAttached)
+            val ret = executionRepository.startRoutine(userKey!!, routineKey, isAttached)
             Log.d("execution", "$ret")
             _routineState.update { routineState -> routineState.copy(reportKey = ret.data!!.reportKey) }
         }
@@ -169,7 +168,7 @@ class BluetoothViewModel(
         Log.d("execution", "$reportKey")
 
         viewModelScope.launch {
-            val ret = executionRepository.endRoutine(userKey, reportKey!!)
+            val ret = executionRepository.endRoutine(userKey!!, reportKey!!)
 
 
             Log.d("execution", "${ret}")

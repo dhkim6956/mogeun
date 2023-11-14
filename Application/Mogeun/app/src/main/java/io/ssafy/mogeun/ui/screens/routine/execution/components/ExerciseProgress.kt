@@ -67,8 +67,14 @@ import org.jtransforms.fft.DoubleFFT_1D
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun ExerciseProgress(emgUiState: EmgUiState, planInfo: List<SetOfRoutineDetail>, addSet: () -> Unit, removeSet: (Int) -> Unit, setWeight: (Int, Int) -> Unit, setRep: (Int, Int) -> Unit){
-
+fun ExerciseProgress(
+    emgUiState: EmgUiState,
+    planInfo: List<SetOfRoutineDetail>,
+    addSet: () -> Unit,
+    removeSet: (Int) -> Unit,
+    setWeight: (Int, Int) -> Unit,
+    setRep: (Int, Int) -> Unit
+){
     val totalSet = planInfo.size
     val setCntList = (1..totalSet).map { it }
 

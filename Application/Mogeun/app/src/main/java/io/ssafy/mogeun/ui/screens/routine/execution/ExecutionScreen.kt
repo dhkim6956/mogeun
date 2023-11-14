@@ -1,6 +1,5 @@
 package io.ssafy.mogeun.ui.screens.routine.execution
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,17 +14,23 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.PauseCircle
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -35,11 +40,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.ui.BluetoothViewModel
+import io.ssafy.mogeun.ui.components.AlertDialogCustom
 import io.ssafy.mogeun.ui.components.ElevatedGif
 import io.ssafy.mogeun.ui.screens.routine.execution.components.ExerciseProgress
 import io.ssafy.mogeun.ui.screens.routine.execution.components.RoutineProgress
 import io.ssafy.mogeun.ui.screens.routine.execution.components.SensorBottomSheet
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 
@@ -51,15 +57,14 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
     val routineState by viewModel.routineState.collectAsState()
     val elapsedTime by viewModel.elaspedTime.collectAsState()
 
+    var openEndDialog by remember { mutableStateOf(false) }
+
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        coroutineScope.launch {
+        val ret = async {
             viewModel.getUserKey()
-        }
-    }
-
-    LaunchedEffect(viewModel.userKey) {
+        }.await()
         if (!routineState.onProcess) {
             viewModel.startRoutine(routineKey)
         }
@@ -68,15 +73,6 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
     LaunchedEffect(routineKey) {
         viewModel.getPlanList(routineKey)
     }
-
-//    DisposableEffect(Unit) {
-//        onDispose {
-//            viewModel.unsubscribe()
-//            coroutineScope.launch {
-//                viewModel.deleteEmgData()
-//            }
-//        }
-//    }
 
     if(routineState.planList == null) {
 
@@ -164,10 +160,29 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
                         }
                     }
                 }
-                RoutineProgress(pagerState.currentPage + 1, routineSize, elapsedTime, {viewModel.endRoutine()})
+                RoutineProgress(pagerState.currentPage + 1, routineSize, elapsedTime) {
+                    openEndDialog = true
+                }
 
                 SensorBottomSheet(state = routineState.showBottomSheet, hide = viewModel::hideBottomSheet, navToConnection = {navController.navigate("Connection")}, btState = btState, sensingPart = routineState.planList!!.data[pagerState.currentPage].mainPart.imagePath)
             }
+        }
+    }
+    when {
+        openEndDialog -> {
+            AlertDialogCustom(
+                onDismissRequest = {
+                    openEndDialog = false
+                                   },
+                onConfirmation = {
+                    openEndDialog = false
+                    viewModel.endRoutine()
+                    navController.navigate("RecordDetail/${routineState.reportKey}")
+                                 },
+                dialogTitle = "오늘의 루틴 종료",
+                dialogText = "현재까지의 진행상황을 기록하고 운동을 종료합니다.",
+                icon = Icons.Default.PauseCircle
+            )
         }
     }
 }
