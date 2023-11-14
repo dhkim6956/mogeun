@@ -4,6 +4,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -36,6 +38,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
@@ -60,6 +63,7 @@ fun LoginScreen(
         navController.navigate("Routine")
     }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
     LaunchedEffect(viewModel.errorSignIn) {
         if (viewModel.errorSignIn == true) {
             snackbarHostState.showSnackbar("잘못된 정보입니다.")
@@ -67,7 +71,16 @@ fun LoginScreen(
         }
     }
     Column(
-        modifier = Modifier.verticalScroll(rememberScrollState())
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+            .clickable(
+                interactionSource = remember {
+                    MutableInteractionSource()
+                },
+                indication = null
+    ) {
+        focusManager.clearFocus()
+    }
     ) {
         Box(
             modifier = Modifier
