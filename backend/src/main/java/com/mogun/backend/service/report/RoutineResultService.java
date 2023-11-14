@@ -56,19 +56,19 @@ public class RoutineResultService {
 
     public ServiceStatus<Object> getAllInfoOfResult(ResultDto dto) {
 
-        Optional<RoutineResult> result = resultRepository.findById(dto.getResultKey());
-        if(result.isEmpty())
+        Optional<RoutineReport> report = reportRepository.findById(dto.getReportKey());
+        if(report.isEmpty())
             return ServiceStatus.errorStatus("요청 오류: 해당 루틴 기록이 없음");
 
         Optional<User> user = userRepository.findById(dto.getUserKey());
         if(user.isEmpty())
             return ServiceStatus.errorStatus("요청 오류: 등록된 회원이 아님");
 
-        if(!result.get().getUser().equals(user.get()))
+        if(!report.get().getUser().equals(user.get()))
             return ServiceStatus.errorStatus("요청 오류: 루틴 기록을 소유한 회원과 요청 회원이 불일치");
 
-        RoutineReport report = result.get().getRoutineReport();
-        List<SetReport> setReportList = setReportRepository.findAllByRoutineReport(report);
+//        RoutineReport report = result.get().getRoutineReport();
+        List<SetReport> setReportList = setReportRepository.findAllByRoutineReport(report.get());
         List<ExerciseResultDto> exerciseResultDtoList = new ArrayList<>();
 
 //        // Seongmin 루틴에서 설정한 운동에 맞게 정렬
@@ -173,13 +173,8 @@ public class RoutineResultService {
                 exerciseResultDtoList.get(lastIndex).getPartList().addAll(attachPartService.getMainSubPartNameByExercise(setReport.getExercise()));
                 exerciseResultDtoList.get(lastIndex).getMuscleImagePathList().addAll(attachPartService.getPartImagePathByExercise(setReport.getExercise()));
 
-                List<Double> actList = new ArrayList<>();
-                List<Double> fatgList = new ArrayList<>();
-                List<MuscleActInSetLog> setLogList = actInSetLogRepository.findAllBySetReport(setReport);
-                for(MuscleActInSetLog log: setLogList) {
-                    actList.add(log.getMuscleActivity());
-                    fatgList.add(log.getMuscleFatigue());
-                }
+                List<Double> actList = actInSetLogRepository.findAllActivityBySetReport(setReport);
+                List<Double> fatgList = actInSetLogRepository.findAllFatigueBySetReport(setReport);
 
                 exerciseResultDtoList.get(lastIndex).getSetResultList().add(SetResultDto.builder()
                         .setNumber(setReport.getSetNumber())
@@ -192,10 +187,11 @@ public class RoutineResultService {
             }
         }
 
-        Duration performTime = Duration.between(result.get().getRoutineReport().getStartTime(), result.get().getRoutineReport().getEndTime());
+        Duration performTime = Duration.between(report.get().getStartTime(), report.get().getEndTime());
+        Optional<RoutineResult> result = resultRepository.findByRoutineReport(report.get());
 
         SummaryResultDto data = SummaryResultDto.builder()
-                .routineName(result.get().getRoutineReport().getRoutineName())
+                .routineName(report.get().getRoutineName())
                 .routineDate(result.get().getRoutineDate())
                 .consumeCalorie(result.get().getConsumeCalorie())
                 .totalSets(setReportList.size())

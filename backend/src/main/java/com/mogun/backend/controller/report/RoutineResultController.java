@@ -38,11 +38,11 @@ public class RoutineResultController {
     }
 
     @GetMapping("/Routine")
-    public ApiResponse<Object> getRoutineResult(@RequestParam("user_key") int userKey, @RequestParam("routine_result_key") int resultKey) {
+    public ApiResponse<Object> getRoutineResult(@RequestParam("user_key") int userKey, @RequestParam("routine_report_key") Long resultKey) {
 
         ServiceStatus<Object> result = resultService.getAllInfoOfResult(ResultDto.builder()
                 .userKey(userKey)
-                .resultKey(resultKey)
+                .reportKey(resultKey)
                 .build());
 
         if(result.getStatus() != 100)
