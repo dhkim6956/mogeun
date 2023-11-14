@@ -76,11 +76,6 @@ public class UserRoutineService {
             return ServiceStatus.errorStatus("요청 오류: 등록된 루틴이 아님");
 
         List<UserRoutinePlan> planList = planRepository.findAllByUserRoutine(routine.get());
-        for(UserRoutinePlan plan: planList) {
-
-            setDetailRepository.deleteAllByUserRoutinePlan(plan);
-            planRepository.delete(plan);
-        }
 
         routine.get().setIsDeleted('Y');
         return ServiceStatus.okStatus();

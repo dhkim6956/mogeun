@@ -174,6 +174,7 @@ public class UserRoutinePlanService {
                     .muscleImagePathList(new HashSet<>())
                     .build());
 
+            if(routine.getIsDeleted() == 'Y') continue;
             if(planList.isEmpty()) continue;
             if(currentIndex >= planList.size()) continue;
             int lastIndex = routineOutlineDtoList.size() - 1;
