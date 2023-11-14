@@ -15,6 +15,7 @@ import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.data.KeyRepository
 import io.ssafy.mogeun.data.RoutineRepository
 import io.ssafy.mogeun.data.UserRepository
+import io.ssafy.mogeun.model.DeleteRoutineResponse
 import io.ssafy.mogeun.model.DupEmailResponse
 import io.ssafy.mogeun.model.GetInbodyResponse
 import io.ssafy.mogeun.model.GetRoutineListResponse
@@ -93,6 +94,10 @@ class RoutineViewModel(
                 }
             }
         }
+    }
+    fun deleteRoutine() {
+        lateinit var ret: DeleteRoutineResponse
+
     }
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {

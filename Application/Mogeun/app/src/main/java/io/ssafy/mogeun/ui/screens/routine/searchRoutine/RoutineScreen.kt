@@ -295,11 +295,7 @@ fun RoutineList(
                         Spacer(modifier = Modifier.height(5.dp))
                         Button(
                             onClick = {
-                                scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                    if (!sheetState.isVisible) {
-                                        showBottomSheet = false
-                                    }
-                                }
+                                showBottomSheet = false
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
