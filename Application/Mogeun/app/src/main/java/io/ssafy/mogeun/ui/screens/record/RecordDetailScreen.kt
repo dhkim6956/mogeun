@@ -1,6 +1,5 @@
 package io.ssafy.mogeun.ui.screens.record
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -78,9 +77,8 @@ fun RecordDetailScreen(
     } catch (e: NullPointerException) {
         routineTimeList = emptyList()
     }
-    Log.d("routineTimeList", routineTimeList.toString())
 
-    if (reportKeyList.isNotNull() && routineTimeList.isNotEmpty()) {
+    if (reportKeyList.isNotNull() || routineTimeList.isNotEmpty()) {
         val recordRoutineSuccess by viewModel.recordRoutineSuccess.collectAsState()
         if (!recordRoutineSuccess) {
             viewModel.recordAllRoutine(reportKeyList)
@@ -96,6 +94,7 @@ fun RecordDetailScreen(
                 initialPage = reportKeyList.indexOf(reportKey?.toInt()),
                 pageCount = { reportKeyList.size }
             )
+
             Column {
                 Row(
                     Modifier
@@ -170,6 +169,7 @@ fun RecordDetailScreen(
         }
     }
 }
+
 
 @Composable
 fun RecordDetail(
