@@ -92,7 +92,6 @@ fun SummaryScreen(viewModel: SummaryViewModel = viewModel(factory = AppViewModel
             .padding(
                 horizontal = 30.dp
             )
-            .background(color = MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.End
     ) {
@@ -106,16 +105,31 @@ fun SummaryScreen(viewModel: SummaryViewModel = viewModel(factory = AppViewModel
             BodyInfoSummaryCard(viewModel.summaryBodyInfo)
             Spacer(
                 modifier = Modifier
-                    .height(10.dp)
+                    .height(30.dp)
                     .background(color = MaterialTheme.colorScheme.primaryContainer)
             )
-            Dropdown(viewModel)
+            Box (
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    .height(2.dp)
+            ) {
+                Text("")
+            }
             Spacer(
                 modifier = Modifier
-                    .height(5.dp)
+                    .height(30.dp)
                     .background(color = MaterialTheme.colorScheme.primaryContainer)
             )
-            Text("운동 요약", modifier = Modifier.align(Alignment.Start), fontSize=18.sp, fontWeight = FontWeight.Bold)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("운동 요약", fontSize=18.sp, fontWeight = FontWeight.Bold)
+                Dropdown(viewModel)
+            }
             ExerciseSummaryCard(
                 viewModel.summaryExerciseMost[viewModel.itemIndex.value],
                 viewModel.summaryExerciseWeight[viewModel.itemIndex.value],
@@ -452,18 +466,15 @@ fun MuscleSummaryCard(muscleInfoList: List<PerformedMuscleInfo>?) {
 fun MuscleSummary(exercises: List<PerformedMuscleInfo>) {
     val yStepSize = 9
     var map: MutableMap<String, Float> = mutableMapOf(
-        "가슴" to 0f, "등" to 0f, "허벅지" to 0f, "어깨" to 0f, "이두" to 0f, "삼두" to 0f, "승모근" to 0f, "종아리" to 0f, "복근" to 0f, "" to 0f
+        "가슴" to 0f, "등" to 0f, "허벅지" to 0f, "어깨" to 0f, "이두" to 0f, "삼두" to 0f, "승모근" to 0f, "종아리" to 0f, "복근" to 0f
     )
     var index = 0
     var barChartdata: MutableList<BarData> = mutableListOf()
     var maxHeight = 0f
 
     for (exercise in exercises) {
-        var prevPart = ""
         for (part in exercise.parts) {
             val partDetail = part.split(" ")
-            if (prevPart == "") prevPart = partDetail[1]
-            else if (prevPart == partDetail[1]) continue
             if (partDetail[0] == "주") {
                 map[partDetail[1]] = map[partDetail[1]]!!.plus(3f)
             }
@@ -472,8 +483,11 @@ fun MuscleSummary(exercises: List<PerformedMuscleInfo>) {
             }
         }
     }
+    val tmpMap = map.toList()
+    var muscleMap = tmpMap.sortedByDescending { it.second }.toMap().toMutableMap()
+    muscleMap[""] = 0f
 
-    for (data in map) {
+    for (data in muscleMap) {
         if (maxHeight < data.value) maxHeight = data.value
         barChartdata.add(index, BarData(Point(index.toFloat(), data.value, data.key), MaterialTheme.colorScheme.primary, data.key))
         index++
@@ -534,7 +548,12 @@ fun Dropdown(viewModel: SummaryViewModel) {
         modifier = Modifier
             .border(
                 width = 1.dp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .background(
+                color = MaterialTheme.colorScheme.background,
+                shape = RoundedCornerShape(16.dp)
             )
             .padding(5.dp)
             .clickable {
