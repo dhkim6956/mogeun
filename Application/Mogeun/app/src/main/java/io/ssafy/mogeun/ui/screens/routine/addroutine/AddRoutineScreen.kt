@@ -1,6 +1,6 @@
 package io.ssafy.mogeun.ui.screens.routine.addroutine
 
-import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +29,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
@@ -62,7 +63,9 @@ fun AddRoutineScreen(
         }
     }
     Column(
-        modifier = Modifier.fillMaxSize().padding(20.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp),
     ) {
         Box(
             modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd
@@ -86,6 +89,7 @@ fun ExerciseList(item: ListMyExerciseResponseData, navController:NavHostControll
     val imageResId = context.resources.getIdentifier("x_${item.imagePath}", "drawable", context.packageName)
     Box(
         modifier = Modifier
+            .background(color = Color.White)
             .fillMaxWidth()
             .height(88.dp)
             .border(
@@ -102,8 +106,11 @@ fun ExerciseList(item: ListMyExerciseResponseData, navController:NavHostControll
                     contentDescription = "GIF Image",
                     contentScale = ContentScale.Crop,
                 ),
-                modifier = Modifier.height(60.dp).width(60.dp)
+                modifier = Modifier
+                    .height(60.dp)
+                    .width(60.dp)
             )
+            Spacer(modifier = Modifier.width(10.dp))
             Column {
                 Text(
                     text = "${item.name}",
