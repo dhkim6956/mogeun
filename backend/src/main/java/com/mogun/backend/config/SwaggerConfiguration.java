@@ -20,9 +20,9 @@ import java.util.ArrayList;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfiguration {
-    private static final String SERVICE_NAME = "Make Project";
+    private static final String SERVICE_NAME = "Mogeun_Everyone's Muscle";
     private static final String API_VERSION = "V1";
-    private static final String API_DESCRIPTION = "MakeProject API TEST";
+    private static final String API_DESCRIPTION = "Moguen API TEST";
     private static final String API_URL = "http://localhost:8081/";
 
 
