@@ -133,6 +133,7 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
                         ) {
                             Text("${plan.name}", fontWeight = FontWeight.Bold, fontSize = 20.sp)
                             FilledTonalIconButton(
+                                enabled = !routineState.inProgress,
                                 onClick = viewModel::showBottomSheet,
                                 shape = RoundedCornerShape(12.dp),
                                 modifier = Modifier
@@ -163,9 +164,7 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
                         }
                     }
                 }
-                RoutineProgress(pagerState.currentPage + 1, routineSize, elapsedTime) {
-                    openEndDialog = true
-                }
+                RoutineProgress(pagerState.currentPage + 1, routineSize, elapsedTime, {openEndDialog = true}, routineState.inProgress)
 
                 SensorBottomSheet(state = routineState.showBottomSheet, hide = viewModel::hideBottomSheet, navToConnection = {navController.navigate("Connection")}, btState = btState, sensingPart = routineState.planList!!.data[pagerState.currentPage].mainPart.imagePath)
             }
