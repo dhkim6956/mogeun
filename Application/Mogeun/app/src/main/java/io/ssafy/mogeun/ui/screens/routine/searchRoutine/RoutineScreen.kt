@@ -176,6 +176,9 @@ fun RoutineScreen(
                         RoutineList(navController, item, index)
                     }
                 }
+                item { 
+                    Spacer(modifier = Modifier.height(80.dp))
+                }
             }
         }
     }
@@ -225,7 +228,7 @@ fun RoutineList(
     val beforeScreen = 1
     Box(modifier = Modifier.padding(vertical = 5.dp)){
         Column(modifier = Modifier
-            .background(MaterialTheme.colorScheme.onPrimary)
+            .background(MaterialTheme.colorScheme.onPrimary, shape = RoundedCornerShape(10.dp))
             .padding(5.dp)
         ) {
             Row(modifier = Modifier
