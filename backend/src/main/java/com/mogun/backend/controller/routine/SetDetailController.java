@@ -99,10 +99,10 @@ public class SetDetailController {
     }
 
     @DeleteMapping("/DeleteAll")
-    public ApiResponse<Object> deleteAll(@RequestBody CommonRoutineRequest request) {
+    public ApiResponse<Object> deleteAll(@RequestParam("plan_key") int planKey) {
 
-        ServiceStatus<Object> result = setDetailService.deleteAllSet(RoutineDto.builder().planKey(request.getPlanKey()).build());
+        ServiceStatus<Object> result = setDetailService.deleteAllSet(RoutineDto.builder().planKey(planKey).build());
 
-        return ApiResponse.postAndPutResponse(result, request);
+        return ApiResponse.postAndPutResponse(result, planKey);
     }
 }
