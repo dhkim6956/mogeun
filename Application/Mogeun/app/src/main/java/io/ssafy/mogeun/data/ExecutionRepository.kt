@@ -1,6 +1,5 @@
 package io.ssafy.mogeun.data
 
-import io.ssafy.mogeun.model.ClearPlanRequest
 import io.ssafy.mogeun.model.ClearPlanResponse
 import io.ssafy.mogeun.model.EndRoutineRequest
 import io.ssafy.mogeun.model.RoutineExecutionResponse
@@ -47,7 +46,7 @@ class NetworkExecutionRepository(
     }
 
     override suspend fun clearPlan(planKey: Int): ClearPlanResponse {
-        return mogeunApiService.deletePlan(ClearPlanRequest(planKey))
+        return mogeunApiService.deletePlan(planKey)
     }
 
     override suspend fun setPlan(planKey: Int, setInfos: List<SetInfo>): SetPlanResponse {

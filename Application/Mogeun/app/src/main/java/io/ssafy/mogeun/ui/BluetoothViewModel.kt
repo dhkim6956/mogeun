@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.yml.charts.common.extensions.isNotNull
 import io.ssafy.mogeun.data.Emg
 import io.ssafy.mogeun.data.EmgRepository
 import io.ssafy.mogeun.data.ExecutionRepository
@@ -17,6 +18,9 @@ import io.ssafy.mogeun.data.bluetooth.ConnectedDevice
 import io.ssafy.mogeun.data.bluetooth.Connection0Result
 import io.ssafy.mogeun.data.bluetooth.Connection1Result
 import io.ssafy.mogeun.model.BluetoothMessage
+import io.ssafy.mogeun.model.SensorData
+import io.ssafy.mogeun.model.SetExecutionRequest
+import io.ssafy.mogeun.model.SetInfo
 import io.ssafy.mogeun.ui.screens.routine.execution.ElapsedTime
 import io.ssafy.mogeun.ui.screens.routine.execution.EmgUiState
 import io.ssafy.mogeun.ui.screens.routine.execution.RoutineState
@@ -25,6 +29,7 @@ import io.ssafy.mogeun.ui.screens.routine.execution.SetProgress
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,6 +44,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jtransforms.fft.DoubleFFT_1D
+import java.text.SimpleDateFormat
 import kotlin.math.abs
 
 
@@ -230,21 +236,82 @@ class BluetoothViewModel(
 
         val reportKey = routineState.value.reportKey
         val plan = routineState.value.planDetails.find { setOfPlan -> setOfPlan.planKey == planKey }
+
+        if (!plan.isNotNull()) return
+
         val set = plan!!.setOfRoutineDetail.find { setProgress -> setProgress.setNumber == setIdx }
+
+        if (!set.isNotNull()) return
+
+        val targetWeight = set!!.targetWeight
+        val targetRep = set!!.targetRep
+        val successRep = set!!.successRep
 
         val startTime: Long = set!!.startTime!!
         val endTime: Long = System.currentTimeMillis()
 
+        val dateFormat = "yyyy-MM-dd"
+        val timeFormat = "HH:mm:ss"
+        val dateFormatter = SimpleDateFormat(dateFormat)
+        val timeFormatter = SimpleDateFormat(timeFormat)
+
+        val formmattedStartDate: String = dateFormatter.format(startTime)
+        val formmattedStartTime: String = timeFormatter.format(startTime)
+        val formmattedEndDate: String = dateFormatter.format(endTime)
+        val formmattedEndTime: String = timeFormatter.format(endTime)
+
         viewModelScope.launch {
             CoroutineScope(Dispatchers.IO).launch {
-                val setEmgList1 = emgRepository.getEmgData(startTime, endTime).filter { it.deviceId == 0 }.map { it.value }
+                val entireEmgList = emgRepository.getEmgData(startTime, endTime)
 
-                if (setEmgList1.isNotEmpty()) {
-                    val fatigue1 = FFT_ready(setEmgList1)
+                var fatigues = mutableListOf(0.0, 0.0)
+                var averages = mutableListOf(0.0, 0.0)
 
-                    Log.d("fatigue", "$fatigue1")
+                for (i in 0..1) {
+                    val setEmgList = entireEmgList.filter { it.deviceId == i }.map { it.value }
 
-                    _muscleavg.update { fatigue1 }
+                    if (setEmgList.isEmpty()) break
+
+                    fatigues[i] = FFT_ready(setEmgList)
+                    _muscleavg.update { fatigues[i] }
+
+                    val setEmgListAbs = setEmgList.map { abs(it) }
+                    averages[i] = setEmgListAbs.average()
+                }
+
+                if (plan.valueChanged) {
+                    val ret1 = async {
+                        executionRepository.clearPlan(planKey)
+                    }.await()
+
+                    Log.d("setInput", "clear plan : $ret1")
+
+                    val ret2 = async {
+                        executionRepository.setPlan(planKey, plan.setOfRoutineDetail.map { setProgress ->
+                            SetInfo(setProgress.setNumber, setProgress.targetWeight, setProgress.targetRep)
+                        })
+                    }.await()
+
+                    Log.d("setInput", "set plan : $ret2")
+
+                    val ret3 = executionRepository.reportSet(
+                        SetExecutionRequest(
+                            routineReportKey = reportKey!!,
+                            planKey = planKey,
+                            setNumber = setIdx,
+                            weight = targetWeight,
+                            targetRep = targetRep,
+                            successRep = successRep,
+                            startTime = "${formmattedStartDate}T${formmattedStartTime}",
+                            endTime = "${formmattedEndDate}T${formmattedEndTime}",
+                            muscleActs = listOf(
+                                SensorData(1,averages[0],fatigues[0]),
+                                SensorData(2,averages[1],fatigues[1])
+                            )
+                        )
+                    )
+
+                    Log.d("setInput", "report set : $ret3")
                 }
             }
         }

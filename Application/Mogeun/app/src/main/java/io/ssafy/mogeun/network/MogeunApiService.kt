@@ -5,7 +5,6 @@ import io.ssafy.mogeun.model.AddAllExerciseResponse
 import io.ssafy.mogeun.model.AddRoutineRequest
 import io.ssafy.mogeun.model.AddRoutineResponse
 import io.ssafy.mogeun.model.BodyInfoResponse
-import io.ssafy.mogeun.model.ClearPlanRequest
 import io.ssafy.mogeun.model.ClearPlanResponse
 import io.ssafy.mogeun.model.DeleteRoutineRequest
 import io.ssafy.mogeun.model.DeleteRoutineResponse
@@ -132,7 +131,7 @@ interface MogeunApiService {
     suspend fun reportSet(@Body setExecutionRequest: SetExecutionRequest): SetExecutionResponse
 
     @DELETE("Routine/Set/DeleteAll")
-    suspend fun deletePlan(@Body clearPlanRequest: ClearPlanRequest): ClearPlanResponse
+    suspend fun deletePlan(@Query("plan_key") planKey: Int): ClearPlanResponse
 
     @POST("Routine/Set/AddAll")
     suspend fun setPlan(@Body setPlanRequest: SetPlanRequest): SetPlanResponse

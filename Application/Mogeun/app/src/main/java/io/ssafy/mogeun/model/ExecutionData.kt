@@ -104,8 +104,6 @@ data class SetExecutionRequest(
     val planKey: Int,
     @SerialName(value = "set_number")
     val setNumber: Int,
-    @SerialName(value = "muslce_avg")
-    val muscleAvg: Double,
     val weight: Int,
     @SerialName(value = "target_rep")
     val targetRep: Int,
@@ -153,13 +151,7 @@ data class ClearPlanResponse(
     val code: Int,
     val status: String,
     val message: String,
-    val data: ClearSetResponseData
-)
-
-@Serializable
-data class ClearPlanRequest(
-    @SerialName(value = "plan_key")
-    val planKey: Int
+    val data: Int
 )
 
 @Serializable

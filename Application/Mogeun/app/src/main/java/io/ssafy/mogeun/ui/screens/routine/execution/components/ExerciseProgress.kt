@@ -52,6 +52,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -166,7 +167,8 @@ fun ExerciseProgress(
                     onWeightChosen = { setWeight(selectedTab + 1, it.toInt()) },
                     onRepChosen = {setRep(selectedTab + 1, it.toInt())},
                     preWeight = planInfo[selectedTab].targetWeight,
-                    preRep = planInfo[selectedTab].targetRep
+                    preRep = planInfo[selectedTab].targetRep,
+                    inProgress = inProgress
                 )
             }
             Box(
@@ -319,10 +321,20 @@ fun DateSelectionSection(
     onWeightChosen: (String) -> Unit,
     onRepChosen: (String) -> Unit,
     preWeight: Int,
-    preRep: Int
+    preRep: Int,
+    inProgress: Boolean
 ) {
     val kgValue = (0..300).map { it.toString() }
     val repValue = (0..100).map { it.toString() }
+
+    if(inProgress) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.3f))
+                .pointerInput(Unit) {  }
+        )
+    }
 
     Row(
         horizontalArrangement = Arrangement.SpaceAround,
@@ -372,8 +384,6 @@ fun DateSelectionSection(
                 onItemSelected =  onRepChosen,
             )
         }
-
-
     }
 }
 
@@ -406,10 +416,11 @@ fun InfiniteItemsPicker(
         }
     }
 
-    Box(modifier = Modifier
-        .height(106.dp)
-        .fillMaxWidth()
-        .background(Color.White),
+    Box(
+        modifier = Modifier
+            .height(106.dp)
+            .fillMaxWidth()
+            .background(Color.White),
         contentAlignment = Alignment.Center
     ) {
         LazyColumn(
@@ -609,7 +620,6 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
                 .background(Color(0xFFDDE2FD)),
                 contentAlignment = Alignment.Center
             ){
-                Log.d("avg", "$muscleAverage")
                 Text("${String.format("%.3f", muscleAverage)}")
             }
         }
