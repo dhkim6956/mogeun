@@ -20,6 +20,8 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -68,8 +70,13 @@ fun Navigation() {
             .fillMaxSize()
             .padding(innerPadding)
             .background(
-                brush = Brush.verticalGradient(listOf(Color.White, Color(0xFFFFEAE4)), startY = 100f, endY = 400f),
-                shape = RectangleShape)
+                brush = Brush.verticalGradient(
+                    listOf(Color.White, Color(0xFFFFEAE4)),
+                    startY = 100f,
+                    endY = 800f
+                ),
+                shape = RectangleShape
+            )
         ) {
             MogeunNavHost(navController, snackbarHostState)
         }
@@ -95,7 +102,10 @@ fun TopBar(navController: NavHostController, currentScreen: Screen) {
                         Icon(Icons.Outlined.ArrowBack, contentDescription = "")
                     }
                 }
-            }
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.White
+            )
         )
     }
 }

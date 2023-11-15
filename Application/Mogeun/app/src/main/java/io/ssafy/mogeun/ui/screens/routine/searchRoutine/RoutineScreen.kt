@@ -24,8 +24,10 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -43,11 +45,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.HorizontalAlignmentLine
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -77,55 +82,36 @@ fun RoutineScreen(
         }
     }
     Column(modifier = Modifier.padding(10.dp)) {
-        Column {
+        Column(
+            modifier = Modifier
+                .shadow(2.dp, RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(16.dp))
+        ) {
             Row(
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
                         color = MaterialTheme.colorScheme.onTertiaryContainer,
-                        RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp)
                     )
+                    .padding(horizontal = 20.dp, vertical = 4.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .height(50.dp)
-                        .width(280.dp)
-                        .padding(start = 24.dp)
-                ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        Text(
-                            modifier = Modifier.width(144.dp),
-                            text = "${viewModel.username}",
-                            fontSize = 24.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.CenterEnd
-                    ) {
-                        Text(
-                            text = " 님 안녕하세요.",
-                            textAlign = TextAlign.End,
-                            modifier = Modifier.fillMaxWidth(),
-                            fontSize = 16.sp
-                        )
-                    }
-                }
-                Button(
-                    onClick = { navController.navigate("User") },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.edit),
-                        contentDescription = "edit",
-                        contentScale = ContentScale.Crop,
-                    )
+                Text(
+                    text = "${viewModel.username}",
+                    fontSize = 24.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = " 님 안녕하세요.",
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.weight(1f),
+                    fontSize = 16.sp
+                )
+                IconButton(onClick = { navController.navigate("User") }) {
+                    Icon(painter = painterResource(id = R.drawable.edit), contentDescription = null)
+
                 }
             }
             Column(
@@ -135,43 +121,38 @@ fun RoutineScreen(
                         color = MaterialTheme.colorScheme.onErrorContainer,
                         shape = RoundedCornerShape(bottomStart = 15.dp, bottomEnd = 15.dp)
                     )
+                    .padding(top = 20.dp, bottom = 20.dp, start = 40.dp, end = 40.dp)
             ) {
-                Row(modifier = Modifier
-                    .padding(top = 20.dp, start = 40.dp, end = 40.dp)
-                    .drawWithContent {
-                        drawContent()
-                        drawLine(
-                            color = Color.Black,
-                            start = Offset(0f, size.height),
-                            end = Offset(size.width, size.height),
-                            strokeWidth = 2f,
-                        )
+                Column {
+                    Row(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(text = "골격근량")
+                        Spacer(modifier = Modifier.weight(1f))
+                        Text(text = "${viewModel.muscleMass.toString()} kg")
+
                     }
-                ) {
-                    Text(text = "골격근량")
-                    Spacer(modifier = Modifier.weight(1f))
-                    Text(text = "${viewModel.muscleMass.toString()} kg")
-                }
-                Row(modifier = Modifier
-                    .padding(
-                        top = 20.dp,
-                        start = 40.dp,
-                        bottom = 20.dp,
-                        end = 40.dp
+                    Divider(
+                        thickness = 1.dp,
+                        color = Color.Black.copy(0.2f),
+                        modifier = Modifier.fillMaxWidth()
                     )
-                    .drawWithContent {
-                        drawContent()
-                        drawLine(
-                            color = Color.Black,
-                            start = Offset(0f, size.height),
-                            end = Offset(size.width, size.height),
-                            strokeWidth = 2f,
-                        )
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+                Column {
+                    Row(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(text = "체지방량")
+                        Spacer(modifier = Modifier.weight(1f))
+                        Text(text = "${viewModel.bodyFat.toString()} kg")
+
                     }
-                ) {
-                    Text(text = "체지방량")
-                    Spacer(modifier = Modifier.weight(1f))
-                    Text(text = "${ viewModel.bodyFat.toString() } kg")
+                    Divider(
+                        thickness = 1.dp,
+                        color = Color.Black.copy(0.2f),
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             }
         }

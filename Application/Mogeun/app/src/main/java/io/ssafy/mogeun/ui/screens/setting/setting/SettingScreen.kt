@@ -415,7 +415,7 @@ fun AlertDialogExample(
                 TextField(
                     value = viewModel.username,
                     onValueChange = { viewModel.updateId(it) },
-                    label = { Text("Enter routine name") },
+                    label = {  },
                     keyboardActions = KeyboardActions(onDone = {
                         keyboardController?.hide()
                     }),
@@ -428,7 +428,7 @@ fun AlertDialogExample(
                 TextField(
                     value = viewModel.pw,
                     onValueChange = { viewModel.updatePw(it) },
-                    label = { Text("Enter routine name") },
+                    label = {  },
                     keyboardActions = KeyboardActions(onDone = {
                         keyboardController?.hide()
                     }),
