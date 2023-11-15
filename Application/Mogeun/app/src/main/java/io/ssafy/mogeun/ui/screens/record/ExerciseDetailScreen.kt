@@ -45,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import co.yml.charts.common.extensions.isNotNull
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.GifDecoder
@@ -84,8 +85,7 @@ fun ExerciseDetailScreen(navController: NavHostController) {
             .padding(
                 horizontal = 30.dp,
                 vertical = 10.dp
-            )
-            .background(color = MaterialTheme.colorScheme.background),
+            ),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         val exerciseImage = LocalContext.current.resources.getIdentifier("z_" + exercise.imagePath, "drawable", LocalContext.current.packageName)
@@ -356,19 +356,23 @@ fun SetDetail(
                 Text(setDetail.successRep.toString() + '/' + setDetail.targetRep.toString() + "rep")
             }
         }
-        if (expanded && !setDetail.muscleActivity.isNullOrEmpty())
+        if (expanded && !setDetail.muscleActivity.isNullOrEmpty() && setDetail.muscleActivity?.get(0) != 0.0f && setDetail.muscleActivity?.get(1) != 0.0f)
             MuscleActivity(setDetail.muscleActivity, part)
     }
 }
 
 @Composable
 fun MuscleActivity(
-    muscleActivityList: List<Float>,
+    muscleActivityList: List<Float>?,
     part: String
 ) {
-    val left = muscleActivityList[0]
+    val left = muscleActivityList!![0]
     val right = muscleActivityList[1]
-    val balanceValue = left / (left + right)
+    var balanceValue = try {
+        left / (left + right)
+    } catch(e: IllegalArgumentException) {
+        0f
+    }
 
     Box(
         modifier = Modifier
@@ -381,7 +385,6 @@ fun MuscleActivity(
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Log.d("balanceValue", balanceValue.toString())
             BalanceBar(balanceValue)
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -400,6 +403,7 @@ fun MuscleActivity(
             }
         }
     }
+
 }
 
 @Composable
