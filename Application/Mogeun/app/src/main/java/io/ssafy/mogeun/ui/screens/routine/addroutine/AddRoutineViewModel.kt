@@ -1,6 +1,5 @@
 package io.ssafy.mogeun.ui.screens.routine.addroutine
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -12,19 +11,12 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.data.KeyRepository
 import io.ssafy.mogeun.data.RoutineRepository
-import io.ssafy.mogeun.model.AddRoutineResponse
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateListOf
-import io.ssafy.mogeun.model.AddAllExerciseResponse
-import io.ssafy.mogeun.model.ListAllExerciseResponsedata
 import io.ssafy.mogeun.model.ListMyExerciseResponse
 import io.ssafy.mogeun.model.ListMyExerciseResponseData
-import io.ssafy.mogeun.model.ListMyExerciseResponseDataExercises
 import io.ssafy.mogeun.model.MyExerciseResponse
 import io.ssafy.mogeun.model.MyExerciseResponseData
 
@@ -45,7 +37,6 @@ class AddRoutineViewModel(
         viewModelScope.launch {
             val key = keyRepository.getKey().first()
             val userKey = key?.userKey
-            Log.d("getUserKey", "사용자 키: $userKey")
             updateUserKey(userKey)
         }
     }
@@ -53,7 +44,6 @@ class AddRoutineViewModel(
         lateinit var ret: ListMyExerciseResponse
         viewModelScope.launch{
             ret = routineRepository.listMyExercise(routineKey)
-            Log.d("listMyexercise", "$ret")
             if (ret.message == "SUCCESS"){
                 _listMyExerciseSuccess.value = true
                 exerciseList = ret.data
@@ -64,12 +54,10 @@ class AddRoutineViewModel(
         lateinit var ret: MyExerciseResponse
         viewModelScope.launch{
             ret = routineRepository.myExercise(execKey)
-            Log.d("myExercise", "$ret")
             if (ret.message == "SUCCESS"){
                 _myExerciseSuccess.value = true
                 exerciseExplain = ret.data
             }
-            Log.d("next", "${ret.data.name}")
         }
     }
     companion object {

@@ -2,7 +2,6 @@ package io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise
 
 
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -45,24 +44,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import io.ssafy.mogeun.R
 import com.skydoves.landscapist.glide.GlideImage
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.skydoves.landscapist.ImageOptions
-import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineViewModel
-import io.ssafy.mogeun.ui.AppViewModelProvider
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,11 +69,10 @@ fun AddExerciseScreen(
     val exercises = viewModel.exerciseList
     val (searchText, setSearchText) = remember { mutableStateOf("") }
     var selectedMusclePart by remember { mutableStateOf("전체") }
+
     LaunchedEffect(Unit){
         viewModel.listAllExercise()
         viewModel.getUserKey()
-        Log.d("beforeScreen", "${beforeScreen}")
-        Log.d("currentRoutineKey", "${currentRoutineKey}")
         if (currentRoutineKey !== null) {
             viewModel.listMyExercise(currentRoutineKey)
         }
@@ -96,16 +86,12 @@ fun AddExerciseScreen(
     }
     LaunchedEffect(viewModel.routineKey) {
         if (viewModel.routineKey !== null) {
-            Log.d("routinKey", "${viewModel.routineKey}")
             viewModel.addAllExercise(viewModel.routineKey, selectedExercises)
             navController.navigate("Routine")
         }
     }
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .padding(16.dp)
+        modifier = Modifier.fillMaxSize().background(Color.White).padding(16.dp)
     ) {
         Spacer(modifier = Modifier.height(16.dp))
         TextField(
@@ -113,10 +99,7 @@ fun AddExerciseScreen(
             onValueChange = setSearchText,
             modifier = Modifier
                 .fillMaxWidth()
-                .border(
-                    width = 2.dp,
-                    color = MaterialTheme.colorScheme.primary,
-                ),
+                .border(width = 2.dp, color = MaterialTheme.colorScheme.primary,),
             placeholder  = {Text("검색")}
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -203,9 +186,7 @@ fun AddExerciseScreen(
             .fillMaxSize()
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp),
+            modifier = Modifier.fillMaxSize().padding(20.dp),
             contentAlignment = Alignment.BottomEnd,
         ) {
             if (selectedExercises.isNotEmpty()) {

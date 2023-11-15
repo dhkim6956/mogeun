@@ -37,7 +37,6 @@ class RoutineViewModel(
     var userKey by mutableStateOf<Int?>(null)
     var tmp by mutableStateOf<GetRoutineListResponse?>(null)
     var username by mutableStateOf<String?>(null)
-    var routinename by mutableStateOf<String?>(null)
     var newRoutineName = mutableStateOf<String> ("")
 
     fun updateMuscleMass(value: Double?) {
