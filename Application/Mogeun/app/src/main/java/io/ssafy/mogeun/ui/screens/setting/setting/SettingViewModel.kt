@@ -13,7 +13,6 @@ import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.data.KeyRepository
 import io.ssafy.mogeun.data.UserRepository
 import io.ssafy.mogeun.model.DeleteUserResponse
-import io.ssafy.mogeun.model.GetInbodyResponse
 import kotlinx.coroutines.launch
 
 class SettingViewModel(
