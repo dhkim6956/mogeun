@@ -3,9 +3,11 @@ package io.ssafy.mogeun.ui.screens.record
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,8 +18,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
@@ -28,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,6 +54,7 @@ import androidx.navigation.NavHostController
 import co.yml.charts.axis.AxisData
 import co.yml.charts.axis.DataCategoryOptions
 import co.yml.charts.axis.Gravity
+import co.yml.charts.common.extensions.isNotNull
 import co.yml.charts.common.model.AccessibilityConfig
 import co.yml.charts.common.model.Point
 import co.yml.charts.common.utils.DataUtils
@@ -68,34 +75,95 @@ import com.google.gson.Gson
 //import com.patrykandpatrick.vico.core.extension.setFieldValue
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.model.Exercise
+import io.ssafy.mogeun.model.RoutineInfoData
 import io.ssafy.mogeun.model.SetResult
 import io.ssafy.mogeun.ui.AppViewModelProvider
 import io.ssafy.mogeun.ui.screens.routine.searchRoutine.muscleIcon
+import io.ssafy.mogeun.ui.screens.summary.BodyInfoSummary
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RecordDetailScreen(
     navController: NavHostController,
     viewModel: RecordViewModel = viewModel(factory = AppViewModelProvider.Factory),
     reportKey: String?
 ) {
-    val recordMonthlySuccess by viewModel.recordRoutineSuccess.collectAsState()
-    if (!recordMonthlySuccess) {
-        LaunchedEffect(viewModel.userKey) {
-            Log.d("reportKey", reportKey.toString())
-            viewModel.recordRoutine(reportKey.toString())
+    var reportKeyList: List<Int>
+    try {
+        reportKeyList = navController.previousBackStackEntry
+            ?.savedStateHandle?.get<List<Int>>("reportKeyList")!!
+    } catch (e: NullPointerException) {
+        reportKeyList = emptyList()
+    }
+    Log.d("reportKeyList", reportKeyList.toString())
+
+    if (reportKeyList.isNotNull()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 30.dp)
+                .padding(top = 10.dp)
+                .background(color = MaterialTheme.colorScheme.background)
+        ) {
+            val pagerState = rememberPagerState(
+                initialPage = reportKeyList.indexOf(reportKey?.toInt()),
+                pageCount = { reportKeyList.size }
+            )
+            Column {
+                Row(
+                    Modifier
+                        .wrapContentHeight()
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    val coroutineScope = rememberCoroutineScope()
+                    val nameList = listOf("test1", " test2")
+
+                    Text(
+                        text = "<",
+                        modifier = Modifier
+                            .clickable {
+                                coroutineScope.launch {
+                                    // Call scroll to on pagerState
+                                    if (pagerState.currentPage > 0)
+                                        pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                                }
+                            }
+                    )
+                    Text(nameList[pagerState.currentPage])
+                    Text(
+                        text = ">",
+                        modifier = Modifier
+                            .clickable {
+                                coroutineScope.launch {
+                                    // Call scroll to on pagerState
+                                    if (pagerState.currentPage < reportKeyList.size)
+                                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                }
+                            }
+                    )
+                }
+                HorizontalPager(state = pagerState) { page ->
+                    // Our page content
+                    RecordDetail(navController, viewModel, reportKeyList[page].toString())
+                }
+            }
         }
     }
+}
+
+@Composable
+fun RecordDetail(
+    navController: NavHostController,
+    viewModel: RecordViewModel,
+    reportKey: String?
+) {
+    viewModel.recordRoutine(reportKey!!)
 
     val routineInfo = viewModel.routineInfo
 
-    Column (
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 30.dp)
-            .padding(top = 10.dp)
-            .background(color = MaterialTheme.colorScheme.background),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    Column (horizontalAlignment = Alignment.CenterHorizontally) {
         if (routineInfo != null) {
             RoutineInfoCard(routineInfo.name, routineInfo.calorie, routineInfo.totalSets, routineInfo.performTime)
         }
@@ -437,27 +505,37 @@ fun RoutineExerciseCardPreview() {
             Row (
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Column () {
+                Column (
+                    modifier = Modifier.fillMaxWidth(0.4f)
+                ) {
+//                    val exerciseImage = LocalContext.current.resources.getIdentifier("x_" + exercise.imagePath, "drawable", LocalContext.current.packageName)
+
                     Image(
-                        modifier = Modifier.fillMaxSize(0.3f),
                         painter = painterResource(id = R.drawable.logo),
-                        contentDescription = "logo",
+                        contentDescription = "test",
                     )
-                    Text("test")
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "test",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 }
                 WeightGrid(
-                    columns = 5,
-                    itemCount = 6,
+                    columns = 4,
+                    itemCount = 43,
                     modifier = Modifier
                         .padding(start = 7.5.dp, end = 7.5.dp)
                 ) {
-                    SetWeightIcon(it)
+                    SetWeightIcon(55)
                 }
             }
             ClickableText(
                 modifier = Modifier.align(Alignment.End),
                 text = AnnotatedString("자세히 보기"),
-                onClick = { },
+                onClick = {
+
+                },
                 style = TextStyle(color = MaterialTheme.colorScheme.secondary)
             )
         }
