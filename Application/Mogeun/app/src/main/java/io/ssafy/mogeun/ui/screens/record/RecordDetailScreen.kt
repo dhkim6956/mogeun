@@ -1,7 +1,5 @@
 package io.ssafy.mogeun.ui.screens.record
 
-import android.net.Uri
-import android.os.Bundle
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -30,7 +28,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -40,13 +37,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,35 +48,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import co.yml.charts.axis.AxisData
-import co.yml.charts.axis.DataCategoryOptions
-import co.yml.charts.axis.Gravity
 import co.yml.charts.common.extensions.isNotNull
-import co.yml.charts.common.model.AccessibilityConfig
-import co.yml.charts.common.model.Point
-import co.yml.charts.common.utils.DataUtils
-import co.yml.charts.ui.barchart.BarChart
-import co.yml.charts.ui.barchart.models.BarChartData
-import co.yml.charts.ui.barchart.models.BarChartType
-import co.yml.charts.ui.barchart.models.BarData
-import co.yml.charts.ui.barchart.models.BarStyle
-import co.yml.charts.ui.barchart.models.SelectionHighlightData
-import co.yml.charts.ui.barchart.models.drawBarGraph
-import com.google.gson.Gson
-//import com.patrykandpatrick.vico.compose.axis.horizontal.bottomAxis
-//import com.patrykandpatrick.vico.compose.axis.vertical.startAxis
-//import com.patrykandpatrick.vico.compose.chart.Chart
-//import com.patrykandpatrick.vico.compose.chart.line.lineChart
-//import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
-//import com.patrykandpatrick.vico.core.entry.entryOf
-//import com.patrykandpatrick.vico.core.extension.setFieldValue
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.model.Exercise
 import io.ssafy.mogeun.model.RoutineInfoData
-import io.ssafy.mogeun.model.SetResult
 import io.ssafy.mogeun.ui.AppViewModelProvider
 import io.ssafy.mogeun.ui.screens.routine.searchRoutine.muscleIcon
-import io.ssafy.mogeun.ui.screens.summary.BodyInfoSummary
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -197,7 +168,7 @@ fun RecordDetail(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            item { routineInfo?.let { RoutineGraphIconCard(it.exercises) } }
+            item { routineInfo?.let { IconCard(it.exercises) } }
             if (routineInfo != null) {
                 itemsIndexed(routineInfo.exercises) {index, item ->
                     if (item.sets > 0)
@@ -321,7 +292,7 @@ fun RoutineInfo(
 }
 
 @Composable
-fun RoutineGraphIconCard(
+fun IconCard(
     exercises: List<Exercise>
 ) {
     Box (
@@ -330,97 +301,6 @@ fun RoutineGraphIconCard(
             .padding(
                 top = 20.dp
             )
-    ) {
-        Column () {
-//            GraphCard(exercises)
-//            Spacer(
-//                modifier = Modifier
-//                    .height(5.dp)
-//                    .background(color = MaterialTheme.colorScheme.primaryContainer)
-//            )
-            IconCard(exercises)
-        }
-    }
-}
-
-@Composable
-fun GraphCard(exercises: List<Exercise>) {
-    val yStepSize = 9
-    var map: MutableMap<String, Float> = mutableMapOf<String, Float>(
-        "가슴" to 0f, "등" to 0f, "허벅지" to 0f, "어깨" to 0f, "이두" to 0f, "삼두" to 0f, "승모근" to 0f, "종아리" to 0f, "복근" to 0f, "" to 0f
-        )
-    var index = 0
-    var barChartdata: MutableList<BarData> = mutableListOf()
-    var maxHeight = 0f
-
-    for (exercise in exercises) {
-        var prevPart = ""
-        for (part in exercise.parts) {
-            val partDetail = part.split(" ")
-            if (prevPart == "") prevPart = partDetail[1]
-            else if (prevPart == partDetail[1]) continue
-            if (partDetail[0] == "주") {
-                map[partDetail[1]] = map[partDetail[1]]!!.plus(3f)
-            }
-            else {
-                map[partDetail[1]] = map[partDetail[1]]!!.plus(1f)
-            }
-        }
-    }
-
-    for (data in map) {
-        if (maxHeight < data.value) maxHeight = data.value
-        barChartdata.add(index, BarData(Point(index.toFloat(), data.value, data.key), MaterialTheme.colorScheme.primary, data.key))
-        index++
-    }
-
-    val xAxisData = AxisData.Builder()
-        .axisStepSize(30.dp)
-        .steps(barChartdata.size - 1)
-        .topPadding(10.dp)
-        .startDrawPadding(20.dp)
-        .shouldDrawAxisLineTillEnd(true)
-        .labelData { index -> barChartdata[index].label }
-        .build()
-
-    val yAxisData = AxisData.Builder()
-        .steps(maxHeight.toInt())
-        .labelAndAxisLinePadding(20.dp)
-        .labelData { index -> (index * (maxHeight / yStepSize)).toString() }
-        .axisOffset(20.dp)
-        .build()
-
-    Log.d("yAxisData", yAxisData.toString())
-
-    val barChartData = BarChartData(
-        chartData = barChartdata,
-        xAxisData = xAxisData,
-        yAxisData = yAxisData,
-        showYAxis = false,
-        barStyle = BarStyle(selectionHighlightData = null),
-        barChartType = BarChartType.VERTICAL,
-        paddingEnd = 0.dp
-    )
-
-    Box (modifier = Modifier
-        .fillMaxWidth()
-    ) {
-        BarChart(
-            modifier = Modifier
-                .height(200.dp),
-            barChartData = barChartData
-        )
-    }
-}
-
-//fun getRandomEntries() = List(9) { entryOf(it, it * 10) }
-
-@Composable
-fun IconCard(
-    exercises: List<Exercise>
-) {
-    Box (
-        modifier = Modifier.fillMaxWidth()
     ) {
         var parts: List<String> = emptyList()
         for (exercise in exercises) {
