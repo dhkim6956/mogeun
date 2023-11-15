@@ -126,7 +126,7 @@ fun SummaryScreen(viewModel: SummaryViewModel = viewModel(factory = AppViewModel
                 verticalAlignment = Alignment.Bottom
             ) {
                 Text("운동 요약", fontSize=18.sp, fontWeight = FontWeight.Bold)
-                Dropdown(viewModel)
+                SummaryDropdown(viewModel)
             }
             Spacer(
                 modifier = Modifier
@@ -536,7 +536,7 @@ fun MuscleSummary(exercises: List<PerformedMuscleInfo>) {
 }
 
 @Composable
-fun Dropdown(viewModel: SummaryViewModel) {
+fun SummaryDropdown(viewModel: SummaryViewModel) {
     val listItems = arrayOf("전체", "올해", "이번 달")
 
     // state of the menu
