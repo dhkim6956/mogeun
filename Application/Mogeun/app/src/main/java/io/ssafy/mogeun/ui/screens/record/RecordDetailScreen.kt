@@ -83,7 +83,7 @@ fun RecordDetailScreen(
     if (reportKeyList.isNotNull() || routineTimeList.isNotEmpty()) {
         val recordRoutineSuccess by viewModel.recordRoutineSuccess.collectAsState()
         if (!recordRoutineSuccess) {
-            viewModel.recordRoutine(reportKeyList)
+            viewModel.recordAllRoutine(reportKeyList)
         }
 
         Box(
@@ -151,6 +151,22 @@ fun RecordDetailScreen(
                         RecordDetail(navController, viewModel.routineInfoList[page])
                 }
             }
+        }
+    }
+    else {
+        val recordRoutineSuccess by viewModel.recordRoutineSuccess.collectAsState()
+        if (!recordRoutineSuccess) {
+            viewModel.recordRoutine(reportKey!!)
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 30.dp)
+                .padding(top = 10.dp)
+                .background(color = MaterialTheme.colorScheme.background)
+        ) {
+            RecordDetail(navController, viewModel.routineInfoList[0])
         }
     }
 }

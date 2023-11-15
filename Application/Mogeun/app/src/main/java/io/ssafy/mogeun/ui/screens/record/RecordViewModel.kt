@@ -70,7 +70,7 @@ class RecordViewModel(
         }
     }
 
-    fun recordRoutine(reportKeyList: List<Int>) {
+    fun recordAllRoutine(reportKeyList: List<Int>) {
         getUserKey()
 
         if (userKey !== null) {
@@ -81,10 +81,26 @@ class RecordViewModel(
                     Log.d("recordRoutine", "$ret")
 
                     if (ret.status == "OK") {
-                        routineInfoList.add(ret.data)
+                        routineInfoList.add(ret.data!!)
                     }
                 }
                 _recordRoutineSuccess.value = true
+            }
+        }
+    }
+
+    fun recordRoutine(reportKey: String) {
+        getUserKey()
+
+        if (userKey !== null) {
+            lateinit var ret: RoutineResponse
+            viewModelScope.launch {
+                ret = recordRepository.recordRoutine(userKey.toString(), reportKey)
+                Log.d("recordRoutine", "$ret")
+                if (ret.status == "OK") {
+                    _recordRoutineSuccess.value = true
+                    routineInfoList.add(ret.data!!)
+                }
             }
         }
     }

@@ -42,6 +42,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.ImageLoader
@@ -219,7 +220,7 @@ fun MuscleFatigueChart(
                 paddingValues = PaddingValues(5.dp),
                 visibility = LinearGraphVisibility(
                     isHeaderVisible = true,
-                    isXAxisLabelVisible = false,
+                    isXAxisLabelVisible = true,
                     isYAxisLabelVisible = true,
                     isCrossHairVisible = false
                 ),
@@ -355,16 +356,20 @@ fun SetDetail(
                 Text(setDetail.successRep.toString() + '/' + setDetail.targetRep.toString() + "rep")
             }
         }
-        if (expanded)
+        if (expanded && !setDetail.muscleActivity.isNullOrEmpty())
             MuscleActivity(setDetail.muscleActivity, part)
     }
 }
 
 @Composable
 fun MuscleActivity(
-    muscleActivityList: List<Float>?,
+    muscleActivityList: List<Float>,
     part: String
 ) {
+    val left = muscleActivityList[0]
+    val right = muscleActivityList[1]
+    val balanceValue = left / (left + right)
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -375,20 +380,60 @@ fun MuscleActivity(
             .background(color = MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            repeat(2) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Log.d("balanceValue", balanceValue.toString())
+            BalanceBar(balanceValue)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 Column {
-                    if (it == 0)
-                        Text("왼쪽 $part")
-                    else
-                        Text("오른쪽 $part")
+                    Text("왼쪽 $part")
                     if (muscleActivityList?.size!! > 0)
-                        Text("근활성도: " + muscleActivityList?.get(it).toString() ?: "")
+                        Text("근활성도: " + muscleActivityList[0].toString())
+                }
+                Column {
+                    Text("오른쪽 $part")
+                    if (muscleActivityList?.size!! > 0)
+                        Text("근활성도: " + muscleActivityList[1].toString())
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun BalanceBar(balanceValue: Float) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 50.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(balanceValue)
+                .background(
+                    color = when (balanceValue) {
+                        in 0.45f..0.55f -> MaterialTheme.colorScheme.tertiary
+                        in 0.3f..0.7f -> MaterialTheme.colorScheme.primary
+                        else -> MaterialTheme.colorScheme.error
+                    }
+                )
+        ) {
+            Text("")
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = when (balanceValue) {
+                        in 0.45f..0.55f -> MaterialTheme.colorScheme.tertiaryContainer
+                        in 0.3f..0.7f -> MaterialTheme.colorScheme.primaryContainer
+                        else -> MaterialTheme.colorScheme.errorContainer
+                    }
+                )
+        ) {
+            Text("")
         }
     }
 }
