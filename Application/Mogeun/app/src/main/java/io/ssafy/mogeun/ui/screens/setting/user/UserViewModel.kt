@@ -1,8 +1,6 @@
 package io.ssafy.mogeun.ui.screens.setting.user
 
-import android.util.Log
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -14,9 +12,7 @@ import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.data.KeyRepository
 import io.ssafy.mogeun.data.UserRepository
 import io.ssafy.mogeun.model.GetInbodyResponse
-import io.ssafy.mogeun.model.SignUpResponse
 import io.ssafy.mogeun.model.UpdateUserResponse
-import io.ssafy.mogeun.ui.screens.signup.SignupViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 

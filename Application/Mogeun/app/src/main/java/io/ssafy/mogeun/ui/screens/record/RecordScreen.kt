@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
@@ -27,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -45,7 +43,6 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -172,14 +169,18 @@ fun CalenderUI(
         val date = selection?.date
         val routineLists = routines[date.toString()].orEmpty()
         var reportKeyList: MutableList<Int> = mutableListOf()
+        var routineTimeList: MutableList<String> = mutableListOf()
+
         for (record in viewModel.recordList) {
             for (routine in record.routineReports) {
                 reportKeyList.add(routine.key)
+                routineTimeList.add(routine.startTime.split("T")[1].split(".")[0] + " ~ " + routine.endTime.split("T")[1].split(".")[0])
             }
         }
+
         if (!routineLists.isEmpty()) {
             items(items = routineLists[0].routineReports) { routineReport ->
-                RoutineRecord(navController, routineReport.startTime, routineReport.endTime, routineReport.routineName, routineReport.key, reportKeyList)
+                RoutineRecord(navController, routineReport.key, routineReport.startTime.split("T")[1].split(".")[0] + " ~ " + routineReport.endTime.split("T")[1].split(".")[0], routineReport.routineName, reportKeyList, routineTimeList)
             }
         }
     }
@@ -323,11 +324,11 @@ private fun CalendarLayoutInfo.firstMostVisibleMonth(viewportPercent: Float = 50
 @Composable
 fun RoutineRecord(
     navController: NavHostController,
-    routineStartTime: String,
-    routineEndTime: String,
+    routineKey: Int,
+    routineTime: String,
     routineName: String,
-    reportKey: Int,
-    reportKeyList: List<Int>
+    reportKeyList: List<Int>,
+    routineTimeList: List<String>
 ) {
     Box (
         modifier = Modifier
@@ -347,9 +348,6 @@ fun RoutineRecord(
             ),
         contentAlignment = Alignment.Center
     ) {
-        val startTime = routineStartTime.split("T")[1].split(".")
-        val endTime = routineEndTime.split("T")[1].split(".")
-        val routineTime = startTime[0] + " ~ " + endTime[0]
         Row (
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -363,123 +361,9 @@ fun RoutineRecord(
                 text = AnnotatedString("자세히 보기") ,
                 onClick = {
                     navController.currentBackStackEntry?.savedStateHandle?.set("reportKeyList", reportKeyList)
-                    navController.navigate("RecordDetail/${reportKey}")
+                    navController.currentBackStackEntry?.savedStateHandle?.set("routineTimeList", routineTimeList)
+                    navController.navigate("RecordDetail/${routineKey}")
                 },
-                style = TextStyle(color = MaterialTheme.colorScheme.secondary)
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-fun CalenderUIPreview(
-    adjacentMonths: Long = 500
-) {
-    val currentMonth = remember { YearMonth.now() }
-    val startMonth = remember { currentMonth.minusMonths(adjacentMonths) }
-    val endMonth = remember { currentMonth.plusMonths(adjacentMonths) }
-    val selections = remember { mutableStateListOf<CalendarDay>() }
-    val daysOfWeek = remember { daysOfWeek() }
-    val testList: MutableList<Boolean> = mutableListOf(true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true)
-//    for (i in 0 until 31) {
-//        testList[i] = false
-//    }
-    Column() {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    vertical = 10.dp
-                )
-                .background(
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    shape = RoundedCornerShape(16.dp)
-                ),
-        ) {
-            val state = rememberCalendarState(
-                startMonth = startMonth,
-                endMonth = endMonth,
-                firstVisibleMonth = currentMonth,
-                firstDayOfWeek = daysOfWeek.first(),
-            )
-            val coroutineScope = rememberCoroutineScope()
-            val visibleMonth = rememberFirstMostVisibleMonth(state, viewportPercent = 90f)
-            SimpleCalendarTitle(
-                modifier = Modifier.padding(vertical = 10.dp, horizontal = 8.dp),
-                currentMonth = visibleMonth.yearMonth,
-                goToPrevious = {
-                    coroutineScope.launch {
-                        state.animateScrollToMonth(state.firstVisibleMonth.yearMonth.previousMonth)
-                    }
-                },
-                goToNext = {
-                    coroutineScope.launch {
-                        state.animateScrollToMonth(state.firstVisibleMonth.yearMonth.nextMonth)
-                    }
-                },
-            )
-            HorizontalCalendar(
-                modifier = Modifier.testTag("calendar"),
-                state = state,
-                dayContent = { day ->
-                    Day(day, isSelected = testList.get(day.date.dayOfMonth - 1))
-                },
-                monthHeader = {
-                    MonthHeader(daysOfWeek = daysOfWeek)
-                },
-            )
-        }
-        Text("운동기록", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
-        ) {
-            itemsIndexed(
-                listOf(1, 2, 3, 4, 5)
-            ) { index, item ->
-                RoutineRecordPreview()
-            }
-        }
-    }
-}
-
-@Preview
-@Composable
-fun RoutineRecordPreview() {
-    Box (
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.background,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .border(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(
-                vertical = 10.dp,
-                horizontal = 10.dp
-            ),
-        contentAlignment = Alignment.Center
-    ) {
-        Row (
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column () {
-                Text("test", fontWeight = FontWeight.Bold)
-                Text("test")
-            }
-            ClickableText(
-                text = AnnotatedString("자세히 보기") ,
-                onClick = { },
                 style = TextStyle(color = MaterialTheme.colorScheme.secondary)
             )
         }
