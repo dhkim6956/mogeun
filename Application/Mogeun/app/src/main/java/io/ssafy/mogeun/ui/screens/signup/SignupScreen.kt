@@ -1,6 +1,5 @@
 package io.ssafy.mogeun.ui.screens.signup
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -109,17 +108,27 @@ fun Essential(
         }
         if(viewModel.checkEmail == 2) {
             snackbarHostState.showSnackbar("중복된 아이디 입니다.")
+            viewModel.updateCheckEmail(0)
         }
     }
-    LaunchedEffect(viewModel.rightInformation) {
-        if(viewModel.rightInformation) {
-            coroutineScope.launch {
-                snackbarHostState.showSnackbar("입력이 올바르지 않습니다.")
-                viewModel.updateRightInformation(false)
-            }
+    LaunchedEffect(viewModel.alertDupEmail) {
+        if (viewModel.alertDupEmail) {
+            snackbarHostState.showSnackbar("중복 확인을 먼저 클릭해 주세요.")
+            viewModel.updateAlertDupEmail(false)
         }
     }
-
+    LaunchedEffect(viewModel.alertPassword) {
+        if (viewModel.alertPassword) {
+            snackbarHostState.showSnackbar("비밀번호가 일치하지 않습니다.")
+            viewModel.updateAlertPassword(false)
+        }
+    }
+    LaunchedEffect(viewModel.alertInput) {
+        if (viewModel.alertInput) {
+            snackbarHostState.showSnackbar("모든 정보를 입력하여 주세요.")
+            viewModel.updateAlertInput(false)
+        }
+    }
     Column(
         modifier = Modifier
             .padding(start = 28.dp, top = 28.dp, end = 28.dp)
@@ -147,8 +156,7 @@ fun Essential(
             Spacer(modifier = Modifier.width(16.dp))
             Button(
                 onClick = {
-                    val ret = viewModel.dupEmail()
-                    Log.d("signIn", "$ret")
+                    viewModel.dupEmail()
                     keyboardController?.hide()
                 },
                 modifier = Modifier.width(100.dp),
@@ -226,12 +234,16 @@ fun Essential(
                 floatingActionButton = {
                     FloatingActionButton(
                         onClick = {
-                            if(viewModel.checkEmail == 1 && viewModel.password == viewModel.checkingPassword && viewModel.nickname !== "" && viewModel.selectedGender !== "") {
-                                viewModel.updateInputForm(2)
-                                viewModel.updateFirstText("신체정보를")
-                            } else {
-                                viewModel.updateRightInformation(true)
-                            }
+                                  if (viewModel.checkEmail !== 1) {
+                                      viewModel.updateAlertDupEmail(true)
+                                  } else if (viewModel.password != viewModel.checkingPassword) {
+                                      viewModel.updateAlertPassword(true)
+                                  } else if (viewModel.password == "" || viewModel.checkingPassword == "" || viewModel.nickname == "" || viewModel.selectedGender == "") {
+                                      viewModel.updateAlertInput(true)
+                                  } else {
+                                      viewModel.updateInputForm(2)
+                                      viewModel.updateFirstText("신체정보를")
+                                  }
                             },
                         containerColor = MaterialTheme.colorScheme.secondary,
                         elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
@@ -380,8 +392,7 @@ fun Inbody(
                 actions = {
                     IconButton(
                         onClick = {
-                            val ret = viewModel.signUp()
-                            Log.d("signUp", "$ret")
+                            viewModel.signUp()
                             navController.navigate("login")
                         },
                         modifier = Modifier
@@ -395,8 +406,7 @@ fun Inbody(
                 floatingActionButton = {
                     FloatingActionButton(
                         onClick = {
-                            val ret = viewModel.signUp()
-                            Log.d("signUp", "$ret")
+                            viewModel.signUp()
                             navController.navigate("login")
                         },
                         containerColor = MaterialTheme.colorScheme.secondary,

@@ -1,6 +1,5 @@
 package io.ssafy.mogeun.ui.screens.signup
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -30,14 +29,13 @@ class SignupViewModel(private val signInRepository: UserRepository): ViewModel()
     var bodyFat by mutableStateOf<Double?>(null)
     var inputForm by mutableIntStateOf(1)
     var firstText by mutableStateOf("회원정보를")
-    var rightInformation by mutableStateOf<Boolean>(false)
     var successSignUp by mutableStateOf<Boolean>(false)
+    var alertDupEmail by mutableStateOf(false)
+    var alertPassword by mutableStateOf(false)
+    var alertInput by mutableStateOf(false)
 
     fun updateDupEmailSuccess(value: Boolean) {
         dupEmailSuccess = value
-    }
-    fun updateRightInformation(value: Boolean) {
-        rightInformation = value
     }
     fun updateSuccessSignUp(value: Boolean) {
         successSignUp = value
@@ -77,6 +75,15 @@ class SignupViewModel(private val signInRepository: UserRepository): ViewModel()
     }
     fun updateFirstText(value: String) {
         firstText = value
+    }
+    fun updateAlertDupEmail(value: Boolean) {
+        alertDupEmail = value
+    }
+    fun updateAlertPassword(value: Boolean) {
+        alertPassword = value
+    }
+    fun updateAlertInput(value: Boolean) {
+        alertInput = value
     }
     fun dupEmail() {
         lateinit var ret: DupEmailResponse
