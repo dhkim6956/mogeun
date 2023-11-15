@@ -91,7 +91,6 @@ fun RecordDetailScreen(
                 .fillMaxSize()
                 .padding(horizontal = 30.dp)
                 .padding(top = 10.dp)
-                .background(color = MaterialTheme.colorScheme.background)
         ) {
             val pagerState = rememberPagerState(
                 initialPage = reportKeyList.indexOf(reportKey?.toInt()),
@@ -358,47 +357,39 @@ fun RoutineExerciseCard(
             .padding(
                 vertical = 10.dp,
                 horizontal = 10.dp
-            ),
+            )
+            .clickable {
+                navController.currentBackStackEntry?.savedStateHandle?.set("exerciseDetail", exercise)
+                navController.navigate("ExerciseDetail")
+            },
         contentAlignment = Alignment.Center
     ) {
-        Column (modifier = Modifier.fillMaxWidth()) {
-            Row (
-                modifier = Modifier.fillMaxWidth()
+        Row (
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column (
+                modifier = Modifier.fillMaxWidth(0.3f)
             ) {
-                Column (
-                    modifier = Modifier.fillMaxWidth(0.4f)
-                ) {
-                    val exerciseImage = LocalContext.current.resources.getIdentifier("x_" + exercise.imagePath, "drawable", LocalContext.current.packageName)
+                val exerciseImage = LocalContext.current.resources.getIdentifier("x_" + exercise.imagePath, "drawable", LocalContext.current.packageName)
 
-                    Image(
-                        painter = painterResource(id = exerciseImage),
-                        contentDescription = exercise.execName,
-                    )
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = exercise.execName,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-                WeightGrid(
-                    columns = 4,
-                    itemCount = exercise.sets,
-                    modifier = Modifier
-                        .padding(start = 7.5.dp, end = 7.5.dp)
-                ) {
-                    SetWeightIcon(exercise.setResults[it].weight.toInt())
-                }
+                Image(
+                    painter = painterResource(id = exerciseImage),
+                    contentDescription = exercise.execName,)
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = exercise.execName,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
-            ClickableText(
-                modifier = Modifier.align(Alignment.End),
-                text = AnnotatedString("자세히 보기"),
-                onClick = {
-                    navController.currentBackStackEntry?.savedStateHandle?.set("exerciseDetail", exercise)
-                    navController.navigate("ExerciseDetail")
-                },
-                style = TextStyle(color = MaterialTheme.colorScheme.secondary)
-            )
+            WeightGrid(
+                columns = 5,
+                itemCount = exercise.sets,
+                modifier = Modifier
+                    .padding(start = 7.5.dp, end = 7.5.dp)
+            ) {
+                SetWeightIcon(exercise.setResults[it].weight.toInt())
+            }
         }
     }
 }

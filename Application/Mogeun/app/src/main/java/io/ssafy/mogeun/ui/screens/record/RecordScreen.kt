@@ -71,8 +71,7 @@ fun RecordScreen(navController: NavHostController) {
             .fillMaxSize()
             .padding(
                 horizontal = 30.dp
-            )
-            .background(color = MaterialTheme.colorScheme.background),
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         CalenderUI(500, navController)
@@ -345,7 +344,12 @@ fun RoutineRecord(
             .padding(
                 vertical = 10.dp,
                 horizontal = 10.dp
-            ),
+            )
+            .clickable {
+                navController.currentBackStackEntry?.savedStateHandle?.set("reportKeyList", reportKeyList)
+                navController.currentBackStackEntry?.savedStateHandle?.set("routineTimeList", routineTimeList)
+                navController.navigate("RecordDetail/${routineKey}")
+            },
         contentAlignment = Alignment.Center
     ) {
         Row (
@@ -357,15 +361,6 @@ fun RoutineRecord(
                 Text(routineTime, fontWeight = FontWeight.Bold)
                 Text(routineName)
             }
-            ClickableText(
-                text = AnnotatedString("자세히 보기") ,
-                onClick = {
-                    navController.currentBackStackEntry?.savedStateHandle?.set("reportKeyList", reportKeyList)
-                    navController.currentBackStackEntry?.savedStateHandle?.set("routineTimeList", routineTimeList)
-                    navController.navigate("RecordDetail/${routineKey}")
-                },
-                style = TextStyle(color = MaterialTheme.colorScheme.secondary)
-            )
         }
     }
 }
