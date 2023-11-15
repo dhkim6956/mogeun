@@ -1,6 +1,5 @@
 package io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -12,21 +11,15 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.data.KeyRepository
-import io.ssafy.mogeun.data.NetworkRoutineRepository
 import io.ssafy.mogeun.data.RoutineRepository
 import io.ssafy.mogeun.model.AddAllExerciseResponse
-import io.ssafy.mogeun.model.AddRoutineRequest
 import io.ssafy.mogeun.model.AddRoutineResponse
-import io.ssafy.mogeun.model.AddRoutineResponseData
 import io.ssafy.mogeun.model.ListAllExerciseResponse
 import io.ssafy.mogeun.model.ListAllExerciseResponsedata
 import io.ssafy.mogeun.model.ListMyExerciseResponse
 import io.ssafy.mogeun.model.ListMyExerciseResponseData
 import io.ssafy.mogeun.model.UpdateRoutineResponse
-import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -35,22 +28,14 @@ class AddExerciseViewModel(
     private val routineRepository: RoutineRepository
 ) : ViewModel() {
     private val _listAllExerciseSuccess = MutableStateFlow(false)
-    val listAllExerciseSuccess: StateFlow<Boolean> = _listAllExerciseSuccess.asStateFlow()
     var exerciseList = mutableStateListOf<ListAllExerciseResponsedata>()
     private val _addRoutineSuccess = MutableStateFlow(false)
-    val addRoutineSuccess: StateFlow<Boolean> = _addRoutineSuccess.asStateFlow()
     private val _addAllExerciseSuccess = MutableStateFlow(false)
-    val addAllExerciseSuccess: StateFlow<Boolean> = _addAllExerciseSuccess.asStateFlow()
-    var myRoutine = mutableStateListOf<AddRoutineRequest>()
     var userKey by mutableStateOf<Int?>(null)
-    var nowRoutine by mutableStateOf<Int?>(null)
     var routineKey by mutableStateOf<Int?>(null)
     var myExerciseList: List<ListMyExerciseResponseData> = mutableStateListOf()
     var successSearch by mutableStateOf<Boolean>(false)
-    fun initListAllExerciseSuccess() {
-        _listAllExerciseSuccess.value = false
-        exerciseList.clear()
-    }
+
     fun updateUserKey(value: Int?) {
         userKey = value
     }
@@ -64,7 +49,6 @@ class AddExerciseViewModel(
         viewModelScope.launch {
             val key = keyRepository.getKey().first()
             val userKey = key?.userKey
-            Log.d("getUserKey", "사용자 키: $userKey")
             updateUserKey(userKey)
         }
     }
@@ -72,7 +56,6 @@ class AddExerciseViewModel(
         lateinit var ret: ListAllExerciseResponse
         viewModelScope.launch {
             ret = routineRepository.listAllExercise()
-            Log.d("listAllExercise", "$ret")
             if (ret.message == "SUCCESS") {
                 _listAllExerciseSuccess.value = true
                 val uniqueExercises = ret.data.distinctBy { it.name }
@@ -85,7 +68,6 @@ class AddExerciseViewModel(
         lateinit var ret: AddRoutineResponse
         viewModelScope.launch {
             ret = routineRepository.addRoutine(userKey, routineName)
-            Log.d("addroutine", "$ret")
             if (ret.message == "SUCCESS") {
                 _addRoutineSuccess.value = true
                 updateRoutineKey(ret.data.routineKey)
@@ -96,29 +78,24 @@ class AddExerciseViewModel(
         lateinit var ret: AddAllExerciseResponse
         viewModelScope.launch{
             ret = routineRepository.addAllExercise(routineKey, execKeys)
-            Log.d("addAllExercise", "$ret")
             if(ret.message == "SUCCESS"){
                 _addAllExerciseSuccess.value = true
             }
-            Log.d("cureentRoutineKey", "${routineKey}")
         }
     }
     fun updateRoutine(routineKey: Int?, execKeys: List<Int>){
         lateinit var ret: UpdateRoutineResponse
         viewModelScope.launch{
             ret = routineRepository.updateRoutine(routineKey, execKeys)
-            Log.d("updateRoutine", "$ret")
             if(ret.message == "SUCCESS"){
                 _addAllExerciseSuccess.value = true
             }
-            Log.d("cureentRoutineKey", "${routineKey}")
         }
     }
     fun listMyExercise(routineKey: Int?){
         lateinit var ret: ListMyExerciseResponse
         viewModelScope.launch{
             ret = routineRepository.listMyExercise(routineKey)
-            Log.d("listMyexercise", "$ret")
             if (ret.message == "SUCCESS"){
                 myExerciseList = ret.data
                 updateSuccessSearch(true)

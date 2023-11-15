@@ -5,14 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import io.ssafy.mogeun.MogeunApplication
-import io.ssafy.mogeun.data.Emg
-import io.ssafy.mogeun.data.EmgRepository
 import io.ssafy.mogeun.data.Key
 import io.ssafy.mogeun.data.KeyRepository
 import io.ssafy.mogeun.data.UserRepository
@@ -27,7 +20,6 @@ class LoginViewModel(
     private val keyRepository: KeyRepository
 ) : ViewModel() {
     private val _keyInput = mutableStateOf<Key>(Key(0, 1))
-    val keyInput = _keyInput
     private val _signInSuccess = MutableStateFlow(false)
     val signInSuccess: StateFlow<Boolean> = _signInSuccess.asStateFlow()
     var id by mutableStateOf("")
@@ -47,7 +39,6 @@ class LoginViewModel(
         lateinit var ret: SignInResponse
         viewModelScope.launch {
             ret = signInRepository.signIn(id, pwd)
-            Log.d("signIn", "$ret")
             if (ret.message == "SUCCESS") {
                 _signInSuccess.value = true
                 setUserKey(ret.data)

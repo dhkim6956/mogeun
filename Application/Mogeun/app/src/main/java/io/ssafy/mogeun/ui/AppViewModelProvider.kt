@@ -31,7 +31,8 @@ object AppViewModelProvider {
                 mogeunApplication().container.executionRepository,
                 mogeunApplication().container.emgDataRepository,
                 mogeunApplication().container.routineRepository,
-                mogeunApplication().container.bluetoothController
+                mogeunApplication().container.bluetoothController,
+                mogeunApplication().container.keyRepository
             )
         }
         initializer {

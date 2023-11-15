@@ -12,13 +12,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -37,7 +32,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.ssafy.mogeun.R
-import io.ssafy.mogeun.ui.screens.login.LoginViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -245,10 +239,7 @@ fun Essential(
                         Text(
                             text = "회원가입",
                             fontSize = 16.sp,
-                            modifier = Modifier.padding(
-                                                    start = 20.dp,
-                                                    end = 20.dp
-                                                )
+                            modifier = Modifier.padding(start = 20.dp, end = 20.dp)
                         )
                     }
                 }
@@ -414,10 +405,7 @@ fun Inbody(
                         Text(
                             text = "회원가입",
                             fontSize = 16.sp,
-                            modifier = Modifier.padding(
-                                                    start = 20.dp,
-                                                    end = 20.dp
-                                                )
+                            modifier = Modifier.padding(start = 20.dp, end = 20.dp)
                         )
                     }
                 }
@@ -456,13 +444,9 @@ fun Preview_MultipleRadioButtons(viewModel: SignupViewModel = viewModel(factory 
                         onClick = null
                     )
                     if(item == "m") {
-                        Text(
-                            text = "남성",
-                        )
+                        Text(text = "남성")
                     } else {
-                        Text(
-                            text = "여성",
-                        )
+                        Text(text = "여성")
                     }
                 }
             }

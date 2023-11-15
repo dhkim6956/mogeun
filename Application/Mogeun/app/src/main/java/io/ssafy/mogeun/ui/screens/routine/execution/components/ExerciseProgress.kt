@@ -3,6 +3,7 @@
 package io.ssafy.mogeun.ui.screens.routine.execution.components
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,6 +35,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,6 +52,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -56,20 +60,39 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.model.SetOfRoutineDetail
 import io.ssafy.mogeun.ui.screens.routine.execution.EmgUiState
+import io.ssafy.mogeun.ui.screens.routine.execution.SetOfPlan
+import io.ssafy.mogeun.ui.screens.routine.execution.SetProgress
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import okhttp3.internal.wait
 import org.jtransforms.fft.DoubleFFT_1D
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun ExerciseProgress(emgUiState: EmgUiState/*viewModel: ExecutionViewModel = viewModel(factory = AppViewModelProvider.Factory)*/){
-    val setList: MutableList<String> by remember { mutableStateOf(mutableListOf("1세트", "2세트", "3세트", "4세트")) }
+fun ExerciseProgress(
+    emgUiState: EmgUiState,
+    planInfo: List<SetProgress>,
+    addSet: () -> Unit,
+    removeSet: (Int) -> Unit,
+    setWeight: (Int, Int) -> Unit,
+    setRep: (Int, Int) -> Unit,
+    startSet: (Int) -> Unit,
+    addCnt: (Int) -> Unit,
+    endSet: (Int) -> Unit,
+    inProgress: Boolean,
+    muscleAverage: Double
+){
+    val totalSet = planInfo.size
+    val setCntList = (1..totalSet).map { it }
+
     var selectedTab by remember { mutableIntStateOf(0) }
-    var lastClickTime by remember { mutableLongStateOf(0L) }
-    val debounceDuration = 300 //0.1초
-    val chosenWeight = remember { mutableStateOf(preWeight) }
-    val chosenRep = remember { mutableStateOf(preRep) }
+
+    val setProgress = planInfo[selectedTab]
+
+
     //시작 종료
     var isStarting by remember { mutableStateOf(false) }
 
@@ -91,27 +114,17 @@ fun ExerciseProgress(emgUiState: EmgUiState/*viewModel: ExecutionViewModel = vie
                     .fillMaxHeight(),
                 contentAlignment = Alignment.TopStart
             ){
-                ScrollableTabRow(setList, selectedTab, onTabClick = { index ->
-                    selectedTab = index
-                })
+                ScrollableTabRow(setCntList.map { "$it 세트" }, selectedTab, { index -> selectedTab = index }, inProgress)
             }
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight()
-                    .padding(0.dp),
-                contentAlignment = Alignment.TopEnd
+                    .padding(horizontal = 4.dp, vertical = 0.dp),
+                contentAlignment = Alignment.CenterEnd
             ){
                 Button(onClick = {
-                    val currentTime = System.currentTimeMillis()
-                    if(currentTime - lastClickTime > debounceDuration){
-                        if(setList.size<9){
-                            val newItem = "${setList.size+1}세트"
-                            setList.add(newItem)
-                            selectedTab = setList.size - 1
-                            lastClickTime = currentTime
-                        }
-                    }
+                    addSet()
                 },
                     modifier = Modifier
                         .width(120.dp)
@@ -151,8 +164,11 @@ fun ExerciseProgress(emgUiState: EmgUiState/*viewModel: ExecutionViewModel = vie
                 contentAlignment = Alignment.Center
             ){
                 DateSelectionSection(
-                    onWeightChosen = { chosenWeight.value = it.toInt() },
-                    onRepChosen = { chosenRep.value = it.toInt() },
+                    onWeightChosen = { setWeight(selectedTab + 1, it.toInt()) },
+                    onRepChosen = {setRep(selectedTab + 1, it.toInt())},
+                    preWeight = planInfo[selectedTab].targetWeight,
+                    preRep = planInfo[selectedTab].targetRep,
+                    inProgress = inProgress
                 )
             }
             Box(
@@ -161,7 +177,7 @@ fun ExerciseProgress(emgUiState: EmgUiState/*viewModel: ExecutionViewModel = vie
                     .fillMaxWidth()
                     .background(Color(0xFFF7F7F7)),
             ){
-                EMGCollector(emgUiState, isStarting)
+                EMGCollector(emgUiState, isStarting, setProgress, {addCnt(selectedTab + 1)}, inProgress, muscleAverage)
             }
         }
         Box(
@@ -178,26 +194,34 @@ fun ExerciseProgress(emgUiState: EmgUiState/*viewModel: ExecutionViewModel = vie
                 horizontalArrangement = Arrangement.Center,
             )
             {
-                Box(
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxWidth(0.3f)
+//                        .fillMaxHeight()
+//                        .background(color = Color.White)
+//                        .clickable {
+//                            if (selectedTab == totalSet - 1) selectedTab = totalSet - 2
+//                            removeSet(selectedTab + 1)
+//                        },
+//                ){
+//                    Text(
+//                        text = "세트 삭제",
+//                        modifier = Modifier.align(Alignment.Center),
+//                    )
+//                }
+                TextButton(
+                    enabled = !inProgress,
+                    onClick = {
+                        if (selectedTab == totalSet - 1) selectedTab = totalSet - 2
+                        removeSet(selectedTab + 1)
+                              },
                     modifier = Modifier
                         .fillMaxWidth(0.3f)
                         .fillMaxHeight()
                         .background(color = Color.White)
-                        .clickable {
-                            val currentTime = System.currentTimeMillis()
-                            if (currentTime - lastClickTime > debounceDuration) {
-                                if (setList.size > 1) {
-                                    setList.removeLast()
-                                    selectedTab = setList.size - 1
-                                }
-                                lastClickTime = currentTime
-                            }
-                        },
-                ){
-                    Text(
-                        text = "세트 삭제",
-                        modifier = Modifier.align(Alignment.Center),
-                    )
+
+                ) {
+                    Text(text = "세트 삭제")
                 }
                 Box(modifier = Modifier
                     .fillMaxSize()
@@ -214,8 +238,7 @@ fun ExerciseProgress(emgUiState: EmgUiState/*viewModel: ExecutionViewModel = vie
                                 .fillMaxHeight()
                                 .padding(4.dp)
                                 .clickable {
-                                    isStarting = true
-                                    //viewModel.getSet()
+                                    startSet(selectedTab + 1)
                                 },
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center,
@@ -232,7 +255,9 @@ fun ExerciseProgress(emgUiState: EmgUiState/*viewModel: ExecutionViewModel = vie
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .padding(start = 4.dp, top = 4.dp, bottom = 4.dp, end = 8.dp)
-                                .clickable { isStarting = false },
+                                .clickable {
+                                    endSet(selectedTab + 1)
+                                },
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center,
                         ){
@@ -257,9 +282,11 @@ fun ExerciseProgress(emgUiState: EmgUiState/*viewModel: ExecutionViewModel = vie
 private fun ScrollableTabRow(
     tabs: List<String>,
     selectedTab: Int,
-    onTabClick: (Int) -> Unit
+    onTabClick: (Int) -> Unit,
+    inProgress: Boolean,
 ) {
     androidx.compose.material3.ScrollableTabRow(
+        containerColor = Color(0xFFDFEAFF),
         selectedTabIndex = selectedTab,
         modifier = Modifier
             .fillMaxWidth()
@@ -268,14 +295,16 @@ private fun ScrollableTabRow(
     ) {
         tabs.forEachIndexed { index, text ->
             Tab(
+                enabled = !inProgress,
                 selected = selectedTab == index,
                 onClick = {
                     onTabClick(index)
                 },
+                selectedContentColor = MaterialTheme.colorScheme.primary,
+                unselectedContentColor = Color.Black,
                 modifier = Modifier
                     .fillMaxHeight()
                     .size(20.dp, 36.dp)
-                    .background(color = Color(0xFFDFEAFF))
             ) {
                 Text(text = text, fontSize = 14.sp)
             }
@@ -290,8 +319,23 @@ private fun ScrollableTabRow(
 @Composable
 fun DateSelectionSection(
     onWeightChosen: (String) -> Unit,
-    onRepChosen: (String) -> Unit
+    onRepChosen: (String) -> Unit,
+    preWeight: Int,
+    preRep: Int,
+    inProgress: Boolean
 ) {
+    val kgValue = (0..300).map { it.toString() }
+    val repValue = (0..100).map { it.toString() }
+
+    if(inProgress) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.3f))
+                .pointerInput(Unit) {  }
+        )
+    }
+
     Row(
         horizontalArrangement = Arrangement.SpaceAround,
         modifier = Modifier
@@ -299,13 +343,12 @@ fun DateSelectionSection(
             .fillMaxHeight(0.9f)
             .background(color = Color.LightGray)
             .padding(10.dp)
-
     ) {
         Column (
             modifier = Modifier
                 .fillMaxWidth(0.4f)
                 .fillMaxHeight()
-                .clip(RoundedCornerShape(4.dp)),
+                .clip(RoundedCornerShape(4.dp))
         ) {
             Box(modifier = Modifier
                 .fillMaxWidth()
@@ -316,16 +359,16 @@ fun DateSelectionSection(
                 Text(text = "Kg",textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
             }
             InfiniteItemsPicker(
-                items = KgValue,
+                items = kgValue,
                 firstIndex = (301 * 200)+preWeight - 1,
-                onItemSelected =  onWeightChosen
+                onItemSelected =  onWeightChosen,
             )
         }
         Column(
             modifier = Modifier
                 .fillMaxWidth(0.66f)
                 .fillMaxHeight()
-                .clip(RoundedCornerShape(4.dp)),
+                .clip(RoundedCornerShape(4.dp))
         ) {
             Box(modifier = Modifier
                 .fillMaxWidth()
@@ -336,13 +379,11 @@ fun DateSelectionSection(
                 Text(text = "Rep")
             }
             InfiniteItemsPicker(
-                items = RepValue,
+                items = repValue,
                 firstIndex = (101 * 200) + preRep - 1,
-                onItemSelected =  onRepChosen
+                onItemSelected =  onRepChosen,
             )
         }
-
-
     }
 }
 
@@ -357,16 +398,29 @@ fun InfiniteItemsPicker(
     // 얼마나 내렸는지 기억
     val listState = rememberLazyListState(firstIndex)
     val currentValue = remember { mutableStateOf("") }
+    val previousValue = remember { mutableStateOf("$firstIndex")}
 
-    LaunchedEffect(key1 = !listState.isScrollInProgress) {
-        onItemSelected(currentValue.value)
-        listState.animateScrollToItem(index = listState.firstVisibleItemIndex)
+    LaunchedEffect(key1 = firstIndex) {
+        if (firstIndex.toString() != currentValue.value) {
+            val newPosition = (items.size * 30) + firstIndex
+
+            listState.scrollToItem(newPosition)
+        }
     }
 
-    Box(modifier = Modifier
-        .height(106.dp)
-        .fillMaxWidth()
-        .background(Color.White),
+    LaunchedEffect(key1 = !listState.isScrollInProgress) {
+        if(previousValue.value != currentValue.value) {
+            onItemSelected(currentValue.value)
+            listState.animateScrollToItem(index = listState.firstVisibleItemIndex)
+            previousValue.value = currentValue.value
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .height(106.dp)
+            .fillMaxWidth()
+            .background(Color.White),
         contentAlignment = Alignment.Center
     ) {
         LazyColumn(
@@ -389,33 +443,39 @@ fun InfiniteItemsPicker(
                         var newText by remember { mutableStateOf(Text) }
                         val coroutineScope = rememberCoroutineScope() // CoroutineScope 생성
 
-                        TextField(
-                            value = newText,
-                            onValueChange = {
-                                newText = it
-                            },
-                            keyboardOptions = KeyboardOptions.Default.copy(
-                                keyboardType = KeyboardType.Number, // 숫자 입력 모드 설정
-                                imeAction = androidx.compose.ui.text.input.ImeAction.Done
-                            ),
-                            keyboardActions = KeyboardActions(
-                                onDone = {
-                                    isEditing = false
-                                    if (newText.isNotEmpty()) {
-                                        val newPosition = (items.size * 30) + newText.toInt()-1
+                        Box(
+                            modifier = Modifier.wrapContentSize(unbounded = true, align = Alignment.TopStart)
+                        ) {
+                            TextField(
+                                value = newText,
+                                onValueChange = {
+                                    newText = it
+                                },
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    keyboardType = KeyboardType.Number, // 숫자 입력 모드 설정
+                                    imeAction = ImeAction.Done
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onDone = {
+                                        isEditing = false
+                                        if (newText.isNotEmpty()) {
+                                            val newPosition =
+                                                (items.size * 30) + newText.toInt() - 1
 
-                                        // CoroutineScope 내에서 scrollToItem 호출
-                                        coroutineScope.launch {
-                                            listState.scrollToItem(newPosition)
+                                            // CoroutineScope 내에서 scrollToItem 호출
+                                            coroutineScope.launch {
+                                                listState.scrollToItem(newPosition)
+                                            }
                                         }
                                     }
-                                }
-                            ),
-                            textStyle = LocalTextStyle.current.copy(fontSize = 12.sp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight(0.1f)
-                        )
+                                ),
+                                textStyle = LocalTextStyle.current.copy(fontSize = 12.sp),
+                                singleLine = true,
+                                modifier = Modifier
+                                    .width(80.dp)
+                                    .fillMaxHeight()
+                            )
+                        }
                     } else {
                         Text(
                             text = items[index],
@@ -446,14 +506,36 @@ fun InfiniteItemsPicker(
 
 // 최신값
 @Composable
-fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean) {
+fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgress, addCnt: () -> Unit, inProgress: Boolean, muscleAverage: Double) {
     var signal_1 by remember { mutableStateOf(0) }
     var signal_2 by remember { mutableStateOf(0) }
     var signal_3 by remember { mutableStateOf(0) }
     var signal_4 by remember { mutableStateOf(0) }
 
+    var lastLev by remember { mutableStateOf(0)}
+    var lastTime by remember { mutableStateOf<Long>(0)}
+    var currentLev by remember { mutableStateOf(0) }
+
     // CoroutineScope을 만듭니다.
     val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(emgUiState.emg1Avg) {
+        if(inProgress) {
+            val curTime = System.currentTimeMillis()
+
+            if(curTime - lastTime >= 500) {
+                Log.d("cnt", "currentLev: $currentLev, lastLev: $lastLev, avg: ${emgUiState.emg1Avg}")
+                currentLev = ((emgUiState.emg1Avg / 90) + 1).toInt()
+                if (currentLev >= 3 && lastLev < 3) {
+                    addCnt()
+                    Log.d("cnt", "triggered")
+                }
+                lastLev = currentLev
+
+                lastTime = curTime
+            }
+        }
+    }
 
     LaunchedEffect(isStarting) {
         while (isStarting) {
@@ -482,12 +564,12 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean) {
                 .background(Color.White),
                 contentAlignment = Alignment.Center
             ){
-                Text("Lv. ${(emgUiState.emg1Avg / 90) + 1}")
+                Text("Lv. ${String.format("%.3f", (emgUiState.emg1Avg / 90) + 1)}")
                 Box(modifier = Modifier
                     .clip(CircleShape)
                     .size((emgUiState.emg1Avg % 90).dp)
                     .background(
-                        when((emgUiState.emg1Avg / 90).toInt()){
+                        when ((emgUiState.emg1Avg / 90).toInt()) {
                             0 -> Color.White.copy(0.7f)
                             1 -> Color.Red.copy(0.7f)
                             2 -> Color.Green.copy(0.7f)
@@ -503,12 +585,12 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean) {
                 .background(Color.White),
                 contentAlignment = Alignment.Center
             ){
-                Text("Lv. ${(emgUiState.emg2Avg / 90) + 1}")
+                Text("Lv. ${String.format("%.3f", (emgUiState.emg2Avg / 90) + 1)}")
                 Box(modifier = Modifier
                     .clip(CircleShape)
                     .size((emgUiState.emg2Avg % 90).dp)
                     .background(
-                        when((emgUiState.emg2Avg / 90).toInt()){
+                        when ((emgUiState.emg2Avg / 90).toInt()) {
                             0 -> Color.White.copy(0.7f)
                             1 -> Color.Red.copy(0.7f)
                             2 -> Color.Green.copy(0.7f)
@@ -530,7 +612,7 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean) {
                 .background(Color(0xFFDDE2FD)),
                 contentAlignment = Alignment.Center
             ){
-                Text("${emgUiState.emg1Avg % 90}")
+                Text(String.format("개수 : ${planInfo.successRep}", emgUiState.emg1Avg % 90))
             }
             Box(modifier = Modifier
                 .fillMaxHeight()
@@ -538,7 +620,7 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean) {
                 .background(Color(0xFFDDE2FD)),
                 contentAlignment = Alignment.Center
             ){
-                Text("${emgUiState.emg2Avg % 90}")
+                Text("${String.format("%.3f", muscleAverage)}")
             }
         }
     }
@@ -597,13 +679,3 @@ fun FFT_ready(N:Int){//N은 신호의 갯수
 
     val avrNumbers = average.map { it as Number }.toTypedArray()
 }
-
-
-
-
-val preWeight = 50 //이전에 사용한 무계 가져오기
-val preRep = 10//이전에 사용한 반복횟수 가져오기
-
-
-val KgValue = (0..300).map { it.toString() }
-val RepValue = (0..100).map { it.toString() }

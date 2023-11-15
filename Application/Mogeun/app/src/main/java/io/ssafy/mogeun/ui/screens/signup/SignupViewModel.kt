@@ -1,13 +1,9 @@
 package io.ssafy.mogeun.ui.screens.signup
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -17,12 +13,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.data.UserRepository
 import io.ssafy.mogeun.model.DupEmailResponse
-import io.ssafy.mogeun.model.SignInResponse
 import io.ssafy.mogeun.model.SignUpResponse
-import io.ssafy.mogeun.ui.screens.login.LoginViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SignupViewModel(private val signInRepository: UserRepository): ViewModel() {
@@ -91,7 +82,6 @@ class SignupViewModel(private val signInRepository: UserRepository): ViewModel()
         lateinit var ret: DupEmailResponse
         viewModelScope.launch {
             ret = signInRepository.dupEmail(id)
-            Log.d("dupEmail", "$ret")
             if(ret.data.joinState == "가입하지 않은 회원") {
                 updateDupEmailSuccess(true)
                 updateCheckEmail(1)
@@ -114,7 +104,6 @@ class SignupViewModel(private val signInRepository: UserRepository): ViewModel()
                     muscleMass,
                     bodyFat
                 )
-                Log.d("signUp", "$ret")
                 updateSuccessSignUp(true)
             }
         } else {
