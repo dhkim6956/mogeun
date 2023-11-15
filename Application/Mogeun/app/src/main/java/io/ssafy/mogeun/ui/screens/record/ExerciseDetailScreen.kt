@@ -1,7 +1,6 @@
 package io.ssafy.mogeun.ui.screens.record
 
 import android.os.Build.VERSION.SDK_INT
-import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -15,20 +14,25 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -36,12 +40,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
@@ -55,8 +60,10 @@ import com.jaikeerthick.composable_graphs.data.GraphData
 import com.jaikeerthick.composable_graphs.style.LabelPosition
 import com.jaikeerthick.composable_graphs.style.LineGraphStyle
 import com.jaikeerthick.composable_graphs.style.LinearGraphVisibility
+import io.ssafy.mogeun.R
 import io.ssafy.mogeun.model.Exercise
 import io.ssafy.mogeun.model.SetResult
+import io.ssafy.mogeun.ui.AppViewModelProvider
 import kotlinx.coroutines.launch
 
 data class MuscleFatigue(
@@ -64,34 +71,102 @@ data class MuscleFatigue(
     val num: Float
 )
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ExerciseDetailScreen(navController: NavHostController) {
-    var exercise: Exercise
+fun ExerciseDetailScreen(
+    navController: NavHostController,
+    index: Int?
+) {
+    var exercises: List<Exercise>
     try {
-        exercise = navController.previousBackStackEntry
-            ?.savedStateHandle?.get<Exercise>("exerciseDetail")!!
+        exercises = navController.previousBackStackEntry
+            ?.savedStateHandle?.get<List<Exercise>>("exercises")!!
     } catch (e: NullPointerException) {
-        exercise = Exercise("", "", 0, listOf(""), listOf(""), listOf(SetResult(0, 0f, 0, 0, listOf(0f), listOf(0f))))
+        exercises = emptyList()
     }
 
-    Column (
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                horizontal = 30.dp,
-                vertical = 10.dp
-            ),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        val exerciseImage = LocalContext.current.resources.getIdentifier("z_" + exercise.imagePath, "drawable", LocalContext.current.packageName)
+    val exerciseIndex = index!!
+
+    if (!exercises.isNullOrEmpty()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 30.dp)
+                .padding(top = 10.dp)
+        ) {
+            val pagerState = rememberPagerState(
+                initialPage = exerciseIndex,
+                pageCount = { exercises.size }
+            )
+
+            Column {
+                Row(
+                    Modifier
+                        .wrapContentHeight()
+                        .fillMaxWidth()
+                        .padding(bottom = 5.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    val coroutineScope = rememberCoroutineScope()
+
+                    Text(
+                        text = "<",
+                        modifier = Modifier
+                            .clickable {
+                                coroutineScope.launch {
+                                    // Call scroll to on pagerState
+                                    if (pagerState.currentPage > 0)
+                                        pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                                }
+                            },
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        exercises[pagerState.currentPage].execName,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = ">",
+                        modifier = Modifier
+                            .clickable {
+                                coroutineScope.launch {
+                                    // Call scroll to on pagerState
+                                    if (pagerState.currentPage < exercises.size)
+                                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                }
+                            },
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                HorizontalPager(state = pagerState) { page ->
+                    // Our page content
+                    ExerciseDetail(exercises[page])
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ExerciseDetail(
+    exercise: Exercise,
+    viewModel: RecordViewModel = viewModel(factory = AppViewModelProvider.Factory),
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        val exerciseImage = LocalContext.current.resources.getIdentifier(
+            "z_" + exercise.imagePath,
+            "drawable",
+            LocalContext.current.packageName
+        )
         var leftMuscleFatigueList: MutableList<MuscleFatigue> = mutableListOf()
         var rightMuscleFatigueList: MutableList<MuscleFatigue> = mutableListOf()
         var muscleFatigueList: List<MutableList<MuscleFatigue>> = mutableListOf()
-
         var set = 1
         for (setResult in exercise.setResults) {
             if (setResult.muscleFatigue!!.size > 1) {
-                Log.d("setResult.muscleFatigue", setResult.muscleFatigue.toString())
                 leftMuscleFatigueList.add(
                     MuscleFatigue(
                         set.toString() + "set",
@@ -108,42 +183,25 @@ fun ExerciseDetailScreen(navController: NavHostController) {
         }
         if (!leftMuscleFatigueList.isNullOrEmpty() || !rightMuscleFatigueList.isNullOrEmpty())
             muscleFatigueList = listOf(leftMuscleFatigueList, rightMuscleFatigueList)
-        Log.d("muscleFatigueList", muscleFatigueList.toString())
 
-        var expanded by remember { mutableStateOf(false) }
-
-
-        Text(exercise.execName, modifier = Modifier.align(Alignment.CenterHorizontally), fontSize = 24.sp, fontWeight = FontWeight.Bold)
         GifImage(modifier = Modifier.fillMaxWidth(), imageId = exerciseImage)
-        if (!expanded) {
-            ClickableText(
-                text = AnnotatedString("피로도 그래프 보기"),
-                onClick = {
-                    expanded = !expanded
-                },
-                style = TextStyle(fontWeight = FontWeight.Bold)
-            )
-        }
-        else {
-            ClickableText(
-                text = AnnotatedString("피로도 그래프 닫기"),
-                onClick = {
-                    expanded = !expanded
-                },
-                style = TextStyle(fontWeight = FontWeight.Bold)
-            )
-        }
-        Column (
+        ExerciseDropdown(viewModel)
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            if (!muscleFatigueList.isNullOrEmpty() && expanded) {
-                MuscleFatigueCard(muscleFatigueList, exercise.parts)
+            verticalArrangement = Arrangement.spacedBy(10.dp),) {
+            if (viewModel.itemIndex.value == 1) {
+                if (!muscleFatigueList.isNullOrEmpty())
+                    MuscleFatigueCard(muscleFatigueList, exercise.parts)
+                else {
+                    Text("No Data")
+                }
             }
-            repeat(exercise.sets) {
-                SetDetail(it + 1, exercise.setResults[it], exercise.parts)
+            else {
+                repeat(exercise.sets) {
+                    SetDetail(it + 1, exercise.setResults[it], exercise.muscleImagePaths)
+                }
             }
         }
     }
@@ -160,7 +218,20 @@ fun MuscleFatigueCard(
     })
     val nameList = listOf("왼쪽 " + parts[0].split(" ")[1], "오른쪽 " + parts[0].split(" ")[1])
 
-    Column {
+    Column (
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                color = MaterialTheme.colorScheme.background,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .border(
+                width = 2.dp,
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(5.dp)
+    ) {
         Row(
             Modifier
                 .wrapContentHeight()
@@ -277,10 +348,9 @@ fun GifImage(
 fun SetDetail(
     setNum: Int,
     setDetail: SetResult,
-    parts: List<String>
+    muscleImagePaths: List<String>
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val part = parts.get(0).split(" ")[1]
 
     Column (
         modifier = Modifier
@@ -345,15 +415,15 @@ fun SetDetail(
                 Text(setDetail.successRep.toString() + '/' + setDetail.targetRep.toString() + "rep")
             }
         }
-        if (expanded && !setDetail.muscleActivity.isNullOrEmpty() && setDetail.muscleActivity?.get(0) != 0.0f && setDetail.muscleActivity?.get(1) != 0.0f)
-            MuscleActivity(setDetail.muscleActivity, part)
+        if (expanded && !setDetail.muscleActivity.isNullOrEmpty() && (setDetail.muscleActivity?.get(0) != 0.0f || setDetail.muscleActivity?.get(1) != 0.0f))
+            MuscleActivity(setDetail.muscleActivity, muscleImagePaths[0])
     }
 }
 
 @Composable
 fun MuscleActivity(
     muscleActivityList: List<Float>?,
-    part: String
+    muscleImagePath: String
 ) {
     val left = muscleActivityList!![0]
     val right = muscleActivityList[1]
@@ -363,30 +433,57 @@ fun MuscleActivity(
         0f
     }
 
+    val leftMuscleImage = LocalContext.current.resources.getIdentifier(muscleImagePath + "_l", "drawable", LocalContext.current.packageName)
+    val rightMuscleImage = LocalContext.current.resources.getIdentifier(muscleImagePath + "_r", "drawable", LocalContext.current.packageName)
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                horizontal = 30.dp,
                 vertical = 10.dp
             ),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            BalanceBar(balanceValue)
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    Text("왼쪽 $part")
-                    if (muscleActivityList?.size!! > 0)
-                        Text("근활성도: " + muscleActivityList[0].toString())
+                Box(
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(50.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.surface,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                ) {
+                    Image(
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(50.dp),
+                        painter = painterResource(leftMuscleImage),
+                        contentDescription = muscleImagePath
+                    )
                 }
-                Column {
-                    Text("오른쪽 $part")
-                    if (muscleActivityList?.size!! > 0)
-                        Text("근활성도: " + muscleActivityList[1].toString())
+                BalanceBar(balanceValue)
+                Box(
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(50.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.surface,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                ) {
+                    Image(
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(50.dp),
+                        painter = painterResource(rightMuscleImage),
+                        contentDescription = muscleImagePath
+                    )
                 }
             }
         }
@@ -398,12 +495,13 @@ fun MuscleActivity(
 fun BalanceBar(balanceValue: Float) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 50.dp)
+            .width(150.dp)
+            .height(30.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth(balanceValue)
+                .height(30.dp)
                 .background(
                     color = when (balanceValue) {
                         in 0.45f..0.55f -> MaterialTheme.colorScheme.tertiary
@@ -414,9 +512,16 @@ fun BalanceBar(balanceValue: Float) {
         ) {
             Text("")
         }
+        Spacer(
+            modifier = Modifier
+                .width(2.dp)
+                .height(30.dp)
+                .background(color = Color.Black)
+        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .height(30.dp)
                 .background(
                     color = when (balanceValue) {
                         in 0.45f..0.55f -> MaterialTheme.colorScheme.tertiaryContainer
@@ -426,6 +531,79 @@ fun BalanceBar(balanceValue: Float) {
                 )
         ) {
             Text("")
+        }
+    }
+}
+
+@Composable
+fun ExerciseDropdown(viewModel: RecordViewModel) {
+    val listItems = arrayOf("세트 정보", "피로도 그래프")
+
+    // state of the menu
+    var expanded by remember { mutableStateOf(false) }
+    var disabledItem by remember { mutableIntStateOf(0) }
+    var item by remember { mutableStateOf(listItems[0]) }
+    var itemIconIndex by remember { mutableIntStateOf(0) }
+    var itemIconList = listOf(R.drawable.baseline_arrow_drop_down_24, R.drawable.baseline_arrow_drop_up_24)
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .background(
+                color = MaterialTheme.colorScheme.background,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(5.dp)
+            .clickable {
+                expanded = true
+                itemIconIndex = if (itemIconIndex == 0) 1
+                else 0
+            }
+    ) {
+        Row {
+            Text(item)
+            Spacer(
+                modifier = Modifier
+                    .width(5.dp)
+                    .background(color = MaterialTheme.colorScheme.primaryContainer)
+            )
+            Image(
+                painter = painterResource(id = itemIconList[itemIconIndex]),
+                contentDescription = "dropdown",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.height(20.dp)
+            )
+        }
+
+        // drop down menu
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = {
+                expanded = false
+                itemIconIndex = if (itemIconIndex == 0) 1
+                else 0
+            }
+        ) {
+            // adding items
+            listItems.forEachIndexed { itemIndex, itemValue ->
+                DropdownMenuItem(
+                    onClick = {
+                        expanded = false
+                        disabledItem = itemIndex
+                        item = itemValue
+                        viewModel.itemIndex.value = itemIndex
+                        itemIconIndex = if (itemIconIndex == 0) 1
+                        else 0
+                    },
+                    enabled = (itemIndex != disabledItem),
+                    text = { Text(text = itemValue) }
+                )
+            }
         }
     }
 }

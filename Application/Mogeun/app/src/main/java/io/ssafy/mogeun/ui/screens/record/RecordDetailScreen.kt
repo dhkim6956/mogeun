@@ -1,5 +1,6 @@
 package io.ssafy.mogeun.ui.screens.record
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -24,11 +26,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,49 +66,56 @@ fun RecordDetailScreen(
     viewModel: RecordViewModel = viewModel(factory = AppViewModelProvider.Factory),
     reportKey: String?
 ) {
-    var reportKeyList: List<Int>
+    var reportKeyListTmp: List<Int>
     try {
-        reportKeyList = navController.previousBackStackEntry
+        reportKeyListTmp = navController.previousBackStackEntry
             ?.savedStateHandle?.get<List<Int>>("reportKeyList")!!
     } catch (e: NullPointerException) {
-        reportKeyList = emptyList()
+        reportKeyListTmp = listOf(reportKey!!.toInt())
     }
+    var reportKeyList = remember { reportKeyListTmp }
 
-    var routineTimeList: List<String>
+    var routineTimeListTmp: List<String>
     try {
-        routineTimeList = navController.previousBackStackEntry
+        routineTimeListTmp = navController.previousBackStackEntry
             ?.savedStateHandle?.get<List<String>>("routineTimeList")!!
     } catch (e: NullPointerException) {
-        routineTimeList = emptyList()
+        routineTimeListTmp = emptyList()
+    }
+    var routineTimeList = remember { routineTimeListTmp }
+
+
+    val recordAllRoutineSuccess by viewModel.recordAllRoutineSuccess.collectAsState()
+    if (!recordAllRoutineSuccess) {
+        viewModel.recordAllRoutine(reportKeyList)
+        IndeterminateCircularIndicator(viewModel)
+    }
+    if (viewModel.routineInfoMap.size == reportKeyList.size) {
+        viewModel.updateRecordAllRoutineSuccess()
     }
 
-    if (reportKeyList.isNotNull() || routineTimeList.isNotEmpty()) {
-        val recordRoutineSuccess by viewModel.recordRoutineSuccess.collectAsState()
-        if (!recordRoutineSuccess) {
-            viewModel.recordAllRoutine(reportKeyList)
-        }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 30.dp)
+            .padding(top = 10.dp)
+    ) {
+        val pagerState = rememberPagerState(
+            initialPage = reportKeyList.indexOf(reportKey?.toInt()),
+            pageCount = { reportKeyList.size }
+        )
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 30.dp)
-                .padding(top = 10.dp)
-        ) {
-            val pagerState = rememberPagerState(
-                initialPage = reportKeyList.indexOf(reportKey?.toInt()),
-                pageCount = { reportKeyList.size }
-            )
+        Column {
+            Row(
+                Modifier
+                    .wrapContentHeight()
+                    .fillMaxWidth()
+                    .padding(bottom = 5.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                val coroutineScope = rememberCoroutineScope()
 
-            Column {
-                Row(
-                    Modifier
-                        .wrapContentHeight()
-                        .fillMaxWidth()
-                        .padding(bottom = 5.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    val coroutineScope = rememberCoroutineScope()
-
+                if (recordAllRoutineSuccess && reportKeyList.size > 1) {
                     Text(
                         text = "<",
                         modifier = Modifier
@@ -113,21 +124,18 @@ fun RecordDetailScreen(
                                     // Call scroll to on pagerState
                                     if (pagerState.currentPage > 0)
                                         pagerState.animateScrollToPage(pagerState.currentPage - 1)
-                                }
-                            },
+                                } },
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
-                    if (recordRoutineSuccess) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = viewModel.routineInfoList[pagerState.currentPage].date,
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                            if (routineTimeList.isNotEmpty())
-                                Text(routineTimeList[pagerState.currentPage])
-                        }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = viewModel.routineInfoMap[reportKeyList[pagerState.currentPage].toString()]!!.date,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        if (routineTimeList.isNotEmpty())
+                            Text(routineTimeList[pagerState.currentPage])
                     }
                     Text(
                         text = ">",
@@ -137,35 +145,17 @@ fun RecordDetailScreen(
                                     // Call scroll to on pagerState
                                     if (pagerState.currentPage < reportKeyList.size)
                                         pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                                }
-                            },
+                                } },
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
-                HorizontalPager(state = pagerState) { page ->
-                    // Our page content
-                    if (recordRoutineSuccess)
-                        RecordDetail(navController, viewModel.routineInfoList[page])
-                }
             }
-        }
-    }
-    else {
-        val recordRoutineSuccess by viewModel.recordRoutineSuccess.collectAsState()
-        if (!recordRoutineSuccess) {
-            viewModel.recordRoutine(reportKey!!)
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 30.dp)
-                .padding(top = 10.dp)
-                .background(color = MaterialTheme.colorScheme.background)
-        ) {
-            if (recordRoutineSuccess)
-                RecordDetail(navController, viewModel.routineInfoList[0])
+            HorizontalPager(state = pagerState) { page ->
+                // Our page content
+                if (recordAllRoutineSuccess && !reportKeyList.isNullOrEmpty())
+                    RecordDetail(navController, viewModel.routineInfoMap[reportKeyList[page].toString()]!!)
+            }
         }
     }
 }
@@ -188,7 +178,7 @@ fun RecordDetail(
             if (routineInfo != null) {
                 itemsIndexed(routineInfo.exercises) {index, item ->
                     if (item.sets > 0)
-                        RoutineExerciseCard(navController, item)
+                        RoutineExerciseCard(navController, routineInfo.exercises, index)
                 }
             }
         }
@@ -340,7 +330,8 @@ fun IconCard(
 @Composable
 fun RoutineExerciseCard(
     navController: NavHostController,
-    exercise: Exercise
+    exercises: List<Exercise>,
+    index: Int
 ) {
     Box (
         modifier = Modifier
@@ -359,8 +350,8 @@ fun RoutineExerciseCard(
                 horizontal = 10.dp
             )
             .clickable {
-                navController.currentBackStackEntry?.savedStateHandle?.set("exerciseDetail", exercise)
-                navController.navigate("ExerciseDetail")
+                navController.currentBackStackEntry?.savedStateHandle?.set("exercises", exercises)
+                navController.navigate("ExerciseDetail/${index}")
             },
         contentAlignment = Alignment.Center
     ) {
@@ -370,25 +361,25 @@ fun RoutineExerciseCard(
             Column (
                 modifier = Modifier.fillMaxWidth(0.3f)
             ) {
-                val exerciseImage = LocalContext.current.resources.getIdentifier("x_" + exercise.imagePath, "drawable", LocalContext.current.packageName)
+                val exerciseImage = LocalContext.current.resources.getIdentifier("x_" + exercises[index].imagePath, "drawable", LocalContext.current.packageName)
 
                 Image(
                     painter = painterResource(id = exerciseImage),
-                    contentDescription = exercise.execName,)
+                    contentDescription = exercises[index].execName,)
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = exercise.execName,
+                    text = exercises[index].execName,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }
             WeightGrid(
                 columns = 5,
-                itemCount = exercise.sets,
+                itemCount = exercises[index].sets,
                 modifier = Modifier
                     .padding(start = 7.5.dp, end = 7.5.dp)
             ) {
-                SetWeightIcon(exercise.setResults[it].weight.toInt())
+                SetWeightIcon(exercises[index].setResults[it].weight.toInt())
             }
         }
     }
@@ -539,5 +530,23 @@ fun MuscleGrid(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun IndeterminateCircularIndicator(viewModel: RecordViewModel) {
+    val recordAllRoutineSuccess by viewModel.recordAllRoutineSuccess.collectAsState()
+    if (recordAllRoutineSuccess) return
+
+    Column (
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.width(64.dp),
+            color = MaterialTheme.colorScheme.surface,
+            trackColor = MaterialTheme.colorScheme.primary,
+        )
     }
 }
