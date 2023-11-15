@@ -80,7 +80,7 @@ fun RecordDetailScreen(
     }
     Log.d("routineTimeList", routineTimeList.toString())
 
-    if (reportKeyList.isNotNull() || routineTimeList.isNotEmpty()) {
+    if (reportKeyList.isNotNull() && routineTimeList.isNotEmpty()) {
         val recordRoutineSuccess by viewModel.recordRoutineSuccess.collectAsState()
         if (!recordRoutineSuccess) {
             viewModel.recordAllRoutine(reportKeyList)
@@ -166,7 +166,8 @@ fun RecordDetailScreen(
                 .padding(top = 10.dp)
                 .background(color = MaterialTheme.colorScheme.background)
         ) {
-            RecordDetail(navController, viewModel.routineInfoList[0])
+            if (recordRoutineSuccess)
+                RecordDetail(navController, viewModel.routineInfoList[0])
         }
     }
 }

@@ -1,5 +1,7 @@
 package io.ssafy.mogeun.data
 
+import io.ssafy.mogeun.model.CalorieReportRequest
+import io.ssafy.mogeun.model.CalorieReportResponse
 import io.ssafy.mogeun.model.ClearPlanResponse
 import io.ssafy.mogeun.model.EndRoutineRequest
 import io.ssafy.mogeun.model.RoutineExecutionResponse
@@ -20,6 +22,7 @@ interface ExecutionRepository {
     suspend fun reportSet(report: SetExecutionRequest): SetExecutionResponse
     suspend fun clearPlan(planKey: Int): ClearPlanResponse
     suspend fun setPlan(planKey: Int, setInfos: List<SetInfo>): SetPlanResponse
+    suspend fun reportCalorie(reportKey: Int, calorie: Double): CalorieReportResponse
 }
 
 class NetworkExecutionRepository(
@@ -51,5 +54,9 @@ class NetworkExecutionRepository(
 
     override suspend fun setPlan(planKey: Int, setInfos: List<SetInfo>): SetPlanResponse {
         return mogeunApiService.setPlan(SetPlanRequest(planKey, setInfos))
+    }
+
+    override suspend fun reportCalorie(reportKey: Int, calorie: Double): CalorieReportResponse {
+        return mogeunApiService.reportCalorie(CalorieReportRequest(reportKey, calorie))
     }
 }

@@ -186,3 +186,27 @@ data class SetPlanResponse(
     val message: String,
     val data: SetPlanResponseData
 )
+
+@Serializable
+data class CalorieReportRequest(
+    @SerialName(value = "routine_report_key")
+    val routineReportKey: Int,
+    @SerialName(value = "consume_calorie")
+    val consumeCalorie: Double,
+)
+
+@Serializable
+data class CalorieReportResponseData(
+    @SerialName(value = "routine_report_key")
+    val routineReportKey: Int,
+    @SerialName(value = "consume_calorie")
+    val consumeCalorie: Double
+)
+
+@Serializable
+data class CalorieReportResponse(
+    val code: Int,
+    val status: String,
+    val message: String,
+    val data: CalorieReportResponseData?
+)

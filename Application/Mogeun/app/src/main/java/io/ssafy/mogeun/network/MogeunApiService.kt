@@ -5,6 +5,8 @@ import io.ssafy.mogeun.model.AddAllExerciseResponse
 import io.ssafy.mogeun.model.AddRoutineRequest
 import io.ssafy.mogeun.model.AddRoutineResponse
 import io.ssafy.mogeun.model.BodyInfoResponse
+import io.ssafy.mogeun.model.CalorieReportRequest
+import io.ssafy.mogeun.model.CalorieReportResponse
 import io.ssafy.mogeun.model.ClearPlanResponse
 import io.ssafy.mogeun.model.DeleteRoutineRequest
 import io.ssafy.mogeun.model.DeleteRoutineResponse
@@ -135,4 +137,7 @@ interface MogeunApiService {
 
     @POST("Routine/Set/AddAll")
     suspend fun setPlan(@Body setPlanRequest: SetPlanRequest): SetPlanResponse
+
+    @POST("Result/Create")
+    suspend fun reportCalorie(@Body calorieReportRequest: CalorieReportRequest): CalorieReportResponse
 }

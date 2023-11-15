@@ -337,7 +337,11 @@ class BluetoothViewModel(
         terminateTimer = true
 
         viewModelScope.launch {
-            val ret = executionRepository.endRoutine(userKey!!, reportKey!!)
+            val ret1 = executionRepository.endRoutine(userKey!!, reportKey!!)
+            Log.d("report", "routine report = $ret1")
+
+            val ret2 = executionRepository.reportCalorie(reportKey, 0.0)
+            Log.d("report", "calorie report = $ret2")
         }
     }
 
