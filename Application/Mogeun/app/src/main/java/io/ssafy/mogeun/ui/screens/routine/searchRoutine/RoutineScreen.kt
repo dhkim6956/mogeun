@@ -2,6 +2,7 @@ package io.ssafy.mogeun.ui.screens.routine.searchRoutine
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
@@ -105,7 +107,6 @@ fun RoutineScreen(
                 )
                 IconButton(onClick = { navController.navigate("User") }) {
                     Icon(painter = painterResource(id = R.drawable.edit), contentDescription = null)
-
                 }
             }
             Column(
@@ -157,36 +158,61 @@ fun RoutineScreen(
                         RoutineList(navController, item, index)
                     }
                 }
-                item { 
-                    Spacer(modifier = Modifier.height(80.dp))
+                item {
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
+                item() {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(color = Color.White.copy(alpha = 0.5f), shape = RoundedCornerShape(10.dp))
+                            .alpha(0.5f)
+                            .height(100.dp)
+                            .clickable{
+                                navController.navigate("addexercise/${beforeScreen}/3")
+                            }
+                    ) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Row {
+                                Image(
+                                    painter = painterResource(id = R.drawable.add),
+                                    contentDescription = "add_routine",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.height(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Text(text = "루틴추가", color = MaterialTheme.colorScheme.scrim)
+                            }
+                        }
+                    }
                 }
             }
         }
     }
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .padding(start = 30.dp, bottom = 30.dp), contentAlignment = Alignment.BottomStart) {
-        Button(
-            onClick = { navController.navigate("addexercise/${beforeScreen}/3") },
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-            shape = RoundedCornerShape(10.dp),
-            elevation = ButtonDefaults.buttonElevation(
-                defaultElevation = 10.dp,
-                pressedElevation = 0.dp,
-            ),
-        ) {
-            Row {
-                Image(
-                    painter = painterResource(id = R.drawable.add_routine),
-                    contentDescription = "add_routine",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.height(20.dp)
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                Text(text = "루틴추가", color = MaterialTheme.colorScheme.scrim)
-            }
-        }
-    }
+//    Box(modifier = Modifier
+//        .fillMaxSize()
+//        .padding(start = 30.dp, bottom = 30.dp), contentAlignment = Alignment.BottomStart) {
+//        Button(
+//            onClick = { navController.navigate("addexercise/${beforeScreen}/3") },
+//            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+//            shape = RoundedCornerShape(10.dp),
+//            elevation = ButtonDefaults.buttonElevation(
+//                defaultElevation = 10.dp,
+//                pressedElevation = 0.dp,
+//            ),
+//        ) {
+//            Row {
+//                Image(
+//                    painter = painterResource(id = R.drawable.add_routine),
+//                    contentDescription = "add_routine",
+//                    contentScale = ContentScale.Crop,
+//                    modifier = Modifier.height(20.dp)
+//                )
+//                Spacer(modifier = Modifier.width(10.dp))
+//                Text(text = "루틴추가", color = MaterialTheme.colorScheme.scrim)
+//            }
+//        }
+//    }
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
