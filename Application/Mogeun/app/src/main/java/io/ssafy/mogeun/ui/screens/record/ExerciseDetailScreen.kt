@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
@@ -29,7 +28,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,10 +40,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import co.yml.charts.common.extensions.isNotNull
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.GifDecoder
@@ -60,8 +57,6 @@ import com.jaikeerthick.composable_graphs.style.LineGraphStyle
 import com.jaikeerthick.composable_graphs.style.LinearGraphVisibility
 import io.ssafy.mogeun.model.Exercise
 import io.ssafy.mogeun.model.SetResult
-import io.ssafy.mogeun.ui.screens.summary.BodyInfoSummary
-import io.ssafy.mogeun.ui.screens.summary.BodyLog
 import kotlinx.coroutines.launch
 
 data class MuscleFatigue(
@@ -117,16 +112,8 @@ fun ExerciseDetailScreen(navController: NavHostController) {
 
         var expanded by remember { mutableStateOf(false) }
 
-        Box (modifier = Modifier
-            .fillMaxWidth()
-            .background(color = MaterialTheme.colorScheme.primaryContainer)
-            .padding(
-                vertical = 10.dp
-            ),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(exercise.execName, fontWeight = FontWeight.Bold)
-        }
+
+        Text(exercise.execName, modifier = Modifier.align(Alignment.CenterHorizontally), fontSize = 24.sp, fontWeight = FontWeight.Bold)
         GifImage(modifier = Modifier.fillMaxWidth(), imageId = exerciseImage)
         if (!expanded) {
             ClickableText(
@@ -137,7 +124,7 @@ fun ExerciseDetailScreen(navController: NavHostController) {
                 style = TextStyle(fontWeight = FontWeight.Bold)
             )
         }
-        if (!muscleFatigueList.isNullOrEmpty() && expanded) {
+        else {
             ClickableText(
                 text = AnnotatedString("피로도 그래프 닫기"),
                 onClick = {
@@ -145,7 +132,6 @@ fun ExerciseDetailScreen(navController: NavHostController) {
                 },
                 style = TextStyle(fontWeight = FontWeight.Bold)
             )
-            MuscleFatigueCard(muscleFatigueList, exercise.parts)
         }
         Column (
             modifier = Modifier
@@ -153,6 +139,9 @@ fun ExerciseDetailScreen(navController: NavHostController) {
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
+            if (!muscleFatigueList.isNullOrEmpty() && expanded) {
+                MuscleFatigueCard(muscleFatigueList, exercise.parts)
+            }
             repeat(exercise.sets) {
                 SetDetail(it + 1, exercise.setResults[it], exercise.parts)
             }
@@ -380,8 +369,7 @@ fun MuscleActivity(
             .padding(
                 horizontal = 30.dp,
                 vertical = 10.dp
-            )
-            .background(color = MaterialTheme.colorScheme.background),
+            ),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
