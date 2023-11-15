@@ -49,7 +49,13 @@ fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarH
             { backStackEntry ->
                 RecordDetailScreen(navController = navController, reportKey = backStackEntry.arguments?.getString("reportKey"))
             }
-            composable(Screen.ExerciseDetail.route) { ExerciseDetailScreen(navController = navController)}
+            composable(
+                Screen.ExerciseDetail.route,
+                arguments = listOf(navArgument("index") { type = NavType.IntType })
+            )
+            { backStackEntry ->
+                ExerciseDetailScreen(navController = navController, index = backStackEntry.arguments?.getInt("index"))
+            }
         }
         composable(Screen.Summary.route) { SummaryScreen() }
         composable(Screen.Setting.route) { SettingScreen(

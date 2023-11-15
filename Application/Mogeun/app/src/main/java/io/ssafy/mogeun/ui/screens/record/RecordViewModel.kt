@@ -2,7 +2,9 @@ package io.ssafy.mogeun.ui.screens.record
 
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -28,13 +30,17 @@ class RecordViewModel(
     val recordMonthlySuccess: StateFlow<Boolean> = _recordMonthlySuccess.asStateFlow()
     var recordList = mutableStateListOf<MonthlyRoutine>()
 
+    private val _recordAllRoutineSuccess = MutableStateFlow(false)
+    val recordAllRoutineSuccess: StateFlow<Boolean> = _recordAllRoutineSuccess.asStateFlow()
+    var routineInfoMap = mutableStateMapOf<String, RoutineInfoData>()
+
     private val _recordRoutineSuccess = MutableStateFlow(false)
     val recordRoutineSuccess: StateFlow<Boolean> = _recordRoutineSuccess.asStateFlow()
-    var routineInfoList = mutableStateListOf<RoutineInfoData>()
+    var routineInfo by mutableStateOf<RoutineInfoData?>(null)
 
     var userKey by mutableStateOf<Int?>(null)
 
-    var barChartdata: MutableList<BarData> = mutableListOf()
+    var itemIndex = mutableIntStateOf(0)
 
     fun initRecordMonthlySuccess() {
         _recordMonthlySuccess.value = false
@@ -70,21 +76,24 @@ class RecordViewModel(
         }
     }
 
+    fun updateRecordAllRoutineSuccess() {
+        _recordAllRoutineSuccess.value = true
+    }
+
     fun recordAllRoutine(reportKeyList: List<Int>) {
         getUserKey()
 
         if (userKey !== null) {
             lateinit var ret: RoutineResponse
             viewModelScope.launch {
-                for (reportKey in reportKeyList) {
-                    ret = recordRepository.recordRoutine(userKey.toString(), reportKey.toString())
+                for (reportKey in reportKeyList!!) {
+                    ret =
+                        recordRepository.recordRoutine(userKey.toString(), reportKey.toString())
                     Log.d("recordRoutine", "$ret")
-
                     if (ret.status == "OK") {
-                        routineInfoList.add(ret.data!!)
+                        routineInfoMap[reportKey.toString()] = ret.data!!
                     }
                 }
-                _recordRoutineSuccess.value = true
             }
         }
     }
@@ -99,7 +108,7 @@ class RecordViewModel(
                 Log.d("recordRoutine", "$ret")
                 if (ret.status == "OK") {
                     _recordRoutineSuccess.value = true
-                    routineInfoList.add(ret.data!!)
+                    routineInfo = ret.data
                 }
             }
         }
