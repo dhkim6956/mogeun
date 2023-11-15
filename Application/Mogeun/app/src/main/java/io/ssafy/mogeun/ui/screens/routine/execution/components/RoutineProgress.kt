@@ -1,12 +1,11 @@
 package io.ssafy.mogeun.ui.screens.routine.execution.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,19 +26,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import io.ssafy.mogeun.ui.screens.routine.execution.ElapsedTime
-import io.ssafy.mogeun.ui.theme.MogeunTheme
 
 @Composable
-fun RoutineProgress(page: Int, execCnt: Int, elapsedTime: ElapsedTime) {
+fun RoutineProgress(page: Int, execCnt: Int, elapsedTime: ElapsedTime, endRoutine: () -> Unit, inProgress: Boolean) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -57,6 +53,7 @@ fun RoutineProgress(page: Int, execCnt: Int, elapsedTime: ElapsedTime) {
         ) {
             Text(text = "< $page / $execCnt >", fontSize = 20.sp)
             ElevatedAssistChip(
+                enabled = !inProgress,
                 onClick = {  },
                 label = { Text("운동 추가") },
                 leadingIcon = {
@@ -88,8 +85,11 @@ fun RoutineProgress(page: Int, execCnt: Int, elapsedTime: ElapsedTime) {
                         modifier = Modifier
                             .width(80.dp)
                             .height(80.dp)
-                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .background(if (inProgress) Color.LightGray else MaterialTheme.colorScheme.primaryContainer)
                             .padding(8.dp)
+                            .clickable {
+                                if(!inProgress) endRoutine()
+                            }
                     ) {
                         Text(text = "루틴종료", fontSize = 24.sp, textAlign = TextAlign.Center, lineHeight = 28.sp)
                     }
