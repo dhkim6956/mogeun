@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,8 +45,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import co.yml.charts.axis.AxisData
+import co.yml.charts.common.extensions.isNotNull
 import co.yml.charts.common.model.Point
 import co.yml.charts.ui.barchart.BarChart
 import co.yml.charts.ui.barchart.models.BarChartData
@@ -94,6 +97,12 @@ fun SummaryScreen(viewModel: SummaryViewModel = viewModel(factory = AppViewModel
         horizontalAlignment = Alignment.End
     ) {
         if (summaryExerciseSetSuccess) {
+            Text("체지방&골격근량 그래프", modifier = Modifier.align(Alignment.Start), fontSize=18.sp, fontWeight = FontWeight.Bold)
+            Spacer(
+                modifier = Modifier
+                    .height(5.dp)
+                    .background(color = MaterialTheme.colorScheme.primaryContainer)
+            )
             BodyInfoSummaryCard(viewModel.summaryBodyInfo)
             Spacer(
                 modifier = Modifier
@@ -106,6 +115,7 @@ fun SummaryScreen(viewModel: SummaryViewModel = viewModel(factory = AppViewModel
                     .height(5.dp)
                     .background(color = MaterialTheme.colorScheme.primaryContainer)
             )
+            Text("운동 요약", modifier = Modifier.align(Alignment.Start), fontSize=18.sp, fontWeight = FontWeight.Bold)
             ExerciseSummaryCard(
                 viewModel.summaryExerciseMost[viewModel.itemIndex.value],
                 viewModel.summaryExerciseWeight[viewModel.itemIndex.value],
@@ -116,6 +126,7 @@ fun SummaryScreen(viewModel: SummaryViewModel = viewModel(factory = AppViewModel
                     .height(10.dp)
                     .background(color = MaterialTheme.colorScheme.primaryContainer)
             )
+            Text("사용 근육 분포", modifier = Modifier.align(Alignment.Start), fontSize=18.sp, fontWeight = FontWeight.Bold)
             MuscleSummaryCard(viewModel.summaryPerformedMuscle[viewModel.itemIndex.value])
         }
     }
@@ -129,20 +140,23 @@ data class BodyLog(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BodyInfoSummaryCard(bodyInfo: BodyInfo?) {
-
-    val bodyFatChangeLog = bodyInfo?.bodyFatChangeLog
+    val bodyFatChangeLog = bodyInfo?.bodyFatChangeLog?.reversed()
     var bodyFatLog: MutableList<BodyLog> = mutableListOf()
     var index = 0
     bodyFatChangeLog?.map {
-        bodyFatLog.add(index, BodyLog(it.bodyFat.toInt(), it.changedTime.split("T")[0]))
+        val time = it.changedTime.split("T")[0]
+        val timeSplit = time.split("-")
+        bodyFatLog.add(index, BodyLog(it.bodyFat, timeSplit[0] + "년 " + timeSplit[1] + "월 " + timeSplit[2] + "일"))
         index++
     }
 
-    val muscleMassChangeLog = bodyInfo?.muscleMassChangeLog
+    val muscleMassChangeLog = bodyInfo?.muscleMassChangeLog?.reversed()
     var muscleMassLog: MutableList<BodyLog> = mutableListOf()
     index = 0
     muscleMassChangeLog?.map {
-        muscleMassLog.add(index, BodyLog(it.muscleMass.toInt(), it.changedTime.split("T")[0]))
+        val time = it.changedTime.split("T")[0]
+        val timeSplit = time.split("-")
+        muscleMassLog.add(index, BodyLog(it.muscleMass, timeSplit[0] + "년 " + timeSplit[1] + "월 " + timeSplit[2] + "일"))
         index++
     }
 
@@ -175,8 +189,7 @@ fun BodyInfoSummaryCard(bodyInfo: BodyInfo?) {
             Row(
                 Modifier
                     .wrapContentHeight()
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 val coroutineScope = rememberCoroutineScope()
@@ -209,54 +222,58 @@ fun BodyInfoSummaryCard(bodyInfo: BodyInfo?) {
 
 @Composable
 fun BodyInfoSummary(bodyLog: MutableList<BodyLog>) {
-    Log.d("bodyLog", bodyLog.toString())
-    if (bodyLog.isEmpty()) {
-        bodyLog.add(0, BodyLog(0, ""))
-    }
-    Column(modifier = Modifier.fillMaxWidth()) {
-        val style = LineGraphStyle(
-            visibility = LinearGraphVisibility(
-                isHeaderVisible = true,
-                isXAxisLabelVisible = false,
-                isYAxisLabelVisible = true,
-                isCrossHairVisible = false
-            ),
-            colors = LinearGraphColors(
-                lineColor = MaterialTheme.colorScheme.primary,
-                pointColor = MaterialTheme.colorScheme.primary,
-                clickHighlightColor = MaterialTheme.colorScheme.inversePrimary,
-                fillGradient = null
-            ),
-            height = 200.dp,
-            yAxisLabelPosition = LabelPosition.LEFT
-        )
-        val clickedValue: MutableState<Pair<Any, Any>?> =
-            remember { mutableStateOf(null) }
-
-        Row(
-            modifier = Modifier
-                .padding(10.dp)
-                .height(20.dp)
-        ) {
-            clickedValue.value?.let {
-                Text(
-                    text = "${it.first}: ${it.second}kg",
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
+    if (bodyLog.isNullOrEmpty()) {
+        Column(Modifier.fillMaxWidth()){
+            Text("운동 기록이 없습니다.", modifier = Modifier.align(Alignment.CenterHorizontally))
         }
-        LineGraph(
-            xAxisData = bodyLog.map {
-                GraphData.String(it.log)
-            },
-            yAxisData = bodyLog.map {
-                it.num
-            },
-            style = style,
-            onPointClicked = {
-                clickedValue.value = it
+    }
+    else {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            val style = LineGraphStyle(
+                paddingValues = PaddingValues(5.dp),
+                visibility = LinearGraphVisibility(
+                    isHeaderVisible = true,
+                    isXAxisLabelVisible = false,
+                    isYAxisLabelVisible = true,
+                    isCrossHairVisible = false
+                ),
+                colors = LinearGraphColors(
+                    lineColor = MaterialTheme.colorScheme.primary,
+                    pointColor = MaterialTheme.colorScheme.primary,
+                    clickHighlightColor = MaterialTheme.colorScheme.inversePrimary,
+                    fillGradient = null
+                ),
+                height = 200.dp,
+                yAxisLabelPosition = LabelPosition.LEFT
+            )
+            val clickedValue: MutableState<Pair<Any, Any>?> =
+                remember { mutableStateOf(null) }
+
+            Row(
+                modifier = Modifier
+                    .padding(top = 10.dp)
+                    .height(25.dp)
+            ) {
+                clickedValue.value?.let {
+                    Text(
+                        text = "${it.first}: ${it.second}kg",
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
             }
-        )
+            LineGraph(
+                xAxisData = bodyLog.map {
+                    GraphData.String(it.log)
+                },
+                yAxisData = bodyLog.map {
+                    it.num
+                },
+                style = style,
+                onPointClicked = {
+                    clickedValue.value = it
+                }
+            )
+        }
     }
 }
 
@@ -269,72 +286,110 @@ data class SummaryCard(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ExerciseSummaryCard(
-    mostPerformedExercise: MostPerformedExercise,
-    mostWeightedExercise: MostWeightedExercise,
-    mostSetExercise: MostSetExercise
+    mostPerformedExercise: MostPerformedExercise?,
+    mostWeightedExercise: MostWeightedExercise?,
+    mostSetExercise: MostSetExercise?
 ) {
-    val SummaryCardList = listOf(
-        SummaryCard(mostPerformedExercise.execName, mostPerformedExercise.imagePath, mostPerformedExercise.performed),
-        SummaryCard(mostWeightedExercise.execName, mostWeightedExercise.imagePath, mostWeightedExercise.weight.toInt()),
-        SummaryCard(mostSetExercise.execName, mostSetExercise.imagePath, mostSetExercise.set)
-    )
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.background,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .border(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(
-                vertical = 10.dp,
-                horizontal = 10.dp
+    if (mostPerformedExercise.isNotNull() && mostWeightedExercise.isNotNull() && mostSetExercise.isNotNull()) {
+        val SummaryCardList = listOf(
+            SummaryCard(
+                mostPerformedExercise!!.execName,
+                mostPerformedExercise!!.imagePath,
+                mostPerformedExercise!!.performed
             ),
-        contentAlignment = Alignment.Center
-    ) {
-        val pagerState = rememberPagerState(pageCount = {
-            3
-        })
-        val nameList = listOf("가장 많이 한 운동", "가장 높은 무게를 기록한 운동", "가장 많은 세트를 수행한 운동")
-
-        Column {
-            Row(
-                Modifier
-                    .wrapContentHeight()
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                val coroutineScope = rememberCoroutineScope()
-
-                Text(
-                    text = "<",
-                    modifier = Modifier
-                        .clickable { coroutineScope.launch {
-                            // Call scroll to on pagerState
-                            if (pagerState.currentPage > 0)
-                                pagerState.animateScrollToPage(pagerState.currentPage - 1)
-                        } }
+            SummaryCard(
+                mostWeightedExercise!!.execName,
+                mostWeightedExercise!!.imagePath,
+                mostWeightedExercise!!.weight.toInt()
+            ),
+            SummaryCard(mostSetExercise!!.execName,
+                mostSetExercise.imagePath,
+                mostSetExercise.set)
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = RoundedCornerShape(16.dp)
                 )
-                Text(nameList[pagerState.currentPage])
-                Text(
-                    text = ">",
-                    modifier = Modifier
-                        .clickable { coroutineScope.launch {
-                            // Call scroll to on pagerState
-                            if (pagerState.currentPage < 2)
-                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                        } }
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(16.dp)
                 )
+                .padding(
+                    vertical = 10.dp,
+                    horizontal = 10.dp
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            val pagerState = rememberPagerState(pageCount = {
+                3
+            })
+            val nameList = listOf("가장 많이 한 운동", "가장 높은 무게를 기록한 운동", "가장 많은 세트를 수행한 운동")
+
+            Column {
+                Row(
+                    Modifier
+                        .wrapContentHeight()
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    val coroutineScope = rememberCoroutineScope()
+
+                    Text(
+                        text = "<",
+                        modifier = Modifier
+                            .clickable {
+                                coroutineScope.launch {
+                                    // Call scroll to on pagerState
+                                    if (pagerState.currentPage > 0)
+                                        pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                                }
+                            }
+                    )
+                    Text(nameList[pagerState.currentPage])
+                    Text(
+                        text = ">",
+                        modifier = Modifier
+                            .clickable {
+                                coroutineScope.launch {
+                                    // Call scroll to on pagerState
+                                    if (pagerState.currentPage < 2)
+                                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                }
+                            }
+                    )
+                }
+                HorizontalPager(state = pagerState) { page ->
+                    // Our page content
+                    ExerciseSummary(page, SummaryCardList[page])
+                }
             }
-            HorizontalPager(state = pagerState) { page ->
-                // Our page content
-                ExerciseSummary(page, SummaryCardList[page])
-            }
+        }
+    }
+    else {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .padding(
+                    vertical = 10.dp,
+                    horizontal = 10.dp
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("운동 기록이 없습니다.")
         }
     }
 }
@@ -345,6 +400,8 @@ fun ExerciseSummary(
     summaryCard: SummaryCard
 ) {
     val cardNameList = listOf("수행한 횟수", "최고 기록", "수행한 세트")
+    val unitList = listOf("회", "kg", "회")
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -359,13 +416,13 @@ fun ExerciseSummary(
         )
         Column(modifier = Modifier.padding(start = 10.dp)) {
             Text(text = summaryCard.execName)
-            Text(text = cardNameList[page] + " = " + summaryCard.num.toString())
+            Text(text = cardNameList[page] + " = " + summaryCard.num.toString() + unitList[page])
         }
     }
 }
 
 @Composable
-fun MuscleSummaryCard(muscleInfoList: List<PerformedMuscleInfo>) {
+fun MuscleSummaryCard(muscleInfoList: List<PerformedMuscleInfo>?) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -384,7 +441,10 @@ fun MuscleSummaryCard(muscleInfoList: List<PerformedMuscleInfo>) {
             ),
         contentAlignment = Alignment.Center
     ) {
-        MuscleSummary(muscleInfoList)
+        if (muscleInfoList.isNullOrEmpty())
+            Text("운동 기록이 없습니다.")
+        else
+            MuscleSummary(muscleInfoList!!)
     }
 }
 
@@ -418,8 +478,6 @@ fun MuscleSummary(exercises: List<PerformedMuscleInfo>) {
         barChartdata.add(index, BarData(Point(index.toFloat(), data.value, data.key), MaterialTheme.colorScheme.primary, data.key))
         index++
     }
-
-    Log.d("barChartdata", barChartdata.toString())
 
     val xAxisData = AxisData.Builder()
         .axisStepSize(30.dp)

@@ -178,7 +178,9 @@ fun RoutineScreen(
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             viewModel.tmp?.let {
                 itemsIndexed(it.data) { index, item ->
-                    RoutineList(navController, item, index)
+                    if (item.imagePath.size !== 0){
+                        RoutineList(navController, item, index)
+                    }
                 }
             }
         }
@@ -215,7 +217,6 @@ fun RoutineList(
     routine: GetRoutineListResponseBody,
     index: Int,
     viewModel: RoutineViewModel = viewModel(factory = RoutineViewModel.Factory)
-
 ) {
     val openAlertDialog = remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
@@ -228,134 +229,140 @@ fun RoutineList(
         }
     }
     val beforeScreen = 1
-    Column(modifier = Modifier
-        .background(MaterialTheme.colorScheme.onPrimary)
-        .padding(top = 20.dp)
-    ) {
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 10.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+    Box(modifier = Modifier.padding(vertical = 5.dp)){
+        Column(modifier = Modifier
+            .background(MaterialTheme.colorScheme.onPrimary)
+            .padding(5.dp)
         ) {
-            Text(
-                text = routine.name?: "name",
-                modifier = Modifier.padding(start = 12.dp, top = 12.dp),
-                fontSize = 24.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            val sheetState = rememberModalBottomSheetState()
-            val scope = rememberCoroutineScope()
-            var showBottomSheet by remember { mutableStateOf(false) }
-            Button(
-                onClick = { showBottomSheet = true },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 10.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.symbol_more),
-                    contentDescription = "dotdotdot",
-                    contentScale = ContentScale.Crop,
+                Text(
+                    text = routine.name?: "name",
+                    modifier = Modifier.padding(start = 12.dp, top = 12.dp),
+                    fontSize = 24.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
-                if (showBottomSheet) {
-                    ModalBottomSheet(
-                        onDismissRequest = {
-                            showBottomSheet = false
-                        },
-                        sheetState = sheetState
-                    ) {
-                        Button(
-                            onClick = {
+                val sheetState = rememberModalBottomSheetState()
+                val scope = rememberCoroutineScope()
+                var showBottomSheet by remember { mutableStateOf(false) }
+                Button(
+                    onClick = { showBottomSheet = true },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.symbol_more),
+                        contentDescription = "dotdotdot",
+                        contentScale = ContentScale.Crop,
+                    )
+                    if (showBottomSheet) {
+                        ModalBottomSheet(
+                            onDismissRequest = {
                                 showBottomSheet = false
-                                openAlertDialog.value = true
                             },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp)
+                            sheetState = sheetState
                         ) {
-                            Text(
-                                text = "이름 변경",
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold
-                            )
+                            Button(
+                                onClick = {
+                                    showBottomSheet = false
+                                    openAlertDialog.value = true
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(50.dp),
+                                shape = RoundedCornerShape(10.dp)
+                            ) {
+                                Text(
+                                    text = "이름 변경",
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(5.dp))
+                            Button(
+                                onClick = { navController.navigate("addroutine/${routine.routineKey}") },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(50.dp),
+                                shape = RoundedCornerShape(10.dp)
+                            ) {
+                                Spacer(modifier = Modifier.width(5.dp))
+                                Text(
+                                    text = "루틴 관리",
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(5.dp))
+                            Button(
+                                onClick = {
+                                    showBottomSheet = false
+                                    viewModel.deleteRoutine(index)
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(50.dp),
+                                shape = RoundedCornerShape(10.dp)
+                            ) {
+                                Text(
+                                    text = "루틴 삭제",
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(20.dp))
                         }
-                        Spacer(modifier = Modifier.height(5.dp))
-                        Button(
-                            onClick = { navController.navigate("addroutine/${routine.routineKey}") },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp)
-                        ) {
-                            Spacer(modifier = Modifier.width(5.dp))
-                            Text(
-                                text = "루틴 관리",
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(5.dp))
-                        Button(
-                            onClick = {
-                                scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                    if (!sheetState.isVisible) {
-                                        showBottomSheet = false
-                                    }
-                                }
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp)
-                        ) {
-                            Text(
-                                text = "루틴 삭제",
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(20.dp))
                     }
                 }
             }
-        }
-        when {
-            openAlertDialog.value -> {
-                AlertDialogExample(
-                    onConfirmation = {
-                        Log.d("routineName", "${viewModel.newRoutineName.value}")
-                        viewModel.updateRoutineName(index, viewModel.newRoutineName.value)
-                        openAlertDialog.value = false
-                    },
-                    dialogTitle = "루틴 이름을 설정해 주세요.",
-                    onDismissRequest = {
-                        openAlertDialog.value = false
-                    },
-                    icon = Icons.Default.Info,
-                    index = index,
-                )
-            }
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            Row(modifier = Modifier.width(200.dp)) {
-                LazyRow() {
-                    items(routine.imagePath) { target ->
-                        muscleIcon(target)
-                    }
+            when {
+                openAlertDialog.value -> {
+                    AlertDialogExample(
+                        onConfirmation = {
+                            viewModel.updateRoutineName(index, viewModel.newRoutineName.value)
+                            openAlertDialog.value = false
+                        },
+                        dialogTitle = "루틴 이름을 설정해 주세요.",
+                        onDismissRequest = {
+                            openAlertDialog.value = false
+                        },
+                        icon = Icons.Default.Info,
+                    )
                 }
             }
-            Button(
-                onClick = { navController.navigate("Execution/${routine.routineKey}") },
-                shape = RoundedCornerShape(12.dp),
-                elevation = ButtonDefaults.buttonElevation(
-                    defaultElevation = 10.dp,
-                    pressedElevation = 0.dp,
-                ),
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
             ) {
-                Text(text = "루틴시작")
+                Row(
+                    modifier = Modifier.width(200.dp)
+                ) {
+                    LazyRow() {
+                        items(routine.imagePath) { target ->
+                            muscleIcon(target)
+                        }
+                    }
+                }
+                Button(
+                    onClick = {
+                        navController.navigate("Execution/${routine.routineKey}")
+                    },
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = ButtonDefaults.buttonElevation(
+                        defaultElevation = 10.dp,
+                        pressedElevation = 0.dp,
+                    ),
+                ) {
+                    Text(text = "루틴시작")
+                }
             }
+            Spacer(
+                modifier = Modifier.height(10.dp)
+            )
         }
-        Spacer(modifier = Modifier.height(10.dp))
     }
 }
 @Composable
@@ -380,7 +387,9 @@ fun muscleIcon(imagePath: String) {
                 .width(32.dp)
         )
     }
-    Spacer(modifier = Modifier.width(10.dp))
+    Spacer(
+        modifier = Modifier.width(10.dp)
+    )
 }
 @Composable
 fun AlertDialogExample(
@@ -388,7 +397,6 @@ fun AlertDialogExample(
     onConfirmation: () -> Unit,
     dialogTitle: String,
     icon: ImageVector,
-    index : Int,
 ) {
     val viewModel: RoutineViewModel = viewModel(factory = RoutineViewModel.Factory)
     AlertDialog(
@@ -413,7 +421,6 @@ fun AlertDialogExample(
             TextButton(
                 onClick = {
                     onConfirmation()
-
                 }
             ) {
                 Text("Confirm")

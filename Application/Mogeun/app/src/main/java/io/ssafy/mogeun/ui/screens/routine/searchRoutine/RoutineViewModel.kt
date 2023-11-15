@@ -15,6 +15,7 @@ import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.data.KeyRepository
 import io.ssafy.mogeun.data.RoutineRepository
 import io.ssafy.mogeun.data.UserRepository
+import io.ssafy.mogeun.model.DeleteRoutineResponse
 import io.ssafy.mogeun.model.DupEmailResponse
 import io.ssafy.mogeun.model.GetInbodyResponse
 import io.ssafy.mogeun.model.GetRoutineListResponse
@@ -89,6 +90,19 @@ class RoutineViewModel(
                 if (routineKey != null) {
                     ret = RoutineRepository.updateRoutineName(routineKey, newName)
                     Log.d("updateRoutineName", "$ret")
+                    getRoutineList()
+                }
+            }
+        }
+    }
+    fun deleteRoutine(index: Int) {
+        lateinit var ret: DeleteRoutineResponse
+        viewModelScope.launch {
+            tmp?.let { response ->
+                val routineKey = response.data.getOrNull(index)?.routineKey
+                if (routineKey != null) {
+                    ret = RoutineRepository.deleteRoutine(routineKey)
+                    Log.d("deleteRoutine", "$ret")
                     getRoutineList()
                 }
             }

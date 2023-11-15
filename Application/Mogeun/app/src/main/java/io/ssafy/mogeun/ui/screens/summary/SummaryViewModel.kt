@@ -5,7 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -39,19 +38,19 @@ class SummaryViewModel(
 
     private val _summaryPerformedMuscleSuccess = MutableStateFlow(false)
     val summaryPerformedMuscleSuccess: StateFlow<Boolean> = _summaryPerformedMuscleSuccess.asStateFlow()
-    var summaryPerformedMuscle = mutableStateListOf<List<PerformedMuscleInfo>>()
+    var summaryPerformedMuscle = mutableStateListOf<List<PerformedMuscleInfo>?>()
 
     private val _summaryExerciseMostSuccess = MutableStateFlow(false)
     val summaryExerciseMostSuccess: StateFlow<Boolean> = _summaryExerciseMostSuccess.asStateFlow()
-    var summaryExerciseMost = mutableStateListOf<MostPerformedExercise>()
+    var summaryExerciseMost = mutableStateListOf<MostPerformedExercise?>()
 
     private val _summaryExerciseWeightSuccess = MutableStateFlow(false)
     val summaryExerciseWeightSuccess: StateFlow<Boolean> = _summaryExerciseWeightSuccess.asStateFlow()
-    var summaryExerciseWeight = mutableStateListOf<MostWeightedExercise>()
+    var summaryExerciseWeight = mutableStateListOf<MostWeightedExercise?>()
 
     private val _summaryExerciseSetSuccess = MutableStateFlow(false)
     val summaryExerciseSetSuccess: StateFlow<Boolean> = _summaryExerciseSetSuccess.asStateFlow()
-    var summaryExerciseSet = mutableStateListOf<MostSetExercise>()
+    var summaryExerciseSet = mutableStateListOf<MostSetExercise?>()
 
     var itemIndex = mutableIntStateOf(0)
 
@@ -77,7 +76,7 @@ class SummaryViewModel(
                 ret = summaryRepository.summaryBodyInfo(userKey.toString())
                 Log.d("summaryBodyInfo", "$ret")
 
-                if (ret.message == "SUCCESS") {
+                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
                     _summaryBodyInfoSuccess.value = true
                     summaryBodyInfo = ret.data
                 }
@@ -92,21 +91,21 @@ class SummaryViewModel(
                 ret = summaryRepository.summaryPerformedMuscle(userKey.toString(), "1")
                 Log.d("summaryPerformedMuscleAll", "$ret")
 
-                if (ret.message == "SUCCESS") {
+                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
                     summaryPerformedMuscle.add(ret.data)
                 }
 
                 ret = summaryRepository.summaryPerformedMuscle(userKey.toString(), "2")
                 Log.d("summaryPerformedMuscleYear", "$ret")
 
-                if (ret.message == "SUCCESS") {
+                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
                     summaryPerformedMuscle.add(ret.data)
                 }
 
                 ret = summaryRepository.summaryPerformedMuscle(userKey.toString(), "3")
                 Log.d("summaryPerformedMuscleMonth", "$ret")
 
-                if (ret.message == "SUCCESS") {
+                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
                     _summaryPerformedMuscleSuccess.value = true
                     summaryPerformedMuscle.add(ret.data)
                 }
@@ -121,21 +120,21 @@ class SummaryViewModel(
                 ret = summaryRepository.summaryExerciseMost(userKey.toString(), "1")
                 Log.d("summaryPerformedMuscleAll", "$ret")
 
-                if (ret.message == "SUCCESS") {
+                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
                     summaryExerciseMost.add(ret.data)
                 }
 
                 ret = summaryRepository.summaryExerciseMost(userKey.toString(), "2")
                 Log.d("summaryPerformedMuscleYear", "$ret")
 
-                if (ret.message == "SUCCESS") {
+                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
                     summaryExerciseMost.add(ret.data)
                 }
 
                 ret = summaryRepository.summaryExerciseMost(userKey.toString(), "3")
                 Log.d("summaryPerformedMuscleMonth", "$ret")
 
-                if (ret.message == "SUCCESS") {
+                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
                     _summaryExerciseMostSuccess.value = true
                     summaryExerciseMost.add(ret.data)
                 }
@@ -150,21 +149,21 @@ class SummaryViewModel(
                 ret = summaryRepository.summaryExerciseWeight(userKey.toString(), "1")
                 Log.d("summaryPerformedMuscleAll", "$ret")
 
-                if (ret.message == "SUCCESS") {
+                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
                     summaryExerciseWeight.add(ret.data)
                 }
 
                 ret = summaryRepository.summaryExerciseWeight(userKey.toString(), "2")
                 Log.d("summaryPerformedMuscleYear", "$ret")
 
-                if (ret.message == "SUCCESS") {
+                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
                     summaryExerciseWeight.add(ret.data)
                 }
 
                 ret = summaryRepository.summaryExerciseWeight(userKey.toString(), "3")
                 Log.d("summaryPerformedMuscleMonth", "$ret")
 
-                if (ret.message == "SUCCESS") {
+                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
                     _summaryBodyInfoSuccess.value = true
                     summaryExerciseWeight.add(ret.data)
                 }
@@ -179,21 +178,21 @@ class SummaryViewModel(
                 ret = summaryRepository.summaryExerciseSet(userKey.toString(), "1")
                 Log.d("summaryPerformedMuscleAll", "$ret")
 
-                if (ret.message == "SUCCESS") {
+                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
                     summaryExerciseSet.add(ret.data)
                 }
 
                 ret = summaryRepository.summaryExerciseSet(userKey.toString(), "2")
                 Log.d("summaryPerformedMuscleYear", "$ret")
 
-                if (ret.message == "SUCCESS") {
+                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
                     summaryExerciseSet.add(ret.data)
                 }
 
                 ret = summaryRepository.summaryExerciseSet(userKey.toString(), "3")
                 Log.d("summaryPerformedMuscleMonth", "$ret")
 
-                if (ret.message == "SUCCESS") {
+                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
                     _summaryExerciseSetSuccess.value = true
                     summaryExerciseSet.add(ret.data)
                 }

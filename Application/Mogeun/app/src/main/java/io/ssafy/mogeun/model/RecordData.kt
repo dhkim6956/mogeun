@@ -45,7 +45,9 @@ data class SetResult(
     @SerialName(value = "success_rep")
     val successRep: Int,
     @SerialName(value = "muscle_activity")
-    val muscleActivity: List<Int>?
+    val muscleActivity: List<Float>?,
+    @SerialName(value = "muscle_fatigue")
+    val muscleFatigue: List<Float>?
 ) : Parcelable
 
 @Parcelize
