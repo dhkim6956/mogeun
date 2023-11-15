@@ -30,7 +30,7 @@ class RecordViewModel(
 
     private val _recordRoutineSuccess = MutableStateFlow(false)
     val recordRoutineSuccess: StateFlow<Boolean> = _recordRoutineSuccess.asStateFlow()
-    var routineInfo by mutableStateOf<RoutineInfoData?>(null)
+    var routineInfoList = mutableStateListOf<RoutineInfoData>()
 
     var userKey by mutableStateOf<Int?>(null)
 
@@ -70,19 +70,21 @@ class RecordViewModel(
         }
     }
 
-    fun recordRoutine(reportKey: String) {
+    fun recordRoutine(reportKeyList: List<Int>) {
         getUserKey()
 
         if (userKey !== null) {
             lateinit var ret: RoutineResponse
             viewModelScope.launch {
-                ret = recordRepository.recordRoutine(userKey.toString(), reportKey)
-                Log.d("recordRoutine", "$ret")
+                for (reportKey in reportKeyList) {
+                    ret = recordRepository.recordRoutine(userKey.toString(), reportKey.toString())
+                    Log.d("recordRoutine", "$ret")
 
-                if (ret.status == "OK") {
-                    _recordRoutineSuccess.value = true
-                    routineInfo = ret.data
+                    if (ret.status == "OK") {
+                        routineInfoList.add(ret.data)
+                    }
                 }
+                _recordRoutineSuccess.value = true
             }
         }
     }

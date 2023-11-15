@@ -67,7 +67,7 @@ interface MogeunApiService {
     suspend fun recordMonthly(@Query("user_key") userKey: String, @Query("date") date: String): MonthlyResponse
 
     @GET("Result/Routine")
-    suspend fun recordRoutine(@Query("user_key") userKey:String, @Query("routine_result_key") reportKey: String): RoutineResponse
+    suspend fun recordRoutine(@Query("user_key") userKey:String, @Query("routine_report_key") reportKey: String): RoutineResponse
 
     @GET("Exercise/ListAll")
     suspend fun listAllExercise(): ListAllExerciseResponse

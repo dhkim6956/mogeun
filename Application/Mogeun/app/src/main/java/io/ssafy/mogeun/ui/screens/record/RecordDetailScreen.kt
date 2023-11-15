@@ -45,6 +45,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -96,9 +99,22 @@ fun RecordDetailScreen(
     } catch (e: NullPointerException) {
         reportKeyList = emptyList()
     }
-    Log.d("reportKeyList", reportKeyList.toString())
 
-    if (reportKeyList.isNotNull()) {
+    var routineTimeList: List<String>
+    try {
+        routineTimeList = navController.previousBackStackEntry
+            ?.savedStateHandle?.get<List<String>>("routineTimeList")!!
+    } catch (e: NullPointerException) {
+        routineTimeList = emptyList()
+    }
+    Log.d("routineTimeList", routineTimeList.toString())
+
+    if (reportKeyList.isNotNull() || routineTimeList.isNotEmpty()) {
+        val recordRoutineSuccess by viewModel.recordRoutineSuccess.collectAsState()
+        if (!recordRoutineSuccess) {
+            viewModel.recordRoutine(reportKeyList)
+        }
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -114,11 +130,11 @@ fun RecordDetailScreen(
                 Row(
                     Modifier
                         .wrapContentHeight()
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(bottom = 5.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     val coroutineScope = rememberCoroutineScope()
-                    val nameList = listOf("test1", " test2")
 
                     Text(
                         text = "<",
@@ -129,9 +145,21 @@ fun RecordDetailScreen(
                                     if (pagerState.currentPage > 0)
                                         pagerState.animateScrollToPage(pagerState.currentPage - 1)
                                 }
-                            }
+                            },
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
                     )
-                    Text(nameList[pagerState.currentPage])
+                    if (recordRoutineSuccess) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = viewModel.routineInfoList[pagerState.currentPage].date,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            if (routineTimeList.isNotEmpty())
+                                Text(routineTimeList[pagerState.currentPage])
+                        }
+                    }
                     Text(
                         text = ">",
                         modifier = Modifier
@@ -141,12 +169,15 @@ fun RecordDetailScreen(
                                     if (pagerState.currentPage < reportKeyList.size)
                                         pagerState.animateScrollToPage(pagerState.currentPage + 1)
                                 }
-                            }
+                            },
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
                     )
                 }
                 HorizontalPager(state = pagerState) { page ->
                     // Our page content
-                    RecordDetail(navController, viewModel, reportKeyList[page].toString())
+                    if (recordRoutineSuccess)
+                        RecordDetail(navController, viewModel.routineInfoList[page])
                 }
             }
         }
@@ -156,13 +187,8 @@ fun RecordDetailScreen(
 @Composable
 fun RecordDetail(
     navController: NavHostController,
-    viewModel: RecordViewModel,
-    reportKey: String?
+    routineInfo: RoutineInfoData
 ) {
-    viewModel.recordRoutine(reportKey!!)
-
-    val routineInfo = viewModel.routineInfo
-
     Column (horizontalAlignment = Alignment.CenterHorizontally) {
         if (routineInfo != null) {
             RoutineInfoCard(routineInfo.name, routineInfo.calorie, routineInfo.totalSets, routineInfo.performTime)
@@ -171,7 +197,7 @@ fun RecordDetail(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            item { viewModel.routineInfo?.let { RoutineGraphIconCard(it.exercises) } }
+            item { routineInfo?.let { RoutineGraphIconCard(it.exercises) } }
             if (routineInfo != null) {
                 itemsIndexed(routineInfo.exercises) {index, item ->
                     if (item.sets > 0)

@@ -172,14 +172,18 @@ fun CalenderUI(
         val date = selection?.date
         val routineLists = routines[date.toString()].orEmpty()
         var reportKeyList: MutableList<Int> = mutableListOf()
+        var routineTimeList: MutableList<String> = mutableListOf()
+
         for (record in viewModel.recordList) {
             for (routine in record.routineReports) {
                 reportKeyList.add(routine.key)
+                routineTimeList.add(routine.startTime.split("T")[1].split(".")[0] + " ~ " + routine.endTime.split("T")[1].split(".")[0])
             }
         }
+
         if (!routineLists.isEmpty()) {
             items(items = routineLists[0].routineReports) { routineReport ->
-                RoutineRecord(navController, routineReport.startTime, routineReport.endTime, routineReport.routineName, routineReport.key, reportKeyList)
+                RoutineRecord(navController, routineReport.key, routineReport.startTime.split("T")[1].split(".")[0] + " ~ " + routineReport.endTime.split("T")[1].split(".")[0], routineReport.routineName, reportKeyList, routineTimeList)
             }
         }
     }
@@ -323,11 +327,11 @@ private fun CalendarLayoutInfo.firstMostVisibleMonth(viewportPercent: Float = 50
 @Composable
 fun RoutineRecord(
     navController: NavHostController,
-    routineStartTime: String,
-    routineEndTime: String,
+    routineKey: Int,
+    routineTime: String,
     routineName: String,
-    reportKey: Int,
-    reportKeyList: List<Int>
+    reportKeyList: List<Int>,
+    routineTimeList: List<String>
 ) {
     Box (
         modifier = Modifier
@@ -347,9 +351,6 @@ fun RoutineRecord(
             ),
         contentAlignment = Alignment.Center
     ) {
-        val startTime = routineStartTime.split("T")[1].split(".")
-        val endTime = routineEndTime.split("T")[1].split(".")
-        val routineTime = startTime[0] + " ~ " + endTime[0]
         Row (
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -363,7 +364,8 @@ fun RoutineRecord(
                 text = AnnotatedString("자세히 보기") ,
                 onClick = {
                     navController.currentBackStackEntry?.savedStateHandle?.set("reportKeyList", reportKeyList)
-                    navController.navigate("RecordDetail/${reportKey}")
+                    navController.currentBackStackEntry?.savedStateHandle?.set("routineTimeList", routineTimeList)
+                    navController.navigate("RecordDetail/${routineKey}")
                 },
                 style = TextStyle(color = MaterialTheme.colorScheme.secondary)
             )
