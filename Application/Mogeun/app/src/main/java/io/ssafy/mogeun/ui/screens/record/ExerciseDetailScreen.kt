@@ -1,9 +1,11 @@
 package io.ssafy.mogeun.ui.screens.record
 
 import android.os.Build.VERSION.SDK_INT
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,25 +13,36 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.ImageLoader
@@ -38,9 +51,22 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
 import coil.size.Size
+import com.jaikeerthick.composable_graphs.color.LinearGraphColors
+import com.jaikeerthick.composable_graphs.composables.LineGraph
+import com.jaikeerthick.composable_graphs.data.GraphData
+import com.jaikeerthick.composable_graphs.style.LabelPosition
+import com.jaikeerthick.composable_graphs.style.LineGraphStyle
+import com.jaikeerthick.composable_graphs.style.LinearGraphVisibility
 import io.ssafy.mogeun.model.Exercise
 import io.ssafy.mogeun.model.SetResult
+import io.ssafy.mogeun.ui.screens.summary.BodyInfoSummary
+import io.ssafy.mogeun.ui.screens.summary.BodyLog
+import kotlinx.coroutines.launch
 
+data class MuscleFatigue(
+    val set: String,
+    val num: Float
+)
 
 @Composable
 fun ExerciseDetailScreen(navController: NavHostController) {
@@ -60,10 +86,37 @@ fun ExerciseDetailScreen(navController: NavHostController) {
                 vertical = 10.dp
             )
             .background(color = MaterialTheme.colorScheme.background),
-        horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         val exerciseImage = LocalContext.current.resources.getIdentifier("z_" + exercise.imagePath, "drawable", LocalContext.current.packageName)
+        var leftMuscleFatigueList: MutableList<MuscleFatigue> = mutableListOf()
+        var rightMuscleFatigueList: MutableList<MuscleFatigue> = mutableListOf()
+        var muscleFatigueList: List<MutableList<MuscleFatigue>> = mutableListOf()
+
+        var set = 1
+        for (setResult in exercise.setResults) {
+            if (setResult.muscleFatigue!!.size > 1) {
+                Log.d("setResult.muscleFatigue", setResult.muscleFatigue.toString())
+                leftMuscleFatigueList.add(
+                    MuscleFatigue(
+                        set.toString() + "set",
+                        setResult.muscleFatigue[0]
+                    )
+                )
+                rightMuscleFatigueList.add(
+                    MuscleFatigue(
+                        set.toString() + "set",
+                        setResult.muscleFatigue[1]
+                    )
+                )
+            }
+        }
+        if (!leftMuscleFatigueList.isNullOrEmpty() || !rightMuscleFatigueList.isNullOrEmpty())
+            muscleFatigueList = listOf(leftMuscleFatigueList, rightMuscleFatigueList)
+        Log.d("muscleFatigueList", muscleFatigueList.toString())
+
+        var expanded by remember { mutableStateOf(false) }
+
         Box (modifier = Modifier
             .fillMaxWidth()
             .background(color = MaterialTheme.colorScheme.primaryContainer)
@@ -75,7 +128,25 @@ fun ExerciseDetailScreen(navController: NavHostController) {
             Text(exercise.execName, fontWeight = FontWeight.Bold)
         }
         GifImage(modifier = Modifier.fillMaxWidth(), imageId = exerciseImage)
-//        Text("test")
+        if (!expanded) {
+            ClickableText(
+                text = AnnotatedString("피로도 그래프 보기"),
+                onClick = {
+                    expanded = !expanded
+                },
+                style = TextStyle(fontWeight = FontWeight.Bold)
+            )
+        }
+        if (!muscleFatigueList.isNullOrEmpty() && expanded) {
+            ClickableText(
+                text = AnnotatedString("피로도 그래프 닫기"),
+                onClick = {
+                    expanded = !expanded
+                },
+                style = TextStyle(fontWeight = FontWeight.Bold)
+            )
+            MuscleFatigueCard(muscleFatigueList, exercise.parts)
+        }
         Column (
             modifier = Modifier
                 .fillMaxWidth()
@@ -84,6 +155,104 @@ fun ExerciseDetailScreen(navController: NavHostController) {
         ) {
             repeat(exercise.sets) {
                 SetDetail(it + 1, exercise.setResults[it], exercise.parts)
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun MuscleFatigueCard(
+    muscleFatigueList: List<MutableList<MuscleFatigue>>,
+    parts: List<String>
+) {
+    val pagerState = rememberPagerState(pageCount = {
+        2
+    })
+    val nameList = listOf("왼쪽 " + parts[0].split(" ")[1], "오른쪽 " + parts[0].split(" ")[1])
+
+    Column {
+        Row(
+            Modifier
+                .wrapContentHeight()
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            val coroutineScope = rememberCoroutineScope()
+
+            Text(
+                text = "<",
+                modifier = Modifier
+                    .clickable { coroutineScope.launch {
+                        // Call scroll to on pagerState
+                        pagerState.animateScrollToPage(0)
+                    } }
+            )
+            Text(nameList[pagerState.currentPage])
+            Text(
+                text = ">",
+                modifier = Modifier
+                    .clickable { coroutineScope.launch {
+                        // Call scroll to on pagerState
+                        pagerState.animateScrollToPage(1)
+                    } }
+            )
+        }
+        HorizontalPager(state = pagerState) { page ->
+            // Our page content
+            MuscleFatigueChart(muscleFatigueList[page])
+        }
+    }
+}
+
+@Composable
+fun MuscleFatigueChart(
+    muscleFatigueList: MutableList<MuscleFatigue>
+) {
+    if (muscleFatigueList.isNullOrEmpty()) {
+        Column(Modifier.fillMaxWidth()){
+            Text("운동 기록이 없습니다.", modifier = Modifier.align(Alignment.CenterHorizontally))
+        }
+    }
+    else {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            val style = LineGraphStyle(
+                paddingValues = PaddingValues(5.dp),
+                visibility = LinearGraphVisibility(
+                    isHeaderVisible = true,
+                    isXAxisLabelVisible = true,
+                    isYAxisLabelVisible = true,
+                    isCrossHairVisible = false
+                ),
+                colors = LinearGraphColors(
+                    lineColor = MaterialTheme.colorScheme.primary,
+                    pointColor = MaterialTheme.colorScheme.primary,
+                    clickHighlightColor = MaterialTheme.colorScheme.inversePrimary,
+                    fillGradient = null
+                ),
+                height = 200.dp,
+                yAxisLabelPosition = LabelPosition.LEFT
+            )
+
+            if (muscleFatigueList.size == 1) {
+                val xAxisDataList = listOf(GraphData.String(""), GraphData.String("1세트"))
+                val yAxisDataList = listOf(0f, muscleFatigueList[0].num)
+                LineGraph(
+                    xAxisData = xAxisDataList,
+                    yAxisData = yAxisDataList,
+                    style = style
+                )
+            }
+            else {
+                LineGraph(
+                    xAxisData = muscleFatigueList.map {
+                        GraphData.String(it.set)
+                    },
+                    yAxisData = muscleFatigueList.map {
+                        it.num
+                    },
+                    style = style
+                )
             }
         }
     }
@@ -187,18 +356,21 @@ fun SetDetail(
                 Text(setDetail.successRep.toString() + '/' + setDetail.targetRep.toString() + "rep")
             }
         }
-        if (expanded)
-            MuscleInfo(setDetail.muscleActivity, setDetail.muscleFatigue, part)
+        if (expanded && !setDetail.muscleActivity.isNullOrEmpty())
+            MuscleActivity(setDetail.muscleActivity, part)
     }
 }
 
 @Composable
-fun MuscleInfo(
-    muscleActivityList: List<Float>?,
-    muscleFatigueList: List<Float>?,
+fun MuscleActivity(
+    muscleActivityList: List<Float>,
     part: String
 ) {
-    Box (
+    val left = muscleActivityList[0]
+    val right = muscleActivityList[1]
+    val balanceValue = left / (left + right)
+
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
@@ -208,20 +380,22 @@ fun MuscleInfo(
             .background(color = MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            repeat(2) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Log.d("balanceValue", balanceValue.toString())
+            BalanceBar(balanceValue)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 Column {
-                    if (it == 0)
-                        Text("왼쪽 $part")
-                    else
-                        Text("오른쪽 $part")
+                    Text("왼쪽 $part")
                     if (muscleActivityList?.size!! > 0)
-                        Text("근활성도: " + muscleActivityList?.get(it).toString() ?: "")
-                    if (muscleFatigueList?.size!! > 0)
-                        Text("근피로도: " + muscleFatigueList?.get(it).toString() ?: "")
+                        Text("근활성도: " + muscleActivityList[0].toString())
+                }
+                Column {
+                    Text("오른쪽 $part")
+                    if (muscleActivityList?.size!! > 0)
+                        Text("근활성도: " + muscleActivityList[1].toString())
                 }
             }
         }
@@ -229,52 +403,37 @@ fun MuscleInfo(
 }
 
 @Composable
-fun MuscleActivity(
-    muscleActivityList: List<Float>?
-) {
-    Box (
+fun BalanceBar(balanceValue: Float) {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                horizontal = 30.dp,
-                vertical = 10.dp
-            )
-            .background(color = MaterialTheme.colorScheme.background)
+            .padding(horizontal = 50.dp)
     ) {
-
-    }
-}
-
-@Composable
-fun MuscleActivityGrid(
-    columns: Int,
-    itemCount: Int,
-    modifier: Modifier = Modifier,
-    content: @Composable() (Int) -> Unit
-) {
-    Column(modifier = modifier) {
-        var rows = (itemCount / columns)
-        if (itemCount.mod(columns) > 0) {
-            rows += 1
-        }
-
-        for (rowId in 0 until rows) {
-            val firstIndex = rowId * columns
-
-            Row {
-                for (columnId in 0 until columns) {
-                    val index = firstIndex + columnId
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    ) {
-                        if (index < itemCount) {
-                            content(index)
-                        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(balanceValue)
+                .background(
+                    color = when (balanceValue) {
+                        in 0.45f..0.55f -> MaterialTheme.colorScheme.tertiary
+                        in 0.3f..0.7f -> MaterialTheme.colorScheme.primary
+                        else -> MaterialTheme.colorScheme.error
                     }
-                }
-            }
+                )
+        ) {
+            Text("")
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = when (balanceValue) {
+                        in 0.45f..0.55f -> MaterialTheme.colorScheme.tertiaryContainer
+                        in 0.3f..0.7f -> MaterialTheme.colorScheme.primaryContainer
+                        else -> MaterialTheme.colorScheme.errorContainer
+                    }
+                )
+        ) {
+            Text("")
         }
     }
 }
