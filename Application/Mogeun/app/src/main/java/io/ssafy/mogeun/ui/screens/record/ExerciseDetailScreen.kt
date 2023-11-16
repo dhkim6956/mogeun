@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -28,10 +27,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PlainTooltipBox
-import androidx.compose.material3.PlainTooltipState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -47,7 +43,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -64,6 +59,7 @@ import io.ssafy.mogeun.model.Exercise
 import io.ssafy.mogeun.model.SetResult
 import io.ssafy.mogeun.ui.AppViewModelProvider
 import io.ssafy.mogeun.ui.components.ElevatedGif
+import io.ssafy.mogeun.ui.components.MuscleTooltipIcon
 import kotlinx.coroutines.launch
 
 data class MuscleFatigue(
@@ -438,43 +434,11 @@ fun MuscleActivity(
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Box(
-                    modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp)
-                        .background(
-                            color = MaterialTheme.colorScheme.surface,
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                ) {
-                    Image(
-                        modifier = Modifier
-                            .width(50.dp)
-                            .height(50.dp),
-                        painter = painterResource(leftMuscleImage),
-                        contentDescription = muscleImagePath
-                    )
-                }
+                MuscleTooltipIcon(muscleImagePath, 50.dp, 40.dp, 2)
                 Text("L", fontWeight = FontWeight.Bold)
                 BalanceBar(balanceValue)
                 Text("R", fontWeight = FontWeight.Bold)
-                Box(
-                    modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp)
-                        .background(
-                            color = MaterialTheme.colorScheme.surface,
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                ) {
-                    Image(
-                        modifier = Modifier
-                            .width(50.dp)
-                            .height(50.dp),
-                        painter = painterResource(rightMuscleImage),
-                        contentDescription = muscleImagePath
-                    )
-                }
+                MuscleTooltipIcon(muscleImagePath, 50.dp, 40.dp, 3)
             }
         }
     }
@@ -681,7 +645,7 @@ fun Dialog1(onDismissRequest: () -> Unit) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(horizontalAlignment = Alignment.Start) {
-                            Text("오른쪽으로")
+                            Text("왼쪽으로")
                             Text("살짝 치우침")
                         }
                         BalanceBar(balanceValue = 0.66f)
@@ -692,7 +656,7 @@ fun Dialog1(onDismissRequest: () -> Unit) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(horizontalAlignment = Alignment.Start) {
-                            Text("왼쪽으로")
+                            Text("오른쪽으로")
                             Text("많이 치우침")
                         }
                         BalanceBar(balanceValue = 0.3f)

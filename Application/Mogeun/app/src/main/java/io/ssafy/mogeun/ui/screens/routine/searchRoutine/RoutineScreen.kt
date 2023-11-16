@@ -59,6 +59,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.model.GetRoutineListResponseBody
+import io.ssafy.mogeun.ui.components.MuscleTooltipIcon
 
 @Composable
 fun RoutineScreen(
@@ -322,7 +323,7 @@ fun RoutineList(
                 ) {
                     LazyRow() {
                         items(routine.imagePath) { target ->
-                            muscleIcon(target)
+                            MuscleTooltipIcon(target, 48.dp, 32.dp, 1)
                         }
                     }
                 }
@@ -345,32 +346,7 @@ fun RoutineList(
         }
     }
 }
-@Composable
-fun muscleIcon(imagePath: String) {
-    Box(
-        modifier = Modifier
-            .background(
-                color = MaterialTheme.colorScheme.surface,
-                RoundedCornerShape(15.dp)
-            )
-            .width(48.dp)
-            .height(48.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        val image = LocalContext.current.resources.getIdentifier(imagePath, "drawable", LocalContext.current.packageName)
-        Image(
-            painter = painterResource(id = image),
-            contentDescription = imagePath,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .height(32.dp)
-                .width(32.dp)
-        )
-    }
-    Spacer(
-        modifier = Modifier.width(10.dp)
-    )
-}
+
 @Composable
 fun AlertDialogExample(
     onDismissRequest: () -> Unit,

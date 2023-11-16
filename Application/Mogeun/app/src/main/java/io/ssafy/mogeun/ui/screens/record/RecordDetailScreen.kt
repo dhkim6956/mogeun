@@ -1,6 +1,5 @@
 package io.ssafy.mogeun.ui.screens.record
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -55,12 +54,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import co.yml.charts.common.extensions.isNotNull
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.model.Exercise
 import io.ssafy.mogeun.model.RoutineInfoData
 import io.ssafy.mogeun.ui.AppViewModelProvider
-import io.ssafy.mogeun.ui.screens.routine.searchRoutine.muscleIcon
+import io.ssafy.mogeun.ui.components.MuscleTooltipIcon
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -313,9 +311,7 @@ fun IconCard(
             )
     ) {
         var imagePaths: List<String> = emptyList()
-        var parts: List<String> = emptyList()
         for (exercise in exercises) {
-            parts = parts.union(exercise.parts).toList()
             imagePaths = imagePaths.union(exercise.muscleImagePaths).toList()
         }
 
@@ -327,56 +323,10 @@ fun IconCard(
                 modifier = Modifier
                     .padding(start = 7.5.dp, end = 7.5.dp)
             ) {
-                muscleTooltipIcon(imagePaths[it], parts[it])
+                MuscleTooltipIcon(imagePaths[it], 48.dp, 32.dp, 1)
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun muscleTooltipIcon(imagePath: String, part: String) {
-    val scope = rememberCoroutineScope()
-    val plainTooltipState = remember { PlainTooltipState() }
-
-    Box (contentAlignment = Alignment.Center) {
-        PlainTooltipBox(
-            tooltip = { Text(text = part.split(" ")[1]) },
-            tooltipState = plainTooltipState,
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = Color.Black
-        ) { // content for TooltipBoxScope
-            Text("")
-        }
-        muscleIcon(modifier = Modifier.clickable { scope.launch { plainTooltipState.show() } }, imagePath)
-    }
-}
-
-@Composable
-fun muscleIcon(modifier: Modifier, imagePath: String) {
-    Box(
-        modifier = modifier
-            .background(
-                color = MaterialTheme.colorScheme.surface,
-                RoundedCornerShape(15.dp)
-            )
-            .width(48.dp)
-            .height(48.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        val image = LocalContext.current.resources.getIdentifier(imagePath, "drawable", LocalContext.current.packageName)
-        Image(
-            painter = painterResource(id = image),
-            contentDescription = imagePath,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .height(32.dp)
-                .width(32.dp)
-        )
-    }
-    Spacer(
-        modifier = Modifier.width(10.dp)
-    )
 }
 
 @Composable

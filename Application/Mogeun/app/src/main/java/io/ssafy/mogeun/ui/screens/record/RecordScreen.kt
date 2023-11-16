@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -39,8 +38,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -171,14 +168,16 @@ fun CalenderUI(
         var routineTimeList: MutableList<String> = mutableListOf()
 
         for (record in viewModel.recordList) {
-            for (routine in record.routineReports) {
+            val routineReports = record.routineReports.sortedBy { it.startTime }
+            for (routine in routineReports) {
                 reportKeyList.add(routine.key)
                 routineTimeList.add(routine.startTime.split("T")[1].split(".")[0] + " ~ " + routine.endTime.split("T")[1].split(".")[0])
             }
         }
 
         if (!routineLists.isEmpty()) {
-            items(items = routineLists[0].routineReports) { routineReport ->
+            val routineReports = routineLists[0].routineReports.sortedBy { it.startTime }
+            items(items = routineReports) { routineReport ->
                 RoutineRecord(navController, routineReport.key, routineReport.startTime.split("T")[1].split(".")[0] + " ~ " + routineReport.endTime.split("T")[1].split(".")[0], routineReport.routineName, reportKeyList, routineTimeList)
             }
         }

@@ -241,7 +241,7 @@ fun BodyInfoSummaryCard(bodyInfo: BodyInfo?) {
 fun BodyInfoSummary(bodyLog: MutableList<BodyLog>) {
     if (bodyLog.isNullOrEmpty()) {
         Column(Modifier.fillMaxWidth()){
-            Text("운동 기록이 없습니다.", modifier = Modifier.align(Alignment.CenterHorizontally))
+            Text("기록이 없습니다.", modifier = Modifier.align(Alignment.CenterHorizontally))
         }
     }
     else {
