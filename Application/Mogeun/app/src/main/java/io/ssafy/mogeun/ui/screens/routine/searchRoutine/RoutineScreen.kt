@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.More
 import androidx.compose.material3.AlertDialog
@@ -106,7 +107,7 @@ fun RoutineScreen(
                     fontSize = 16.sp
                 )
                 IconButton(onClick = { navController.navigate("User") }) {
-                    Icon(painter = painterResource(id = R.drawable.edit), contentDescription = null)
+                    Icon(imageVector = Icons.Default.DriveFileRenameOutline, "edit user info")
                 }
             }
             Column(
