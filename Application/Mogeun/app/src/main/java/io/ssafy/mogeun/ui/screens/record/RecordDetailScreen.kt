@@ -26,10 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PlainTooltipBox
-import androidx.compose.material3.PlainTooltipState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -42,7 +39,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
@@ -58,6 +54,7 @@ import io.ssafy.mogeun.R
 import io.ssafy.mogeun.model.Exercise
 import io.ssafy.mogeun.model.RoutineInfoData
 import io.ssafy.mogeun.ui.AppViewModelProvider
+import io.ssafy.mogeun.ui.components.HorizontalPagerArrow
 import io.ssafy.mogeun.ui.components.MuscleTooltipIcon
 import kotlinx.coroutines.launch
 
@@ -115,13 +112,13 @@ fun RecordDetailScreen(
                     .wrapContentHeight()
                     .fillMaxWidth()
                     .padding(bottom = 5.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 val coroutineScope = rememberCoroutineScope()
 
                 if (recordAllRoutineSuccess && reportKeyList.size > 1) {
-                    Text(
-                        text = "<",
+                    HorizontalPagerArrow(
                         modifier = Modifier
                             .clickable {
                                 coroutineScope.launch {
@@ -129,8 +126,9 @@ fun RecordDetailScreen(
                                     if (pagerState.currentPage > 0)
                                         pagerState.animateScrollToPage(pagerState.currentPage - 1)
                                 } },
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
+                        size = 50.dp,
+                        visible = pagerState.currentPage > 0,
+                        direction = true
                     )
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
@@ -141,8 +139,7 @@ fun RecordDetailScreen(
                         if (routineTimeList.isNotEmpty())
                             Text(routineTimeList[pagerState.currentPage])
                     }
-                    Text(
-                        text = ">",
+                    HorizontalPagerArrow(
                         modifier = Modifier
                             .clickable {
                                 coroutineScope.launch {
@@ -150,8 +147,9 @@ fun RecordDetailScreen(
                                     if (pagerState.currentPage < reportKeyList.size)
                                         pagerState.animateScrollToPage(pagerState.currentPage + 1)
                                 } },
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
+                        size = 50.dp,
+                        visible = pagerState.currentPage < reportKeyList.size,
+                        direction = false
                     )
                 }
             }
