@@ -1,6 +1,5 @@
 package io.ssafy.mogeun.ui.screens.record
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -55,12 +54,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import co.yml.charts.common.extensions.isNotNull
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.model.Exercise
 import io.ssafy.mogeun.model.RoutineInfoData
 import io.ssafy.mogeun.ui.AppViewModelProvider
-import io.ssafy.mogeun.ui.screens.routine.searchRoutine.muscleIcon
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
