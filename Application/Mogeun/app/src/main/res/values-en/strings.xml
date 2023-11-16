@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mogeun</string>
+    <string name="routine_screen_title">Routine</string>
+    <string name="record_screen_title">Record</string>
+    <string name="summary_screen_title">Summary</string>
+    <string name="setting_screen_title">Setting</string>
+    <string name="routine_start">Start</string>
+    <string name="wrong_information">Invalid information.</string>
+    <string name="service_name">Mogeun</string>
+    <string name="id">Id</string>
+    <string name="password">Password</string>
+    <string name="login">Log In</string>
+    <string name="not_user">Are you not a member?</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="please_enter_it">Please enter it.</string>
+    <string name="valid_id">This is a valid ID.</string>
+    <string name="duplicate_id">Duplicate ID.</string>
+    <string name="duplicate_first">Click duplicate confirmation first.</string>
+    <string name="password_not_match">Passwords do not match.</string>
+    <string name="enter_all_information">Please enter all information.</string>
+    <string name="duplicate_verification">Duplicate Verification</string>
+    <string name="confirm_password">Password Confirm</string>
+    <string name="nickname">Nickname</string>
+    <string name="body_information">Body Information</string>
+    <string name="success_signup">Successful membership.</string>
+    <string name="height">Height (cm)</string>
+    <string name="weight">Weight (kg)</string>
+    <string name="muscle_mass">Muscle Mass</string>
+    <string name="body_fat">Body Fat</string>
+    <string name="skipping">Skipping</string>
+    <string name="choose_gender">Please choose your gender.</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+</resources>
