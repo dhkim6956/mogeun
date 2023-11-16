@@ -39,7 +39,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -63,12 +62,10 @@ import com.jaikeerthick.composable_graphs.style.LineGraphStyle
 import com.jaikeerthick.composable_graphs.style.LinearGraphVisibility
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.model.BodyInfo
-import io.ssafy.mogeun.model.Exercise
 import io.ssafy.mogeun.model.MostPerformedExercise
 import io.ssafy.mogeun.model.MostSetExercise
 import io.ssafy.mogeun.model.MostWeightedExercise
 import io.ssafy.mogeun.model.PerformedMuscleInfo
-import io.ssafy.mogeun.model.SetResult
 import io.ssafy.mogeun.ui.AppViewModelProvider
 import kotlinx.coroutines.launch
 
@@ -125,11 +122,17 @@ fun SummaryScreen(viewModel: SummaryViewModel = viewModel(factory = AppViewModel
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom
             ) {
                 Text("운동 요약", fontSize=18.sp, fontWeight = FontWeight.Bold)
-                Dropdown(viewModel)
+                SummaryDropdown(viewModel)
             }
+            Spacer(
+                modifier = Modifier
+                    .height(5.dp)
+                    .background(color = MaterialTheme.colorScheme.primaryContainer)
+            )
             ExerciseSummaryCard(
                 viewModel.summaryExerciseMost[viewModel.itemIndex.value],
                 viewModel.summaryExerciseWeight[viewModel.itemIndex.value],
@@ -533,7 +536,7 @@ fun MuscleSummary(exercises: List<PerformedMuscleInfo>) {
 }
 
 @Composable
-fun Dropdown(viewModel: SummaryViewModel) {
+fun SummaryDropdown(viewModel: SummaryViewModel) {
     val listItems = arrayOf("전체", "올해", "이번 달")
 
     // state of the menu

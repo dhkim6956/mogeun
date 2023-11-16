@@ -50,7 +50,7 @@ enum class Screen(
         bottomBarState = BottomBarState(true, R.drawable.icon_record, "Record")
     ),
     ExerciseDetail(
-        route = "ExerciseDetail",
+        route = "ExerciseDetail/{index}",
         title = "운동 상세 정보",
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
         bottomBarState = BottomBarState(true, R.drawable.icon_record, "Record")
