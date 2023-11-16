@@ -1,6 +1,5 @@
 package io.ssafy.mogeun.ui.screens.record
 
-import android.os.Build.VERSION.SDK_INT
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -21,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -28,7 +28,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PlainTooltipBox
+import androidx.compose.material3.PlainTooltipState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -44,16 +47,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import coil.ImageLoader
-import coil.compose.rememberAsyncImagePainter
-import coil.decode.GifDecoder
-import coil.decode.ImageDecoderDecoder
-import coil.request.ImageRequest
-import coil.size.Size
 import com.jaikeerthick.composable_graphs.color.LinearGraphColors
 import com.jaikeerthick.composable_graphs.composables.LineGraph
 import com.jaikeerthick.composable_graphs.data.GraphData
@@ -64,6 +63,7 @@ import io.ssafy.mogeun.R
 import io.ssafy.mogeun.model.Exercise
 import io.ssafy.mogeun.model.SetResult
 import io.ssafy.mogeun.ui.AppViewModelProvider
+import io.ssafy.mogeun.ui.components.ElevatedGif
 import kotlinx.coroutines.launch
 
 data class MuscleFatigue(
@@ -156,15 +156,14 @@ fun ExerciseDetail(
     viewModel: RecordViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        val exerciseImage = LocalContext.current.resources.getIdentifier(
-            "z_" + exercise.imagePath,
-            "drawable",
-            LocalContext.current.packageName
-        )
         var leftMuscleFatigueList: MutableList<MuscleFatigue> = mutableListOf()
         var rightMuscleFatigueList: MutableList<MuscleFatigue> = mutableListOf()
         var muscleFatigueList: List<MutableList<MuscleFatigue>> = mutableListOf()
         var set = 1
+        if (exercise.setResults.size == 1) {
+            leftMuscleFatigueList.add(MuscleFatigue("", 0f))
+            rightMuscleFatigueList.add(MuscleFatigue("", 0f))
+        }
         for (setResult in exercise.setResults) {
             if (setResult.muscleFatigue!!.size > 1) {
                 leftMuscleFatigueList.add(
@@ -180,15 +179,28 @@ fun ExerciseDetail(
                     )
                 )
             }
+            set++
         }
         if (!leftMuscleFatigueList.isNullOrEmpty() || !rightMuscleFatigueList.isNullOrEmpty())
             muscleFatigueList = listOf(leftMuscleFatigueList, rightMuscleFatigueList)
 
-        GifImage(modifier = Modifier.fillMaxWidth(), imageId = exerciseImage)
-        ExerciseDropdown(viewModel)
+        ElevatedGif(modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp), imgPath = exercise.imagePath)
+        Row(
+            modifier = Modifier.padding(top = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ExerciseDropdown(viewModel)
+            Spacer(
+                modifier = Modifier
+                    .width(5.dp)
+            )
+            SetExplain(viewModel)
+        }
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(10.dp),) {
             if (viewModel.itemIndex.value == 1) {
@@ -295,7 +307,9 @@ fun MuscleFatigueChart(
             )
 
             if (muscleFatigueList.size == 1) {
-                val xAxisDataList = listOf(GraphData.String(""), GraphData.String("1세트"))
+                val xAxisDataList = muscleFatigueList.map {
+                    GraphData.String(it.set)
+                }
                 val yAxisDataList = listOf(0f, muscleFatigueList[0].num)
                 LineGraph(
                     xAxisData = xAxisDataList,
@@ -316,32 +330,6 @@ fun MuscleFatigueChart(
             }
         }
     }
-}
-
-@Composable
-fun GifImage(
-    modifier: Modifier = Modifier,
-    imageId: Int
-) {
-    val context = LocalContext.current
-    val imageLoader = ImageLoader.Builder(context)
-        .components {
-            if (SDK_INT >= 28) {
-                add(ImageDecoderDecoder.Factory())
-            } else {
-                add(GifDecoder.Factory())
-            }
-        }
-        .build()
-    Image(
-        painter = rememberAsyncImagePainter(
-            ImageRequest.Builder(context).data(data = imageId).apply(block = {
-                size(Size.ORIGINAL)
-            }).build(), imageLoader = imageLoader
-        ),
-        contentDescription = null,
-        modifier = modifier.fillMaxWidth(),
-    )
 }
 
 @Composable
@@ -467,7 +455,9 @@ fun MuscleActivity(
                         contentDescription = muscleImagePath
                     )
                 }
+                Text("L", fontWeight = FontWeight.Bold)
                 BalanceBar(balanceValue)
+                Text("R", fontWeight = FontWeight.Bold)
                 Box(
                     modifier = Modifier
                         .width(50.dp)
@@ -504,8 +494,8 @@ fun BalanceBar(balanceValue: Float) {
                 .height(30.dp)
                 .background(
                     color = when (balanceValue) {
-                        in 0.45f..0.55f -> MaterialTheme.colorScheme.tertiary
-                        in 0.3f..0.7f -> MaterialTheme.colorScheme.primary
+                        in 0.41f..0.59f -> MaterialTheme.colorScheme.tertiary
+                        in 0.31f..0.69f -> MaterialTheme.colorScheme.primary
                         else -> MaterialTheme.colorScheme.error
                     }
                 )
@@ -524,8 +514,8 @@ fun BalanceBar(balanceValue: Float) {
                 .height(30.dp)
                 .background(
                     color = when (balanceValue) {
-                        in 0.45f..0.55f -> MaterialTheme.colorScheme.tertiaryContainer
-                        in 0.3f..0.7f -> MaterialTheme.colorScheme.primaryContainer
+                        in 0.41f..0.59f -> MaterialTheme.colorScheme.tertiaryContainer
+                        in 0.31f..0.69f -> MaterialTheme.colorScheme.primaryContainer
                         else -> MaterialTheme.colorScheme.errorContainer
                     }
                 )
@@ -541,9 +531,9 @@ fun ExerciseDropdown(viewModel: RecordViewModel) {
 
     // state of the menu
     var expanded by remember { mutableStateOf(false) }
-    var disabledItem by remember { mutableIntStateOf(0) }
-    var item by remember { mutableStateOf(listItems[0]) }
-    var itemIconIndex by remember { mutableIntStateOf(0) }
+    var disabledItem by remember { mutableIntStateOf(viewModel.itemIndex.value) }
+    var item by remember { mutableStateOf(listItems[viewModel.itemIndex.value]) }
+    var itemIconIndex by remember { mutableIntStateOf(viewModel.itemIndex.value) }
     var itemIconList = listOf(R.drawable.baseline_arrow_drop_down_24, R.drawable.baseline_arrow_drop_up_24)
 
     Box(
@@ -603,6 +593,149 @@ fun ExerciseDropdown(viewModel: RecordViewModel) {
                     enabled = (itemIndex != disabledItem),
                     text = { Text(text = itemValue) }
                 )
+            }
+        }
+    }
+}
+
+@Composable
+fun SetExplain(viewModel: RecordViewModel) {
+    var declarationDialogState by remember {
+        mutableStateOf(false)
+    }
+
+    Image(
+        modifier = Modifier.clickable { declarationDialogState = !declarationDialogState },
+        painter = painterResource(id = R.drawable.info_icon),
+        contentDescription = "set_info"
+    )
+
+    if (declarationDialogState)
+        MinimalDialog(viewModel.itemIndex.value){ declarationDialogState = false }
+}
+
+@Composable
+fun MinimalDialog(
+    type: Int,
+    onDismissRequest: () -> Unit
+) {
+    when(type) {
+        0 -> Dialog1 { onDismissRequest() }
+        1 -> Dialog2 { onDismissRequest() }
+    }
+}
+
+@Composable
+fun Dialog1(onDismissRequest: () -> Unit) {
+    Dialog(onDismissRequest = { onDismissRequest() }) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp)
+                .padding(16.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .clickable { onDismissRequest() },
+        ) {
+            Column (
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(text = "단위시간당 운동량에 따른 근육 균형도를 보여줍니다.")
+                Spacer(
+                    modifier = Modifier
+                        .height(15.dp)
+                )
+                Text("예시")
+                Spacer(
+                    modifier = Modifier
+                        .height(5.dp)
+                )
+                Column (
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 10.dp),
+                    verticalArrangement = Arrangement.SpaceAround
+                ) {
+                    Row (
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("균형 잡힘")
+                        BalanceBar(balanceValue = 0.5f)
+                    }
+                    Row (
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(horizontalAlignment = Alignment.Start) {
+                            Text("오른쪽으로")
+                            Text("살짝 치우침")
+                        }
+                        BalanceBar(balanceValue = 0.66f)
+                    }
+                    Row (
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(horizontalAlignment = Alignment.Start) {
+                            Text("왼쪽으로")
+                            Text("많이 치우침")
+                        }
+                        BalanceBar(balanceValue = 0.3f)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun Dialog2(onDismissRequest: () -> Unit) {
+    Dialog(onDismissRequest = { onDismissRequest() }) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .padding(16.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .clickable { onDismissRequest() },
+        ) {
+            Column (
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(10.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text("피로도 추이 그래프 입니다.")
+                Text("피로도가 높을 수록 값이 커집니다.")
+                Spacer(
+                    modifier = Modifier
+                        .height(10.dp)
+                )
+                Text("*주의", color = MaterialTheme.colorScheme.error)
+                Text("휴식시간의 정도에 따라 값이 낮아질 수도 있습니다.")
             }
         }
     }
