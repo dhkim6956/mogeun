@@ -105,37 +105,35 @@ fun ExerciseDetailScreen(
                 ) {
                     val coroutineScope = rememberCoroutineScope()
 
-                    if (exercises.size > 1) {
-                        HorizontalPagerArrow(
-                            modifier = Modifier
-                                .clickable {
-                                    coroutineScope.launch {
-                                        // Call scroll to on pagerState
-                                        if (pagerState.currentPage > 0)
-                                            pagerState.animateScrollToPage(pagerState.currentPage - 1)
-                                    } },
-                            size = 50.dp,
-                            visible = pagerState.currentPage > 0,
-                            direction = true
+                    HorizontalPagerArrow(
+                        modifier = Modifier
+                            .clickable {
+                                coroutineScope.launch {
+                                    // Call scroll to on pagerState
+                                    if (pagerState.currentPage > 0)
+                                        pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                                } },
+                        size = 50.dp,
+                        visible = pagerState.currentPage > 0 && exercises.size > 1,
+                        direction = true
+                    )
+                    Text(
+                        exercises[pagerState.currentPage].execName,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    HorizontalPagerArrow(
+                        modifier = Modifier
+                            .clickable {
+                                coroutineScope.launch {
+                                    // Call scroll to on pagerState
+                                    if (pagerState.currentPage < exercises.size)
+                                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                } },
+                        size = 50.dp,
+                        visible = pagerState.currentPage < exercises.size  && exercises.size > 1,
+                        direction = false
                         )
-                        Text(
-                            exercises[pagerState.currentPage].execName,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        HorizontalPagerArrow(
-                            modifier = Modifier
-                                .clickable {
-                                    coroutineScope.launch {
-                                        // Call scroll to on pagerState
-                                        if (pagerState.currentPage < exercises.size)
-                                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                                    } },
-                            size = 50.dp,
-                            visible = pagerState.currentPage < exercises.size,
-                            direction = false
-                        )
-                    }
                 }
                 HorizontalPager(state = pagerState) { page ->
                     // Our page content
