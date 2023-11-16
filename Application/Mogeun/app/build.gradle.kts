@@ -114,9 +114,6 @@ dependencies {
 
     implementation ("com.github.wendykierp:JTransforms:3.1")
 
-    // tooltip
-    implementation("com.github.skgmn:composetooltip:0.2.0")
-
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext)
