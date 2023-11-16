@@ -31,4 +31,12 @@
     <string name="choose_gender">성별을 선택해주세요.</string>
     <string name="male">남성</string>
     <string name="female">여성</string>
+    <string name="hello">" 님 안녕하세요."</string>
+    <string name="add_routine">루틴추가</string>
+    <string name="renaming">이름 변경</string>
+    <string name="routine_management">루틴 관리</string>
+    <string name="delete_routine">루틴 삭제</string>
+    <string name="set_routine_name">루틴 이름을 설정해 주세요.</string>
+    <string name="check">확인</string>
+    <string name="cancellation">취소</string>
 </resources>

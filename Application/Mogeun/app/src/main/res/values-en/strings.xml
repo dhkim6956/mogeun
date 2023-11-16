@@ -32,4 +32,12 @@
     <string name="choose_gender">Please choose your gender.</string>
     <string name="male">Male</string>
     <string name="female">Female</string>
+    <string name="hello">Hello,</string>
+    <string name="add_routine">Add Routine</string>
+    <string name="renaming">Renaming</string>
+    <string name="routine_management">Routine management</string>
+    <string name="delete_routine">Delete Routine</string>
+    <string name="set_routine_name">Please set the name of the routine.</string>
+    <string name="check">Check</string>
+    <string name="cancellation">Cancellation</string>
 </resources>
