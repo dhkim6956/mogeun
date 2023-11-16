@@ -168,14 +168,16 @@ fun CalenderUI(
         var routineTimeList: MutableList<String> = mutableListOf()
 
         for (record in viewModel.recordList) {
-            for (routine in record.routineReports) {
+            val routineReports = record.routineReports.sortedBy { it.startTime }
+            for (routine in routineReports) {
                 reportKeyList.add(routine.key)
                 routineTimeList.add(routine.startTime.split("T")[1].split(".")[0] + " ~ " + routine.endTime.split("T")[1].split(".")[0])
             }
         }
 
         if (!routineLists.isEmpty()) {
-            items(items = routineLists[0].routineReports) { routineReport ->
+            val routineReports = routineLists[0].routineReports.sortedBy { it.startTime }
+            items(items = routineReports) { routineReport ->
                 RoutineRecord(navController, routineReport.key, routineReport.startTime.split("T")[1].split(".")[0] + " ~ " + routineReport.endTime.split("T")[1].split(".")[0], routineReport.routineName, reportKeyList, routineTimeList)
             }
         }
