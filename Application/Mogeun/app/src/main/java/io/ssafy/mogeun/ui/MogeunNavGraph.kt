@@ -37,7 +37,7 @@ fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarH
                 Screen.Execution.route,
                 arguments = listOf(navArgument("routineKey") {type = NavType.IntType})
             ) { backStackEntry ->
-                ExecutionScreen(viewModel = btViewModel, routineKey = backStackEntry.arguments?.getInt("routineKey")!!, navController)
+                ExecutionScreen(viewModel = btViewModel, routineKey = backStackEntry.arguments?.getInt("routineKey")!!, navController, snackbarHostState)
             }
         }
         navigation(route = "Records", startDestination = Screen.Record.route) {

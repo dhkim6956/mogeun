@@ -98,7 +98,7 @@ fun RoutineScreen(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = " 님 안녕하세요.",
+                    text = stringResource(R.string.hello),
                     textAlign = TextAlign.Start,
                     modifier = Modifier.weight(1f),
                     fontSize = 16.sp
@@ -120,7 +120,7 @@ fun RoutineScreen(
                     Row(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(text = "골격근량")
+                        Text(text = stringResource(R.string.muscle_mass))
                         Spacer(modifier = Modifier.weight(1f))
                         Text(text = "${viewModel.muscleMass.toString()} kg")
 
@@ -136,7 +136,7 @@ fun RoutineScreen(
                     Row(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(text = "체지방량")
+                        Text(text = stringResource(R.string.body_fat))
                         Spacer(modifier = Modifier.weight(1f))
                         Text(text = "${viewModel.bodyFat.toString()} kg")
 
@@ -182,7 +182,7 @@ fun RoutineScreen(
                                     modifier = Modifier.height(20.dp)
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
-                                Text(text = "루틴추가", color = MaterialTheme.colorScheme.scrim)
+                                Text(text = stringResource(R.string.add_routine), color = MaterialTheme.colorScheme.scrim)
                             }
                         }
                     }
@@ -256,7 +256,7 @@ fun RoutineList(
                                 shape = RoundedCornerShape(10.dp)
                             ) {
                                 Text(
-                                    text = "이름 변경",
+                                    text = stringResource(R.string.renaming),
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -271,7 +271,7 @@ fun RoutineList(
                             ) {
                                 Spacer(modifier = Modifier.width(5.dp))
                                 Text(
-                                    text = "루틴 관리",
+                                    text = stringResource(R.string.routine_management),
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -288,7 +288,7 @@ fun RoutineList(
                                 shape = RoundedCornerShape(10.dp)
                             ) {
                                 Text(
-                                    text = "루틴 삭제",
+                                    text = stringResource(R.string.delete_routine),
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -305,7 +305,7 @@ fun RoutineList(
                             viewModel.updateRoutineName(index, viewModel.newRoutineName.value)
                             openAlertDialog.value = false
                         },
-                        dialogTitle = "루틴 이름을 설정해 주세요.",
+                        dialogTitle = stringResource(R.string.set_routine_name),
                         onDismissRequest = {
                             openAlertDialog.value = false
                         },
@@ -403,7 +403,7 @@ fun AlertDialogExample(
                     onConfirmation()
                 }
             ) {
-                Text("확인")
+                Text(stringResource(R.string.check))
             }
         },
         dismissButton = {
@@ -412,7 +412,7 @@ fun AlertDialogExample(
                     onDismissRequest()
                 }
             ) {
-                Text("취소")
+                Text(stringResource(R.string.cancellation))
             }
         }
     )

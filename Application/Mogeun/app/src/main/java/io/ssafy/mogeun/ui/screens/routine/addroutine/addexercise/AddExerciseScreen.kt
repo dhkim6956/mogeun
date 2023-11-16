@@ -41,11 +41,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.skydoves.landscapist.glide.GlideImage
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextButton
@@ -54,8 +52,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.skydoves.landscapist.ImageOptions
+import io.ssafy.mogeun.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -105,7 +104,7 @@ fun AddExerciseScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .border(width = 2.dp, color = MaterialTheme.colorScheme.primary,),
-            placeholder  = {Text("검색")}
+            placeholder  = {Text(stringResource(R.string.search))}
         )
         Spacer(modifier = Modifier.height(8.dp))
         LazyRow(
@@ -214,14 +213,14 @@ fun AddExerciseScreen(
                             }
                         },
                     ) {
-                        Text("변경사항 적용")
+                        Text(stringResource(R.string.apply_changes))
                     }
                 }
                 when {
                     openAlertDialog.value -> {
                         AlertDialogExample(
                             onDismissRequest = { openAlertDialog.value = false },
-                            dialogTitle = "루틴 이름을 설정해 주세요.",
+                            dialogTitle = stringResource(R.string.set_routine_name),
                             icon = Icons.Default.Info,
                         )
                     }
@@ -269,7 +268,7 @@ fun AlertDialogExample(
                     } ?: Log.e("addRoutine", "User key is null")
                 }
             ) {
-                Text("확인")
+                Text(stringResource(R.string.check))
             }
         },
         dismissButton = {
@@ -278,7 +277,7 @@ fun AlertDialogExample(
                     onDismissRequest()
                 }
             ) {
-                Text("취소")
+                Text(stringResource(R.string.cancellation))
             }
         }
     )
