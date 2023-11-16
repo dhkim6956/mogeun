@@ -15,9 +15,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -67,7 +69,11 @@ fun SensorBottomSheet(state: Boolean, hide: () -> Unit, navToConnection: () -> U
                     .fillMaxWidth()
             ) {
                 ElevatedButton(
-                    onClick = { navToConnection() }
+                    onClick = { navToConnection() },
+                    colors = ButtonDefaults.elevatedButtonColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
                 ) {
                     Text(text = "센서 연결")
                 }
@@ -78,7 +84,11 @@ fun SensorBottomSheet(state: Boolean, hide: () -> Unit, navToConnection: () -> U
                                 hide()
                             }
                         }
-                    }
+                    },
+                    colors = ButtonDefaults.elevatedButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
                 ) {
                     Text(text = "닫기")
                 }

@@ -36,9 +36,10 @@ data class RoutineState(
     val planDetails: List<SetOfPlan> = listOf(),
     val showBottomSheet: Boolean = false,
     val planDetailsRequested: Boolean = false,
-    val onProcess: Boolean = false,
+    val routineInProgress: Boolean = false,
     val reportKey: Int? = null,
-    val inProgress: Boolean = false
+    val setInProgress: Boolean = false,
+    val hasValidSet: Boolean = false,
 )
 
 data class ElapsedTime(

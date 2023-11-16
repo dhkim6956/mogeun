@@ -102,7 +102,7 @@ class BluetoothViewModel(
         _routineState.update { routineState ->
             val changedPlanDetails = routineState.planDetails.map { setOfPlan ->
                 if (setOfPlan.planKey == planKey) {
-                    setOfPlan.copy(valueChanged = true, setOfRoutineDetail = setOfPlan.setOfRoutineDetail + setOfPlan.setOfRoutineDetail.last().copy(setNumber = setOfPlan.setOfRoutineDetail.size + 1))
+                    setOfPlan.copy(valueChanged = true, setOfRoutineDetail = setOfPlan.setOfRoutineDetail + setOfPlan.setOfRoutineDetail.last().copy(setNumber = setOfPlan.setOfRoutineDetail.size + 1, successRep = 0))
                 } else {
                     setOfPlan
                 }
@@ -156,7 +156,9 @@ class BluetoothViewModel(
     }
 
     fun startSet(planKey: Int, setIdx: Int) {
-        _routineState.update { routineState -> routineState.copy(inProgress = true, planDetails = routineState.planDetails.map { setOfPlan ->
+        if(routineState.value.setInProgress) return
+
+        _routineState.update { routineState -> routineState.copy(setInProgress = true, planDetails = routineState.planDetails.map { setOfPlan ->
             if(setOfPlan.planKey == planKey) {
                 setOfPlan.copy(setOfRoutineDetail = setOfPlan.setOfRoutineDetail.map { routineDetail ->
                     if(routineDetail.setNumber == setIdx) {
@@ -172,7 +174,7 @@ class BluetoothViewModel(
     }
 
     fun addCnt(planKey: Int, setIdx: Int) {
-        _routineState.update { routineState -> routineState.copy(planDetails = routineState.planDetails.map { setOfPlan ->
+        _routineState.update { routineState -> routineState.copy(hasValidSet = true, planDetails = routineState.planDetails.map { setOfPlan ->
             if(setOfPlan.planKey == planKey) {
                 setOfPlan.copy(setOfRoutineDetail = setOfPlan.setOfRoutineDetail.map { routineDetail ->
                     if(routineDetail.setNumber == setIdx) {
@@ -232,7 +234,9 @@ class BluetoothViewModel(
     }
 
     fun endSet(planKey: Int, setIdx: Int) {
-        _routineState.update { routineState -> routineState.copy(inProgress = false) }
+        if(!routineState.value.setInProgress) return
+
+        _routineState.update { routineState -> routineState.copy(setInProgress = false) }
 
         val reportKey = routineState.value.reportKey
         val plan = routineState.value.planDetails.find { setOfPlan -> setOfPlan.planKey == planKey }
@@ -324,7 +328,7 @@ class BluetoothViewModel(
         viewModelScope.launch {
             runTimer()
         }
-        _routineState.update { routineState -> routineState.copy(onProcess = true) }
+        _routineState.update { routineState -> routineState.copy(routineInProgress = true) }
 
         viewModelScope.launch {
             val ret = executionRepository.startRoutine(userKey!!, routineKey, isAttached)
@@ -336,12 +340,16 @@ class BluetoothViewModel(
         val reportKey = routineState.value.reportKey
         terminateTimer = true
 
-        viewModelScope.launch {
-            val ret1 = executionRepository.endRoutine(userKey!!, reportKey!!)
-            Log.d("report", "routine report = $ret1")
+        _routineState.update { routineState -> routineState.copy(routineInProgress = false) }
 
-            val ret2 = executionRepository.reportCalorie(reportKey, 0.0)
-            Log.d("report", "calorie report = $ret2")
+        if(routineState.value.hasValidSet) {
+            viewModelScope.launch {
+                val ret1 = executionRepository.endRoutine(userKey!!, reportKey!!)
+                Log.d("report", "routine report = $ret1")
+
+                val ret2 = executionRepository.reportCalorie(reportKey, 0.0)
+                Log.d("report", "calorie report = $ret2")
+            }
         }
     }
 
