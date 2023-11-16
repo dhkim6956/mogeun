@@ -13,6 +13,7 @@ import com.mogun.backend.service.attachPart.AttachPartService;
 import com.mogun.backend.service.routine.dto.RoutineDto;
 import com.mogun.backend.service.routine.userRoutine.UserRoutineService;
 import com.mogun.backend.service.routine.userRoutinePlan.UserRoutinePlanService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,7 @@ public class PlanController {
     private final UserRoutineService routineService;
     private final UserRoutinePlanService planService;
 
+    @ApiOperation(value = "운동 추가 API", notes = "특정 루틴에 운동을 추가한다.")
     @PostMapping("/Add")
     public ApiResponse<Object> addPlan(@RequestBody CommonRoutineRequest request) {
 
@@ -43,6 +45,7 @@ public class PlanController {
         return ApiResponse.postAndPutResponse(result, request);
     }
 
+    @ApiOperation(value = "2개 이상의 운동 추가 API", notes = "특정 루틴에 여러 개의 운동을 추가한다.")
     @PostMapping("/AddAll")
     public ApiResponse<Object> addAllPlan(@RequestBody AddPlanListRequest request) {
 
@@ -66,6 +69,7 @@ public class PlanController {
         return ApiResponse.of(HttpStatus.ACCEPTED, "OK", AddPlanListResponse.builder().addedExec(success).failedExec(fail).build());
     }
 
+    @ApiOperation(value = "운동 수정 API", notes = "특정 루틴의 운동을 수정한다.")
     @PutMapping("/Edit")
     public ApiResponse<Object> editPlan(@RequestBody AddPlanListRequest request) {
 
@@ -75,7 +79,7 @@ public class PlanController {
         return ApiResponse.postAndPutResponse(result, request);
     }
 
-    @DeleteMapping("/Remove")
+    @ApiOperation(value = "운동 제거 API", notes = "특정 루틴의 운동을 제거한다.")
     public ApiResponse<Object> removePlan(@RequestParam("routine_key") int routineKey, @RequestParam("exec_key") int execKey) {
 
         ServiceStatus<Object> result = planService.removePlan(RoutineDto.builder()
@@ -86,6 +90,7 @@ public class PlanController {
         return ApiResponse.postAndPutResponse(result, null);
     }
 
+    @ApiOperation(value = "운동 확인 API", notes = "하나의 루틴에 대해 등록된 운동을 모두 조회한다.")
     @GetMapping("/ListAll")
     public ApiResponse<List<SimplePlanInfoResponse>> getAllPlan(@RequestParam("routine_key") int routineKey) {
 

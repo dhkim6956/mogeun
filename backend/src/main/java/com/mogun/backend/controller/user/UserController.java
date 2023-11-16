@@ -11,6 +11,7 @@ import com.mogun.backend.service.user.UserService;
 import com.mogun.backend.service.user.dto.UserDto;
 import com.mogun.backend.controller.user.request.UserJoinRequest;
 import com.mogun.backend.controller.user.response.IsJoinedResponse;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ public class UserController {
 
     private final UserService userService;
 
+    @ApiOperation(value = "가입 여부 API", notes = "입력된 이메일 주소로 회원 등록이 되어 있는지 판별한다.")
     @GetMapping("/isJoined")
     public ApiResponse<IsJoinedResponse> isJoined(@RequestParam String email) {
 
@@ -45,6 +47,7 @@ public class UserController {
                     .build());
     }
 
+    @ApiOperation(value = "회원가입 API", notes = "회원 정보를 입력 후 회원 가입을 수행한다.")
     @PostMapping("/Enroll")
     public ApiResponse<Object> enrollUser(@RequestBody UserJoinRequest userJoinRequest) {
         ServiceStatus<Object> result = userService.joinUser(UserDto.builder()
@@ -62,6 +65,7 @@ public class UserController {
         return ApiResponse.postAndPutResponse(result, userJoinRequest);
     }
 
+    @ApiOperation(value = "회원 탈퇴 API", notes = "해당 서비스에서 회원을 탈퇴한다.")
     @PostMapping("/Exit")
     public ApiResponse<Object> exitUser(@RequestBody ExitRequest exitRequest) {
 
@@ -70,6 +74,7 @@ public class UserController {
         return ApiResponse.postAndPutResponse(result, exitRequest);
     }
 
+    @ApiOperation(value = "비밀번호 변경 API", notes = "회원의 로그인 비밀번호를 변경한다. ")
     @PostMapping("/Change/Password")
     public ApiResponse<Object> changePassword(@RequestBody ChangePasswordRequest pwdReq) {
 
@@ -78,6 +83,7 @@ public class UserController {
         return ApiResponse.postAndPutResponse(result, pwdReq);
     }
 
+    @ApiOperation(value = "회원 세부 정보 API", notes = "회원의 신체 정보를 조회 및 반환한다.")
     @GetMapping("/Detail")
     public ApiResponse<Object> getUserDetail(@RequestParam("user_key") int userKey) {
 
@@ -96,6 +102,7 @@ public class UserController {
                 .build());
     }
 
+    @ApiOperation(value = "로그인 API", notes = "회원 정보를 입력하여 로그인한다.")
     @PostMapping("/SignIn")
     public ApiResponse<Object> signIn(@RequestBody SignInRequest request) {
 

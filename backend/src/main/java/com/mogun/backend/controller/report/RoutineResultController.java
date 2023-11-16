@@ -9,6 +9,7 @@ import com.mogun.backend.service.report.dto.ResultDto;
 import com.mogun.backend.service.report.dto.ResultListDto;
 import com.mogun.backend.service.report.dto.SetResultListDto;
 import com.mogun.backend.service.report.dto.SummaryResultDto;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -26,6 +27,7 @@ public class RoutineResultController {
 
     private final RoutineResultService resultService;
 
+    @ApiOperation(value = "루틴 결과 작성 API", notes = "루틴 종료 시 보고서를 작성한다.")
     @PostMapping("/Create")
     public ApiResponse<Object> createResult(@RequestBody CommonResultRequest request) {
 
@@ -37,6 +39,7 @@ public class RoutineResultController {
         return ApiResponse.postAndPutResponse(result, request);
     }
 
+    @ApiOperation(value = "루틴 결과 조회 API", notes = "하나의 특정 루틴 결과를 조회한다.")
     @GetMapping("/Routine")
     public ApiResponse<Object> getRoutineResult(@RequestParam("user_key") int userKey, @RequestParam("routine_report_key") Long resultKey) {
 
@@ -51,6 +54,7 @@ public class RoutineResultController {
         return ApiResponse.ok(result.getData());
     }
 
+    @ApiOperation(value = "운동 별 결과 조회 API", notes = "루틴 결과를 수행한 운동 별로 나누어 조회한다.")
     @GetMapping("/Exercise")
     public ApiResponse<Object> getExerciseResult(@RequestParam("user_key") int userKey, @RequestParam("routine_result_key") int resultKey) {
 
@@ -75,6 +79,7 @@ public class RoutineResultController {
         return  ApiResponse.ok(responses);
     }
 
+    @ApiOperation(value = "30일 간 수행 루틴 결과 조회 API", notes = "지난 30일 동안 수행한 모든 루틴 결과를 조회한다.")
     @GetMapping("/LastMonth")
     public ApiResponse<Object> getLastMonthResult(@RequestParam("user_key") int userKey) {
 
@@ -85,6 +90,7 @@ public class RoutineResultController {
         return  ApiResponse.ok(result.getData());
     }
 
+    @ApiOperation(value = "월별 루틴 결과 조회 API", notes = "달마다 수행한 모든 루틴 결과를 조회한다.")
     @GetMapping("/Monthly")
     public ApiResponse<Object> getMonthlyResult(@RequestParam("user_key") int userKey, @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
 

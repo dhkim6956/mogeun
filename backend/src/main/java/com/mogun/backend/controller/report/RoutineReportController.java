@@ -8,6 +8,7 @@ import com.mogun.backend.service.report.RoutineReportService;
 import com.mogun.backend.service.report.SetReportService;
 import com.mogun.backend.service.report.dto.MuscleActsDto;
 import com.mogun.backend.service.report.dto.RoutineReportDto;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ public class RoutineReportController {
     private final RoutineReportService routineReportService;
     private final SetReportService setReportService;
 
+    @ApiOperation(value = "루틴 시작 API", notes = "하나의 특정 루틴을 시작한다.")
     @PostMapping("/Start")
     public ApiResponse<Object> startRoutineReport(@RequestBody CommonReportRequest request) {
 
@@ -37,6 +39,7 @@ public class RoutineReportController {
         return ApiResponse.postAndPutResponse(result, request);
     }
 
+    @ApiOperation(value = "루틴 종료 API", notes = "하나의 특정 루틴을 종료한다.")
     @PutMapping("/End")
     public ApiResponse<Object> endRoutineReport(@RequestBody CommonReportRequest request) {
 
@@ -48,6 +51,7 @@ public class RoutineReportController {
         return ApiResponse.postAndPutResponse(result, request);
     }
 
+    @ApiOperation(value = "세트 기록 API", notes = "하나의 특정 운동의 1개 세트를 측정 및 기록한다.")
     @PostMapping("/Set")
     public ApiResponse<Object> insertSetReport(@RequestBody CommonReportRequest request) {
 

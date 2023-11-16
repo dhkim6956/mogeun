@@ -11,6 +11,7 @@ import com.mogun.backend.domain.routine.setDetail.SetDetail;
 import com.mogun.backend.service.ServiceStatus;
 import com.mogun.backend.service.routine.dto.RoutineDto;
 import com.mogun.backend.service.routine.setDetail.SetDetailService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +27,7 @@ public class SetDetailController {
 
     private final SetDetailService setDetailService;
 
+    @ApiOperation(value = "세트 추가 API", notes = "루틴 내 하나의 운동에 대해 세트 정보를 추가한다.")
     @PostMapping("/Add")
     public ApiResponse<Object> addOneSet(@RequestBody SetRequest request) {
 
@@ -39,6 +41,7 @@ public class SetDetailController {
         return ApiResponse.postAndPutResponse(result, request);
     }
 
+    @ApiOperation(value = "2개 이상의 세트 추가 API", notes = "루틴 내 하나의 운동에 대해 세트 정보를 여러 개 추가한다.")
     @PostMapping("/AddAll")
     public ApiResponse<Object> addAllSet(@RequestBody SetRequestList requestList) {
 
@@ -59,7 +62,8 @@ public class SetDetailController {
         return ApiResponse.postAndPutResponse(result, requestList);
     }
 
-    @RequestMapping("/ListAll")
+    @ApiOperation(value = "전체 세트 조회 API", notes = "루틴 내 하나의 운동에 대해 모든 세트 정보를 조회한다.")
+    @GetMapping("/ListAll")
     public ApiResponse<Object> getAll(@RequestParam("plan_key") int planKey) {
 
         List<SetInfo> infoList = new ArrayList<>();
@@ -90,6 +94,7 @@ public class SetDetailController {
                 .build());
     }
 
+    @ApiOperation(value = "세트 제거 API", notes = "루틴 내 하나의 운동에 대해 세트를 제거한다.")
     @DeleteMapping("/Delete")
     public ApiResponse<Object> deleteOneSet(@RequestBody CommonRoutineRequest request) {
 
@@ -98,6 +103,7 @@ public class SetDetailController {
         return ApiResponse.postAndPutResponse(result, request);
     }
 
+    @ApiOperation(value = "전체 세트 제거 API", notes = "루틴 내 하나의 운동에 대해 모든 세트 정보를 제거한다.")
     @DeleteMapping("/DeleteAll")
     public ApiResponse<Object> deleteAll(@RequestParam("plan_key") int planKey) {
 

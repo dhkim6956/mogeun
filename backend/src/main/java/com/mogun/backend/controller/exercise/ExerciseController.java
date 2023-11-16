@@ -10,6 +10,7 @@ import com.mogun.backend.service.ServiceStatus;
 import com.mogun.backend.service.attachPart.AttachPartService;
 import com.mogun.backend.service.exercise.ExerciseService;
 import com.mogun.backend.service.exercise.dto.ExerciseDto;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +27,7 @@ public class ExerciseController {
     private final ExerciseService exerciseService;
     private final AttachPartService attachPartService;
 
+    @ApiOperation(value = "전체 운동 조회 API", notes = "루틴에 추가 가능한 모든 운동 목록을 조회한다.")
     @GetMapping("/ListAll")
     public ApiResponse<Object> getAllExercise() {
 
@@ -50,6 +52,7 @@ public class ExerciseController {
         return ApiResponse.ok(data);
     }
 
+    @ApiOperation(value = "운동 조회 API", notes = "루틴에 추가 가능한 1개 운동을 조회한다.")
     @GetMapping("/List")
     public ApiResponse<Object> getExercise(@RequestParam("exec_key") int execKey) {
 
@@ -67,6 +70,7 @@ public class ExerciseController {
                 .build());
     }
 
+    @ApiOperation(value = "운동 등록 API", notes = "(개발용) 루틴에 추가 가능한 운동을 등록한다.")
     @PostMapping("/Add")
     public ApiResponse<Object> createExercise(@RequestBody ExerciseRequest request) {
 

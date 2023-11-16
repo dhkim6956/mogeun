@@ -13,6 +13,7 @@ import com.mogun.backend.service.routine.dto.RoutineDto;
 import com.mogun.backend.service.routine.dto.RoutineOutlineDto;
 import com.mogun.backend.service.routine.userRoutine.UserRoutineService;
 import com.mogun.backend.service.routine.userRoutinePlan.UserRoutinePlanService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,7 @@ public class RoutineController {
     private final UserRoutineService routineService;
     private final UserRoutinePlanService planService;
 
+    @ApiOperation(value = "루틴 생성 API", notes = "회원이 루틴을 추가한다.")
     @PostMapping("/Create")
     public ApiResponse<Object> createRoutine(@RequestBody CommonRoutineRequest request) {
 
@@ -49,6 +51,7 @@ public class RoutineController {
                 .build());
     }
 
+    @ApiOperation(value = "루틴 제거 API", notes = "회원이 루틴을 제거한다.")
     @PutMapping("/Delete")
     public ApiResponse<Object> deleteRoutine(@RequestBody CommonRoutineRequest request) {
 
@@ -59,6 +62,7 @@ public class RoutineController {
         return ApiResponse.postAndPutResponse(result, request);
     }
 
+    @ApiOperation(value = "루틴 명 변경 API", notes = "특정 루틴의 이름을 변경한다.")
     @PutMapping("/Rename")
     public ApiResponse<Object> renameRoutine(@RequestBody CommonRoutineRequest request) {
 
@@ -87,6 +91,7 @@ public class RoutineController {
 //    }
 
     // Seongmin 루틴에서 사용하는 근육 이미지 포함
+    @ApiOperation(value = "루틴 조회 API", notes = "회원이 등록한 모든 루틴 정보를 조회한다.")
     @GetMapping("/ListAll")
     public ApiResponse<Object> getAllRoutine(@RequestParam("user_key") int userKey) {
 

@@ -6,6 +6,7 @@ import com.mogun.backend.controller.musclePart.response.MusclePartResponse;
 import com.mogun.backend.service.ServiceStatus;
 import com.mogun.backend.service.attachPart.MusclePartService;
 import com.mogun.backend.service.attachPart.dto.MusclePartDto;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ public class MusclePartController {
 
     private final MusclePartService musclePartService;
 
+    @ApiOperation(value = "근육 부위 등록 API", notes = "(개발용) 근육 부위를 등록한다.")
     @PostMapping("/Insert")
     public ApiResponse<Object> insertMusclePart(@RequestBody MusclePartRequest request) {
 
@@ -32,6 +34,7 @@ public class MusclePartController {
         return ApiResponse.postAndPutResponse(result, request);
     }
 
+    @ApiOperation(value = "전체 근육 부위 조회 API", notes = "모든 근육 부위를 조회한다.")
     @GetMapping("/ListAll")
     public ApiResponse<Object> listAllMusclePart() {
 
