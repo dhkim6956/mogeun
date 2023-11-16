@@ -23,6 +23,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -54,7 +55,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navController: NavHostController) {
+fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navController: NavHostController, snackbarHostState: SnackbarHostState) {
     val emgState by viewModel.emgState.collectAsState()
     val btState by viewModel.btState.collectAsState()
     val routineState by viewModel.routineState.collectAsState()
@@ -64,6 +65,8 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
 
     var openEndDialog by remember { mutableStateOf(false) }
 
+    val coroutineScope = rememberCoroutineScope()
+
     BackHandler {
         openEndDialog = true
     }
@@ -72,8 +75,9 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
         val ret = async {
             viewModel.getUserKey()
         }.await()
-        if (!routineState.onProcess) {
+        if (!routineState.routineInProgress) {
             viewModel.startRoutine(routineKey)
+            snackbarHostState.showSnackbar("루틴을 시작합니다.")
         }
     }
 
@@ -133,7 +137,7 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
                         ) {
                             Text("${plan.name}", fontWeight = FontWeight.Bold, fontSize = 20.sp)
                             FilledTonalIconButton(
-                                enabled = !routineState.inProgress,
+                                enabled = !routineState.setInProgress,
                                 onClick = viewModel::showBottomSheet,
                                 shape = RoundedCornerShape(12.dp),
                                 modifier = Modifier
@@ -158,13 +162,13 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
                                 {idx -> viewModel.startSet(plan.planKey, idx)},
                                 {idx -> viewModel.addCnt(plan.planKey, idx)},
                                 {idx -> viewModel.endSet(plan.planKey, idx)},
-                                routineState.inProgress,
+                                routineState.setInProgress,
                                 muscleavg
                             )
                         }
                     }
                 }
-                RoutineProgress(pagerState.currentPage + 1, routineSize, elapsedTime, {openEndDialog = true}, routineState.inProgress)
+                RoutineProgress(pagerState.currentPage + 1, routineSize, elapsedTime, {openEndDialog = true}, routineState.setInProgress)
 
                 SensorBottomSheet(state = routineState.showBottomSheet, hide = viewModel::hideBottomSheet, navToConnection = {navController.navigate("Connection")}, btState = btState, sensingPart = routineState.planList!!.data[pagerState.currentPage].mainPart.imagePath)
             }
@@ -179,13 +183,24 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
                 onConfirmation = {
                     openEndDialog = false
                     viewModel.endRoutine()
-                    navController.navigate("RecordDetail/${routineState.reportKey}",) {
-                        popUpTo(navController.graph.startDestinationId)
-                        launchSingleTop = true
+                    if (routineState.hasValidSet) {
+                        navController.navigate("RecordDetail/${routineState.reportKey}",) {
+                            popUpTo(navController.graph.startDestinationId)
+                            launchSingleTop = true
+                        }
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar("루틴이 종료되었습니다.")
+                        }
+                    } else {
+                        navController.popBackStack()
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar("루틴이 취소되었습니다.")
+                        }
                     }
+
                                  },
-                dialogTitle = "오늘의 루틴 종료",
-                dialogText = "현재까지의 진행상황을 기록하고 운동을 종료합니다.",
+                dialogTitle = if (routineState.hasValidSet) {"오늘의 루틴 종료"} else {"루틴 진행 취소"},
+                dialogText = if (routineState.hasValidSet) {"현재까지의 진행상황을 기록하고 운동을 종료합니다."} else {"측정된 횟수가 없어 진행상황을 기록하지 않고 돌아갑니다"},
                 icon = Icons.Default.PauseCircle
             )
         }

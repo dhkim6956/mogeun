@@ -524,11 +524,9 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
             val curTime = System.currentTimeMillis()
 
             if(curTime - lastTime >= 500) {
-                Log.d("cnt", "currentLev: $currentLev, lastLev: $lastLev, avg: ${emgUiState.emg1Avg}")
                 currentLev = ((emgUiState.emg1Avg / 90) + 1).toInt()
                 if (currentLev >= 3 && lastLev < 3) {
                     addCnt()
-                    Log.d("cnt", "triggered")
                 }
                 lastLev = currentLev
 
@@ -601,27 +599,13 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
                 )
             }
         }
-        Row(
+        Box(
+            contentAlignment = Alignment.Center,
             modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
+                .fillMaxSize()
+                .background(Color(0xFFDDE2FD)),
         ){
-            Box(modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth(0.5f)
-                .background(Color(0xFFDDE2FD)),
-                contentAlignment = Alignment.Center
-            ){
-                Text(String.format("개수 : ${planInfo.successRep}", emgUiState.emg1Avg % 90))
-            }
-            Box(modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth()
-                .background(Color(0xFFDDE2FD)),
-                contentAlignment = Alignment.Center
-            ){
-                Text("${String.format("%.3f", muscleAverage)}")
-            }
+            Text(String.format("개수 : ${planInfo.successRep}", emgUiState.emg1Avg % 90))
         }
     }
 }
