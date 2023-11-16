@@ -17,9 +17,14 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowLeft
+import androidx.compose.material.icons.filled.ArrowRight
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ElevatedAssistChip
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,7 +40,7 @@ import androidx.compose.ui.zIndex
 import io.ssafy.mogeun.ui.screens.routine.execution.ElapsedTime
 
 @Composable
-fun RoutineProgress(page: Int, execCnt: Int, elapsedTime: ElapsedTime, endRoutine: () -> Unit, inProgress: Boolean) {
+fun RoutineProgress(page: Int, execCnt: Int, elapsedTime: ElapsedTime, endRoutine: () -> Unit, inProgress: Boolean, goPrevPage: () -> Unit, goNextPage: () -> Unit, totalPage: Int, currentPage: Int) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -45,29 +50,35 @@ fun RoutineProgress(page: Int, execCnt: Int, elapsedTime: ElapsedTime, endRoutin
             horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.Start),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .height(40.dp)
+                .height(48.dp)
                 .fillMaxWidth()
                 .background(Color(0x22000000))
                 .padding(horizontal = 20.dp)
                 .zIndex(1f)
         ) {
-            Text(text = "< $page / $execCnt >", fontSize = 20.sp)
-            ElevatedAssistChip(
-                enabled = !inProgress,
-                onClick = {  },
-                label = { Text("운동 추가") },
-                leadingIcon = {
-                    Icon(
-                        Icons.Filled.Add,
-                        contentDescription = "Localized description",
-                    )
-                },
-                colors = AssistChipDefaults.elevatedAssistChipColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    leadingIconContentColor = MaterialTheme.colorScheme.secondary
-                )
-            )
+            FilledIconButton(
+                onClick = { goPrevPage() },
+                colors = IconButtonDefaults.filledIconButtonColors(
+                    containerColor = Color(0xFFAED3C8),
+                    contentColor = Color.White
+                ),
+                shape = RoundedCornerShape(12.dp),
+                enabled = currentPage != 0
+            ) {
+                Icon(imageVector = Icons.Default.ArrowLeft, contentDescription = "prev exercise")
+            }
+            Text(text = "$page / $execCnt", fontSize = 20.sp)
+            FilledIconButton(
+                onClick = { goNextPage() },
+                colors = IconButtonDefaults.filledIconButtonColors(
+                    containerColor = Color(0xFFAED3C8),
+                    contentColor = Color.White
+                ),
+                shape = RoundedCornerShape(12.dp),
+                enabled = currentPage != totalPage - 1
+            ) {
+                Icon(imageVector = Icons.Default.ArrowRight, contentDescription = "next exercise")
+            }
             Row (
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier
@@ -88,7 +99,7 @@ fun RoutineProgress(page: Int, execCnt: Int, elapsedTime: ElapsedTime, endRoutin
                             .background(if (inProgress) Color.LightGray else MaterialTheme.colorScheme.primaryContainer)
                             .padding(8.dp)
                             .clickable {
-                                if(!inProgress) endRoutine()
+                                if (!inProgress) endRoutine()
                             }
                     ) {
                         Text(text = "루틴종료", fontSize = 24.sp, textAlign = TextAlign.Center, lineHeight = 28.sp)

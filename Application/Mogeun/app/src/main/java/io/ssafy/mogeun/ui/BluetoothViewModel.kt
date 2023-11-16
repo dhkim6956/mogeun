@@ -437,16 +437,16 @@ class BluetoothViewModel(
         }
     }
 
-    fun connectToDevice(device: BluetoothDeviceDomain, deviceNo: Int = 0) {
+    fun connectToDevice(device: BluetoothDeviceDomain) {
         _btState.update { it.copy(isConnecting = true) }
 
         if(!btState.value.isConnected[0]) {
-            deviceConnectionJob[deviceNo] = bluetoothController
-                .connectToDevice0(ConnectedDevice(name = device.name, address = device.address, assignedNo = deviceNo))
+            deviceConnectionJob[0] = bluetoothController
+                .connectToDevice0(ConnectedDevice(name = device.name, address = device.address, assignedNo = 0))
                 .listen()
         } else if(!btState.value.isConnected[1]) {
-            deviceConnectionJob[deviceNo] = bluetoothController
-                .connectToDevice1(ConnectedDevice(name = device.name, address = device.address, assignedNo = deviceNo))
+            deviceConnectionJob[1] = bluetoothController
+                .connectToDevice1(ConnectedDevice(name = device.name, address = device.address, assignedNo = 1))
                 .listen()
         } else {
             Log.d("bluetoothAddress", "이미 디바이스가 전부 연결됨")

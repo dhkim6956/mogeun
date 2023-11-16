@@ -238,7 +238,7 @@ fun ExerciseProgress(
                                 .fillMaxHeight()
                                 .padding(4.dp)
                                 .clickable {
-                                    startSet(selectedTab + 1)
+                                    if (!inProgress) startSet(selectedTab + 1)
                                 },
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center,
@@ -246,7 +246,7 @@ fun ExerciseProgress(
                             Icon(
                                 imageVector = Icons.Default.PlayCircleOutline,
                                 contentDescription = null,
-                                tint = Color(0xFF556FF7),
+                                tint = if(!inProgress) Color(0xFF556FF7) else Color(0xFFDDDDDD),
                                 modifier = Modifier.size(20.dp),
                             )
                             Text(text = "시작",fontSize = 15.sp, textAlign = TextAlign.Center)
@@ -256,9 +256,11 @@ fun ExerciseProgress(
                                 .fillMaxHeight()
                                 .padding(start = 4.dp, top = 4.dp, bottom = 4.dp, end = 8.dp)
                                 .clickable {
-                                    endSet(selectedTab + 1)
-                                    if(selectedTab < totalSet - 1) {
-                                        selectedTab += 1
+                                    if(inProgress) {
+                                        endSet(selectedTab + 1)
+                                        if(selectedTab < totalSet - 1) {
+                                            selectedTab += 1
+                                        }
                                     }
                                 },
                             verticalAlignment = Alignment.CenterVertically,
@@ -267,7 +269,7 @@ fun ExerciseProgress(
                             Icon(
                                 painter = painterResource(id = R.drawable.removecirclestop),
                                 contentDescription = "contentDescription",
-                                tint = Color(0xFFFFD5D5),
+                                tint = if(inProgress) Color(0xFFFFD5D5) else Color(0xFFDDDDDD),
                                 modifier = Modifier
                                     .size(21.dp)
                                     .padding(2.dp)
@@ -510,11 +512,6 @@ fun InfiniteItemsPicker(
 // 최신값
 @Composable
 fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgress, addCnt: () -> Unit, inProgress: Boolean, muscleAverage: Double) {
-    var signal_1 by remember { mutableStateOf(0) }
-    var signal_2 by remember { mutableStateOf(0) }
-    var signal_3 by remember { mutableStateOf(0) }
-    var signal_4 by remember { mutableStateOf(0) }
-
     var lastLev by remember { mutableStateOf(0)}
     var lastTime by remember { mutableStateOf<Long>(0)}
     var currentLev by remember { mutableStateOf(0) }
@@ -527,7 +524,7 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
             val curTime = System.currentTimeMillis()
 
             if(curTime - lastTime >= 500) {
-                currentLev = ((emgUiState.emg1Avg / 90) + 1).toInt()
+                currentLev = ((emgUiState.emg1Avg / 90) + 1 - 0.4).toInt()
                 if (currentLev >= 3 && lastLev < 3) {
                     addCnt()
                 }
@@ -535,18 +532,6 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
 
                 lastTime = curTime
             }
-        }
-    }
-
-    LaunchedEffect(isStarting) {
-        while (isStarting) {
-            // 0.05초당 한번씩 업데이트
-            delay(5)
-
-            signal_1++;
-            if(signal_1%2==0)signal_2++;
-            if(signal_1%3==0)signal_3++;
-            if(signal_1%4==0)signal_4++;
         }
     }
 
@@ -565,16 +550,17 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
                 .background(Color.White),
                 contentAlignment = Alignment.Center
             ){
-                Text("Lv. ${String.format("%.3f", (emgUiState.emg1Avg / 90) + 1)}")
+                Text("Lv. ${String.format("%.3f", (emgUiState.emg1Avg / 90) + 1 - 0.4)}")
                 Box(modifier = Modifier
                     .clip(CircleShape)
-                    .size((emgUiState.emg1Avg % 90).dp)
+                    .size(if (emgUiState.emg1Avg > 360) (emgUiState.emg1Avg - 270).dp else (emgUiState.emg1Avg % 360 / 4).dp)
                     .background(
                         when ((emgUiState.emg1Avg / 90).toInt()) {
                             0 -> Color.White.copy(0.7f)
                             1 -> Color.Red.copy(0.7f)
                             2 -> Color.Green.copy(0.7f)
-                            else -> Color.Blue.copy(0.7f)
+                            3 -> Color.Blue.copy(0.7f)
+                            else -> Color.Magenta.copy(0.7f)
                         }
                     )
                     .wrapContentSize(Alignment.Center)
@@ -589,13 +575,14 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
                 Text("Lv. ${String.format("%.3f", (emgUiState.emg2Avg / 90) + 1)}")
                 Box(modifier = Modifier
                     .clip(CircleShape)
-                    .size((emgUiState.emg2Avg % 90).dp)
+                    .size(if (emgUiState.emg2Avg > 360) (emgUiState.emg2Avg - 270).dp else (emgUiState.emg2Avg % 360 / 4).dp)
                     .background(
                         when ((emgUiState.emg2Avg / 90).toInt()) {
                             0 -> Color.White.copy(0.7f)
                             1 -> Color.Red.copy(0.7f)
                             2 -> Color.Green.copy(0.7f)
-                            else -> Color.Blue.copy(0.7f)
+                            3 -> Color.Blue.copy(0.7f)
+                            else -> Color.Magenta.copy(0.7f)
                         }
                     )
                     .wrapContentSize(Alignment.Center)

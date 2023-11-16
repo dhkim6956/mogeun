@@ -104,7 +104,7 @@ void loop() {
     if(isConnected) {
       num++;
 
-      if(num > 400) num = 0;
+      if(num > 440) num = 0;
 
       sendData(num);
     }
