@@ -7,7 +7,7 @@ const int sensorInputPin = 34;
 const int ledPin = 2;
 int deviceId = 0;
 
-String device_name = "Mogeun_Left";
+String device_name = "ESP32-BT-Test";
 
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
@@ -45,6 +45,8 @@ void sendData(int i) {
   Serial.println(buf);
   SerialBT.print(buf);
 }
+
+int num = 0;
 
 void loop() {
 
@@ -100,24 +102,11 @@ void loop() {
 
   if(loopCnt % 20 == 0) {
     if(isConnected) {
-      if(!calculated) {  
-        double tmpSum = 0;
-        
-        for(int i = 0 ; i < 200 ; i++){
-          tmpSum +=  analogRead(sensorInputPin);
-          delay(1);
-        }
-  
-        ref = tmpSum / 200;
+      num++;
 
-        calculated = true;
-      }
+      if(num > 400) num = 0;
 
-      int ret = analogRead(sensorInputPin);
-
-      ret = 700;
-
-      sendData(ret - ref);
+      sendData(num);
     }
   }
 

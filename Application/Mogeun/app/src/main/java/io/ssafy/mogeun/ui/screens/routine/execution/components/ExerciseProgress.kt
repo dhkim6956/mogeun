@@ -257,6 +257,9 @@ fun ExerciseProgress(
                                 .padding(start = 4.dp, top = 4.dp, bottom = 4.dp, end = 8.dp)
                                 .clickable {
                                     endSet(selectedTab + 1)
+                                    if(selectedTab < totalSet - 1) {
+                                        selectedTab += 1
+                                    }
                                 },
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center,
