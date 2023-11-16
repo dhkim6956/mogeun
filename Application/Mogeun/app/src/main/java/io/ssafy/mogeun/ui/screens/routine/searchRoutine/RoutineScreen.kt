@@ -78,7 +78,7 @@ fun RoutineScreen(
             viewModel.getRoutineList()
         }
     }
-    Column(modifier = Modifier.padding(10.dp)) {
+    Column(modifier = Modifier.padding(top = 12.dp, start = 12.dp, end = 12.dp)) {
         Column(
             modifier = Modifier
                 .shadow(2.dp, RoundedCornerShape(16.dp))
@@ -289,55 +289,59 @@ fun RoutineList(
             },
             sheetState = sheetState
         ) {
-            Button(
-                onClick = {
-                    showBottomSheet = false
-                    openAlertDialog.value = true
-                },
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                shape = RoundedCornerShape(10.dp)
+                    .padding(bottom = 40.dp, start = 20.dp, end = 20.dp)
             ) {
-                Text(
-                    text = stringResource(R.string.renaming),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                Button(
+                    onClick = {
+                        showBottomSheet = false
+                        openAlertDialog.value = true
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.renaming),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Button(
+                    onClick = { navController.navigate("addroutine/${routine.routineKey}") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(
+                        text = stringResource(R.string.routine_management),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Button(
+                    onClick = {
+                        showBottomSheet = false
+                        viewModel.deleteRoutine(index)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.delete_routine),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
-            Spacer(modifier = Modifier.height(5.dp))
-            Button(
-                onClick = { navController.navigate("addroutine/${routine.routineKey}") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                shape = RoundedCornerShape(10.dp)
-            ) {
-                Spacer(modifier = Modifier.width(5.dp))
-                Text(
-                    text = stringResource(R.string.routine_management),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-            Spacer(modifier = Modifier.height(5.dp))
-            Button(
-                onClick = {
-                    showBottomSheet = false
-                    viewModel.deleteRoutine(index)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                shape = RoundedCornerShape(10.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.delete_routine),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 

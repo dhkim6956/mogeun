@@ -15,13 +15,17 @@ data class EmgUiState (
     val emg2Max: Int = 0
 )
 
+data class MuscleSensorValue(
+    val muscleAvg: Double? = null,
+    val muscleFatigue: Double? = null,
+)
+
 data class SetProgress(
     val setNumber: Int,
     val targetWeight: Int,
     val targetRep: Int,
     val successRep: Int = 0,
-    val muscleAvg: Double? = null,
-    val muscleFatigue: Double? = null,
+    val sensorData: List<MuscleSensorValue> = listOf(MuscleSensorValue(), MuscleSensorValue()),
     val startTime: Long? = null
 )
 
@@ -35,7 +39,6 @@ data class RoutineState(
     val planList: ListMyExerciseResponse? = null,
     val planDetails: List<SetOfPlan> = listOf(),
     val showBottomSheet: Boolean = false,
-    val planDetailsRequested: Boolean = false,
     val routineInProgress: Boolean = false,
     val reportKey: Int? = null,
     val setInProgress: Boolean = false,

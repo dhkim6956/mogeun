@@ -63,7 +63,7 @@ fun RoutineProgress(page: Int, execCnt: Int, elapsedTime: ElapsedTime, endRoutin
                     contentColor = Color.White
                 ),
                 shape = RoundedCornerShape(12.dp),
-                enabled = currentPage != 0
+                enabled = currentPage != 0 && !inProgress
             ) {
                 Icon(imageVector = Icons.Default.ArrowLeft, contentDescription = "prev exercise")
             }
@@ -75,7 +75,7 @@ fun RoutineProgress(page: Int, execCnt: Int, elapsedTime: ElapsedTime, endRoutin
                     contentColor = Color.White
                 ),
                 shape = RoundedCornerShape(12.dp),
-                enabled = currentPage != totalPage - 1
+                enabled = currentPage != totalPage - 1 && !inProgress
             ) {
                 Icon(imageVector = Icons.Default.ArrowRight, contentDescription = "next exercise")
             }
@@ -90,6 +90,9 @@ fun RoutineProgress(page: Int, execCnt: Int, elapsedTime: ElapsedTime, endRoutin
                         .wrapContentSize(unbounded = true, align = Alignment.TopEnd)
                         .shadow(12.dp, shape = RoundedCornerShape(16.dp))
                         .clip(RoundedCornerShape(16.dp))
+                        .clickable {
+                            if (!inProgress) endRoutine()
+                        }
                 ) {
                     Box(
                         contentAlignment = Alignment.Center,
@@ -98,9 +101,6 @@ fun RoutineProgress(page: Int, execCnt: Int, elapsedTime: ElapsedTime, endRoutin
                             .height(80.dp)
                             .background(if (inProgress) Color.LightGray else MaterialTheme.colorScheme.primaryContainer)
                             .padding(8.dp)
-                            .clickable {
-                                if (!inProgress) endRoutine()
-                            }
                     ) {
                         Text(text = "루틴종료", fontSize = 24.sp, textAlign = TextAlign.Center, lineHeight = 28.sp)
                     }

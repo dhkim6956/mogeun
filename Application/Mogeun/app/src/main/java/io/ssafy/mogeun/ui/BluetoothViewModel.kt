@@ -23,6 +23,7 @@ import io.ssafy.mogeun.model.SetExecutionRequest
 import io.ssafy.mogeun.model.SetInfo
 import io.ssafy.mogeun.ui.screens.routine.execution.ElapsedTime
 import io.ssafy.mogeun.ui.screens.routine.execution.EmgUiState
+import io.ssafy.mogeun.ui.screens.routine.execution.MuscleSensorValue
 import io.ssafy.mogeun.ui.screens.routine.execution.RoutineState
 import io.ssafy.mogeun.ui.screens.routine.execution.SetOfPlan
 import io.ssafy.mogeun.ui.screens.routine.execution.SetProgress
@@ -68,16 +69,12 @@ class BluetoothViewModel(
     val routineState = _routineState.asStateFlow()
 
 
-    fun getPlanList(routineKey: Int) {
-        viewModelScope.launch {
-            val ret = routineRepository.listMyExercise(routineKey)
-            _routineState.update { routineState -> routineState.copy(planList = ret) }
-        }
+    suspend fun getPlanList(routineKey: Int) {
+        val ret = routineRepository.listMyExercise(routineKey)
+        _routineState.update { routineState -> routineState.copy(planList = ret) }
     }
 
     fun getSetOfRoutine() {
-        _routineState.update { routineState -> routineState.copy(planDetailsRequested = true) }
-
         viewModelScope.launch {
             routineState.value.planList!!.data.forEach { plan ->
                 val planKey = plan.planKey
@@ -283,6 +280,24 @@ class BluetoothViewModel(
                     averages[i] = setEmgListAbs.average()
                 }
 
+                _routineState.update { routineState ->
+                    routineState.copy(planDetails = routineState.planDetails.map {setOfPlan ->
+                        if (setOfPlan.planKey == planKey) {
+                            setOfPlan.copy(
+                                setOfRoutineDetail = setOfPlan.setOfRoutineDetail.map {setProgress ->
+                                    if(setProgress.setNumber == setIdx) {
+                                        setProgress.copy(sensorData = listOf(MuscleSensorValue(averages[0], fatigues[0]),MuscleSensorValue(averages[1], fatigues[1])))
+                                    } else {
+                                        setProgress
+                                    }
+                                }
+                            )
+                        } else {
+                            setOfPlan
+                        }
+                    })
+                }
+
                 if (plan.valueChanged) {
                     val ret1 = async {
                         executionRepository.clearPlan(planKey)
@@ -351,6 +366,18 @@ class BluetoothViewModel(
                 Log.d("report", "calorie report = $ret2")
             }
         }
+    }
+
+    fun resetRoutine() {
+        _routineState.update { routineState -> routineState.copy(
+            routineInProgress = false,
+            setInProgress = false,
+            hasValidSet = false,
+            planDetails = routineState.planDetails.map { setOfPlan ->
+                setOfPlan.copy(setOfRoutineDetail = setOfPlan.setOfRoutineDetail.map { setProgress ->
+                    setProgress.copy(successRep = 0, sensorData = listOf(MuscleSensorValue(), MuscleSensorValue()), startTime = null)
+                })
+            }) }
     }
 
     val _elaspedTime = MutableStateFlow(ElapsedTime(System.currentTimeMillis(), 0, 0))

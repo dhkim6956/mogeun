@@ -45,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -146,20 +147,20 @@ fun SettingScreen(
         stickyHeader {
             LazyHeader(stringResource(R.string.member_information))
         }
-        items(userMenus) {
-            LazyList(menu = it)
+        item() {
+            LazyLists(userMenus)
         }
         stickyHeader {
             LazyHeader(stringResource(R.string.service_interworking))
         }
-        items(serviceMenus) {
-            LazyList(menu = it)
+        item() {
+            LazyLists(serviceMenus)
         }
         stickyHeader {
             LazyHeader(stringResource(R.string.app_information))
         }
-        items(appMenus) {
-            LazyList(menu = it)
+        item() {
+            LazyLists(appMenus)
         }
     }
 
@@ -199,7 +200,6 @@ fun LazyHeader(title: String) {
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(vertical = 8.dp)
     ) {
         Box(
             modifier = Modifier
@@ -218,40 +218,33 @@ fun LazyHeader(title: String) {
 }
 
 @Composable
+fun LazyLists(menus: List<MenuItemInfo>) {
+    Column(
+        modifier = Modifier
+            .padding(12.dp)
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .shadow(4.dp, RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(16.dp))
+    ) {
+        for (menu in menus) {
+            LazyList(menu)
+        }
+    }
+}
+
+@Composable
 fun LazyList(menu: MenuItemInfo) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp)
             .wrapContentHeight()
-            .shadow(
-                if (menu.position == Position.Bot || menu.position == Position.Single) 4.dp else 0.dp,
-                shape = if (menu.position == Position.Bot) {
-                    RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
-                } else if (menu.position == Position.Single) {
-                    RoundedCornerShape(20.dp)
-                } else {
-                    RoundedCornerShape(0.dp)
-                }
-            )
-            .clip(
-                shape = when (menu.position) {
-                    Position.Single -> RoundedCornerShape(20.dp)
-                    Position.Top -> RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
-                    Position.Bot -> RoundedCornerShape(
-                        bottomStart = 20.dp,
-                        bottomEnd = 20.dp
-                    )
-
-                    Position.Mid -> RoundedCornerShape(0.dp)
-                }
-            )
             .clickable {
                 menu.onClick()
             }
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .wrapContentHeight()
@@ -262,7 +255,8 @@ fun LazyList(menu: MenuItemInfo) {
                 Divider(
                     thickness = 0.5.dp,
                     modifier = Modifier
-                        .fillMaxWidth(0.9f)
+                        .fillMaxWidth(0.8f)
+                        .padding(end = 12.dp)
                 )
             Row(
                 modifier = Modifier
@@ -289,7 +283,8 @@ fun LazyList(menu: MenuItemInfo) {
                         ) {
                             Image(
                                 imageVector = menu.vector,
-                                contentDescription = menu.title
+                                contentDescription = menu.title,
+                                colorFilter = ColorFilter.tint(Color(0xFF888888))
                             )
                         }
                     }
@@ -308,7 +303,8 @@ fun LazyList(menu: MenuItemInfo) {
                 Divider(
                     thickness = 0.5.dp,
                     modifier = Modifier
-                        .fillMaxWidth(0.9f)
+                        .fillMaxWidth(0.8f)
+                        .padding(end = 12.dp)
                 )
         }
     }

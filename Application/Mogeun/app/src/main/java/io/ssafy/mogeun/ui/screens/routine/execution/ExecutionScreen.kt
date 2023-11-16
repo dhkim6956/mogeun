@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,7 +15,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PauseCircle
@@ -26,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -82,11 +86,21 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
     }
 
     LaunchedEffect(routineKey) {
-        viewModel.getPlanList(routineKey)
+    }
+
+    DisposableEffect(Unit) {
+        coroutineScope.launch {
+            val ret = async {
+                viewModel.getPlanList(routineKey)
+            }.await()
+            viewModel.getSetOfRoutine()
+        }
+        this.onDispose {
+            viewModel.resetRoutine()
+        }
     }
 
     if(routineState.planList == null) {
-
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize()
@@ -101,21 +115,27 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
         val routineSize = routineState.planList!!.data.size
         val pagerState = rememberPagerState { routineSize }
 
-        LaunchedEffect(pagerState.currentPage) {
-            if(!routineState.planDetailsRequested) viewModel.getSetOfRoutine()
-        }
-
         if(routineState.planDetails.isNotEmpty()) {
             Column {
                 HorizontalPager(
                     pagerState,
+                    userScrollEnabled = !routineState.setInProgress,
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
                 ) { page ->
                     val plan = routineState.planList!!.data[page]
                     val imgPath = plan.imagePath
-                    Column {
+
+                    val scrollState = rememberScrollState()
+
+                    Column (
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Top,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(scrollState)
+                    ) {
                         Box(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier
@@ -148,25 +168,19 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
                                 Icon(painter = painterResource(id = R.drawable.heart_rate), null, modifier = Modifier.fillMaxSize(0.8f))
                             }
                         }
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .fillMaxSize()
-                        ) {
-                            ExerciseProgress(
-                                emgState,
-                                routineState.planDetails[page].setOfRoutineDetail,
-                                {viewModel.addSet(plan.planKey)},
-                                {idx -> viewModel.removeSet(plan.planKey, idx)},
-                                {idx, weight -> viewModel.setWeight(plan.planKey, idx, weight)},
-                                {idx, rep -> viewModel.setRep(plan.planKey, idx, rep)},
-                                {idx -> viewModel.startSet(plan.planKey, idx)},
-                                {idx -> viewModel.addCnt(plan.planKey, idx)},
-                                {idx -> viewModel.endSet(plan.planKey, idx)},
-                                routineState.setInProgress,
-                                muscleavg
-                            )
-                        }
+                        ExerciseProgress(
+                            emgState,
+                            routineState.planDetails[page].setOfRoutineDetail,
+                            {viewModel.addSet(plan.planKey)},
+                            {idx -> viewModel.removeSet(plan.planKey, idx)},
+                            {idx, weight -> viewModel.setWeight(plan.planKey, idx, weight)},
+                            {idx, rep -> viewModel.setRep(plan.planKey, idx, rep)},
+                            {idx -> viewModel.startSet(plan.planKey, idx)},
+                            {idx -> viewModel.addCnt(plan.planKey, idx)},
+                            {idx -> viewModel.endSet(plan.planKey, idx)},
+                            routineState.setInProgress,
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
                     }
                 }
                 RoutineProgress(pagerState.currentPage + 1, routineSize, elapsedTime, {openEndDialog = true}, routineState.setInProgress, {coroutineScope.launch { pagerState.scrollToPage(pagerState.currentPage - 1) }}, {coroutineScope.launch { pagerState.scrollToPage(pagerState.currentPage + 1) }}, routineSize, pagerState.currentPage)

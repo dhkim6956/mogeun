@@ -3,8 +3,8 @@
 package io.ssafy.mogeun.ui.screens.routine.execution.components
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,9 +18,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,10 +30,15 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.PlayCircleOutline
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ElevatedAssistChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -41,7 +47,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -57,17 +62,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import io.ssafy.mogeun.R
-import io.ssafy.mogeun.model.SetOfRoutineDetail
 import io.ssafy.mogeun.ui.screens.routine.execution.EmgUiState
-import io.ssafy.mogeun.ui.screens.routine.execution.SetOfPlan
+import io.ssafy.mogeun.ui.screens.routine.execution.MuscleSensorValue
 import io.ssafy.mogeun.ui.screens.routine.execution.SetProgress
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import okhttp3.internal.wait
 import org.jtransforms.fft.DoubleFFT_1D
 
 @SuppressLint("MutableCollectionMutableState")
@@ -83,7 +86,6 @@ fun ExerciseProgress(
     addCnt: (Int) -> Unit,
     endSet: (Int) -> Unit,
     inProgress: Boolean,
-    muscleAverage: Double
 ){
     val totalSet = planInfo.size
     val setCntList = (1..totalSet).map { it }
@@ -92,6 +94,7 @@ fun ExerciseProgress(
 
     val setProgress = planInfo[selectedTab]
 
+    val sensorData = setProgress.sensorData
 
     //시작 종료
     var isStarting by remember { mutableStateOf(false) }
@@ -99,183 +102,157 @@ fun ExerciseProgress(
 
     Column(
         modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .shadow(2.dp, RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(16.dp))
             .height(300.dp)
-            .fillMaxWidth(0.95f)
-            .background(color = Color(0xFFF7F7F7))
-            .clip(RoundedCornerShape(12.dp)),
+            .fillMaxWidth()
+            .background(color = Color(0xFFF7F7F7)),
     ) {
-        Box(modifier = Modifier //---------header---------
-            .fillMaxHeight(0.15f)
-            .background(color = Color(0xFFDFEAFF))
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp)
+                .background(color = Color(0xFFDFEAFF))
         ) {
-            Box(
+            SetOfRoutineRow(
+                setCntList.map { "$it 세트" },
+                selectedTab,
+                { index -> selectedTab = index },
+                inProgress,
                 modifier = Modifier
-                    .fillMaxWidth(0.7f)
-                    .fillMaxHeight(),
-                contentAlignment = Alignment.TopStart
-            ){
-                ScrollableTabRow(setCntList.map { "$it 세트" }, selectedTab, { index -> selectedTab = index }, inProgress)
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
+                    .weight(1f)
                     .fillMaxHeight()
-                    .padding(horizontal = 4.dp, vertical = 0.dp),
-                contentAlignment = Alignment.CenterEnd
-            ){
-                Button(onClick = {
+            )
+            ElevatedAssistChip(
+                colors = AssistChipDefaults.elevatedAssistChipColors(
+                    containerColor = if (inProgress) MaterialTheme.colorScheme.secondary.copy(
+                        0.3f
+                    ) else MaterialTheme.colorScheme.secondary,
+                    leadingIconContentColor = MaterialTheme.colorScheme.onSecondary,
+                    labelColor = MaterialTheme.colorScheme.onSecondary
+                ),
+                enabled = !inProgress,
+                onClick = {
                     addSet()
                 },
-                    modifier = Modifier
-                        .width(120.dp)
-                        .height(36.dp)
-                        .padding(0.dp)
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier
-                                .size(20.dp)
-                                .padding(0.dp),
-                        )
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            text = "세트 추가",
-                            fontSize = 12.sp,
-                        )
-                    }
-                }
-            }
+                label = { Text(text = "세트 추가") },
+                leadingIcon = { Icon(Icons.Default.Add, null) },
+                modifier = Modifier.padding(horizontal = 4.dp)
+            )
         }
-        Row(modifier = Modifier //---------------body-------------------
-            .fillMaxHeight(0.7f)
-            .fillMaxWidth()
+        Row(
+            modifier = Modifier //---------------body-------------------
+                .weight(1f)
+                .fillMaxWidth()
         ) {
-            Box(modifier = Modifier //무계, 횟수
-                .fillMaxHeight()
-                .fillMaxWidth(0.35f)
-                .background(Color(0xFFF7F7F7)),
-                contentAlignment = Alignment.Center
-            ){
-                DateSelectionSection(
-                    onWeightChosen = { setWeight(selectedTab + 1, it.toInt()) },
-                    onRepChosen = {setRep(selectedTab + 1, it.toInt())},
-                    preWeight = planInfo[selectedTab].targetWeight,
-                    preRep = planInfo[selectedTab].targetRep,
-                    inProgress = inProgress
-                )
-            }
+            DateSelectionSection(
+                onWeightChosen = { setWeight(selectedTab + 1, it.toInt()) },
+                onRepChosen = { setRep(selectedTab + 1, it.toInt()) },
+                preWeight = planInfo[selectedTab].targetWeight,
+                preRep = planInfo[selectedTab].targetRep,
+                inProgress = inProgress,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(140.dp)
+            )
             Box(
                 modifier = Modifier//EMG 신호 표기
                     .fillMaxHeight()
-                    .fillMaxWidth()
+                    .weight(1f)
                     .background(Color(0xFFF7F7F7)),
-            ){
-                EMGCollector(emgUiState, isStarting, setProgress, {addCnt(selectedTab + 1)}, inProgress, muscleAverage)
+            ) {
+                EMGCollector(
+                    emgUiState,
+                    isStarting,
+                    setProgress,
+                    { addCnt(selectedTab + 1) },
+                    inProgress,
+                    sensorData
+                )
             }
         }
         Box(
-            modifier = Modifier //---------footer---------
-                .fillMaxSize()
-                .background(Color(0xFFF7F7F7)),
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(12.dp)
+                .shadow(4.dp, RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(16.dp))
         ) {
-            Row(
+            Box(
+                contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(15.dp)
-                    .shadow(4.dp, shape = RoundedCornerShape(4.dp))
-                    .clip(RoundedCornerShape(12.dp)),
-                horizontalArrangement = Arrangement.Center,
-            )
-            {
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxWidth(0.3f)
-//                        .fillMaxHeight()
-//                        .background(color = Color.White)
-//                        .clickable {
-//                            if (selectedTab == totalSet - 1) selectedTab = totalSet - 2
-//                            removeSet(selectedTab + 1)
-//                        },
-//                ){
-//                    Text(
-//                        text = "세트 삭제",
-//                        modifier = Modifier.align(Alignment.Center),
-//                    )
-//                }
-                TextButton(
-                    enabled = !inProgress,
-                    onClick = {
-                        if (selectedTab == totalSet - 1) selectedTab = totalSet - 2
-                        removeSet(selectedTab + 1)
-                              },
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .background(Color.White)
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .fillMaxWidth(0.3f)
-                        .fillMaxHeight()
-                        .background(color = Color.White)
-
+                        .fillMaxWidth()
+                        .height(40.dp)
                 ) {
-                    Text(text = "세트 삭제")
-                }
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .background(color = Color.White)
-                ){
+                    TextButton(
+                        enabled = !inProgress,
+                        onClick = {
+                            if (selectedTab == totalSet - 1) selectedTab = totalSet - 2
+                            removeSet(selectedTab + 1)
+                        },
+                        modifier = Modifier
+                            .wrapContentSize()
+                    ) {
+                        Text(text = "세트 삭제")
+                    }
+                    Spacer(
+                        modifier = Modifier
+                            .weight(1f)
+                    )
                     Row(
                         modifier = Modifier
-                            .fillMaxSize(),
-                        horizontalArrangement = Arrangement.End
-
+                            .wrapContentHeight()
+                            .padding(4.dp)
+                            .clickable {
+                                if (!inProgress) startSet(selectedTab + 1)
+                            },
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .padding(4.dp)
-                                .clickable {
-                                    if (!inProgress) startSet(selectedTab + 1)
-                                },
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center,
-                        ){
-                            Icon(
-                                imageVector = Icons.Default.PlayCircleOutline,
-                                contentDescription = null,
-                                tint = if(!inProgress) Color(0xFF556FF7) else Color(0xFFDDDDDD),
-                                modifier = Modifier.size(20.dp),
-                            )
-                            Text(text = "시작",fontSize = 15.sp, textAlign = TextAlign.Center)
-                        }
-                        Row(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .padding(start = 4.dp, top = 4.dp, bottom = 4.dp, end = 8.dp)
-                                .clickable {
-                                    if(inProgress) {
-                                        endSet(selectedTab + 1)
-                                        if(selectedTab < totalSet - 1) {
-                                            selectedTab += 1
-                                        }
+                        Icon(
+                            imageVector = Icons.Default.PlayCircleOutline,
+                            contentDescription = null,
+                            tint = if (!inProgress) Color(0xFF556FF7) else Color(0xFFDDDDDD),
+                            modifier = Modifier.size(20.dp),
+                        )
+                        Text(text = "시작", fontSize = 15.sp, textAlign = TextAlign.Center)
+                    }
+                    Row(
+                        modifier = Modifier
+                            .wrapContentHeight()
+                            .padding(start = 4.dp, top = 4.dp, bottom = 4.dp, end = 8.dp)
+                            .clickable {
+                                if (inProgress) {
+                                    endSet(selectedTab + 1)
+                                    if (selectedTab < totalSet - 1) {
+                                        selectedTab += 1
                                     }
-                                },
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center,
-                        ){
-                            Icon(
-                                painter = painterResource(id = R.drawable.removecirclestop),
-                                contentDescription = "contentDescription",
-                                tint = if(inProgress) Color(0xFFFFD5D5) else Color(0xFFDDDDDD),
-                                modifier = Modifier
-                                    .size(21.dp)
-                                    .padding(2.dp)
-                            )
-                            Text(text = "종료")
-                        }
+                                }
+                            },
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.removecirclestop),
+                            contentDescription = "contentDescription",
+                            tint = if (inProgress) Color(0xFFFFD5D5) else Color(0xFFDDDDDD),
+                            modifier = Modifier
+                                .size(21.dp)
+                                .padding(2.dp)
+                        )
+                        Text(text = "종료")
                     }
                 }
             }
@@ -284,19 +261,18 @@ fun ExerciseProgress(
 }
 
 @Composable//header
-private fun ScrollableTabRow(
+private fun SetOfRoutineRow(
     tabs: List<String>,
     selectedTab: Int,
     onTabClick: (Int) -> Unit,
     inProgress: Boolean,
+    modifier: Modifier = Modifier
 ) {
-    androidx.compose.material3.ScrollableTabRow(
+    ScrollableTabRow(
         containerColor = Color(0xFFDFEAFF),
         selectedTabIndex = selectedTab,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(40.dp),
         edgePadding = 0.dp,
+        modifier = modifier,
     ) {
         tabs.forEachIndexed { index, text ->
             Tab(
@@ -305,8 +281,8 @@ private fun ScrollableTabRow(
                 onClick = {
                     onTabClick(index)
                 },
-                selectedContentColor = MaterialTheme.colorScheme.primary,
-                unselectedContentColor = Color.Black,
+                selectedContentColor = if(inProgress) MaterialTheme.colorScheme.primary.copy(alpha = 0.3f) else MaterialTheme.colorScheme.primary,
+                unselectedContentColor = if(inProgress) Color.Black.copy(alpha = 0.3f) else Color.Black,
                 modifier = Modifier
                     .fillMaxHeight()
                     .size(20.dp, 36.dp)
@@ -327,67 +303,87 @@ fun DateSelectionSection(
     onRepChosen: (String) -> Unit,
     preWeight: Int,
     preRep: Int,
-    inProgress: Boolean
+    inProgress: Boolean,
+    modifier: Modifier = Modifier
 ) {
     val kgValue = (0..300).map { it.toString() }
     val repValue = (0..100).map { it.toString() }
 
-    if(inProgress) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.3f))
-                .pointerInput(Unit) {  }
-        )
-    }
-
-    Row(
-        horizontalArrangement = Arrangement.SpaceAround,
-        modifier = Modifier
-            .fillMaxWidth(0.9f)
-            .fillMaxHeight(0.9f)
-            .background(color = Color.LightGray)
-            .padding(10.dp)
+    Box (
+        contentAlignment = Alignment.Center,
+        modifier = modifier
     ) {
-        Column (
-            modifier = Modifier
-                .fillMaxWidth(0.4f)
-                .fillMaxHeight()
-                .clip(RoundedCornerShape(4.dp))
-        ) {
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.3f)
-                .background(color = Color.Gray),
-                contentAlignment = Alignment.Center
-            ){
-                Text(text = "Kg",textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
-            }
-            InfiniteItemsPicker(
-                items = kgValue,
-                firstIndex = (301 * 200)+preWeight - 1,
-                onItemSelected =  onWeightChosen,
+        if (inProgress) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(0.1f))
+                    .pointerInput(Unit) { }
+                    .zIndex(1f)
             )
         }
-        Column(
+
+        Row(
+            horizontalArrangement = Arrangement.SpaceAround,
             modifier = Modifier
-                .fillMaxWidth(0.66f)
-                .fillMaxHeight()
-                .clip(RoundedCornerShape(4.dp))
+                .fillMaxSize(0.9f)
+                .padding(10.dp)
+                .shadow(1.dp, shape = RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(8.dp))
+                .background(color = Color(0xFFEDEDED))
+                .padding(4.dp)
+                .zIndex(0f)
         ) {
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.3f)
-                .background(color = Color.Gray),
-                contentAlignment = Alignment.Center
-            ){
-                Text(text = "Rep")
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth(0.4f)
+                    .fillMaxHeight()
+                    .clip(RoundedCornerShape(4.dp))
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(28.dp)
+                        .background(color = Color(0xFFC8C8C8)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Kg",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                InfiniteItemsPicker(
+                    items = kgValue,
+                    firstIndex = (301 * 200) + preWeight - 1,
+                    onItemSelected = onWeightChosen,
+                    modifier = Modifier.weight(1f)
+                )
             }
-            InfiniteItemsPicker(
-                items = repValue,
-                firstIndex = (101 * 200) + preRep - 1,
-                onItemSelected =  onRepChosen,
-            )
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth(0.66f)
+                    .fillMaxHeight()
+                    .clip(RoundedCornerShape(4.dp))
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(28.dp)
+                        .background(color = Color(0xFFC8C8C8)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "Rep")
+                }
+                InfiniteItemsPicker(
+                    items = repValue,
+                    firstIndex = (101 * 200) + preRep - 1,
+                    onItemSelected = onRepChosen,
+                    modifier = Modifier.weight(1f)
+                )
+            }
         }
     }
 }
@@ -422,7 +418,7 @@ fun InfiniteItemsPicker(
     }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .height(106.dp)
             .fillMaxWidth()
             .background(Color.White),
@@ -511,7 +507,7 @@ fun InfiniteItemsPicker(
 
 // 최신값
 @Composable
-fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgress, addCnt: () -> Unit, inProgress: Boolean, muscleAverage: Double) {
+fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgress, addCnt: () -> Unit, inProgress: Boolean, sensorData: List<MuscleSensorValue>) {
     var lastLev by remember { mutableStateOf(0)}
     var lastTime by remember { mutableStateOf<Long>(0)}
     var currentLev by remember { mutableStateOf(0) }
@@ -538,15 +534,24 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(end = 12.dp)
     ){
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(24.dp)
+        ) {
+            Text(text = "근 활성도")
+        }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.5f)
+                .weight(1f)
         ) {
             Box(modifier = Modifier
                 .fillMaxHeight()
-                .fillMaxWidth(0.5f)
+                .weight(1f)
                 .background(Color.White),
                 contentAlignment = Alignment.Center
             ){
@@ -568,7 +573,7 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
             }
             Box(modifier = Modifier
                 .fillMaxHeight()
-                .fillMaxWidth()
+                .weight(1f)
                 .background(Color.White),
                 contentAlignment = Alignment.Center
             ){
@@ -592,7 +597,52 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
+                .height(24.dp)
+        ) {
+            Text(text = "근 피로도")
+        }
+        
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        ) {
+            if(sensorData[0].muscleFatigue == null || sensorData[1].muscleFatigue == null) {
+                Box (
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White)
+                ) {
+                    Text(text = "세트를 진행해 주세요")
+                }
+            } else {
+                Box(modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .background(Color.White),
+                    contentAlignment = Alignment.Center
+                ){
+                    Text("${String.format("%.3f", sensorData[0].muscleFatigue)}")
+
+                }
+                Box(modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .background(Color.White),
+                    contentAlignment = Alignment.Center
+                ){
+                    Text("${String.format("%.3f", sensorData[1].muscleFatigue)}")
+
+                }
+            }
+        }
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp)
                 .background(Color(0xFFDDE2FD)),
         ){
             Text(String.format("개수 : ${planInfo.successRep}", emgUiState.emg1Avg % 90))
