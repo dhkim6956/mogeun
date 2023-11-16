@@ -59,6 +59,7 @@ import io.ssafy.mogeun.model.Exercise
 import io.ssafy.mogeun.model.SetResult
 import io.ssafy.mogeun.ui.AppViewModelProvider
 import io.ssafy.mogeun.ui.components.ElevatedGif
+import io.ssafy.mogeun.ui.components.MuscleTooltipIcon
 import kotlinx.coroutines.launch
 
 data class MuscleFatigue(
@@ -433,43 +434,11 @@ fun MuscleActivity(
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Box(
-                    modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp)
-                        .background(
-                            color = MaterialTheme.colorScheme.surface,
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                ) {
-                    Image(
-                        modifier = Modifier
-                            .width(50.dp)
-                            .height(50.dp),
-                        painter = painterResource(leftMuscleImage),
-                        contentDescription = muscleImagePath
-                    )
-                }
+                MuscleTooltipIcon(muscleImagePath, 50.dp, 40.dp, 2)
                 Text("L", fontWeight = FontWeight.Bold)
                 BalanceBar(balanceValue)
                 Text("R", fontWeight = FontWeight.Bold)
-                Box(
-                    modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp)
-                        .background(
-                            color = MaterialTheme.colorScheme.surface,
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                ) {
-                    Image(
-                        modifier = Modifier
-                            .width(50.dp)
-                            .height(50.dp),
-                        painter = painterResource(rightMuscleImage),
-                        contentDescription = muscleImagePath
-                    )
-                }
+                MuscleTooltipIcon(muscleImagePath, 50.dp, 40.dp, 3)
             }
         }
     }
