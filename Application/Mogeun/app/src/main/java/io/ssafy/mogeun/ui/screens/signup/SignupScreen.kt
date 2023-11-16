@@ -21,6 +21,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -70,7 +71,7 @@ fun SignupScreen(
                     fontSize = 24.sp
                 )
                 Text(
-                    text = "입력해주세요",
+                    text = stringResource(R.string.please_enter_it),
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
                     color = Color.White,
@@ -98,34 +99,40 @@ fun Essential(
     val nickname = viewModel.nickname
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
+    val validIdText = stringResource(R.string.valid_id)
+    val duplicateIdText = stringResource(R.string.duplicate_id)
+    val duplicateFirstText = stringResource(R.string.duplicate_first)
+    val passwordNotMatchText = stringResource(R.string.password_not_match)
+    val enterAllInforText = stringResource(R.string.enter_all_information)
+    val bodyInforText = stringResource(R.string.body_information)
 
     LaunchedEffect(viewModel.checkEmail) {
         if(viewModel.dupEmailSuccess) {
             coroutineScope.launch {
-                snackbarHostState.showSnackbar("사용 가능한 아이디 입니다.")
+                snackbarHostState.showSnackbar(validIdText)
                 viewModel.updateDupEmailSuccess(false)
             }
         }
         if(viewModel.checkEmail == 2) {
-            snackbarHostState.showSnackbar("중복된 아이디 입니다.")
+            snackbarHostState.showSnackbar(duplicateIdText)
             viewModel.updateCheckEmail(0)
         }
     }
     LaunchedEffect(viewModel.alertDupEmail) {
         if (viewModel.alertDupEmail) {
-            snackbarHostState.showSnackbar("중복 확인을 먼저 클릭해 주세요.")
+            snackbarHostState.showSnackbar(duplicateFirstText)
             viewModel.updateAlertDupEmail(false)
         }
     }
     LaunchedEffect(viewModel.alertPassword) {
         if (viewModel.alertPassword) {
-            snackbarHostState.showSnackbar("비밀번호가 일치하지 않습니다.")
+            snackbarHostState.showSnackbar(passwordNotMatchText)
             viewModel.updateAlertPassword(false)
         }
     }
     LaunchedEffect(viewModel.alertInput) {
         if (viewModel.alertInput) {
-            snackbarHostState.showSnackbar("모든 정보를 입력하여 주세요.")
+            snackbarHostState.showSnackbar(enterAllInforText)
             viewModel.updateAlertInput(false)
         }
     }
@@ -135,7 +142,7 @@ fun Essential(
             .verticalScroll(rememberScrollState())
             .fillMaxHeight()
     ) {
-        Text(text = "아이디")
+        Text(text = stringResource(R.string.id))
         Row {
             TextField(
                 value = id,
@@ -162,11 +169,11 @@ fun Essential(
                 modifier = Modifier.width(100.dp),
                 shape = RoundedCornerShape(10.dp)
             ) {
-                Text(text = "중복확인")
+                Text(text = stringResource(R.string.duplicate_verification))
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = "비밀 번호")
+        Text(text = stringResource(R.string.password))
         TextField(
             value = password,
             onValueChange = viewModel::updatePassword,
@@ -183,7 +190,7 @@ fun Essential(
             maxLines = 1
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = "비밀 번호 확인")
+        Text(text = stringResource(R.string.confirm_password))
         TextField(
             value = checkingPassword,
             onValueChange = viewModel::updateCheckingPassword,
@@ -200,7 +207,7 @@ fun Essential(
             maxLines = 1
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = "닉네임")
+        Text(text = stringResource(R.string.nickname))
         TextField(
             value = nickname,
             onValueChange = viewModel::updateNickname,
@@ -242,14 +249,14 @@ fun Essential(
                                       viewModel.updateAlertInput(true)
                                   } else {
                                       viewModel.updateInputForm(2)
-                                      viewModel.updateFirstText("신체정보를")
+                                      viewModel.updateFirstText(bodyInforText)
                                   }
                             },
                         containerColor = MaterialTheme.colorScheme.secondary,
                         elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
                     ) {
                         Text(
-                            text = "회원가입",
+                            text = stringResource(R.string.sign_up),
                             fontSize = 16.sp,
                             modifier = Modifier.padding(start = 20.dp, end = 20.dp)
                         )
@@ -278,11 +285,12 @@ fun Inbody(
     var bodyFatText by remember { mutableStateOf(if(viewModel.bodyFat == null) "" else viewModel.bodyFat.toString()) }
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
+    val successSignUpText = stringResource(R.string.success_signup)
 
     LaunchedEffect(viewModel.successSignUp) {
         if(viewModel.successSignUp) {
             coroutineScope.launch {
-                snackbarHostState.showSnackbar("회원가입 성공.")
+                snackbarHostState.showSnackbar(successSignUpText)
                 viewModel.updateSuccessSignUp(false)
             }
         }
@@ -292,7 +300,7 @@ fun Inbody(
             .padding(28.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        Text(text = "키 (cm)")
+        Text(text = stringResource(R.string.height))
         TextField(
             value = heightText,
             onValueChange = {
@@ -316,7 +324,7 @@ fun Inbody(
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "몸무게 (kg)")
+        Text(text = stringResource(R.string.weight))
         TextField(
             value = weightText,
             onValueChange = {
@@ -339,7 +347,7 @@ fun Inbody(
             maxLines = 1
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "골격근량 (kg)")
+        Text(text = stringResource(R.string.muscle_mass))
         TextField(
             value = muscleMassText,
             onValueChange = {
@@ -362,7 +370,7 @@ fun Inbody(
             maxLines = 1
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "체지방 (kg)")
+        Text(text = stringResource(R.string.body_fat))
         TextField(
             value = bodyFatText,
             onValueChange = {
@@ -400,7 +408,7 @@ fun Inbody(
                             .height(36.dp)
                             .background(color = Color.White, shape = RoundedCornerShape(30.dp)),
                     ) {
-                        Text(text = "건너뛰기", fontSize = 16.sp)
+                        Text(text = stringResource(R.string.skipping), fontSize = 16.sp)
                     }
                 },
                 floatingActionButton = {
@@ -413,7 +421,7 @@ fun Inbody(
                         elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
                     ) {
                         Text(
-                            text = "회원가입",
+                            text = stringResource(R.string.sign_up),
                             fontSize = 16.sp,
                             modifier = Modifier.padding(start = 20.dp, end = 20.dp)
                         )
@@ -436,7 +444,7 @@ fun Preview_MultipleRadioButtons(viewModel: SignupViewModel = viewModel(factory 
     val onChangeState: (String) -> Unit = { viewModel.updateSelectedGender(it) }
     val items = listOf("m", "f")
     Column(Modifier.padding(8.dp)) {
-        Text(text = "성별을 선택해주세요.")
+        Text(text = stringResource(R.string.choose_gender))
         Row {
             items.forEach { item ->
                 Row(
@@ -454,9 +462,9 @@ fun Preview_MultipleRadioButtons(viewModel: SignupViewModel = viewModel(factory 
                         onClick = null
                     )
                     if(item == "m") {
-                        Text(text = "남성")
+                        Text(text = stringResource(R.string.male))
                     } else {
-                        Text(text = "여성")
+                        Text(text = stringResource(R.string.female))
                     }
                 }
             }

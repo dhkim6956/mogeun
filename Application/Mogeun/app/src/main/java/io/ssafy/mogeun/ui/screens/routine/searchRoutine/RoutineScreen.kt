@@ -43,15 +43,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.HorizontalAlignmentLine
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -165,10 +163,13 @@ fun RoutineScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(color = Color.White.copy(alpha = 0.5f), shape = RoundedCornerShape(10.dp))
+                            .background(
+                                color = Color.White.copy(alpha = 0.5f),
+                                shape = RoundedCornerShape(10.dp)
+                            )
                             .alpha(0.5f)
                             .height(100.dp)
-                            .clickable{
+                            .clickable {
                                 navController.navigate("addexercise/${beforeScreen}/3")
                             }
                     ) {
@@ -189,30 +190,6 @@ fun RoutineScreen(
             }
         }
     }
-//    Box(modifier = Modifier
-//        .fillMaxSize()
-//        .padding(start = 30.dp, bottom = 30.dp), contentAlignment = Alignment.BottomStart) {
-//        Button(
-//            onClick = { navController.navigate("addexercise/${beforeScreen}/3") },
-//            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-//            shape = RoundedCornerShape(10.dp),
-//            elevation = ButtonDefaults.buttonElevation(
-//                defaultElevation = 10.dp,
-//                pressedElevation = 0.dp,
-//            ),
-//        ) {
-//            Row {
-//                Image(
-//                    painter = painterResource(id = R.drawable.add_routine),
-//                    contentDescription = "add_routine",
-//                    contentScale = ContentScale.Crop,
-//                    modifier = Modifier.height(20.dp)
-//                )
-//                Spacer(modifier = Modifier.width(10.dp))
-//                Text(text = "루틴추가", color = MaterialTheme.colorScheme.scrim)
-//            }
-//        }
-//    }
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -359,7 +336,7 @@ fun RoutineList(
                         pressedElevation = 0.dp,
                     ),
                 ) {
-                    Text(text = "루틴시작")
+                    Text(text = stringResource(R.string.routine_start))
                 }
             }
             Spacer(
@@ -426,7 +403,7 @@ fun AlertDialogExample(
                     onConfirmation()
                 }
             ) {
-                Text("Confirm")
+                Text("확인")
             }
         },
         dismissButton = {
@@ -435,7 +412,7 @@ fun AlertDialogExample(
                     onDismissRequest()
                 }
             ) {
-                Text("Dismiss")
+                Text("취소")
             }
         }
     )

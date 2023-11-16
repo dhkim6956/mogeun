@@ -32,6 +32,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -56,9 +57,10 @@ fun LoginScreen(
     }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
+    var wrongInforText = stringResource(R.string.wrong_information)
     LaunchedEffect(viewModel.errorSignIn) {
         if (viewModel.errorSignIn == true) {
-            snackbarHostState.showSnackbar("잘못된 정보입니다.")
+            snackbarHostState.showSnackbar(wrongInforText)
             viewModel.updateErrorSignIn(false)
         }
     }
@@ -68,24 +70,29 @@ fun LoginScreen(
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
-    ) {
-        focusManager.clearFocus()
-    }
+            ) {
+                focusManager.clearFocus()
+            }
     ) {
         Box(
-            modifier = Modifier.height(330.dp).fillMaxSize(),
+            modifier = Modifier
+                .height(330.dp)
+                .fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) {
             Image(
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "logo",
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.padding(end = 120.dp).padding(bottom = 100.dp).height(150.dp)
+                modifier = Modifier
+                    .padding(end = 120.dp)
+                    .padding(bottom = 100.dp)
+                    .height(150.dp)
             )
-            Text(text = "모근", fontSize = 60.sp, color = MaterialTheme.colorScheme.primary)
+            Text(text = stringResource(R.string.service_name), fontSize = 60.sp, color = MaterialTheme.colorScheme.primary)
         }
         Column(modifier = Modifier.padding(28.dp)) {
-            Text(text = "아이디")
+            Text(text = stringResource(R.string.id))
             TextField(
                 value = viewModel.id,
                 onValueChange = { viewModel.updateText1(it) },
@@ -101,7 +108,7 @@ fun LoginScreen(
                 maxLines = 1
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = "비밀번호")
+            Text(text = stringResource(R.string.password))
             TextField(
                 value = viewModel.pwd,
                 onValueChange = { viewModel.updateText2(it) },
@@ -124,11 +131,11 @@ fun LoginScreen(
                     .height(52.dp),
                 shape = RoundedCornerShape(10.dp)
             ) {
-                Text(text = "로그인", color = MaterialTheme.colorScheme.scrim)
+                Text(text = stringResource(R.string.login), color = MaterialTheme.colorScheme.scrim)
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "회원이 아니신가요?",
+                text = stringResource(R.string.not_user),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -140,7 +147,7 @@ fun LoginScreen(
                     .height(52.dp),
                 shape = RoundedCornerShape(10.dp)
             ) {
-                Text(text = "회원가입", color = MaterialTheme.colorScheme.scrim)
+                Text(text = stringResource(R.string.sign_up), color = MaterialTheme.colorScheme.scrim)
             }
         }
     }

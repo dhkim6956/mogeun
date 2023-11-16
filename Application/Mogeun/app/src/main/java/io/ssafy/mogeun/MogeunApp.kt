@@ -71,7 +71,7 @@ fun Navigation() {
             .padding(innerPadding)
             .background(
                 brush = Brush.verticalGradient(
-                    listOf(Color.White, Color(0xFFFFEAE4)),
+                    listOf(Color.White, Color(0xFFFFF1F1)),
                     startY = 100f,
                     endY = 800f
                 ),

@@ -1,24 +1,35 @@
 package io.ssafy.mogeun.ui.screens.setting.setting
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BluetoothSearching
+import androidx.compose.material.icons.filled.GroupOff
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material.icons.filled.ManageAccounts
+import androidx.compose.material.icons.filled.RateReview
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -32,20 +43,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import io.ssafy.mogeun.R
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SettingScreen(
     viewModel: SettingViewModel = viewModel(factory = SettingViewModel.Factory),
@@ -61,331 +72,245 @@ fun SettingScreen(
     }
     LaunchedEffect(viewModel.errorDeleteUser) {
         if (viewModel.errorDeleteUser == true) {
-            snackbarHostState.showSnackbar("잘못된 정보입니다.")
+            snackbarHostState.showSnackbar("아이디와 비밀번호를 정확하게 입력해주세요.")
         }
     }
-    Column(
+
+    val userMenus: List<MenuItemInfo> = listOf(
+        MenuItemInfo(
+            "내 정보 수정",
+            "개인 정보를 수정합니다.",
+            Icons.Default.ManageAccounts,
+            {navController.navigate("User")},
+            Color(0xFFFFF0C9),
+            Position.Top
+        ),
+        MenuItemInfo(
+            "로그아웃",
+            "서비스에서 로그아웃합니다.",
+            Icons.Default.Logout,
+            {
+                viewModel.deleteUserKey()
+                navController.navigate("Splash")
+            },
+            Color(0xFFFFE0C9),
+            Position.Mid
+        ),
+        MenuItemInfo(
+            "회원탈퇴",
+            "서비스를 그만 이용하고 싶어요.",
+            Icons.Default.GroupOff,
+            {openAlertDialog.value = true},
+            Color(0xFFFFC9C9),
+            Position.Bot
+        )
+    )
+
+    val serviceMenus: List<MenuItemInfo> = listOf(
+        MenuItemInfo(
+            "기기연동",
+            "디바이스를 연결합니다.",
+            Icons.Default.BluetoothSearching,
+            {navController.navigate("Connection")},
+            Color(0xFFC9E2FF),
+            Position.Single
+        )
+    )
+
+    val appMenus: List<MenuItemInfo> = listOf(
+        MenuItemInfo(
+            "Google Play 평가",
+            "리뷰를 남겨주세요.",
+            Icons.Default.RateReview,
+            {},
+            Color(0xFFEAC9FF),
+            Position.Top
+        ),
+        MenuItemInfo(
+            "앱 정보",
+            "버전, Contact...",
+            Icons.Default.Info,
+            {},
+            Color(0xFFFFC9E3),
+            Position.Bot
+        )
+    )
+
+    LazyColumn(
         modifier = Modifier
-            .padding(32.dp)
-            .verticalScroll(rememberScrollState())
+            .fillMaxSize()
     ) {
-        Column {
-            Text(
-                text = "회원정보",
-                fontSize = 20.sp,
-                )
+        stickyHeader {
+            LazyHeader("회원정보")
         }
-        Spacer(modifier = Modifier.height(10.dp))
-        Column(modifier = Modifier
-            .background(
-                color = MaterialTheme.colorScheme.onErrorContainer,
-                shape = RoundedCornerShape(15.dp)
+        items(userMenus) {
+            LazyList(menu = it)
+        }
+        stickyHeader {
+            LazyHeader("서비스 연동")
+        }
+        items(serviceMenus) {
+            LazyList(menu = it)
+        }
+        stickyHeader {
+            LazyHeader("앱 정보")
+        }
+        items(appMenus) {
+            LazyList(menu = it)
+        }
+    }
+
+
+
+    when {
+        openAlertDialog.value -> {
+            AlertDialogExample(
+                onDismissRequest = { openAlertDialog.value = false },
+                onConfirmation = {
+                    viewModel.deleteUser()
+                    openAlertDialog.value = false
+                },
+                dialogTitle = "회원 정보를 입력해 주세요.",
+                icon = Icons.Default.Info
             )
+        }
+    }
+}
+
+enum class Position() {
+    Top, Mid, Bot, Single
+}
+
+data class MenuItemInfo(
+    val title: String,
+    val description: String,
+    val vector: ImageVector,
+    val onClick: () -> Unit,
+    val color: Color,
+    val position: Position,
+)
+
+@Composable
+fun LazyHeader(title: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .padding(vertical = 8.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .background(Color(0xFFF7F7F7))
         ) {
-            Row(modifier = Modifier
-                .drawWithContent {
-                    drawContent()
-                    drawLine(
-                        color = Color.Gray,
-                        start = Offset(0f, size.height),
-                        end = Offset(size.width, size.height),
-                        strokeWidth = 2f,
-                    )
-                }
-                .fillMaxWidth()
-                .padding(16.dp)
-                .clickable { navController.navigate("User") }
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .height(48.dp)
-                        .width(48.dp)
-                    ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.user_information_update),
-                        contentDescription = "user_information_update",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.height(32.dp),
-                    )
-                }
-                Spacer(modifier = Modifier.width(10.dp))
-                Column {
-                    Text(text = "내 정보 수정")
-                    Text(
-                        text = "개인 정보를 수정 합니다.",
-                        color = Color.Gray
-                        )
-                }
-            }
-            Row(modifier = Modifier
-                .drawWithContent {
-                    drawContent()
-                    drawLine(
-                        color = Color.Gray,
-                        start = Offset(0f, size.height),
-                        end = Offset(size.width, size.height),
-                        strokeWidth = 2f,
-                    )
-                }
-                .fillMaxWidth()
-                .padding(16.dp)
-                .clickable {
-                    viewModel.deleteUserKey()
-                    navController.navigate("Splash")
-                }
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .height(48.dp)
-                        .width(48.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.baseline_logout_24),
-                        contentDescription = "baseline_logout_24",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.height(32.dp),
-                    )
-                }
-                Spacer(modifier = Modifier.width(10.dp))
-                Column {
-                    Text(text = "로그아웃")
-                    Text(
-                        text = "서비스에서 로그아웃 합니다.",
-                        color = Color.Gray
-                    )
-                }
-            }
-            Row(modifier = Modifier
-                .drawWithContent {
-                    drawContent()
-                    drawLine(
-                        color = Color.Gray,
-                        start = Offset(0f, size.height),
-                        end = Offset(size.width, size.height),
-                        strokeWidth = 2f,
-                    )
-                }
-                .fillMaxWidth()
-                .padding(16.dp)
-                .clickable {
-                    openAlertDialog.value = true
-                }
-            ) {
-                when {
-                    openAlertDialog.value -> {
-                        AlertDialogExample(
-                            onDismissRequest = { openAlertDialog.value = false },
-                            onConfirmation = {
-                                viewModel.deleteUser()
-                                openAlertDialog.value = false
-                            },
-                            dialogTitle = "회원 정보를 입력해 주세요.",
-                            icon = Icons.Default.Info
-                        )
-                    }
-                }
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .height(48.dp)
-                        .width(48.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.user_delete),
-                        contentDescription = "user_delete",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.height(32.dp),
-                    )
-                }
-                Spacer(modifier = Modifier.width(10.dp))
-                Column {
-                    Text(text = "회원 탈퇴")
-                    Text(
-                        text = "서비스를 그만 이용하고 싶어요.",
-                        color = Color.Gray
-                    )
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-        Column {
-            Text(
-                text = "서비스 연동",
-                fontSize = 20.sp,
-            )
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-        Column(modifier = Modifier
-            .background(
-                color = MaterialTheme.colorScheme.onErrorContainer,
-                shape = RoundedCornerShape(15.dp)
-            )
-        ) {
-            Row(modifier = Modifier
-                .drawWithContent {
-                    drawContent()
-                    drawLine(
-                        color = Color.Gray,
-                        start = Offset(0f, size.height),
-                        end = Offset(size.width, size.height),
-                        strokeWidth = 2f,
-                    )
-                }
-                .fillMaxWidth()
-                .padding(16.dp)
-                .clickable {
-                    navController.navigate("Connection")
-                }
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .height(48.dp)
-                        .width(48.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.bluetooth),
-                        contentDescription = "bluetooth",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.height(32.dp),
-                    )
-                }
-                Spacer(modifier = Modifier.width(10.dp))
-                Column {
-                    Text(text = "기기 연동")
-                    Text(
-                        text = "디바이스를 연결합니다.",
-                        color = Color.Gray,
-                        fontSize = 16.sp
-                    )
-                }
-            }
-            Row(modifier = Modifier
-                .drawWithContent {
-                    drawContent()
-                    drawLine(
-                        color = Color.Gray,
-                        start = Offset(0f, size.height),
-                        end = Offset(size.width, size.height),
-                        strokeWidth = 2f,
-                    )
-                }
-                .fillMaxWidth()
-                .padding(16.dp)
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .height(48.dp)
-                        .width(48.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.run),
-                        contentDescription = "run",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.height(32.dp),
-                    )
-                }
-                Spacer(modifier = Modifier.width(10.dp))
-                Column {
-                    Text(text = "웨어러블 기기 연동")
-                    Text(
-                        text = "삼성 헬스 서비스와 연동합니다.",
-                        color = Color.Gray
-                    )
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-        Column {
-            Text(
-                text = "앱 정보",
-                fontSize = 20.sp,
-            )
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-        Column(modifier = Modifier
-            .background(
-                color = MaterialTheme.colorScheme.onErrorContainer,
-                shape = RoundedCornerShape(15.dp)
-            )
-        ) {
-            Row(modifier = Modifier
-                .drawWithContent {
-                    drawContent()
-                    drawLine(
-                        color = Color.Gray,
-                        start = Offset(0f, size.height),
-                        end = Offset(size.width, size.height),
-                        strokeWidth = 2f,
-                    )
-                }
-                .fillMaxWidth()
-                .padding(16.dp)
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .height(48.dp)
-                        .width(48.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.review),
-                        contentDescription = "review",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.height(32.dp),
-                    )
-                }
-                Spacer(modifier = Modifier.width(10.dp))
-                Column {
-                    Text(text = "Google Play 평가")
-                    Text(
-                        text = "리뷰를 남겨주세요.",
-                        color = Color.Gray,
-                        fontSize = 16.sp
-                    )
-                }
-            }
-            Row(modifier = Modifier
-                .drawWithContent {
-                    drawContent()
-                    drawLine(
-                        color = Color.Gray,
-                        start = Offset(0f, size.height),
-                        end = Offset(size.width, size.height),
-                        strokeWidth = 2f,
-                    )
-                }
-                .fillMaxWidth()
-                .padding(16.dp)
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .height(48.dp)
-                        .width(48.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.info),
-                        contentDescription = "info",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.height(32.dp),
-                    )
-                }
-                Spacer(modifier = Modifier.width(10.dp))
-                Column {
-                    Text(text = "앱 정보")
-                    Text(
-                        text = "버전, Contact ...",
-                        color = Color.Gray
-                    )
-                }
+                Text(title, fontStyle = FontStyle.Italic, fontSize = 16.sp)
             }
         }
     }
 }
+
+@Composable
+fun LazyList(menu: MenuItemInfo) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp)
+            .wrapContentHeight()
+            .shadow(
+                if (menu.position == Position.Bot || menu.position == Position.Single) 4.dp else 0.dp,
+                shape = if (menu.position == Position.Bot) {
+                    RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
+                } else if (menu.position == Position.Single) {
+                    RoundedCornerShape(20.dp)
+                } else {
+                    RoundedCornerShape(0.dp)
+                }
+            )
+            .clip(
+                shape = when (menu.position) {
+                    Position.Single -> RoundedCornerShape(20.dp)
+                    Position.Top -> RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+                    Position.Bot -> RoundedCornerShape(
+                        bottomStart = 20.dp,
+                        bottomEnd = 20.dp
+                    )
+
+                    Position.Mid -> RoundedCornerShape(0.dp)
+                }
+            )
+            .clickable {
+                menu.onClick()
+            }
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .wrapContentHeight()
+                .fillMaxWidth()
+                .background(color = Color(0xFFFFF4ED))
+        ) {
+            if(menu.position != Position.Top && menu.position != Position.Single)
+                Divider(
+                    thickness = 0.5.dp,
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                )
+            Row(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .padding(12.dp)
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .width(48.dp)
+                        .height(48.dp)
+                        .clip(RoundedCornerShape(24.dp))
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .background(color = menu.color)
+                            .fillMaxSize()
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .fillMaxSize(0.7f)
+                        ) {
+                            Image(
+                                imageVector = menu.vector,
+                                contentDescription = menu.title
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.width(20.dp))
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    Text(text = menu.title, fontWeight = FontWeight.Bold)
+                    Text(text = menu.description)
+                }
+
+            }
+            if(menu.position != Position.Bot && menu.position != Position.Single)
+                Divider(
+                    thickness = 0.5.dp,
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                )
+        }
+    }
+}
+
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AlertDialogExample(
@@ -439,7 +364,7 @@ fun AlertDialogExample(
             TextButton(
                 onClick = { onConfirmation() }
             ) {
-                Text("Confirm")
+                Text("탈퇴하기")
             }
         },
         dismissButton = {
@@ -448,7 +373,7 @@ fun AlertDialogExample(
                     onDismissRequest()
                 }
             ) {
-                Text("Dismiss")
+                Text("취소")
             }
         }
     )
