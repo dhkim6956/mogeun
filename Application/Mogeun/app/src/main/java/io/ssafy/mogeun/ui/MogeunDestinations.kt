@@ -117,4 +117,4 @@ enum class Screen(
     )
 }
 
-val rootScreen = arrayOf(Screen.Routine, Screen.Record, Screen.Summary, Screen.Setting)
+val rootScreen = arrayOf(Screen.Record, Screen.Routine, Screen.Summary, Screen.Setting)
