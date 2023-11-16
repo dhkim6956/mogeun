@@ -71,7 +71,7 @@ fun Navigation() {
             .padding(innerPadding)
             .background(
                 brush = Brush.verticalGradient(
-                    listOf(Color.White, Color(0xFFFFF1F1)),
+                    listOf(Color.White, Color(0xFFFFF7F7)),
                     startY = 100f,
                     endY = 800f
                 ),
@@ -130,7 +130,7 @@ fun BottomBar(navController: NavHostController, currentScreen: Screen) {
                             }
                         }
                     },
-                    icon = { Image(imageVector = ImageVector.vectorResource(id = screen.bottomBarState.vectorId!!), contentDescription = screen.route) },
+                    icon = { Icon(imageVector = screen.bottomBarState.imgVector!!, contentDescription = screen.route) },
                     label = { Text(screen.title) }
                 )
             }

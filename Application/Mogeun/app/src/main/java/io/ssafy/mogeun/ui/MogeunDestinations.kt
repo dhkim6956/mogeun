@@ -1,5 +1,12 @@
 package io.ssafy.mogeun.ui
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AvTimer
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.StickyNote2
+import androidx.compose.ui.graphics.vector.ImageVector
+import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.R
 
 data class TopBarState(
@@ -9,7 +16,7 @@ data class TopBarState(
 
 data class BottomBarState(
     val visibility: Boolean,
-    val vectorId: Int? = null,
+    val imgVector: ImageVector? = null,
     val originRoute: String? = null,
 )
 
@@ -21,87 +28,87 @@ enum class Screen(
 ) {
     Splash(
         route = "Splash",
-        title = "로딩화면",
+        title = MogeunApplication.getContext().getString(R.string.screen_loading),
         topBarState = TopBarState(visibility = false, backBtnVisibility = false),
         bottomBarState = BottomBarState(false)
     ),
     Routine(
         route = "Routine",
-        title = "루틴",
+        title = MogeunApplication.getContext().getString(R.string.screen_routine),
         topBarState = TopBarState(visibility = true, backBtnVisibility = false),
-        bottomBarState = BottomBarState(true, R.drawable.icon_routine, "Routine")
+        bottomBarState = BottomBarState(true, Icons.Default.AvTimer, "Routine")
     ),
     Execution(
     route = "Execution/{routineKey}",
-    title = "운동 진행",
+    title = MogeunApplication.getContext().getString(R.string.screen_execution),
     topBarState = TopBarState(visibility = true, backBtnVisibility = false),
     bottomBarState = BottomBarState(false)
     ),
     Record(
         route = "Record",
-        title = "기록",
+        title = MogeunApplication.getContext().getString(R.string.screen_record),
         topBarState = TopBarState(visibility = true, backBtnVisibility = false),
-        bottomBarState = BottomBarState(true, R.drawable.icon_record, "Record")
+        bottomBarState = BottomBarState(true, Icons.Default.CalendarMonth, "Record")
     ),
     RecordDetail(
         route = "RecordDetail/{reportKey}",
-        title = "루틴 상세 정보",
+        title = MogeunApplication.getContext().getString(R.string.screen_record_detail),
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
-        bottomBarState = BottomBarState(true, R.drawable.icon_record, "Record")
+        bottomBarState = BottomBarState(true, originRoute = "Record")
     ),
     ExerciseDetail(
         route = "ExerciseDetail/{index}",
-        title = "운동 상세 정보",
+        title = MogeunApplication.getContext().getString(R.string.screen_exercise_detail),
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
-        bottomBarState = BottomBarState(true, R.drawable.icon_record, "Record")
+        bottomBarState = BottomBarState(true, originRoute = "Record")
     ),
     Summary(
         route = "Summary",
-        title = "요약",
+        title = MogeunApplication.getContext().getString(R.string.screen_summary),
         topBarState = TopBarState(visibility = true, backBtnVisibility = false),
-        bottomBarState = BottomBarState(true, R.drawable.icon_summary, "Summary")
+        bottomBarState = BottomBarState(true, Icons.Default.StickyNote2, "Summary")
     ),
-    Setting(
-        route = "Setting",
-        title = "설정",
+    Menu(
+        route = "Menu",
+        title = MogeunApplication.getContext().getString(R.string.screen_menus),
         topBarState = TopBarState(visibility = true, backBtnVisibility = false),
-        bottomBarState = BottomBarState(true, R.drawable.icon_setting, "Setting")
+        bottomBarState = BottomBarState(true, Icons.Default.Menu, "Menu")
     ),
     User(
         route = "User",
-        title = "유저 정보 변경",
+        title = MogeunApplication.getContext().getString(R.string.screen_user_info),
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
         bottomBarState = BottomBarState(true, originRoute = "Setting")
     ),
     Login(
         route = "Login",
-        title = "로그인",
+        title = MogeunApplication.getContext().getString(R.string.screen_login),
         topBarState = TopBarState(visibility = false, backBtnVisibility = false),
         bottomBarState = BottomBarState(false)
     ),
     Signup(
         route = "Signup",
-        title = "회원가입",
+        title = MogeunApplication.getContext().getString(R.string.screen_signup),
         topBarState = TopBarState(visibility = false, backBtnVisibility = false),
         bottomBarState = BottomBarState(false)
     ),
     AddRoutine(
         route = "AddRoutine/{routineKey}",
-        title = "루틴 관리",
+        title = MogeunApplication.getContext().getString(R.string.screen_routine_management),
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
-        bottomBarState = BottomBarState(true, R.drawable.icon_setting, "Routine")
+        bottomBarState = BottomBarState(true, originRoute = "Routine")
     ),
     AddExercise(
         route = "AddExercise/{beforeScreen}/{currentRoutineKey}",
-        title = "운동 추가",
+        title = MogeunApplication.getContext().getString(R.string.screen_add_exercise),
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
-        bottomBarState = BottomBarState(true, R.drawable.icon_setting, "Routine")
+        bottomBarState = BottomBarState(true, originRoute = "Routine")
     ),
     ExplainExercise(
         route = "ExplainExercise/{image}",
-        title = "운동 설명",
+        title = MogeunApplication.getContext().getString(R.string.screen_explain_exercise),
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
-        bottomBarState = BottomBarState(true, R.drawable.icon_setting, "Routine")
+        bottomBarState = BottomBarState(true, originRoute = "Routine")
     ),
     SqlSample(
         route = "SqlSample",
@@ -111,10 +118,10 @@ enum class Screen(
     ),
     Connection(
         route = "Connection",
-        title = "기기 연결",
+        title = MogeunApplication.getContext().getString(R.string.screen_connection),
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
         bottomBarState = BottomBarState(false)
     )
 }
 
-val rootScreen = arrayOf(Screen.Record, Screen.Routine, Screen.Summary, Screen.Setting)
+val rootScreen = arrayOf(Screen.Record, Screen.Routine, Screen.Summary, Screen.Menu)

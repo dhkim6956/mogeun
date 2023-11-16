@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -62,21 +63,21 @@ fun SplashScreen(
         }
         Spacer(modifier = Modifier.height(60.dp))
         Text(
-            text = "모근",
+            text = stringResource(R.string.app_name),
             color = MaterialTheme.colorScheme.surfaceTint,
             fontSize = 64.sp
         )
         Spacer(modifier = Modifier.height(40.dp))
         Text(
-            text = "건강한 몸에",
+            text = stringResource(R.string.slogan_1),
             fontSize = 24.sp
         )
         Text(
-            text = "건강한 정신이",
+            text = stringResource(R.string.slogan_2),
             fontSize = 24.sp
         )
         Text(
-            text = "깃든다.",
+            text = stringResource(R.string.slogan_3),
             fontSize = 24.sp
         )
     }

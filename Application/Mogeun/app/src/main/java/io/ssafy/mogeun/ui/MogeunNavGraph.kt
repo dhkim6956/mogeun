@@ -58,7 +58,7 @@ fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarH
             }
         }
         composable(Screen.Summary.route) { SummaryScreen() }
-        composable(Screen.Setting.route) { SettingScreen(
+        composable(Screen.Menu.route) { SettingScreen(
             navController = navController,
             snackbarHostState = snackbarHostState
         ) }

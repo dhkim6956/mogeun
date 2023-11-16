@@ -61,4 +61,22 @@
     <string name="service_interworking">Service Interworking</string>
     <string name="enter_membership_information">Please enter your membership information.</string>
     <string name="withdrawal">To withdrawal</string>
+    <string name="slogan_1">A sound</string>
+    <string name="slogan_2">mind in a</string>
+    <string name="slogan_3">sound body.</string>
+    <string name="screen_loading">loading</string>
+    <string name="screen_routine">routine</string>
+    <string name="screen_execution">routine procedure</string>
+    <string name="screen_record">record</string>
+    <string name="screen_record_detail">routine record</string>
+    <string name="screen_exercise_detail">exercise detail</string>
+    <string name="screen_summary">summary</string>
+    <string name="screen_user_info">change user info</string>
+    <string name="screen_login">sign in</string>
+    <string name="screen_signup">sign up</string>
+    <string name="screen_routine_management">manage routine</string>
+    <string name="screen_add_exercise">add exercise</string>
+    <string name="screen_explain_exercise">exercise info</string>
+    <string name="screen_connection">connect devices</string>
+    <string name="screen_menus">menus</string>
 </resources>
