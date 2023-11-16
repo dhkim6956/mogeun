@@ -54,7 +54,7 @@ fun ExplainExerciseScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        viewModel.exerciseExplain?.let { ElevatedGif(it.imagePath, modifier = Modifier.height(350.dp).width(350.dp)) }
+        viewModel.exerciseExplain?.let { ElevatedGif(it.imagePath, modifier = Modifier.height(350.dp).width(370.dp)) }
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = myExerciseName,

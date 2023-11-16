@@ -32,10 +32,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
+import io.ssafy.mogeun.R
 import io.ssafy.mogeun.model.ListMyExerciseResponseData
 
 @Composable
@@ -78,7 +80,7 @@ fun AddRoutineScreen(
                 ),
                 onClick = { navController.navigate("addexercise/${beforeScreen}/${routineKey}") }
             ) {
-                Text("운동 추가/삭제")
+                Text(stringResource(R.string.add_delete_exercise))
             }
         }
     }
