@@ -78,22 +78,29 @@ fun ConnectionScreen(viewModel: BluetoothViewModel, snackbarHostState: SnackbarH
                 verticalArrangement = Arrangement.Center
             ) {
                 CircularProgressIndicator()
-                Text("Connecting ...")
+                Text("연결 중 ...")
             }
         }
-//        state.isConnected -> {
-//            ChatScreen(
-//                state = state,
-//                onDisconnect = viewModel::disconnectFromDevice,
-//                onSendMessage = viewModel::sendMessage
-//            )
-//        }
         
         else -> {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    Button(onClick = viewModel::startScan) {
+                        Text(text = "기기 검색")
+                    }
+                    Button(onClick = viewModel::stopScan) {
+                        Text(text = "검색 중지")
+                    }
+                    Button(onClick = viewModel::disconnectFromDevice) {
+                        Text(text = "연결 해제")
+                    }
+                }
                 BluetoothDeviceList(
                     pairedDevices = state.pairedDevices,
                     scannedDevices = state.scannedDevices,
@@ -103,20 +110,6 @@ fun ConnectionScreen(viewModel: BluetoothViewModel, snackbarHostState: SnackbarH
                         .fillMaxWidth()
                         .weight(1f)
                 )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    Button(onClick = viewModel::startScan) {
-                        Text(text = "Start scan")
-                    }
-                    Button(onClick = viewModel::stopScan) {
-                        Text(text = "Stop scan")
-                    }
-                    Button(onClick = viewModel::disconnectFromDevice) {
-                        Text(text = "Disconnect")
-                    }
-                }
             }
         }
     }
@@ -136,7 +129,7 @@ fun BluetoothDeviceList(
     ) {
         item {
             Text(
-                text = "Connected Devices",
+                text = "연결된 장치",
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp,
                 modifier = Modifier.padding(16.dp)
@@ -154,7 +147,7 @@ fun BluetoothDeviceList(
 
         item {
             Text(
-                text = "Paired Devices",
+                text = "페어링된 장치",
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp,
                 modifier = Modifier.padding(16.dp)
@@ -172,7 +165,7 @@ fun BluetoothDeviceList(
 
         item {
             Text(
-                text = "Scanned Devices",
+                text = "검색된 장치",
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp,
                 modifier = Modifier.padding(16.dp)
