@@ -39,4 +39,7 @@
     <string name="set_routine_name">루틴 이름을 설정해 주세요.</string>
     <string name="check">확인</string>
     <string name="cancellation">취소</string>
+    <string name="add_delete_exercise">운동 추가/삭제</string>
+    <string name="search">검색</string>
+    <string name="apply_changes">변경사항 적용</string>
 </resources>

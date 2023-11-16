@@ -40,4 +40,14 @@
     <string name="set_routine_name">Please set the name of the routine.</string>
     <string name="check">Check</string>
     <string name="cancellation">Cancellation</string>
+    <string name="add_delete_exercise">Add/Delete Exercise</string>
+    <string name="search">Search</string>
+    <string name="apply_changes">Apply Changes</string>
+    <string name="withdrawal_complete">The withdrawal is complete.</string>
+    <string name="invalid_information">Invalid information.</string>
+    <string name="member_information">Member information</string>
+    <string name="modify_information">Modify My Information</string>
+    <string name="modify_personal_information">Modify your personal information.</string>
+    <string name="logout">Logout</string>
+    <string name="logout_service">Log out of the service</string>
 </resources>
