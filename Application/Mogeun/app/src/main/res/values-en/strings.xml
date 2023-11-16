@@ -50,4 +50,15 @@
     <string name="modify_personal_information">Modify your personal information.</string>
     <string name="logout">Logout</string>
     <string name="logout_service">Log out of the service</string>
+    <string name="membership_withdrawal">Membership Withdrawal</string>
+    <string name="want_stop_service">I want to stop using the service.</string>
+    <string name="interworking_equipment">Interworking with equipment</string>
+    <string name="connect_device">Connect the device.</string>
+    <string name="google_assessment">Google Play Assessment</string>
+    <string name="leave_eview">Please leave a review.</string>
+    <string name="app_information">App information</string>
+    <string name="version_contact">Version, Contact...</string>
+    <string name="service_interworking">Service Interworking</string>
+    <string name="enter_membership_information">Please enter your membership information.</string>
+    <string name="withdrawal">To withdrawal</string>
 </resources>

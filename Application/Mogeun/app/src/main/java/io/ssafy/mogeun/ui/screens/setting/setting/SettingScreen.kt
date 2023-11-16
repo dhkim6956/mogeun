@@ -31,7 +31,6 @@ import androidx.compose.material.icons.filled.RateReview
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -48,6 +47,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import io.ssafy.mogeun.R
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -64,30 +65,32 @@ fun SettingScreen(
     snackbarHostState: SnackbarHostState
 ) {
     val openAlertDialog = remember { mutableStateOf(false) }
+    val withdrawalText = stringResource(R.string.withdrawal_complete)
+    val invalidInfoText = stringResource(R.string.invalid_information)
     LaunchedEffect(viewModel.deleteUserSuccess) {
         if (viewModel.deleteUserSuccess == true) {
             navController.navigate("Splash")
-            snackbarHostState.showSnackbar("탈퇴가 완료되었습니다.")
+            snackbarHostState.showSnackbar(withdrawalText)
         }
     }
     LaunchedEffect(viewModel.errorDeleteUser) {
         if (viewModel.errorDeleteUser == true) {
-            snackbarHostState.showSnackbar("아이디와 비밀번호를 정확하게 입력해주세요.")
+            snackbarHostState.showSnackbar(invalidInfoText)
         }
     }
 
     val userMenus: List<MenuItemInfo> = listOf(
         MenuItemInfo(
-            "내 정보 수정",
-            "개인 정보를 수정합니다.",
+            stringResource(R.string.modify_information),
+            stringResource(R.string.modify_personal_information),
             Icons.Default.ManageAccounts,
             {navController.navigate("User")},
             Color(0xFFFFF0C9),
             Position.Top
         ),
         MenuItemInfo(
-            "로그아웃",
-            "서비스에서 로그아웃합니다.",
+            stringResource(R.string.logout),
+            stringResource(R.string.logout_service),
             Icons.Default.Logout,
             {
                 viewModel.deleteUserKey()
@@ -97,8 +100,8 @@ fun SettingScreen(
             Position.Mid
         ),
         MenuItemInfo(
-            "회원탈퇴",
-            "서비스를 그만 이용하고 싶어요.",
+            stringResource(R.string.membership_withdrawal),
+            stringResource(R.string.want_stop_service),
             Icons.Default.GroupOff,
             {openAlertDialog.value = true},
             Color(0xFFFFC9C9),
@@ -108,8 +111,8 @@ fun SettingScreen(
 
     val serviceMenus: List<MenuItemInfo> = listOf(
         MenuItemInfo(
-            "기기연동",
-            "디바이스를 연결합니다.",
+            stringResource(R.string.interworking_equipment),
+            stringResource(R.string.connect_device),
             Icons.Default.BluetoothSearching,
             {navController.navigate("Connection")},
             Color(0xFFC9E2FF),
@@ -119,16 +122,16 @@ fun SettingScreen(
 
     val appMenus: List<MenuItemInfo> = listOf(
         MenuItemInfo(
-            "Google Play 평가",
-            "리뷰를 남겨주세요.",
+            stringResource(R.string.google_assessment),
+            stringResource(R.string.leave_eview),
             Icons.Default.RateReview,
             {},
             Color(0xFFEAC9FF),
             Position.Top
         ),
         MenuItemInfo(
-            "앱 정보",
-            "버전, Contact...",
+            stringResource(R.string.app_information),
+            stringResource(R.string.version_contact),
             Icons.Default.Info,
             {},
             Color(0xFFFFC9E3),
@@ -141,19 +144,19 @@ fun SettingScreen(
             .fillMaxSize()
     ) {
         stickyHeader {
-            LazyHeader("회원정보")
+            LazyHeader(stringResource(R.string.member_information))
         }
         items(userMenus) {
             LazyList(menu = it)
         }
         stickyHeader {
-            LazyHeader("서비스 연동")
+            LazyHeader(stringResource(R.string.service_interworking))
         }
         items(serviceMenus) {
             LazyList(menu = it)
         }
         stickyHeader {
-            LazyHeader("앱 정보")
+            LazyHeader(stringResource(R.string.app_information))
         }
         items(appMenus) {
             LazyList(menu = it)
@@ -170,7 +173,7 @@ fun SettingScreen(
                     viewModel.deleteUser()
                     openAlertDialog.value = false
                 },
-                dialogTitle = "회원 정보를 입력해 주세요.",
+                dialogTitle = stringResource(R.string.enter_membership_information),
                 icon = Icons.Default.Info
             )
         }
@@ -330,7 +333,7 @@ fun AlertDialogExample(
         },
         text = {
             Column {
-                Text(text = "아이디")
+                Text(text = stringResource(R.string.id))
                 TextField(
                     value = viewModel.username,
                     onValueChange = { viewModel.updateId(it) },
@@ -343,7 +346,7 @@ fun AlertDialogExample(
                     )
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "비밀번호")
+                Text(text = stringResource(R.string.password))
                 TextField(
                     value = viewModel.pw,
                     onValueChange = { viewModel.updatePw(it) },
@@ -364,7 +367,7 @@ fun AlertDialogExample(
             TextButton(
                 onClick = { onConfirmation() }
             ) {
-                Text("탈퇴하기")
+                Text(stringResource(R.string.withdrawal))
             }
         },
         dismissButton = {
@@ -373,7 +376,7 @@ fun AlertDialogExample(
                     onDismissRequest()
                 }
             ) {
-                Text("취소")
+                Text(stringResource(R.string.cancellation))
             }
         }
     )
