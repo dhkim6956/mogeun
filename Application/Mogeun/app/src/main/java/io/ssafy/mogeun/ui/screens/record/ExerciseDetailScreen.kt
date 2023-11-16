@@ -40,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -59,6 +58,7 @@ import io.ssafy.mogeun.model.Exercise
 import io.ssafy.mogeun.model.SetResult
 import io.ssafy.mogeun.ui.AppViewModelProvider
 import io.ssafy.mogeun.ui.components.ElevatedGif
+import io.ssafy.mogeun.ui.components.HorizontalPagerArrow
 import io.ssafy.mogeun.ui.components.MuscleTooltipIcon
 import kotlinx.coroutines.launch
 
@@ -105,37 +105,37 @@ fun ExerciseDetailScreen(
                 ) {
                     val coroutineScope = rememberCoroutineScope()
 
-                    Text(
-                        text = "<",
-                        modifier = Modifier
-                            .clickable {
-                                coroutineScope.launch {
-                                    // Call scroll to on pagerState
-                                    if (pagerState.currentPage > 0)
-                                        pagerState.animateScrollToPage(pagerState.currentPage - 1)
-                                }
-                            },
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        exercises[pagerState.currentPage].execName,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = ">",
-                        modifier = Modifier
-                            .clickable {
-                                coroutineScope.launch {
-                                    // Call scroll to on pagerState
-                                    if (pagerState.currentPage < exercises.size)
-                                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                                }
-                            },
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    if (exercises.size > 1) {
+                        HorizontalPagerArrow(
+                            modifier = Modifier
+                                .clickable {
+                                    coroutineScope.launch {
+                                        // Call scroll to on pagerState
+                                        if (pagerState.currentPage > 0)
+                                            pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                                    } },
+                            size = 50.dp,
+                            visible = pagerState.currentPage > 0,
+                            direction = true
+                        )
+                        Text(
+                            exercises[pagerState.currentPage].execName,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        HorizontalPagerArrow(
+                            modifier = Modifier
+                                .clickable {
+                                    coroutineScope.launch {
+                                        // Call scroll to on pagerState
+                                        if (pagerState.currentPage < exercises.size)
+                                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                    } },
+                            size = 50.dp,
+                            visible = pagerState.currentPage < exercises.size,
+                            direction = false
+                        )
+                    }
                 }
                 HorizontalPager(state = pagerState) { page ->
                     // Our page content
@@ -248,22 +248,28 @@ fun MuscleFatigueCard(
         ) {
             val coroutineScope = rememberCoroutineScope()
 
-            Text(
-                text = "<",
+            HorizontalPagerArrow(
                 modifier = Modifier
-                    .clickable { coroutineScope.launch {
-                        // Call scroll to on pagerState
-                        pagerState.animateScrollToPage(0)
-                    } }
+                    .clickable {
+                        coroutineScope.launch {
+                            // Call scroll to on pagerState
+                            pagerState.animateScrollToPage(0)
+                        } },
+                size = 30.dp,
+                visible = pagerState.currentPage > 0,
+                direction = true
             )
             Text(nameList[pagerState.currentPage])
-            Text(
-                text = ">",
+            HorizontalPagerArrow(
                 modifier = Modifier
-                    .clickable { coroutineScope.launch {
-                        // Call scroll to on pagerState
-                        pagerState.animateScrollToPage(1)
-                    } }
+                    .clickable {
+                        coroutineScope.launch {
+                            // Call scroll to on pagerState
+                            pagerState.animateScrollToPage(1)
+                        } },
+                size = 30.dp,
+                visible = pagerState.currentPage < 1,
+                direction = false
             )
         }
         HorizontalPager(state = pagerState) { page ->
@@ -416,9 +422,6 @@ fun MuscleActivity(
     } catch(e: IllegalArgumentException) {
         0f
     }
-
-    val leftMuscleImage = LocalContext.current.resources.getIdentifier(muscleImagePath + "_l", "drawable", LocalContext.current.packageName)
-    val rightMuscleImage = LocalContext.current.resources.getIdentifier(muscleImagePath + "_r", "drawable", LocalContext.current.packageName)
 
     Box(
         modifier = Modifier

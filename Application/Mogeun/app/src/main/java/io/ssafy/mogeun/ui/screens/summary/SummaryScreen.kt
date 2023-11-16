@@ -67,6 +67,7 @@ import io.ssafy.mogeun.model.MostSetExercise
 import io.ssafy.mogeun.model.MostWeightedExercise
 import io.ssafy.mogeun.model.PerformedMuscleInfo
 import io.ssafy.mogeun.ui.AppViewModelProvider
+import io.ssafy.mogeun.ui.components.HorizontalPagerArrow
 import kotlinx.coroutines.launch
 
 @Composable
@@ -211,22 +212,28 @@ fun BodyInfoSummaryCard(bodyInfo: BodyInfo?) {
             ) {
                 val coroutineScope = rememberCoroutineScope()
 
-                Text(
-                    text = "<",
+                HorizontalPagerArrow(
                     modifier = Modifier
-                        .clickable { coroutineScope.launch {
-                            // Call scroll to on pagerState
-                            pagerState.animateScrollToPage(0)
-                        } }
+                        .clickable {
+                            coroutineScope.launch {
+                                // Call scroll to on pagerState
+                                pagerState.animateScrollToPage(0)
+                            } },
+                    size = 30.dp,
+                    visible = pagerState.currentPage > 0,
+                    direction = true
                 )
                 Text(nameList[pagerState.currentPage])
-                Text(
-                    text = ">",
+                HorizontalPagerArrow(
                     modifier = Modifier
-                        .clickable { coroutineScope.launch {
-                            // Call scroll to on pagerState
-                            pagerState.animateScrollToPage(1)
-                        } }
+                        .clickable {
+                            coroutineScope.launch {
+                                // Call scroll to on pagerState
+                                pagerState.animateScrollToPage(1)
+                            } },
+                    size = 30.dp,
+                    visible = pagerState.currentPage < 1,
+                    direction = false
                 )
             }
             HorizontalPager(state = pagerState) { page ->
@@ -356,28 +363,30 @@ fun ExerciseSummaryCard(
                 ) {
                     val coroutineScope = rememberCoroutineScope()
 
-                    Text(
-                        text = "<",
+                    HorizontalPagerArrow(
                         modifier = Modifier
                             .clickable {
                                 coroutineScope.launch {
                                     // Call scroll to on pagerState
                                     if (pagerState.currentPage > 0)
                                         pagerState.animateScrollToPage(pagerState.currentPage - 1)
-                                }
-                            }
+                                } },
+                        size = 30.dp,
+                        visible = pagerState.currentPage > 0,
+                        direction = true
                     )
                     Text(nameList[pagerState.currentPage])
-                    Text(
-                        text = ">",
+                    HorizontalPagerArrow(
                         modifier = Modifier
                             .clickable {
                                 coroutineScope.launch {
                                     // Call scroll to on pagerState
                                     if (pagerState.currentPage < 2)
                                         pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                                }
-                            }
+                                } },
+                        size = 30.dp,
+                        visible = pagerState.currentPage < 2,
+                        direction = false
                     )
                 }
                 HorizontalPager(state = pagerState) { page ->
