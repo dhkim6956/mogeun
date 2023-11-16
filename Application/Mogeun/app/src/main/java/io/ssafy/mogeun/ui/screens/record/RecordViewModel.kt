@@ -31,7 +31,9 @@ class RecordViewModel(
     var recordList = mutableStateListOf<MonthlyRoutine>()
 
     private val _recordAllRoutineSuccess = MutableStateFlow(false)
+    private val _recordAllRoutineLoading = MutableStateFlow(false)
     val recordAllRoutineSuccess: StateFlow<Boolean> = _recordAllRoutineSuccess.asStateFlow()
+    val recordAllRoutineLoading: StateFlow<Boolean> = _recordAllRoutineLoading.asStateFlow()
     var routineInfoMap = mutableStateMapOf<String, RoutineInfoData>()
 
     private val _recordRoutineSuccess = MutableStateFlow(false)
@@ -84,6 +86,7 @@ class RecordViewModel(
         getUserKey()
 
         if (userKey !== null) {
+            _recordAllRoutineLoading.value = true
             lateinit var ret: RoutineResponse
             viewModelScope.launch {
                 for (reportKey in reportKeyList!!) {

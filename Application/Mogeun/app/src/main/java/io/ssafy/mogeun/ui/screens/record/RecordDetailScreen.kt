@@ -88,9 +88,11 @@ fun RecordDetailScreen(
 
 
     val recordAllRoutineSuccess by viewModel.recordAllRoutineSuccess.collectAsState()
-    if (!recordAllRoutineSuccess) {
+    val recordAllRoutineLoading by viewModel.recordAllRoutineLoading.collectAsState()
+
+    IndeterminateCircularIndicator(viewModel)
+    if (!recordAllRoutineSuccess && !recordAllRoutineLoading) {
         viewModel.recordAllRoutine(reportKeyList)
-        IndeterminateCircularIndicator(viewModel)
     }
     if (viewModel.routineInfoMap.size == reportKeyList.size) {
         viewModel.updateRecordAllRoutineSuccess()
