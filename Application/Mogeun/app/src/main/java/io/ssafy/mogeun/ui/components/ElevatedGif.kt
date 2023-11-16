@@ -29,7 +29,7 @@ fun ElevatedGif(imgPath: String, modifier: Modifier = Modifier) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
-            .drawColoredShadow(offsetY = 12.dp)
+            .drawColoredShadow(offsetY = 12.dp, borderRadius = 20.dp)
             .clip(RoundedCornerShape(20.dp))
             .wrapContentSize()
     ) {
