@@ -681,7 +681,7 @@ fun Dialog1(onDismissRequest: () -> Unit) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(horizontalAlignment = Alignment.Start) {
-                            Text("오른쪽으로")
+                            Text("왼쪽으로")
                             Text("살짝 치우침")
                         }
                         BalanceBar(balanceValue = 0.66f)
@@ -692,7 +692,7 @@ fun Dialog1(onDismissRequest: () -> Unit) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(horizontalAlignment = Alignment.Start) {
-                            Text("왼쪽으로")
+                            Text("오른쪽으로")
                             Text("많이 치우침")
                         }
                         BalanceBar(balanceValue = 0.3f)
