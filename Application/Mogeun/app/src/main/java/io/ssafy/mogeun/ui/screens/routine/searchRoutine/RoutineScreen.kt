@@ -49,6 +49,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -162,10 +163,13 @@ fun RoutineScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(color = Color.White.copy(alpha = 0.5f), shape = RoundedCornerShape(10.dp))
+                            .background(
+                                color = Color.White.copy(alpha = 0.5f),
+                                shape = RoundedCornerShape(10.dp)
+                            )
                             .alpha(0.5f)
                             .height(100.dp)
-                            .clickable{
+                            .clickable {
                                 navController.navigate("addexercise/${beforeScreen}/3")
                             }
                     ) {
@@ -332,7 +336,7 @@ fun RoutineList(
                         pressedElevation = 0.dp,
                     ),
                 ) {
-                    Text(text = "루틴시작")
+                    Text(text = stringResource(R.string.routine_start))
                 }
             }
             Spacer(
