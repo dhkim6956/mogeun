@@ -27,7 +27,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PlainTooltipBox
+import androidx.compose.material3.PlainTooltipState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -40,6 +43,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
@@ -171,7 +175,7 @@ fun RecordDetail(
             RoutineInfoCard(routineInfo.name, routineInfo.calorie, routineInfo.totalSets, routineInfo.performTime)
         }
         LazyColumn (
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             item { routineInfo?.let { IconCard(it.exercises) } }
@@ -223,7 +227,7 @@ fun RoutineInfoCard(
     )
 
     var routineInfoList: List<RoutineInfoData> =
-        listOf(RoutineInfoData("소모 칼로리", calorie.toString() + "kcal"), RoutineInfoData("수행한 세트", totalSets.toString() + "set"), RoutineInfoData("운동한 시간", performTime.toString() + "분"))
+        listOf(RoutineInfoData("수행한 세트", totalSets.toString() + "set"), RoutineInfoData("운동한 시간", performTime.toString() + "분"))
 
     Card (
         modifier = Modifier
@@ -308,23 +312,71 @@ fun IconCard(
                 top = 20.dp
             )
     ) {
+        var imagePaths: List<String> = emptyList()
         var parts: List<String> = emptyList()
         for (exercise in exercises) {
-            parts = parts.union(exercise.muscleImagePaths).toList()
+            parts = parts.union(exercise.parts).toList()
+            imagePaths = imagePaths.union(exercise.muscleImagePaths).toList()
         }
 
         Column {
             Text("사용근육")
             MuscleGrid(
                 columns = 5,
-                itemCount = parts.size,
+                itemCount = imagePaths.size,
                 modifier = Modifier
                     .padding(start = 7.5.dp, end = 7.5.dp)
             ) {
-                muscleIcon(parts[it])
+                muscleTooltipIcon(imagePaths[it], parts[it])
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun muscleTooltipIcon(imagePath: String, part: String) {
+    val scope = rememberCoroutineScope()
+    val plainTooltipState = remember { PlainTooltipState() }
+
+    Box (contentAlignment = Alignment.Center) {
+        PlainTooltipBox(
+            tooltip = { Text(text = part.split(" ")[1]) },
+            tooltipState = plainTooltipState,
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = Color.Black
+        ) { // content for TooltipBoxScope
+            Text("")
+        }
+        muscleIcon(modifier = Modifier.clickable { scope.launch { plainTooltipState.show() } }, imagePath)
+    }
+}
+
+@Composable
+fun muscleIcon(modifier: Modifier, imagePath: String) {
+    Box(
+        modifier = modifier
+            .background(
+                color = MaterialTheme.colorScheme.surface,
+                RoundedCornerShape(15.dp)
+            )
+            .width(48.dp)
+            .height(48.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        val image = LocalContext.current.resources.getIdentifier(imagePath, "drawable", LocalContext.current.packageName)
+        Image(
+            painter = painterResource(id = image),
+            contentDescription = imagePath,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .height(32.dp)
+                .width(32.dp)
+        )
+    }
+    Spacer(
+        modifier = Modifier.width(10.dp)
+    )
 }
 
 @Composable
