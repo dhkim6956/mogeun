@@ -5,7 +5,7 @@ const char *pin = "1234"; // Change this to more secure PIN.
 
 const int sensorInputPin = 34;
 const int ledPin = 2;
-int deviceId = 0;
+int deviceId = 3 ;
 
 String device_name = "ESP32-BT-Test";
 
