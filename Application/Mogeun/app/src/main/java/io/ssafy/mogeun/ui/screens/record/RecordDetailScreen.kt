@@ -144,11 +144,11 @@ fun RecordDetailScreen(
                             .clickable {
                                 coroutineScope.launch {
                                     // Call scroll to on pagerState
-                                    if (pagerState.currentPage < reportKeyList.size)
+                                    if (pagerState.currentPage < reportKeyList.size-1)
                                         pagerState.animateScrollToPage(pagerState.currentPage + 1)
                                 } },
                         size = 50.dp,
-                        visible = pagerState.currentPage < reportKeyList.size,
+                        visible = pagerState.currentPage < reportKeyList.size-1,
                         direction = false
                     )
                 }

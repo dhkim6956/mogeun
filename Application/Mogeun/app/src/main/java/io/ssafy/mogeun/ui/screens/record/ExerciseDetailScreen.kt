@@ -127,11 +127,11 @@ fun ExerciseDetailScreen(
                             .clickable {
                                 coroutineScope.launch {
                                     // Call scroll to on pagerState
-                                    if (pagerState.currentPage < exercises.size)
+                                    if (pagerState.currentPage < exercises.size - 1)
                                         pagerState.animateScrollToPage(pagerState.currentPage + 1)
                                 } },
                         size = 50.dp,
-                        visible = pagerState.currentPage < exercises.size  && exercises.size > 1,
+                        visible = pagerState.currentPage < exercises.size - 1 && exercises.size > 1,
                         direction = false
                         )
                 }
