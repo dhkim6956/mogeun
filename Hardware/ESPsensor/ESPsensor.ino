@@ -115,8 +115,6 @@ void loop() {
 
       int ret = analogRead(sensorInputPin);
 
-      ret = 700;
-
       sendData(ret - ref);
     }
   }
