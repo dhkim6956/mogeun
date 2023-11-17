@@ -41,7 +41,7 @@
 
 - ### 요약 페이지
 
-    <img src="exec\summary_page.jpg" width="300" height="600"/>
+    <img src="exec/summary_page.jpg" width="300" height="600"/>
   
     #### 사용자가 지금까지 변화한 골격근량, 체지방량의 변화 추이를 그래프로 나타냅니다. 더불어 가장 많은 세트를 수행한 운동, 가장 무거운 중량을 수행한 운동 등 각종 최고 기록을 확인할 수 있습니다. 
 
