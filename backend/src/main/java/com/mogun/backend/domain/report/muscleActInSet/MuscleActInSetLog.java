@@ -4,30 +4,26 @@ import com.mogun.backend.domain.musclePart.MusclePart;
 import com.mogun.backend.domain.report.routineReport.RoutineReport;
 import com.mogun.backend.domain.report.setReport.SetReport;
 import com.mogun.backend.domain.user.User;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class MuscleActInSetLog implements Serializable {
 
     @Id
-    @Column(name = "set_log_key")
+    @GeneratedValue
+    @Column(name = "set_act_key")
     private Long setLogKey;
 
-    @Id
-    @Column(name = "routine_report_key")
-    private Long routineReportKey;
-
-    @Id
-    @Column(name = "user_key")
-    private int userKey;
+    @ManyToOne
+    @JoinColumn(name = "set_report_key")
+    private SetReport setReport;
 
     @ManyToOne
     @JoinColumn(name = "part_key")
@@ -37,21 +33,9 @@ public class MuscleActInSetLog implements Serializable {
     private int sensorNumber;
 
     @Column(name = "muscle_activity")
-    private float muscleActivity;
+    private double muscleActivity;
 
-    @MapsId
-    @ManyToOne
-    @JoinColumn(name = "set_log_key")
-    private SetReport setReport;
-
-    @MapsId
-    @ManyToOne
-    @JoinColumn(name = "routine_report_key")
-    private RoutineReport routineReport;
-
-    @MapsId
-    @ManyToOne
-    @JoinColumn(name = "user_key")
-    private User user;
+    @Column(name = "muscle_fatigue")
+    private double muscleFatigue;
 
 }

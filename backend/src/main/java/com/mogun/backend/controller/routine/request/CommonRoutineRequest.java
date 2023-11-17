@@ -10,18 +10,27 @@ import lombok.Data;
 @AllArgsConstructor
 public class CommonRoutineRequest {
 
+    @JsonProperty("user_key")
+    private int userKey;
+
     @JsonProperty("user_email")
-    public String email;
+    private String email;
 
     @JsonProperty("routine_name")
-    public String routineName;
+    private String routineName;
 
     @JsonProperty("routine_key")
-    public int routineKey;
+    private int routineKey;
 
     @JsonProperty("exec_key")
-    public int execKey;
+    private int execKey;
 
     @JsonProperty("total_sets")
-    public int sets;
+    private int sets;
+
+    @JsonProperty("plan_key")
+    private int planKey;
+
+    @JsonProperty("set_key")
+    private int setKey;
 }

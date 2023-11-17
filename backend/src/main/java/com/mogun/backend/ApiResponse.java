@@ -1,5 +1,6 @@
 package com.mogun.backend;
 
+import com.mogun.backend.service.ServiceStatus;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
@@ -29,15 +30,18 @@ public class ApiResponse<T> {
         return of(OK, "SUCCESS", data);
     }
 
+    // Seongmin 단순 accept return
+    public static <T> ApiResponse<T> accept() { return of(HttpStatus.ACCEPTED, "SUCCESS", null); }
+
     public static <T> ApiResponse<T> badRequest(String message) {
         return of(BAD_REQUEST, message, null);
     }
 
-    public static <T> ApiResponse<T> postAndPutResponse(String msg, T data) {
+    public static <T> ApiResponse<T> postAndPutResponse(ServiceStatus result, T data) {
 
-        if(msg != "SUCCESS")
-            return badRequest(msg);
+        if(result.getStatus() != 100)
+            return badRequest(result.getMessage());
 
-        return of(HttpStatus.ACCEPTED, msg, data);
+        return of(HttpStatus.ACCEPTED, result.getMessage(), data);
     }
 }

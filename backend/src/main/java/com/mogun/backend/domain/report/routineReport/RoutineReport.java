@@ -1,15 +1,18 @@
 package com.mogun.backend.domain.report.routineReport;
 
+import com.mogun.backend.domain.routine.userRoutine.UserRoutine;
 import com.mogun.backend.domain.user.User;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
+@Builder
+@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 public class RoutineReport {
@@ -17,7 +20,7 @@ public class RoutineReport {
     @Id
     @GeneratedValue
     @Column(name = "log_key")
-    private long routineReportKey;
+    private Long routineReportKey;
 
     @ManyToOne
     @JoinColumn(name = "user_key")
@@ -34,4 +37,9 @@ public class RoutineReport {
 
     @Column(name = "is_attached")
     private char isAttached;
+
+    // Seongmin 루틴 정렬을 위해 추가
+//    @ManyToOne
+//    @JoinColumn(name = "routine_key")
+//    private UserRoutine userRoutine;
 }

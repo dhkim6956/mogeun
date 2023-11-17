@@ -4,6 +4,7 @@ import com.mogun.backend.domain.exercise.Exercise;
 import com.mogun.backend.domain.report.routineReport.RoutineReport;
 import com.mogun.backend.domain.user.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class SetReport {
@@ -19,7 +21,7 @@ public class SetReport {
     @Id
     @GeneratedValue
     @Column(name = "set_report_key")
-    private long setReportKey;
+    private Long setReportKey;
 
     @ManyToOne
     @JoinColumn(name = "routine_report_key")
@@ -34,10 +36,7 @@ public class SetReport {
     private Exercise exercise;
 
     @Column(name = "set_number")
-    private int set_number;
-
-    @Column(name = "muscle_fatigue")
-    private float muscleFatigue;
+    private int setNumber;
 
     @Column(name = "train_weight")
     private float trainWeight;

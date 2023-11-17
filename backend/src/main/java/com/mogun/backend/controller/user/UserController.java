@@ -1,14 +1,17 @@
 package com.mogun.backend.controller.user;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mogun.backend.ApiResponse;
 import com.mogun.backend.controller.user.request.ChangePasswordRequest;
 import com.mogun.backend.controller.user.request.ExitRequest;
 import com.mogun.backend.controller.user.request.SignInRequest;
 import com.mogun.backend.controller.user.response.UserDetailResponse;
+import com.mogun.backend.service.ServiceStatus;
 import com.mogun.backend.service.user.UserService;
 import com.mogun.backend.service.user.dto.UserDto;
 import com.mogun.backend.controller.user.request.UserJoinRequest;
 import com.mogun.backend.controller.user.response.IsJoinedResponse;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,9 +25,9 @@ public class UserController {
 
     private final UserService userService;
 
+    @ApiOperation(value = "가입 여부 API", notes = "입력된 이메일 주소로 회원 등록이 되어 있는지 판별한다.")
     @GetMapping("/isJoined")
     public ApiResponse<IsJoinedResponse> isJoined(@RequestParam String email) {
-        boolean res = true;
 
         char joinState = userService.isJoined(email);
         if(joinState == 'J')
@@ -44,9 +47,10 @@ public class UserController {
                     .build());
     }
 
+    @ApiOperation(value = "회원가입 API", notes = "회원 정보를 입력 후 회원 가입을 수행한다.")
     @PostMapping("/Enroll")
-    public ApiResponse enrollUser(@RequestBody UserJoinRequest userJoinRequest) {
-        String result = userService.joinUser(UserDto.builder()
+    public ApiResponse<Object> enrollUser(@RequestBody UserJoinRequest userJoinRequest) {
+        ServiceStatus<Object> result = userService.joinUser(UserDto.builder()
                 .email(userJoinRequest.getUserEmail())
                 .password(userJoinRequest.getUserPassword())
                 .name(userJoinRequest.getUserName())
@@ -58,54 +62,55 @@ public class UserController {
                 .build()
         );
 
-        if(result == "SUCCESS")
-            return ApiResponse.of(HttpStatus.ACCEPTED, "등록 완료", userJoinRequest);
-        else
-            return ApiResponse.badRequest(result);
+        return ApiResponse.postAndPutResponse(result, userJoinRequest);
     }
 
+    @ApiOperation(value = "회원 탈퇴 API", notes = "해당 서비스에서 회원을 탈퇴한다.")
     @PostMapping("/Exit")
-    public ApiResponse exitUser(@RequestBody ExitRequest exitRequest) {
+    public ApiResponse<Object> exitUser(@RequestBody ExitRequest exitRequest) {
 
-        String result = userService.exitUser(exitRequest.getUserId(), exitRequest.getUserPassword());
+        ServiceStatus<Object> result = userService.exitUser(exitRequest.getUserId(), exitRequest.getUserPassword());
 
-        if(result != "SUCCESS")
-            return ApiResponse.badRequest(result);
-        else
-            return ApiResponse.of(HttpStatus.ACCEPTED, result, null);
+        return ApiResponse.postAndPutResponse(result, exitRequest);
     }
 
+    @ApiOperation(value = "비밀번호 변경 API", notes = "회원의 로그인 비밀번호를 변경한다. ")
     @PostMapping("/Change/Password")
-    public ApiResponse changePassword(@RequestBody ChangePasswordRequest pwdReq) {
+    public ApiResponse<Object> changePassword(@RequestBody ChangePasswordRequest pwdReq) {
 
-        String result = userService.changePassword(pwdReq.getEmail(), pwdReq.getOldPassword(), pwdReq.getNewPassword());
-        if(result != "SUCCESS")
-            return ApiResponse.badRequest(result);
-        else
-            return ApiResponse.of(HttpStatus.ACCEPTED, result, null);
+        ServiceStatus<Object> result = userService.changePassword(pwdReq.getEmail(), pwdReq.getOldPassword(), pwdReq.getNewPassword());
+
+        return ApiResponse.postAndPutResponse(result, pwdReq);
     }
 
+    @ApiOperation(value = "회원 세부 정보 API", notes = "회원의 신체 정보를 조회 및 반환한다.")
     @GetMapping("/Detail")
-    public ApiResponse getUserDetail(@RequestParam String email) {
+    public ApiResponse<Object> getUserDetail(@RequestParam("user_key") int userKey) {
 
-        UserDto result = userService.getUserDetail(email);
+        ServiceStatus<UserDto> result = userService.getUserDetail(userKey);
+
+        if(result.getStatus() != 100)
+            return ApiResponse.badRequest(result.getMessage());
+        UserDto data = result.getData();
 
         return ApiResponse.ok(UserDetailResponse.builder()
-                .height(result.getHeight())
-                .weight(result.getWeight())
-                .muscleMass(result.getMuscleMass())
-                .bodyFat(result.getBodyFat())
+                .userName(data.getName())
+                .height(data.getHeight())
+                .weight(data.getWeight())
+                .muscleMass(data.getMuscleMass())
+                .bodyFat(data.getBodyFat())
                 .build());
     }
 
+    @ApiOperation(value = "로그인 API", notes = "회원 정보를 입력하여 로그인한다.")
     @PostMapping("/SignIn")
-    public ApiResponse signIn(@RequestBody SignInRequest request) {
+    public ApiResponse<Object> signIn(@RequestBody SignInRequest request) {
 
-        String result = userService.signIn(request.getUserEmail(), request.getUserPassword());
+        ServiceStatus<Object> result = userService.signIn(request.getUserEmail(), request.getUserPassword());
 
-        if(result != "SUCCESS")
-            return ApiResponse.badRequest(result);
+        if(result.getStatus() != 100)
+            return ApiResponse.of(HttpStatus.BAD_REQUEST, "FAILED", -1);
 
-        return ApiResponse.of(HttpStatus.ACCEPTED, result, null);
+        return ApiResponse.of(HttpStatus.ACCEPTED, "SUCCESS", result.getData());
     }
 }

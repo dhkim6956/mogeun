@@ -24,8 +24,8 @@ public class Exercise {
     @Column
     private String name;
 
-    @Column(name = "exec_desc")
-    private String execDesc;
+    @Column(name = "eng_name")
+    private String engName;
 
     @OneToOne
     @JoinColumn(name = "part_key")

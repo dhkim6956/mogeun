@@ -19,6 +19,9 @@ public class UserLogDto {
     private int userKey;
     private String email;
 
+    // Seongmin 닉네임 변경을 위한 userName 추가
+    private String userName;
+
     private float heightBefore;
     private float weightBefore;
     private float muscleMassBefore;
