@@ -1,4 +1,4 @@
-``# 모근_모두의 근육
+# 모근_모두의 근육
 
 ## 효율적이고 안전한 운동을 위해
 ![mogen_icon.png](.%2Fexec%2Fmogen_icon.png)
