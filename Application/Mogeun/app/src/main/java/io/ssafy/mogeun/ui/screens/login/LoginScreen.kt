@@ -1,5 +1,7 @@
 package io.ssafy.mogeun.ui.screens.login
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -25,10 +27,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -43,6 +47,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.ui.AppViewModelProvider
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -64,6 +69,21 @@ fun LoginScreen(
             viewModel.updateErrorSignIn(false)
         }
     }
+
+    var exitCnt = 0
+    val activity = (LocalContext.current as? Activity)
+    val coroutineScope = rememberCoroutineScope()
+    BackHandler {
+        if(exitCnt == 0) {
+            exitCnt++
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("한번 더 누르면 앱이 종료됩니다.")
+            }
+        } else {
+            activity?.finish()
+        }
+    }
+
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())

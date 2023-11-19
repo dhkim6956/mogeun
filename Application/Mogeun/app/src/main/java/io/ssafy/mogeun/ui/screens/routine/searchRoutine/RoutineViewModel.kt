@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -21,6 +22,8 @@ import io.ssafy.mogeun.model.GetInbodyResponse
 import io.ssafy.mogeun.model.GetRoutineListResponse
 import io.ssafy.mogeun.model.UpdateRoutineNameResponse
 import io.ssafy.mogeun.ui.screens.signup.SignupViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -74,8 +77,8 @@ class RoutineViewModel(
         }
     }
     fun getUserKey() {
-        viewModelScope.launch {
-            val key = keyRepository.getKey().first()
+        viewModelScope.launch(Dispatchers.IO) {
+            val key = keyRepository.getKey()
             val userKey = key?.userKey
             Log.d("getUserKey", "사용자 키: $userKey")
             updateUserKey(userKey)
@@ -104,17 +107,6 @@ class RoutineViewModel(
                     Log.d("deleteRoutine", "$ret")
                     getRoutineList()
                 }
-            }
-        }
-    }
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as MogeunApplication)
-                val UserRepository = application.container.userDataRepository
-                val keyRepository = application.container.keyRepository
-                val RoutineRepository = application.container.routineRepository
-                RoutineViewModel(UserRepository = UserRepository ,keyRepository, RoutineRepository = RoutineRepository)
             }
         }
     }

@@ -1,5 +1,7 @@
 package io.ssafy.mogeun.ui.screens.routine.searchRoutine
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +26,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.More
+import androidx.compose.material.icons.filled.PauseCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -33,6 +36,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -42,6 +46,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +55,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -59,14 +65,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.model.GetRoutineListResponseBody
+import io.ssafy.mogeun.ui.AppViewModelProvider
+import io.ssafy.mogeun.ui.components.AlertDialogCustom
 import io.ssafy.mogeun.ui.components.MuscleTooltipIcon
+import kotlinx.coroutines.launch
 
 @Composable
 fun RoutineScreen(
-    viewModel: RoutineViewModel = viewModel(factory = RoutineViewModel.Factory),
-    navController: NavHostController
+    viewModel: RoutineViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    navController: NavHostController,
+    snackbarHostState: SnackbarHostState
 ) {
     val beforeScreen = 1
     LaunchedEffect(Unit) {
@@ -78,6 +89,21 @@ fun RoutineScreen(
             viewModel.getRoutineList()
         }
     }
+
+    var exitCnt = 0
+    val activity = (LocalContext.current as? Activity)
+    val coroutineScope = rememberCoroutineScope()
+    BackHandler {
+        if(exitCnt == 0) {
+            exitCnt++
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("한번 더 누르면 앱이 종료됩니다.")
+            }
+        } else {
+            activity?.finish()
+        }
+    }
+
     Column(modifier = Modifier.padding(top = 12.dp, start = 12.dp, end = 12.dp)) {
         Column(
             modifier = Modifier
@@ -368,7 +394,7 @@ fun AlertDialogExample(
     dialogTitle: String,
     icon: ImageVector,
 ) {
-    val viewModel: RoutineViewModel = viewModel(factory = RoutineViewModel.Factory)
+    val viewModel: RoutineViewModel = viewModel(factory = AppViewModelProvider.Factory)
     AlertDialog(
         icon = {
             Icon(icon, contentDescription = "Example Icon")

@@ -1,5 +1,9 @@
-package io.ssafy.mogeun.ui.screens.setting.setting
+package io.ssafy.mogeun.ui.screens.menu.menu
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,7 +21,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -28,6 +31,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.ManageAccounts
 import androidx.compose.material.icons.filled.RateReview
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -39,6 +43,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -47,6 +52,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
@@ -56,12 +62,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.ui.AppViewModelProvider
+import io.ssafy.mogeun.ui.Screen
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SettingScreen(
-    viewModel: SettingViewModel = viewModel(factory = SettingViewModel.Factory),
+fun MenuScreen(
+    viewModel: MenuViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navController: NavHostController,
     snackbarHostState: SnackbarHostState
 ) {
@@ -77,6 +87,20 @@ fun SettingScreen(
     LaunchedEffect(viewModel.errorDeleteUser) {
         if (viewModel.errorDeleteUser == true) {
             snackbarHostState.showSnackbar(invalidInfoText)
+        }
+    }
+
+    var exitCnt = 0
+    val activity = (LocalContext.current as? Activity)
+    val coroutineScope = rememberCoroutineScope()
+    BackHandler {
+        if(exitCnt == 0) {
+            exitCnt++
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("한번 더 누르면 앱이 종료됩니다.")
+            }
+        } else {
+            activity?.finish()
         }
     }
 
@@ -126,9 +150,23 @@ fun SettingScreen(
             stringResource(R.string.google_assessment),
             stringResource(R.string.leave_eview),
             Icons.Default.RateReview,
-            {},
-            Color(0xFFEAC9FF),
+            {
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=io.ssafy.mogeun"))
+                browserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                MogeunApplication.getContext().startActivity(browserIntent)
+            },
+            Color(0xFFC9CBFF),
             Position.Top
+        ),
+        MenuItemInfo(
+            stringResource(R.string.app_setting),
+            stringResource(R.string.theme_sensor),
+            Icons.Default.Settings,
+            {
+                navController.navigate(Screen.Setting.route)
+            },
+            Color(0xFFEAC9FF),
+            Position.Mid
         ),
         MenuItemInfo(
             stringResource(R.string.app_information),
@@ -318,8 +356,9 @@ fun AlertDialogExample(
     dialogTitle: String,
     icon: ImageVector,
 ) {
-    val viewModel: SettingViewModel = viewModel(factory = SettingViewModel.Factory)
+    val viewModel: MenuViewModel = viewModel(factory = AppViewModelProvider.Factory)
     val keyboardController = LocalSoftwareKeyboardController.current
+
     AlertDialog(
         icon = {
             Icon(icon, contentDescription = "Example Icon")

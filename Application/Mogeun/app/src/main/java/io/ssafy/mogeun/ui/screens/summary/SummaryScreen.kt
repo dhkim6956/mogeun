@@ -1,6 +1,8 @@
 package io.ssafy.mogeun.ui.screens.summary
 
+import android.app.Activity
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,6 +28,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -71,7 +74,22 @@ import io.ssafy.mogeun.ui.components.HorizontalPagerArrow
 import kotlinx.coroutines.launch
 
 @Composable
-fun SummaryScreen(viewModel: SummaryViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
+fun SummaryScreen(viewModel: SummaryViewModel = viewModel(factory = AppViewModelProvider.Factory), snackbarHostState: SnackbarHostState) {
+
+    var exitCnt = 0
+    val activity = (LocalContext.current as? Activity)
+    val coroutineScope = rememberCoroutineScope()
+    BackHandler {
+        if(exitCnt == 0) {
+            exitCnt++
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("한번 더 누르면 앱이 종료됩니다.")
+            }
+        } else {
+            activity?.finish()
+        }
+    }
+
     // 요약 페이지 구성을 위한 api 통신
     val summaryExerciseSetSuccess by viewModel.summaryExerciseSetSuccess.collectAsState()
     if (!summaryExerciseSetSuccess) {

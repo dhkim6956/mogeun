@@ -1,9 +1,10 @@
-package io.ssafy.mogeun.ui.screens.setting.connection
+package io.ssafy.mogeun.ui.screens.menu.connection
 
 import android.bluetooth.BluetoothDevice
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.ssafy.mogeun.data.BleRepository
+import io.ssafy.mogeun.model.BleDevice
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -30,19 +31,13 @@ class ConnectionViewModel(
     fun startScan() {
         bleRepository.startScan()
     }
-    fun stopScan() {
-        bleRepository.stopScan()
-    }
 
     fun connect(device: BluetoothDevice) {
         bleRepository.connect(device)
     }
 
-    fun send(num: Int) {
-        bleRepository.send(num, 0)
-    }
-
-    fun disConnect(device: BluetoothDevice) {
+    fun disConnect(device: BleDevice) {
+        if(bleRepository.virtualEnabled.value) return
         bleRepository.disconnect(device)
     }
 

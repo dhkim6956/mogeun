@@ -1,5 +1,6 @@
 package io.ssafy.mogeun.ui.screens.splash
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,13 +22,15 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.ui.AppViewModelProvider
 import io.ssafy.mogeun.ui.screens.routine.searchRoutine.RoutineViewModel
 import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(
-    viewModel: RoutineViewModel = viewModel(factory = RoutineViewModel.Factory),
-    navController: NavHostController
+    viewModel: SplashViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    navController: NavHostController,
+    setTheme: (useDynamic: Boolean, useSystemSetting: Boolean, useDarkMode: Boolean) -> Unit
 ) {
     LaunchedEffect(Unit) {
         viewModel.getUserKey()
@@ -39,6 +42,15 @@ fun SplashScreen(
         } else {
             delay(3000)
             navController.navigate("Login")
+        }
+    }
+    LaunchedEffect(viewModel.settingLoaded) {
+        if(viewModel.settingLoaded) {
+            val useDynamic = viewModel.dynamicMode
+            val useDarkMode = viewModel.darkMode
+            val useLightMode = viewModel.lightMode
+            val useSystemSetting = !useDarkMode && !useLightMode
+            setTheme(useDynamic, useSystemSetting, useDarkMode)
         }
     }
     Column(

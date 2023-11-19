@@ -9,7 +9,13 @@ import io.ssafy.mogeun.ui.screens.login.LoginViewModel
 import io.ssafy.mogeun.ui.screens.record.RecordViewModel
 import io.ssafy.mogeun.ui.screens.sample.DbSampleViewModel
 import io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.AddExerciseViewModel
-import io.ssafy.mogeun.ui.screens.setting.connection.ConnectionViewModel
+import io.ssafy.mogeun.ui.screens.routine.execution.ExecutionViewModel
+import io.ssafy.mogeun.ui.screens.menu.connection.ConnectionViewModel
+import io.ssafy.mogeun.ui.screens.menu.menu.MenuViewModel
+import io.ssafy.mogeun.ui.screens.menu.setting.SettingViewModel
+import io.ssafy.mogeun.ui.screens.routine.searchRoutine.RoutineViewModel
+import io.ssafy.mogeun.ui.screens.splash.SplashScreen
+import io.ssafy.mogeun.ui.screens.splash.SplashViewModel
 import io.ssafy.mogeun.ui.screens.summary.SummaryViewModel
 
 object AppViewModelProvider {
@@ -28,11 +34,11 @@ object AppViewModelProvider {
             )
         }
         initializer {
-            BluetoothViewModel(
+            ExecutionViewModel(
                 mogeunApplication().container.executionRepository,
                 mogeunApplication().container.emgDataRepository,
                 mogeunApplication().container.routineRepository,
-                mogeunApplication().container.bluetoothController,
+                mogeunApplication().container.bleRepository,
                 mogeunApplication().container.keyRepository
             )
         }
@@ -54,8 +60,32 @@ object AppViewModelProvider {
             )
         }
         initializer {
+            MenuViewModel(
+                mogeunApplication().container.keyRepository,
+                mogeunApplication().container.userDataRepository
+            )
+        }
+        initializer {
             ConnectionViewModel(
                 mogeunApplication().container.bleRepository,
+            )
+        }
+        initializer {
+            SettingViewModel(
+                mogeunApplication().container.bleRepository,
+                mogeunApplication().container.keyRepository
+            )
+        }
+        initializer {
+            RoutineViewModel(
+                mogeunApplication().container.userDataRepository,
+                mogeunApplication().container.keyRepository,
+                mogeunApplication().container.routineRepository,
+            )
+        }
+        initializer {
+            SplashViewModel(
+                mogeunApplication().container.keyRepository,
             )
         }
     }

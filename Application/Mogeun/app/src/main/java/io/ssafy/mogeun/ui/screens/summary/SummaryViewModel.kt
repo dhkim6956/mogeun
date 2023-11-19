@@ -20,6 +20,7 @@ import io.ssafy.mogeun.model.MostWeightedExercise
 import io.ssafy.mogeun.model.MostWeightedExerciseResponse
 import io.ssafy.mogeun.model.PerformedMuscleInfo
 import io.ssafy.mogeun.model.PerformedMuscleInfoResponse
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -59,8 +60,8 @@ class SummaryViewModel(
     }
 
     private fun getUserKey() {
-        viewModelScope.launch {
-            val key = keyRepository.getKey().first()
+        viewModelScope.launch(Dispatchers.IO) {
+            val key = keyRepository.getKey()
             val userKey = key?.userKey
             Log.d("getUserKey", "사용자 키: $userKey")
             updateUserKey(userKey)

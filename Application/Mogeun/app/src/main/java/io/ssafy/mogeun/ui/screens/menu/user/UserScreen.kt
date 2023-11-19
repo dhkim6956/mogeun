@@ -1,6 +1,5 @@
-package io.ssafy.mogeun.ui.screens.setting.user
+package io.ssafy.mogeun.ui.screens.menu.user
 
-import android.graphics.drawable.shapes.Shape
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

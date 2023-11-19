@@ -1,9 +1,10 @@
-package io.ssafy.mogeun.ui.screens.setting.connection
+package io.ssafy.mogeun.ui.screens.menu.connection
 
 import android.bluetooth.BluetoothDevice
+import io.ssafy.mogeun.model.BleDevice
 
 data class ConnectionState(
     val scannedDevices: List<BluetoothDevice> = listOf(),
-    val connectedDevices: List<BluetoothDevice?> = listOf(null, null),
+    val connectedDevices: List<BleDevice?> = listOf(null, null),
     val sensorVal: List<Int> = listOf(0, 0),
 )

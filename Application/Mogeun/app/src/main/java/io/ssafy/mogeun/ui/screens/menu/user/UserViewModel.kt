@@ -1,4 +1,4 @@
-package io.ssafy.mogeun.ui.screens.setting.user
+package io.ssafy.mogeun.ui.screens.menu.user
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,6 +13,7 @@ import io.ssafy.mogeun.data.KeyRepository
 import io.ssafy.mogeun.data.UserRepository
 import io.ssafy.mogeun.model.GetInbodyResponse
 import io.ssafy.mogeun.model.UpdateUserResponse
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -70,8 +71,8 @@ class UserViewModel(
         }
     }
     fun getUserKey() {
-        viewModelScope.launch {
-            val key = keyRepository.getKey().first()
+        viewModelScope.launch(Dispatchers.IO) {
+            val key = keyRepository.getKey()
             val userKey = key?.userKey
             updateUserKey(userKey)
         }

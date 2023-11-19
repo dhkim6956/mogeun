@@ -12,6 +12,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import io.ssafy.mogeun.ui.theme.MogeunTheme
 
@@ -59,13 +64,32 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            MogeunTheme {
+            var enableDynamic by rememberSaveable { mutableStateOf(false) }
+            var enableDarkMode by rememberSaveable { mutableStateOf(0) }
+
+            val setTheme: (Boolean, Boolean, Boolean) -> Unit = { useDynamic, useSystemSetting, useDarkMode ->
+                    enableDynamic = useDynamic
+                    if(useSystemSetting) {
+                        enableDarkMode = 0
+                    } else {
+                        if(useDarkMode) {
+                            enableDarkMode = 1
+                        } else {
+                            enableDarkMode = 2
+                        }
+                    }
+                }
+
+            MogeunTheme(
+                dynamicColor = enableDynamic,
+                setTheme = enableDarkMode
+            ) {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Navigation()
+                    Navigation(setTheme)
                 }
             }
         }

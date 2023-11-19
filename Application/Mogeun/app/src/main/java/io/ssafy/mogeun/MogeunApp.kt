@@ -39,7 +39,9 @@ import io.ssafy.mogeun.ui.rootScreen
 
 
 @Composable
-fun Navigation() {
+fun Navigation(
+    setTheme: (useDynamic: Boolean, useSystemSetting: Boolean, useDarkMode: Boolean) -> Unit
+) {
     val snackbarHostState = remember{ SnackbarHostState() }
 
     val navController: NavHostController = rememberNavController()
@@ -78,7 +80,7 @@ fun Navigation() {
                 shape = RectangleShape
             )
         ) {
-            MogeunNavHost(navController, snackbarHostState)
+            MogeunNavHost(navController, snackbarHostState, setTheme)
         }
     }
 }

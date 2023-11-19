@@ -15,15 +15,22 @@ import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.os.Build
 import android.util.Log
+import androidx.compose.runtime.rememberCoroutineScope
 import co.yml.charts.common.extensions.isNotNull
 import io.ssafy.mogeun.data.BluetoothUtils.Companion.findResponseCharacteristic
+import io.ssafy.mogeun.model.BleDevice
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.util.Timer
 import java.util.UUID
 import kotlin.concurrent.schedule
+import kotlin.coroutines.coroutineContext
 
 interface BleRepository{
     val scanResults: StateFlow<List<BluetoothDevice>>
@@ -32,7 +39,7 @@ interface BleRepository{
 
     fun stopScan()
 
-    val connectedDevices: StateFlow<List<BluetoothDevice?>>
+    val connectedDevices: StateFlow<List<BleDevice?>>
 
     val connecting: StateFlow<List<Boolean>>
 
@@ -42,7 +49,13 @@ interface BleRepository{
 
     fun send(cmd: Int, idx: Int)
 
-    fun disconnect(device: BluetoothDevice)
+    fun disconnect(device: BleDevice)
+
+    val virtualEnabled: StateFlow<Boolean>
+
+    fun attachVirtual()
+
+    fun detachVirtual()
 }
 
 const val TAG = "ble"
@@ -99,8 +112,8 @@ class AndroidBleRepository(
 
     private var deviceMac = mutableListOf<String>("", "")
 
-    private val _connectedDevices = MutableStateFlow<List<BluetoothDevice?>> (listOf(null, null))
-    override val connectedDevices: StateFlow<List<BluetoothDevice?>>
+    private val _connectedDevices = MutableStateFlow<List<BleDevice?>> (listOf(null, null))
+    override val connectedDevices: StateFlow<List<BleDevice?>>
         get() = _connectedDevices.asStateFlow()
 
     private val _connecting = MutableStateFlow<List<Boolean>> (listOf(false, false))
@@ -120,7 +133,7 @@ class AndroidBleRepository(
                 _connectedDevices.update { it ->
                     it.mapIndexed { connectedIdx, origConnected ->
                         if(connectedIdx == idx) {
-                            gatt?.device
+                            BleDevice(gatt!!.device.name, gatt!!.device.address)
                         } else {
                             origConnected
                         }
@@ -248,7 +261,7 @@ class AndroidBleRepository(
         }
     }
 
-    override fun disconnect(device: BluetoothDevice) {
+    override fun disconnect(device: BleDevice) {
         val idx = connectedDevices.value.indexOf(device)
         Log.d(TAG, "블루투스 연결 해제")
 
@@ -265,5 +278,45 @@ class AndroidBleRepository(
         mGatt[idx]?.close()
         mGatt[idx] = null
         deviceMac[idx] = ""
+    }
+
+    private var _virtualEnabled = MutableStateFlow(false)
+    override val virtualEnabled: StateFlow<Boolean>
+        get() = _virtualEnabled.asStateFlow()
+
+    override fun attachVirtual() {
+        for(i in 0..1) {
+            if(connectedDevices.value[i].isNotNull()) {
+                disconnect(connectedDevices.value[i]!!)
+            }
+        }
+
+        _connectedDevices.update {
+            listOf(BleDevice("virtual_left", "--:--:--:--:--:--"), BleDevice("virtual_right", "--:--:--:--:--:--"))
+        }
+        _virtualEnabled.update { true }
+
+        CoroutineScope(Dispatchers.Default).launch {
+            while(virtualEnabled.value) {
+                var dummyValue: Int = 0
+                for( i in 1..500) {
+                    _sensorVal.update {
+                        listOf(dummyValue + (1..10).random(), dummyValue + (1..10).random())
+                    }
+                    dummyValue++
+                    delay(20)
+                }
+            }
+        }
+    }
+
+    override fun detachVirtual() {
+        _connectedDevices.update {
+            listOf(null, null)
+        }
+        _sensorVal.update {
+            listOf(0, 0)
+        }
+        _virtualEnabled.update { false }
     }
 }
