@@ -44,7 +44,7 @@ class SettingViewModel(
     fun deleteUser() {
         lateinit var ret: DeleteUserResponse
         viewModelScope.launch {
-            ret = UserRepository.deleteUser(username, pw)
+            ret = UserRepository.deleteUser(username, pw)       // response 데이터에 객체 들어올수 있음
             Log.d("deleteUser", "$ret")
             if (ret.message == "SUCCESS") {
                 updateDeleteUserSuccess(true)

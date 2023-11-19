@@ -9,6 +9,7 @@ import io.ssafy.mogeun.ui.screens.login.LoginViewModel
 import io.ssafy.mogeun.ui.screens.record.RecordViewModel
 import io.ssafy.mogeun.ui.screens.sample.DbSampleViewModel
 import io.ssafy.mogeun.ui.screens.routine.addroutine.addexercise.AddExerciseViewModel
+import io.ssafy.mogeun.ui.screens.setting.connection.ConnectionViewModel
 import io.ssafy.mogeun.ui.screens.summary.SummaryViewModel
 
 object AppViewModelProvider {
@@ -50,6 +51,11 @@ object AppViewModelProvider {
             SummaryViewModel(
                 mogeunApplication().container.summaryRepository,
                 mogeunApplication().container.keyRepository
+            )
+        }
+        initializer {
+            ConnectionViewModel(
+                mogeunApplication().container.bleRepository,
             )
         }
     }

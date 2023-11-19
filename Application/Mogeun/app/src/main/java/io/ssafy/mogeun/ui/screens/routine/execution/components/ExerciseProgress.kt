@@ -199,7 +199,7 @@ fun ExerciseProgress(
                     TextButton(
                         enabled = !inProgress,
                         onClick = {
-                            if (selectedTab == totalSet - 1) selectedTab = totalSet - 2
+                            if (selectedTab == totalSet - 1) selectedTab = totalSet - 2 // 문제발생가능
                             removeSet(selectedTab + 1)
                         },
                         modifier = Modifier

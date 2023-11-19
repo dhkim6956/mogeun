@@ -19,6 +19,7 @@ interface AppContainer {
     val setRepository: SetRepository
     val summaryRepository: SummaryRepository
     val executionRepository: ExecutionRepository
+    val bleRepository: BleRepository
 }
 
 class DefaultAppContainer(private val context: Context): AppContainer {
@@ -66,5 +67,8 @@ class DefaultAppContainer(private val context: Context): AppContainer {
     }
     override val executionRepository: ExecutionRepository by lazy {
         NetworkExecutionRepository(retrofitService)
+    }
+    override val bleRepository: BleRepository by lazy {
+        AndroidBleRepository(context)
     }
 }

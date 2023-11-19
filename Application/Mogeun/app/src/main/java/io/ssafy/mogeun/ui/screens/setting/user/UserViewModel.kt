@@ -65,7 +65,7 @@ class UserViewModel(
                 height?.toDouble(),
                 weight?.toDouble(),
                 muscleMass?.toDouble(),
-                bodyFat?.toDouble()
+                bodyFat?.toDouble()             //문제발생가능
             )
         }
     }
