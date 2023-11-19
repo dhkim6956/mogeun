@@ -10,6 +10,7 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import io.ssafy.mogeun.ui.screens.routine.addroutine.AddRoutineScreen
 import io.ssafy.mogeun.ui.screens.login.LoginScreen
+import io.ssafy.mogeun.ui.screens.menu.appInfo.AppInfoScreen
 import io.ssafy.mogeun.ui.screens.record.ExerciseDetailScreen
 import io.ssafy.mogeun.ui.screens.record.RecordDetailScreen
 import io.ssafy.mogeun.ui.screens.record.RecordScreen
@@ -94,7 +95,8 @@ fun MogeunNavHost(navController: NavHostController, snackbarHostState: SnackbarH
         navigation(route = "Menus", startDestination = Screen.Menu.route) {
             composable(Screen.Menu.route) { MenuScreen(navController = navController, snackbarHostState = snackbarHostState) }
             composable(Screen.Connection.route) { ConnectionScreen(snackbarHostState = snackbarHostState) }
-            composable(Screen.Setting.route) { SettingScreen(snackbarHostState = snackbarHostState, setTheme = setTheme) }
+            composable(Screen.Setting.route) { SettingScreen(setTheme = setTheme) }
+            composable(Screen.AppInfo.route) { AppInfoScreen() }
         }
 
         composable(Screen.User.route) { UserScreen(navController = navController)}

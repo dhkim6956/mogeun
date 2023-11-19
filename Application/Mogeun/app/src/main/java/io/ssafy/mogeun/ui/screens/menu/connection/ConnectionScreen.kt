@@ -56,8 +56,18 @@ fun ConnectionScreen(
     snackbarHostState: SnackbarHostState
 ) {
     val state by viewModel.state.collectAsState()
+    val msgState by viewModel.connectionMessage.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(key1 = msgState) {
+        if(msgState.display) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(msgState.message)
+            }
+            viewModel.resetMessage()
+        }
+    }
 
     LaunchedEffect(key1 = state.connectedDevices[0]) {
         if(state.connectedDevices[0].isNotNull()) {

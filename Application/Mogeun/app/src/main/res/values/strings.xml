@@ -81,4 +81,5 @@
     <string name="screen_setting">앱 설정</string>
     <string name="app_setting">앱 설정</string>
     <string name="theme_sensor">테마설정, 가상 센서 ...</string>
+    <string name="screen_appinfo">앱 정보</string>
 </resources>

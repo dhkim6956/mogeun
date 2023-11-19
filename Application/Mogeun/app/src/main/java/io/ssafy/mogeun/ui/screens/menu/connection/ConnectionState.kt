@@ -8,3 +8,8 @@ data class ConnectionState(
     val connectedDevices: List<BleDevice?> = listOf(null, null),
     val sensorVal: List<Int> = listOf(0, 0),
 )
+
+data class ConnectionMessage(
+    val display: Boolean = false,
+    val message: String = ""
+)

@@ -64,7 +64,6 @@ import io.ssafy.mogeun.ui.screens.menu.menu.MenuViewModel
 @Composable
 fun SettingScreen(
     viewModel: SettingViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    snackbarHostState: SnackbarHostState,
     setTheme: (useDynamic: Boolean, useSystemSetting: Boolean, useDarkMode: Boolean) -> Unit
 ) {
     val useDynamic = viewModel.useDynamic.collectAsState().value

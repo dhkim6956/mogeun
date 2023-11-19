@@ -172,7 +172,9 @@ fun MenuScreen(
             stringResource(R.string.app_information),
             stringResource(R.string.version_contact),
             Icons.Default.Info,
-            {},
+            {
+                navController.navigate(Screen.AppInfo.route)
+            },
             Color(0xFFFFC9E3),
             Position.Bot
         )
