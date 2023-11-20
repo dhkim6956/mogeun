@@ -38,7 +38,9 @@ class AddRoutineViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val key = keyRepository.getKey()
             val userKey = key?.userKey
-            updateUserKey(userKey)
+            launch(Dispatchers.Main) {
+                updateUserKey(userKey)
+            }
         }
     }
     fun listMyExercise(routineKey: Int?){

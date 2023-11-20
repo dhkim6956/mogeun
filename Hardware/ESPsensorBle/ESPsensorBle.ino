@@ -24,19 +24,23 @@
 #include <BLEUtils.h>
 #include <BLE2902.h>
 
-const int sensorInputPin = 0;
+const int sensorInputPin = A3;
 const int ledPin = LED_BUILTIN;
-const String device_name = "Mogeun_Ble_Right";
+const String device_name = "Movice_Left";
 
 BLEServer *pServer = NULL;
 BLECharacteristic * pTxCharacteristic;
 
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
+bool calculated = false;
+
+double tempSum = 0;
+int addCnt = 0;
+int ref = 0;
 
 bool ledState = false;
 int loopCnt = 0;
-int num = 500;
 
 #define SERVICE_UUID           "6E400001-B5A3-F393-E0A9-E50E24DCCA9E" // UART service UUID
 #define CHARACTERISTIC_UUID_RX "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"
@@ -65,6 +69,9 @@ class MyCallbacks: public BLECharacteristicCallbacks {
 
         Serial.println();
         Serial.println("*********");
+
+        char cmd = rxValue[0];
+        Serial.println(cmd);
       }
     }
 };
@@ -110,7 +117,6 @@ void setup() {
 
   
   pinMode(ledPin, OUTPUT);
-  pinMode(sensorInputPin, INPUT);
 }
 
 void loop() {
@@ -138,13 +144,27 @@ void loop() {
 
     if(loopCnt % 20 == 0) {
         if(deviceConnected) {
-            ledState = true;
-            
-            num++;
+            ledState = false;
 
-            if(num > 940) num = 500;
+            int ret = analogRead(sensorInputPin);
 
-            sendData(num);
+            // Serial.println(ret);
+
+            if(!calculated) {
+              if(addCnt < 200) {
+                tempSum += ret;
+                addCnt++;
+              } else {
+                ref = tempSum / 200;
+                calculated = true;
+                tempSum = 0;
+                addCnt = 0;
+              }
+            } else {
+              int sendValue = ret - ref;
+              Serial.println(sendValue);
+              sendData(sendValue);
+            }
         }
     }
 

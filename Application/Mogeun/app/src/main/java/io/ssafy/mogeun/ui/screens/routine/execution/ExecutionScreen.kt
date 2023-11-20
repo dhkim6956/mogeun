@@ -67,6 +67,7 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
     val muscleavg by viewModel.muscleavg.collectAsState()
 
     var openEndDialog by remember { mutableStateOf(false) }
+    var openNoSensorDialog by remember { mutableStateOf(false) }
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -215,6 +216,37 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
                                  },
                 dialogTitle = if (routineState.hasValidSet) {"오늘의 루틴 종료"} else {"루틴 진행 취소"},
                 dialogText = if (routineState.hasValidSet) {"현재까지의 진행상황을 기록하고 운동을 종료합니다."} else {"측정된 횟수가 없어 진행상황을 기록하지 않고 돌아갑니다"},
+                icon = Icons.Default.PauseCircle
+            )
+        }
+    }
+    when {
+        openNoSensorDialog -> {
+            AlertDialogCustom(
+                onDismissRequest = {
+                    openNoSensorDialog = false
+                },
+                onConfirmation = {
+                    openNoSensorDialog = false
+                    viewModel.endRoutine()
+                    if (routineState.hasValidSet) {
+                        navController.navigate("RecordDetail/${routineState.reportKey}",) {
+                            popUpTo(navController.graph.startDestinationId)
+                            launchSingleTop = true
+                        }
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar("루틴이 종료되었습니다.")
+                        }
+                    } else {
+                        navController.popBackStack()
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar("루틴이 취소되었습니다.")
+                        }
+                    }
+
+                },
+                dialogTitle = "센서가 연결되지 않았습니다.",
+                dialogText = "센서를 연결하지 않고 진행하시겠습니까?",
                 icon = Icons.Default.PauseCircle
             )
         }

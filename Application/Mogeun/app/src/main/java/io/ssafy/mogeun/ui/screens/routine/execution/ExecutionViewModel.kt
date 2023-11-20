@@ -46,8 +46,10 @@ class ExecutionViewModel(
     fun getUserKey() {
         viewModelScope.launch(Dispatchers.IO) {
             val key = keyRepository.getKey()
-            userKey = key?.userKey
             Log.d("execution", "사용자 키: $userKey")
+            launch(Dispatchers.Main) {
+                userKey = key?.userKey
+            }
         }
     }
 
@@ -289,7 +291,7 @@ class ExecutionViewModel(
                         executionRepository.clearPlan(planKey)
                     }.await()
 
-                    Log.d("setInput", "clear plan : $ret1")
+                    Log.d("report", "clear plan : $ret1")
 
                     val ret2 = async {
                         executionRepository.setPlan(planKey, plan.setOfRoutineDetail.map { setProgress ->
@@ -297,7 +299,7 @@ class ExecutionViewModel(
                         })
                     }.await()
 
-                    Log.d("setInput", "set plan : $ret2")
+                    Log.d("report", "set plan : $ret2")
 
                     val ret3 = executionRepository.reportSet(
                         SetExecutionRequest(
@@ -316,7 +318,7 @@ class ExecutionViewModel(
                         )
                     )
 
-                    Log.d("setInput", "report set : $ret3")
+                    Log.d("report", "report set : $ret3")
                 }
             }
         }
@@ -333,6 +335,7 @@ class ExecutionViewModel(
 
         viewModelScope.launch {
             val ret = executionRepository.startRoutine(userKey!!, routineKey, isAttached)
+            Log.d("report", "routine started = $ret")
             _routineState.update { routineState -> routineState.copy(reportKey = ret.data!!.reportKey) }
         }
     }
@@ -398,7 +401,7 @@ class ExecutionViewModel(
                 for (i in 0..1) {
                     _emgState.update { emgUiState ->
                         val bufValue = abs(sensorVal[i])
-                        val calcList = if(bufValue > 1500) emgUiState.emgList[i] else {if(emgUiState.emgList[i].size < 80) emgUiState.emgList[i] + bufValue else emgUiState.emgList[i].subList(1, 80) + bufValue}
+                        val calcList = if(bufValue > 5000) emgUiState.emgList[i] else {if(emgUiState.emgList[i].size < 80) emgUiState.emgList[i] + bufValue else emgUiState.emgList[i].subList(1, 80) + bufValue}
                         val avg = calcList.average()
 
                         var bufEmg: MutableList<Emg?> = emgUiState.emg.toMutableList()

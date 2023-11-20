@@ -5,6 +5,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -73,7 +74,7 @@ fun Navigation(
             .padding(innerPadding)
             .background(
                 brush = Brush.verticalGradient(
-                    listOf(Color.White, Color(0xFFFFF7F7)),
+                    if (isSystemInDarkTheme()) listOf(Color.Black, Color(0xFF452703)) else listOf(Color.White, Color(0xFFFFF7F7)),
                     startY = 100f,
                     endY = 800f
                 ),

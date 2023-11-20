@@ -55,7 +55,9 @@ class RecordViewModel(
             val key = keyRepository.getKey()
             val userKey = key?.userKey
             Log.d("getUserKey", "사용자 키: $userKey")
-            updateUserKey(userKey)
+            launch(Dispatchers.Main) {
+                updateUserKey(userKey)
+            }
         }
     }
 
@@ -90,9 +92,9 @@ class RecordViewModel(
             _recordAllRoutineLoading.value = true
             lateinit var ret: RoutineResponse
             viewModelScope.launch {
+                Log.d("requestInfo", "userKey : ${userKey}")
                 for (reportKey in reportKeyList!!) {
-                    ret =
-                        recordRepository.recordRoutine(userKey.toString(), reportKey.toString())
+                    ret = recordRepository.recordRoutine(userKey.toString(), reportKey.toString())
                     Log.d("recordRoutine", "$ret")
                     if (ret.status == "OK") {
                         routineInfoMap[reportKey.toString()] = ret.data!!

@@ -116,7 +116,7 @@ fun RoutineScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = MaterialTheme.colorScheme.onTertiaryContainer,
+                        color = Color(0xFFF5D4B1),
                     )
                     .padding(horizontal = 20.dp, vertical = 4.dp)
             ) {
@@ -140,7 +140,7 @@ fun RoutineScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        color = Color(0xFF0FFF3E7),
                         shape = RoundedCornerShape(bottomStart = 15.dp, bottomEnd = 15.dp)
                     )
                     .padding(top = 20.dp, bottom = 20.dp, start = 40.dp, end = 40.dp)
@@ -193,7 +193,7 @@ fun RoutineScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(
-                                color = Color.White.copy(alpha = 0.5f),
+                                color = MaterialTheme.colorScheme.surfaceVariant,
                                 shape = RoundedCornerShape(10.dp)
                             )
                             .alpha(0.5f)
@@ -206,7 +206,7 @@ fun RoutineScreen(
                             Row {
                                 Icon(imageVector = Icons.Default.Add, contentDescription = "add routine")
                                 Spacer(modifier = Modifier.width(10.dp))
-                                Text(text = stringResource(R.string.add_routine), color = MaterialTheme.colorScheme.scrim)
+                                Text(text = stringResource(R.string.add_routine))
                             }
                         }
                     }
@@ -249,7 +249,7 @@ fun RoutineList(
     ) {
         Column(
             modifier = Modifier
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(8.dp)
                 .fillMaxWidth()
                 .wrapContentHeight()

@@ -196,6 +196,7 @@ class AndroidBleRepository(
                 Log.d(TAG,"블루투스 수신성공")
 
                 val idx = deviceMac.indexOf(gatt.device.address)
+                Log.d("ble", "${value}")
                 _sensorVal.update { orig -> orig.mapIndexed { origIdx, origVal ->
                     if(origIdx == idx) {
                         value.toString().toInt()

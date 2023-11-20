@@ -64,7 +64,9 @@ class SummaryViewModel(
             val key = keyRepository.getKey()
             val userKey = key?.userKey
             Log.d("getUserKey", "사용자 키: $userKey")
-            updateUserKey(userKey)
+            launch(Dispatchers.Main) {
+                updateUserKey(userKey)
+            }
         }
     }
 
