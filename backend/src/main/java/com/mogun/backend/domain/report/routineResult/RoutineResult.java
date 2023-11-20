@@ -3,6 +3,7 @@ package com.mogun.backend.domain.report.routineResult;
 import com.mogun.backend.domain.report.routineReport.RoutineReport;
 import com.mogun.backend.domain.user.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class RoutineResult {
@@ -29,7 +31,7 @@ public class RoutineResult {
     private User user;
 
     @Column(name = "consume_calorie")
-    private int consumeCalorie;
+    private float consumeCalorie;
 
     @Column(name = "routine_date")
     private LocalDate routineDate;

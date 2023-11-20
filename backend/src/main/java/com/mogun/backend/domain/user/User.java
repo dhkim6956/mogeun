@@ -53,4 +53,24 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    // Seongmin 닉네임 setter 추가
+    public void setName(String name) {
+        this.name = name;
+    }
+
+
+    // ---- 비지니스 로직 ---- //
+    @Override
+    public boolean equals(Object other) {
+
+        User user = (User)other;
+        if(!this.email.equals(user.getEmail()))
+            return false;
+
+        if(this.userKey != user.getUserKey())
+            return false;
+
+        return true;
+    }
 }
