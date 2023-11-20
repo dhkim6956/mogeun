@@ -48,7 +48,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.jaikeerthick.composable_graphs.color.LinearGraphColors
-import com.jaikeerthick.composable_graphs.composables.LineGraph
 import com.jaikeerthick.composable_graphs.data.GraphData
 import com.jaikeerthick.composable_graphs.style.LabelPosition
 import com.jaikeerthick.composable_graphs.style.LineGraphStyle
@@ -59,6 +58,7 @@ import io.ssafy.mogeun.model.SetResult
 import io.ssafy.mogeun.ui.AppViewModelProvider
 import io.ssafy.mogeun.ui.components.ElevatedGif
 import io.ssafy.mogeun.ui.components.HorizontalPagerArrow
+import io.ssafy.mogeun.ui.components.FatigueLineGraph
 import io.ssafy.mogeun.ui.components.MuscleTooltipIcon
 import kotlinx.coroutines.launch
 
@@ -311,14 +311,14 @@ fun MuscleFatigueChart(
                     GraphData.String(it.set)
                 }
                 val yAxisDataList = listOf(0f, muscleFatigueList[0].num)
-                LineGraph(
+                FatigueLineGraph(
                     xAxisData = xAxisDataList,
                     yAxisData = yAxisDataList,
                     style = style
                 )
             }
             else {
-                LineGraph(
+                FatigueLineGraph(
                     xAxisData = muscleFatigueList.map {
                         GraphData.String(it.set)
                     },
