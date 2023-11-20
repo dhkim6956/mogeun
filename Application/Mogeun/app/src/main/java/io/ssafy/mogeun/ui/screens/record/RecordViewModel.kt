@@ -109,8 +109,7 @@ class RecordViewModel(
                 ret = recordRepository.recordRoutine(userKey.toString(), reportKey.toString())
                 Log.d("recordRoutine", "$ret")
                 if (ret.status == "OK") {
-                    _recordRoutineSuccess.value = true
-                    routineInfo = ret.data
+                    routineInfoMap[reportKey.toString()] = ret.data!!
                 }
                 else if (ret.status == "BAD_REQUEST") _recordRoutineLoading.value = false
             }
