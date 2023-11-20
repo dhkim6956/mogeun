@@ -58,7 +58,6 @@ import co.yml.charts.ui.barchart.models.BarChartType
 import co.yml.charts.ui.barchart.models.BarData
 import co.yml.charts.ui.barchart.models.BarStyle
 import com.jaikeerthick.composable_graphs.color.LinearGraphColors
-import com.jaikeerthick.composable_graphs.composables.LineGraph
 import com.jaikeerthick.composable_graphs.data.GraphData
 import com.jaikeerthick.composable_graphs.style.LabelPosition
 import com.jaikeerthick.composable_graphs.style.LineGraphStyle
@@ -71,6 +70,7 @@ import io.ssafy.mogeun.model.MostWeightedExercise
 import io.ssafy.mogeun.model.PerformedMuscleInfo
 import io.ssafy.mogeun.ui.AppViewModelProvider
 import io.ssafy.mogeun.ui.components.HorizontalPagerArrow
+import io.ssafy.mogeun.ui.components.BodyLineGraph
 import kotlinx.coroutines.launch
 
 @Composable
@@ -303,7 +303,7 @@ fun BodyInfoSummary(bodyLog: MutableList<BodyLog>) {
                     )
                 }
             }
-            LineGraph(
+            BodyLineGraph(
                 xAxisData = bodyLog.map {
                     GraphData.String(it.log)
                 },

@@ -31,11 +31,10 @@ class RecordViewModel(
     val recordMonthlySuccess: StateFlow<Boolean> = _recordMonthlySuccess.asStateFlow()
     var recordList = mutableStateListOf<MonthlyRoutine>()
 
-    private val _recordAllRoutineSuccess = MutableStateFlow(false)
-    private val _recordAllRoutineLoading = MutableStateFlow(false)
-    val recordAllRoutineSuccess: StateFlow<Boolean> = _recordAllRoutineSuccess.asStateFlow()
-    val recordAllRoutineLoading: StateFlow<Boolean> = _recordAllRoutineLoading.asStateFlow()
+    private val _recordRoutineLoading = MutableStateFlow(false)
+    val recordRoutineLoading: StateFlow<Boolean> = _recordRoutineLoading.asStateFlow()
     var routineInfoMap = mutableStateMapOf<String, RoutineInfoData>()
+    var requestFailCount = mutableIntStateOf(0)
 
     private val _recordRoutineSuccess = MutableStateFlow(false)
     val recordRoutineSuccess: StateFlow<Boolean> = _recordRoutineSuccess.asStateFlow()
@@ -82,14 +81,12 @@ class RecordViewModel(
     }
 
     fun updateRecordAllRoutineSuccess() {
-        _recordAllRoutineSuccess.value = true
+        _recordRoutineSuccess.value = true
     }
 
     fun recordAllRoutine(reportKeyList: List<Int>) {
-        getUserKey()
-
         if (userKey !== null) {
-            _recordAllRoutineLoading.value = true
+            _recordRoutineLoading.value = true
             lateinit var ret: RoutineResponse
             viewModelScope.launch {
                 Log.d("requestInfo", "userKey : ${userKey}")
@@ -99,24 +96,31 @@ class RecordViewModel(
                     if (ret.status == "OK") {
                         routineInfoMap[reportKey.toString()] = ret.data!!
                     }
+                    else if (ret.status == "BAD_REQUEST") requestFailCount.value++
                 }
             }
         }
+        else {
+            getUserKey()
+        }
     }
 
-    fun recordRoutine(reportKey: String) {
-        getUserKey()
-
+    fun recordRoutine(reportKey: Int) {
         if (userKey !== null) {
+            _recordRoutineLoading.value = true
             lateinit var ret: RoutineResponse
             viewModelScope.launch {
-                ret = recordRepository.recordRoutine(userKey.toString(), reportKey)
+                ret = recordRepository.recordRoutine(userKey.toString(), reportKey.toString())
                 Log.d("recordRoutine", "$ret")
                 if (ret.status == "OK") {
                     _recordRoutineSuccess.value = true
                     routineInfo = ret.data
                 }
+                else if (ret.status == "BAD_REQUEST") _recordRoutineLoading.value = false
             }
+        }
+        else {
+            getUserKey()
         }
     }
 
