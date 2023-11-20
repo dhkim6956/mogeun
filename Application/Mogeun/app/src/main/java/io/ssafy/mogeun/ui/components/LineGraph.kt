@@ -116,13 +116,15 @@ fun FatigueLineGraph(
             val absMinY = GraphHelper.getAbsoluteMin(yAxisData)
             println("yAxisData - $yAxisData")
 
-            val verticalStep = (absMaxY.toInt() - absMinY.toInt() + 200) / maxPointsSize.toFloat()
+            val verticalStep = if (absMinY.toFloat() > 100) (absMaxY.toInt() - absMinY.toInt() + 200) / maxPointsSize.toFloat()
+            else (absMaxY.toInt() + 100) / maxPointsSize.toFloat()
 
             // generate y axis label
             val yAxisLabelList = mutableListOf<String>()
 
             for (i in 0..maxPointsSize) {
-                val intervalValue = (absMinY.toFloat() - 100f + (verticalStep*i)).roundToInt()
+                val intervalValue = if (absMinY.toFloat() > 100) (absMinY.toFloat() - 100f + (verticalStep*i)).roundToInt()
+                else (verticalStep*i).roundToInt()
                 println("interval - $intervalValue")
                 yAxisLabelList.add(intervalValue.toString())
             }
@@ -224,7 +226,8 @@ fun FatigueLineGraph(
 
                 //val x1 = xItemSpacing * pos
                 val x1 = if (style.yAxisLabelPosition == LabelPosition.RIGHT) (xItemSpacing * i) else (xItemSpacing * i) + yAxisPadding.toPx()
-                val y1 = gridHeight - (yItemSpacing * ((yAxisData[i].toFloat() - absMinY.toFloat() + 100f) / verticalStep.toFloat()))
+                val y1 = if (absMinY.toFloat() > 100) gridHeight - (yItemSpacing * ((yAxisData[i].toFloat() - absMinY.toFloat() + 100f) / verticalStep.toFloat()))
+                else gridHeight - (yItemSpacing * (yAxisData[i].toFloat() / verticalStep.toFloat()))
 
                 offsetList.add(
                     Offset(
