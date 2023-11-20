@@ -84,14 +84,19 @@ fun RecordDetailScreen(
     var routineTimeList = remember { routineTimeListTmp }
 
 
-    val recordAllRoutineSuccess by viewModel.recordAllRoutineSuccess.collectAsState()
-    val recordAllRoutineLoading by viewModel.recordAllRoutineLoading.collectAsState()
+    val recordRoutineSuccess by viewModel.recordRoutineSuccess.collectAsState()
+    val recordRoutineLoading by viewModel.recordRoutineLoading.collectAsState()
 
     IndeterminateCircularIndicator(viewModel)
-    if (!recordAllRoutineSuccess && !recordAllRoutineLoading) {
-        viewModel.recordAllRoutine(reportKeyList)
+    if (!recordRoutineSuccess && !recordRoutineLoading) {
+        if (reportKeyList.size == 1) {
+            viewModel.recordRoutine(reportKeyList[0])
+        }
+        else {
+            viewModel.recordAllRoutine(reportKeyList)
+        }
     }
-    if (viewModel.routineInfoMap.size == reportKeyList.size) {
+    if (viewModel.routineInfoMap.size + viewModel.requestFailCount.value == reportKeyList.size) {
         viewModel.updateRecordAllRoutineSuccess()
     }
 
@@ -117,7 +122,7 @@ fun RecordDetailScreen(
             ) {
                 val coroutineScope = rememberCoroutineScope()
 
-                if (recordAllRoutineSuccess && reportKeyList.size > 1) {
+                if (recordRoutineSuccess && reportKeyList.size > 1) {
                     HorizontalPagerArrow(
                         modifier = Modifier
                             .clickable {
@@ -155,7 +160,7 @@ fun RecordDetailScreen(
             }
             HorizontalPager(state = pagerState) { page ->
                 // Our page content
-                if (recordAllRoutineSuccess && !reportKeyList.isNullOrEmpty())
+                if (recordRoutineSuccess && !reportKeyList.isNullOrEmpty())
                     RecordDetail(navController, viewModel.routineInfoMap[reportKeyList[page].toString()]!!)
             }
         }
@@ -537,7 +542,7 @@ fun MuscleGrid(
 
 @Composable
 fun IndeterminateCircularIndicator(viewModel: RecordViewModel) {
-    val recordAllRoutineSuccess by viewModel.recordAllRoutineSuccess.collectAsState()
+    val recordAllRoutineSuccess by viewModel.recordRoutineSuccess.collectAsState()
     if (recordAllRoutineSuccess) return
 
     Column (
