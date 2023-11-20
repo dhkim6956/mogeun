@@ -13,7 +13,7 @@ import java.util.TimeZone;
 @SpringBootApplication
 public class MainApplication {
 
-	@PostMapping
+	@PostConstruct
 	public void started() {
 
 		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
@@ -21,5 +21,6 @@ public class MainApplication {
 	public static void main(String[] args) {
 
 		SpringApplication.run(MainApplication.class, args);
+		System.out.println(LocalDateTime.now());
 	}
 }
