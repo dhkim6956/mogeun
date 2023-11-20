@@ -40,7 +40,7 @@ public class RoutineReportService {
             return ServiceStatus.errorStatus("요청 오류: 현재 회원이 소유한 루틴이 아님");
 
         // Seongmin local time to Asia/Seoul
-        dto.setStartTime(LocalDateTime.now(Clock.system(ZoneId.of("Asia/Seoul"))));
+        dto.setStartTime(LocalDateTime.now());
 
         RoutineReport save = routineReportRepository.save(dto.toRoutineReportEntity(user.get(), routine.get()));
 
@@ -64,7 +64,7 @@ public class RoutineReportService {
             return ServiceStatus.errorStatus("요청 오류: 해당 로그는 이미 종료됨");
 
         // Seongmin local time to Asia/Seoul
-        report.get().setEndTime(LocalDateTime.now(Clock.system(ZoneId.of("Asia/Seoul"))));
+        report.get().setEndTime(LocalDateTime.now());
 
         return ServiceStatus.okStatus();
     }

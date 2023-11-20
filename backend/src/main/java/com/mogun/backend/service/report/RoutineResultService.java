@@ -188,7 +188,11 @@ public class RoutineResultService {
         }
 
         Duration performTime = Duration.between(report.get().getStartTime(), report.get().getEndTime());
+
+        // result 소실 문제 발생
         Optional<RoutineResult> result = resultRepository.findByRoutineReport(report.get());
+        if(result.isEmpty())
+            return ServiceStatus.errorStatus("요청 오류: Report에 대응하는 Result가 없음");
 
         SummaryResultDto data = SummaryResultDto.builder()
                 .routineName(report.get().getRoutineName())
