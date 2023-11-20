@@ -79,4 +79,8 @@
     <string name="screen_explain_exercise">exercise info</string>
     <string name="screen_connection">connect devices</string>
     <string name="screen_menus">menus</string>
+    <string name="screen_setting">Setting</string>
+    <string name="app_setting">Application Setting</string>
+    <string name="theme_sensor">themes, virtual sensor ...</string>
+    <string name="screen_appinfo">App Info</string>
 </resources>

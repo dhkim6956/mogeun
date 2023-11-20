@@ -85,15 +85,22 @@ fun MogeunTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
+    setTheme: Int = 0,
     content: @Composable() () -> Unit
 ) {
+    val usersDarkTheme = when (setTheme) {
+        1 -> true
+        2 -> false
+        else -> darkTheme
+    }
+
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            if (usersDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> DarkColorScheme
+        usersDarkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
     val view = LocalView.current

@@ -1,6 +1,8 @@
 package io.ssafy.mogeun.ui.screens.record
 
+import android.app.Activity
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,6 +22,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
@@ -62,7 +66,22 @@ import java.time.DayOfWeek
 import java.time.YearMonth
 
 @Composable
-fun RecordScreen(navController: NavHostController) {
+fun RecordScreen(navController: NavHostController, snackbarHostState: SnackbarHostState) {
+
+    var exitCnt = 0
+    val activity = (LocalContext.current as? Activity)
+    val coroutineScope = rememberCoroutineScope()
+    BackHandler {
+        if(exitCnt == 0) {
+            exitCnt++
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("한번 더 누르면 앱이 종료됩니다.")
+            }
+        } else {
+            activity?.finish()
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()

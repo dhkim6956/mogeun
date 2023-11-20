@@ -19,6 +19,7 @@ import io.ssafy.mogeun.model.ListMyExerciseResponse
 import io.ssafy.mogeun.model.ListMyExerciseResponseData
 import io.ssafy.mogeun.model.MyExerciseResponse
 import io.ssafy.mogeun.model.MyExerciseResponseData
+import kotlinx.coroutines.Dispatchers
 
 class AddRoutineViewModel(
     private val routineRepository: RoutineRepository,
@@ -34,10 +35,12 @@ class AddRoutineViewModel(
         userKey = value
     }
     fun getUserKey() {
-        viewModelScope.launch {
-            val key = keyRepository.getKey().first()
+        viewModelScope.launch(Dispatchers.IO) {
+            val key = keyRepository.getKey()
             val userKey = key?.userKey
-            updateUserKey(userKey)
+            launch(Dispatchers.Main) {
+                updateUserKey(userKey)
+            }
         }
     }
     fun listMyExercise(routineKey: Int?){

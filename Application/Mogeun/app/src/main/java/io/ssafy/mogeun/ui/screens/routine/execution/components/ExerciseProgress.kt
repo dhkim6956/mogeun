@@ -199,7 +199,7 @@ fun ExerciseProgress(
                     TextButton(
                         enabled = !inProgress,
                         onClick = {
-                            if (selectedTab == totalSet - 1) selectedTab = totalSet - 2
+                            if (selectedTab == totalSet - 1) selectedTab = totalSet - 2 // 문제발생가능
                             removeSet(selectedTab + 1)
                         },
                         modifier = Modifier
@@ -515,12 +515,12 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
     // CoroutineScope을 만듭니다.
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(emgUiState.emg1Avg) {
+    LaunchedEffect(emgUiState.emgAvg[0]) {
         if(inProgress) {
             val curTime = System.currentTimeMillis()
 
             if(curTime - lastTime >= 500) {
-                currentLev = ((emgUiState.emg1Avg / 90) + 1 - 0.4).toInt()
+                currentLev = ((emgUiState.emgAvg[0] / 90) + 1 - 0.4).toInt()
                 if (currentLev >= 3 && lastLev < 3) {
                     addCnt()
                 }
@@ -555,12 +555,12 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
                 .background(Color.White),
                 contentAlignment = Alignment.Center
             ){
-                Text("Lv. ${String.format("%.3f", (emgUiState.emg1Avg / 90) + 1 - 0.4)}")
+                Text("Lv. ${String.format("%.3f", (emgUiState.emgAvg[0] / 90) + 1 - 0.4)}")
                 Box(modifier = Modifier
                     .clip(CircleShape)
-                    .size(if (emgUiState.emg1Avg > 360) (emgUiState.emg1Avg - 270).dp else (emgUiState.emg1Avg % 360 / 4).dp)
+                    .size(if (emgUiState.emgAvg[0] > 360) (emgUiState.emgAvg[0] - 270).dp else (emgUiState.emgAvg[0] % 360 / 4).dp)
                     .background(
-                        when ((emgUiState.emg1Avg / 90).toInt()) {
+                        when ((emgUiState.emgAvg[0] / 90).toInt()) {
                             0 -> Color.White.copy(0.7f)
                             1 -> Color.Red.copy(0.7f)
                             2 -> Color.Green.copy(0.7f)
@@ -577,12 +577,12 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
                 .background(Color.White),
                 contentAlignment = Alignment.Center
             ){
-                Text("Lv. ${String.format("%.3f", (emgUiState.emg2Avg / 90) + 1)}")
+                Text("Lv. ${String.format("%.3f", (emgUiState.emgAvg[1] / 90) + 1)}")
                 Box(modifier = Modifier
                     .clip(CircleShape)
-                    .size(if (emgUiState.emg2Avg > 360) (emgUiState.emg2Avg - 270).dp else (emgUiState.emg2Avg % 360 / 4).dp)
+                    .size(if (emgUiState.emgAvg[1] > 360) (emgUiState.emgAvg[1] - 270).dp else (emgUiState.emgAvg[1] % 360 / 4).dp)
                     .background(
-                        when ((emgUiState.emg2Avg / 90).toInt()) {
+                        when ((emgUiState.emgAvg[1] / 90).toInt()) {
                             0 -> Color.White.copy(0.7f)
                             1 -> Color.Red.copy(0.7f)
                             2 -> Color.Green.copy(0.7f)
@@ -645,7 +645,7 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
                 .height(40.dp)
                 .background(Color(0xFFDDE2FD)),
         ){
-            Text(String.format("개수 : ${planInfo.successRep}", emgUiState.emg1Avg % 90))
+            Text(String.format("개수 : ${planInfo.successRep}", emgUiState.emgAvg[0] % 90))
         }
     }
 }

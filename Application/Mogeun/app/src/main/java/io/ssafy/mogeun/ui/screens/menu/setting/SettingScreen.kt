@@ -1,5 +1,8 @@
-package io.ssafy.mogeun.ui.screens.setting.setting
+package io.ssafy.mogeun.ui.screens.menu.setting
 
+import android.content.Intent
+import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,126 +20,114 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BluetoothSearching
-import androidx.compose.material.icons.filled.GroupOff
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Logout
-import androidx.compose.material.icons.filled.ManageAccounts
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.MonitorHeart
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.RateReview
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.R
+import io.ssafy.mogeun.ui.AppViewModelProvider
+import io.ssafy.mogeun.ui.screens.menu.menu.MenuViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SettingScreen(
-    viewModel: SettingViewModel = viewModel(factory = SettingViewModel.Factory),
-    navController: NavHostController,
-    snackbarHostState: SnackbarHostState
+    viewModel: SettingViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    setTheme: (useDynamic: Boolean, useSystemSetting: Boolean, useDarkMode: Boolean) -> Unit
 ) {
-    val openAlertDialog = remember { mutableStateOf(false) }
-    val withdrawalText = stringResource(R.string.withdrawal_complete)
-    val invalidInfoText = stringResource(R.string.invalid_information)
-    LaunchedEffect(viewModel.deleteUserSuccess) {
-        if (viewModel.deleteUserSuccess == true) {
-            navController.navigate("Splash")
-            snackbarHostState.showSnackbar(withdrawalText)
-        }
-    }
-    LaunchedEffect(viewModel.errorDeleteUser) {
-        if (viewModel.errorDeleteUser == true) {
-            snackbarHostState.showSnackbar(invalidInfoText)
-        }
-    }
+    val useDynamic = viewModel.useDynamic.collectAsState().value
+    val useDarkMode = viewModel.useDarkMode.collectAsState().value
+    val useLightMode = viewModel.useLightMode.collectAsState().value
+    val useVirtual = viewModel.useVirtual.collectAsState().value
 
-    val userMenus: List<MenuItemInfo> = listOf(
-        MenuItemInfo(
-            stringResource(R.string.modify_information),
-            stringResource(R.string.modify_personal_information),
-            Icons.Default.ManageAccounts,
-            {navController.navigate("User")},
-            Color(0xFFFFF0C9),
-            Position.Top
-        ),
-        MenuItemInfo(
-            stringResource(R.string.logout),
-            stringResource(R.string.logout_service),
-            Icons.Default.Logout,
-            {
-                viewModel.deleteUserKey()
-                navController.navigate("Splash")
-            },
-            Color(0xFFFFE0C9),
-            Position.Mid
-        ),
-        MenuItemInfo(
-            stringResource(R.string.membership_withdrawal),
-            stringResource(R.string.want_stop_service),
-            Icons.Default.GroupOff,
-            {openAlertDialog.value = true},
-            Color(0xFFFFC9C9),
-            Position.Bot
-        )
-    )
-
-    val serviceMenus: List<MenuItemInfo> = listOf(
-        MenuItemInfo(
-            stringResource(R.string.interworking_equipment),
-            stringResource(R.string.connect_device),
-            Icons.Default.BluetoothSearching,
-            {navController.navigate("Connection")},
-            Color(0xFFC9E2FF),
-            Position.Single
-        )
-    )
+    LaunchedEffect(useDynamic, useDarkMode, useLightMode) {
+        val useSystemSetting = !useDarkMode && !useLightMode
+        Log.d("theme", "dynamic : $useDynamic, dark : $useDarkMode, light : $useLightMode")
+        setTheme(useDynamic, useSystemSetting, useDarkMode)
+    }
 
     val appMenus: List<MenuItemInfo> = listOf(
         MenuItemInfo(
-            stringResource(R.string.google_assessment),
-            stringResource(R.string.leave_eview),
-            Icons.Default.RateReview,
-            {},
-            Color(0xFFEAC9FF),
+            "다이나믹 색상",
+            "테마를 배경색으로 사용합니다",
+            Icons.Default.Palette,
+            useDynamic,
+            {
+                viewModel.switchModes(!useDynamic, useDarkMode, useLightMode)
+            },
+            Color(0xFFC9E2FF),
             Position.Top
         ),
         MenuItemInfo(
-            stringResource(R.string.app_information),
-            stringResource(R.string.version_contact),
-            Icons.Default.Info,
-            {},
-            Color(0xFFFFC9E3),
+            "다크모드 설정",
+            "테마를 다크모드로 설정합니다",
+            Icons.Default.DarkMode,
+            useDarkMode,
+            {
+                viewModel.switchModes(useDynamic, !useDarkMode, if(!useDarkMode) false else useLightMode)
+            },
+            Color(0xFFC9CBFF),
+            Position.Mid
+        ),
+        MenuItemInfo(
+            "라이트모드 설정",
+            "테마를 라이트모드로 설정합니다",
+            Icons.Default.LightMode,
+            useLightMode,
+            {
+                viewModel.switchModes(useDynamic, if(!useLightMode) false else useDarkMode, !useLightMode)
+            },
+            Color(0xFFFFF0C9),
             Position.Bot
+        )
+    )
+
+    val sensorMenus: List<MenuItemInfo> = listOf(
+        MenuItemInfo(
+            "가상 센서 연결",
+            "테스트를 위해 가상 센서와 연결합니다",
+            Icons.Default.MonitorHeart,
+            useVirtual,
+            {
+                if(useVirtual) {
+                    viewModel.disableVirtualSensor()
+                } else {
+                    viewModel.enableVirtualSensor()
+                }
+            },
+            Color(0xFFC9E2FF),
+            Position.Single
         )
     )
 
@@ -145,41 +136,20 @@ fun SettingScreen(
             .fillMaxSize()
     ) {
         stickyHeader {
-            LazyHeader(stringResource(R.string.member_information))
-        }
-        item() {
-            LazyLists(userMenus)
-        }
-        stickyHeader {
-            LazyHeader(stringResource(R.string.service_interworking))
-        }
-        item() {
-            LazyLists(serviceMenus)
-        }
-        stickyHeader {
-            LazyHeader(stringResource(R.string.app_information))
+            LazyHeader("테마 설정")
         }
         item() {
             LazyLists(appMenus)
         }
-    }
-
-
-
-    when {
-        openAlertDialog.value -> {
-            AlertDialogExample(
-                onDismissRequest = { openAlertDialog.value = false },
-                onConfirmation = {
-                    viewModel.deleteUser()
-                    openAlertDialog.value = false
-                },
-                dialogTitle = stringResource(R.string.enter_membership_information),
-                icon = Icons.Default.Info
-            )
+        stickyHeader {
+            LazyHeader("센서 (실험용)")
+        }
+        item() {
+            LazyLists(sensorMenus)
         }
     }
 }
+
 
 enum class Position() {
     Top, Mid, Bot, Single
@@ -189,6 +159,7 @@ data class MenuItemInfo(
     val title: String,
     val description: String,
     val vector: ImageVector,
+    val checkedState: Boolean,
     val onClick: () -> Unit,
     val color: Color,
     val position: Position,
@@ -239,9 +210,6 @@ fun LazyList(menu: MenuItemInfo) {
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .clickable {
-                menu.onClick()
-            }
     ) {
         Column(
             horizontalAlignment = Alignment.End,
@@ -295,8 +263,9 @@ fun LazyList(menu: MenuItemInfo) {
                         .weight(1f)
                 ) {
                     Text(text = menu.title, fontWeight = FontWeight.Bold)
-                    Text(text = menu.description)
+                    Text(text = menu.description, overflow = TextOverflow.Ellipsis)
                 }
+                Switch(checked = menu.checkedState, onCheckedChange = {menu.onClick()})
 
             }
             if(menu.position != Position.Bot && menu.position != Position.Single)
@@ -308,72 +277,4 @@ fun LazyList(menu: MenuItemInfo) {
                 )
         }
     }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun AlertDialogExample(
-    onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
-    dialogTitle: String,
-    icon: ImageVector,
-) {
-    val viewModel: SettingViewModel = viewModel(factory = SettingViewModel.Factory)
-    val keyboardController = LocalSoftwareKeyboardController.current
-    AlertDialog(
-        icon = {
-            Icon(icon, contentDescription = "Example Icon")
-        },
-        title = {
-            Text(text = dialogTitle)
-        },
-        text = {
-            Column {
-                Text(text = stringResource(R.string.id))
-                TextField(
-                    value = viewModel.username,
-                    onValueChange = { viewModel.updateId(it) },
-                    label = {  },
-                    keyboardActions = KeyboardActions(onDone = {
-                        keyboardController?.hide()
-                    }),
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Done
-                    )
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = stringResource(R.string.password))
-                TextField(
-                    value = viewModel.pw,
-                    onValueChange = { viewModel.updatePw(it) },
-                    label = {  },
-                    keyboardActions = KeyboardActions(onDone = {
-                        keyboardController?.hide()
-                    }),
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Done
-                    )
-                )
-            }
-        },
-        onDismissRequest = {
-            onDismissRequest()
-        },
-        confirmButton = {
-            TextButton(
-                onClick = { onConfirmation() }
-            ) {
-                Text(stringResource(R.string.withdrawal))
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = {
-                    onDismissRequest()
-                }
-            ) {
-                Text(stringResource(R.string.cancellation))
-            }
-        }
-    )
 }

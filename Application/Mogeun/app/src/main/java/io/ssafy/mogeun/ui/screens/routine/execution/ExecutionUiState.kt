@@ -1,18 +1,20 @@
 package io.ssafy.mogeun.ui.screens.routine.execution
 
+import android.bluetooth.BluetoothDevice
 import io.ssafy.mogeun.data.Emg
+import io.ssafy.mogeun.model.BleDevice
 import io.ssafy.mogeun.model.ListMyExerciseResponse
 import io.ssafy.mogeun.model.SetOfRoutineDetail
 
+data class SensorState(
+    val connectedDevices: List<BleDevice?> = listOf(null, null)
+)
+
 data class EmgUiState (
-    val emg1: Emg? = null,
-    val emg2: Emg? = null,
-    val emg1Avg: Double = 0.0,
-    val emg2Avg: Double = 0.0,
-    val emg1List: List<Int> = listOf(),
-    val emg2List: List<Int> = listOf(),
-    val emg1Max: Int = 0,
-    val emg2Max: Int = 0
+    val emg: List<Emg?> = listOf(null, null),
+    val emgAvg: List<Double> = listOf(0.0, 0.0),
+    val emgList: List<List<Int>> = listOf(listOf(), listOf()),
+    val emgMax: List<Int> = listOf(0, 0)
 )
 
 data class MuscleSensorValue(

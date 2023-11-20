@@ -1,4 +1,4 @@
-package io.ssafy.mogeun.ui
+package io.ssafy.mogeun.ui.screens.routine.execution
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -7,40 +7,25 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.yml.charts.common.extensions.isNotNull
+import io.ssafy.mogeun.data.BleRepository
 import io.ssafy.mogeun.data.Emg
 import io.ssafy.mogeun.data.EmgRepository
 import io.ssafy.mogeun.data.ExecutionRepository
 import io.ssafy.mogeun.data.KeyRepository
 import io.ssafy.mogeun.data.RoutineRepository
-import io.ssafy.mogeun.data.bluetooth.BluetoothController
-import io.ssafy.mogeun.data.bluetooth.BluetoothDeviceDomain
-import io.ssafy.mogeun.data.bluetooth.ConnectedDevice
-import io.ssafy.mogeun.data.bluetooth.Connection0Result
-import io.ssafy.mogeun.data.bluetooth.Connection1Result
-import io.ssafy.mogeun.model.BluetoothMessage
 import io.ssafy.mogeun.model.SensorData
 import io.ssafy.mogeun.model.SetExecutionRequest
 import io.ssafy.mogeun.model.SetInfo
-import io.ssafy.mogeun.ui.screens.routine.execution.ElapsedTime
-import io.ssafy.mogeun.ui.screens.routine.execution.EmgUiState
-import io.ssafy.mogeun.ui.screens.routine.execution.MuscleSensorValue
-import io.ssafy.mogeun.ui.screens.routine.execution.RoutineState
-import io.ssafy.mogeun.ui.screens.routine.execution.SetOfPlan
-import io.ssafy.mogeun.ui.screens.routine.execution.SetProgress
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -49,20 +34,23 @@ import java.text.SimpleDateFormat
 import kotlin.math.abs
 
 
-class BluetoothViewModel(
+class ExecutionViewModel(
     private val executionRepository: ExecutionRepository,
     private val emgRepository: EmgRepository,
     private val routineRepository: RoutineRepository,
-    private val bluetoothController: BluetoothController,
+    private val bleRepository: BleRepository,
     private val keyRepository: KeyRepository,
 ): ViewModel() {
 
     var userKey by mutableStateOf<Int?>(null)
-    suspend fun getUserKey(): Int? {
-        val key = keyRepository.getKey().first()
-        userKey = key?.userKey
-        Log.d("execution", "사용자 키: $userKey")
-        return userKey
+    fun getUserKey() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val key = keyRepository.getKey()
+            Log.d("execution", "사용자 키: $userKey")
+            launch(Dispatchers.Main) {
+                userKey = key?.userKey
+            }
+        }
     }
 
     private val _routineState = MutableStateFlow(RoutineState(null, showBottomSheet = false))
@@ -303,7 +291,7 @@ class BluetoothViewModel(
                         executionRepository.clearPlan(planKey)
                     }.await()
 
-                    Log.d("setInput", "clear plan : $ret1")
+                    Log.d("report", "clear plan : $ret1")
 
                     val ret2 = async {
                         executionRepository.setPlan(planKey, plan.setOfRoutineDetail.map { setProgress ->
@@ -311,7 +299,7 @@ class BluetoothViewModel(
                         })
                     }.await()
 
-                    Log.d("setInput", "set plan : $ret2")
+                    Log.d("report", "set plan : $ret2")
 
                     val ret3 = executionRepository.reportSet(
                         SetExecutionRequest(
@@ -330,7 +318,7 @@ class BluetoothViewModel(
                         )
                     )
 
-                    Log.d("setInput", "report set : $ret3")
+                    Log.d("report", "report set : $ret3")
                 }
             }
         }
@@ -347,6 +335,7 @@ class BluetoothViewModel(
 
         viewModelScope.launch {
             val ret = executionRepository.startRoutine(userKey!!, routineKey, isAttached)
+            Log.d("report", "routine started = $ret")
             _routineState.update { routineState -> routineState.copy(reportKey = ret.data!!.reportKey) }
         }
     }
@@ -383,9 +372,6 @@ class BluetoothViewModel(
     val _elaspedTime = MutableStateFlow(ElapsedTime(System.currentTimeMillis(), 0, 0))
     val elaspedTime = _elaspedTime.asStateFlow()
 
-
-
-
     suspend fun runTimer() {
         _elaspedTime.update { elapsedTime -> elapsedTime.copy(startTime = System.currentTimeMillis()) }
         while (!terminateTimer) {
@@ -398,225 +384,61 @@ class BluetoothViewModel(
 
     private val _emgState = MutableStateFlow(EmgUiState())
     val emgState = _emgState.asStateFlow()
-//    val emgState: StateFlow<EmgUiState> =
-//        emgRepository.getEmgStream()
-//            .map {
-//                if(it != null) {
-//                    if(it.deviceId == 0) {
-//                        _emgState.update { emgUiState ->
-//                            val bufValue = abs(it.value)
-//                            val bufList = if(emgUiState.emg1List.size < 80) emgUiState.emg1List + bufValue else emgUiState.emg1List.subList(1, 80) + bufValue
-//                            emgUiState.copy(
-//                                emg1 = it,
-//                                emg1List = bufList,
-//                                emg1Avg = bufList.average()
-//                        ) }
-//
-//                    } else {
-//                        _emgState.update { emgUiState ->
-//                            val bufValue = abs(it.value)
-//                            val bufList = if(emgUiState.emg2List.size < 80) emgUiState.emg2List + bufValue else emgUiState.emg2List.subList(1, 80) + bufValue
-//                            emgUiState.copy(
-//                                emg2 = it,
-//                                emg2List = bufList,
-//                                emg2Avg = bufList.average()
-//                            ) }
-//                    }
-//                }
-//                _emgState.value.copy()
-//            }.stateIn(
-//                viewModelScope,
-//                SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-//                initialValue = _emgState.value
-//            )
 
-    private val _btState = MutableStateFlow(BluetoothUiState())
-    val btState = combine(
-        bluetoothController.scannedDevices,
-        bluetoothController.pairedDevices,
-        bluetoothController.connectedDevices,
-        bluetoothController.isConnected,
-        _btState
-    ) { scannedDevices, pairedDevices, connectedDevices, isConnected, btState ->
-
-        btState.copy(
-            scannedDevices = scannedDevices,
-            pairedDevices = pairedDevices,
+    private val _sensorState = MutableStateFlow(SensorState())
+    val sensorState: StateFlow<SensorState> = combine(
+        bleRepository.connectedDevices,
+        _sensorState
+    ) { connectedDevices, state ->
+        state.copy(
             connectedDevices = connectedDevices,
-            isConnected = isConnected
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(TIMEOUT_MILLIS), _btState.value)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(TIMEOUT_MILLIS), _sensorState.value)
 
-    private var deviceConnectionJob: Array<Job?> = arrayOf(null, null, null, null)
-
-
-
-    init {
-        bluetoothController.errors.onEach { error ->
-            _btState.update { it.copy(
-                errorMessage = error
-            ) }
-        }.launchIn(viewModelScope)
-
-
+    fun getSensorVal() {
         viewModelScope.launch {
-            runTimer()
-        }
-    }
+            bleRepository.sensorVal.collect { sensorVal ->
+                for (i in 0..1) {
+                    _emgState.update { emgUiState ->
+                        val bufValue = abs(sensorVal[i])
+                        val calcList = if(bufValue > 5000) emgUiState.emgList[i] else {if(emgUiState.emgList[i].size < 80) emgUiState.emgList[i] + bufValue else emgUiState.emgList[i].subList(1, 80) + bufValue}
+                        val avg = calcList.average()
 
-    fun connectToDevice(device: BluetoothDeviceDomain) {
-        _btState.update { it.copy(isConnecting = true) }
+                        var bufEmg: MutableList<Emg?> = emgUiState.emg.toMutableList()
+                        bufEmg[i] = Emg(0, i, "unknown", sensorVal[i], System.currentTimeMillis())
 
-        if(!btState.value.isConnected[0]) {
-            deviceConnectionJob[0] = bluetoothController
-                .connectToDevice0(ConnectedDevice(name = device.name, address = device.address, assignedNo = 0))
-                .listen()
-        } else if(!btState.value.isConnected[1]) {
-            deviceConnectionJob[1] = bluetoothController
-                .connectToDevice1(ConnectedDevice(name = device.name, address = device.address, assignedNo = 1))
-                .listen()
-        } else {
-            Log.d("bluetoothAddress", "이미 디바이스가 전부 연결됨")
-        }
-    }
+                        var bufList = emgUiState.emgList.toMutableList()
+                        bufList[i] = calcList
 
-    fun disconnectFromDevice(deviceNo: Int = 0) {
-        deviceConnectionJob[0]?.cancel()
-        deviceConnectionJob[1]?.cancel()
+                        var bufAvg = emgUiState.emgAvg.toMutableList()
+                        bufAvg[i] = avg
 
-        viewModelScope.launch {
-            bluetoothController.closeConnection(0)
-            bluetoothController.closeConnection(1)
-        }
-//        val bufConnected = state.value.isConnected.toMutableList()
-//        bufConnected[deviceNo] = false
+                        var bufMax = emgUiState.emgMax.toMutableList()
+                        bufMax[i] = if(emgUiState.emgMax[i] < avg) avg.toInt() else emgUiState.emgMax[i]
 
-        _btState.update { it.copy(
-            isConnecting = false,
-//            isConnected = bufConnected.toList()
-        ) }
-    }
 
-    fun startScan() {
-        bluetoothController.startDiscovery()
-    }
-
-    fun stopScan() {
-        bluetoothController.stopDiscovery()
-    }
-
-    @JvmName("connection0")
-    private fun Flow<Connection0Result>.listen(): Job {
-        return onEach { result ->
-            when(result) {
-                is Connection0Result.ConnectionEstablished -> {
-                    _btState.update {it.copy(
-                        isConnecting = false,
-                        errorMessage = null
-                    ) }
-                }
-                is Connection0Result.TransferSucceeded -> {
-//                    Log.d("bluetooth", "${result.message}")
-//                    Log.d("bluetooth", "${state.value.isConnected}")
-
-                    if(result.message.sensorId == 0) {
-                        _emgState.update { emgUiState ->
-                            val bufValue = abs(result.message.message)
-                            val bufList = if(bufValue > 1500) emgUiState.emg1List else {if(emgUiState.emg1List.size < 80) emgUiState.emg1List + bufValue else emgUiState.emg1List.subList(1, 80) + bufValue}
-                            val avg = bufList.average()
-                            emgUiState.copy(
-                                emg1 = Emg(0, result.message.sensorId, "unknown", result.message.message, System.currentTimeMillis()),
-                                emg1List = bufList,
-                                emg1Avg = avg,
-                                emg1Max = if(emgUiState.emg1Max < avg) avg.toInt() else emgUiState.emg1Max
-                            )
-                        }
+                        emgUiState.copy(
+                            emg = bufEmg,
+                            emgList = bufList,
+                            emgAvg = bufAvg,
+                            emgMax = bufMax
+                        )
                     }
                     viewModelScope.launch {
-                        saveData(result.message)
-                    }
-                }
-                is Connection0Result.Error -> {
-                    if(result.message != "errString") {
-                        _btState.update { it.copy(
-                            isConnecting = false,
-                            errorMessage = result.message
-                        ) }
+                        saveData(i, sensorVal[i])
                     }
                 }
             }
-        }.catch {throwable ->
-            Log.d("bluetooth", "종료조건 ${throwable}")
-            bluetoothController.closeConnection(0)
-            _btState.update { it.copy(
-                isConnecting = false,
-            ) }
-        }.launchIn(viewModelScope)
+        }
     }
 
-    @JvmName("connection1")
-    private fun Flow<Connection1Result>.listen(): Job {
-        return onEach { result ->
-            when(result) {
-                is Connection1Result.ConnectionEstablished -> {
-                    _btState.update {it.copy(
-                        isConnecting = false,
-                        errorMessage = null
-                    ) }
-                }
-                is Connection1Result.TransferSucceeded -> {
-//                    Log.d("bluetooth", "${result.message}")
-//                    Log.d("bluetooth", "${state.value.isConnected}")
-                    if(result.message.sensorId == 1) {
-                        _emgState.update { emgUiState ->
-                            val bufValue = abs(result.message.message)
-                            val bufList = if(bufValue > 1500) emgUiState.emg2List else {if(emgUiState.emg2List.size < 80) emgUiState.emg2List + bufValue else emgUiState.emg2List.subList(1, 80) + bufValue}
-                            val avg = bufList.average()
-                            emgUiState.copy(
-                                emg2 = Emg(0, result.message.sensorId, "unknown", result.message.message, System.currentTimeMillis()),
-                                emg2List = bufList,
-                                emg2Avg = avg,
-                                emg2Max = if(emgUiState.emg2Max < avg) avg.toInt() else emgUiState.emg2Max
-                            )
-                        }
-                    }
-                    viewModelScope.launch {
-                        saveData(result.message)
-                    }
-                }
-                is Connection1Result.Error -> {
-                    if(result.message != "errString") {
-                        _btState.update { it.copy(
-                            isConnecting = false,
-                            errorMessage = result.message
-                        ) }
-                    }
-                }
-            }
-        }.catch {throwable ->
-            Log.d("bluetooth", "종료조건 ${throwable}")
-            bluetoothController.closeConnection(1)
-            _btState.update { it.copy(
-                isConnecting = false,
-            ) }
-        }.launchIn(viewModelScope)
-    }
-
-    suspend fun saveData(msg: BluetoothMessage) {
-        val emgInput = Emg(0, msg.sensorId, "unknown", msg.message, System.currentTimeMillis())
+    suspend fun saveData(idx: Int, value: Int) {
+        val emgInput = Emg(0, idx, "unknown", value, System.currentTimeMillis())
         emgRepository.insertEmg(emgInput)
     }
 
     suspend fun deleteEmgData() {
         emgRepository.deleteEmgData()
-    }
-
-    fun subscribe() {
-        _btState.update { bluetoothUiState -> bluetoothUiState.copy(subscribe = true) }
-    }
-
-    fun unsubscribe() {
-        _btState.update { bluetoothUiState -> bluetoothUiState.copy(subscribe = false) }
     }
 
     fun showBottomSheet() {
@@ -629,7 +451,6 @@ class BluetoothViewModel(
     override fun onCleared() {
         super.onCleared()
         viewModelScope.launch {
-            bluetoothController.release()
             emgRepository.deleteEmgData()
         }
     }

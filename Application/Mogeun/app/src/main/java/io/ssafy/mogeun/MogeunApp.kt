@@ -5,6 +5,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -39,7 +40,9 @@ import io.ssafy.mogeun.ui.rootScreen
 
 
 @Composable
-fun Navigation() {
+fun Navigation(
+    setTheme: (useDynamic: Boolean, useSystemSetting: Boolean, useDarkMode: Boolean) -> Unit
+) {
     val snackbarHostState = remember{ SnackbarHostState() }
 
     val navController: NavHostController = rememberNavController()
@@ -71,14 +74,14 @@ fun Navigation() {
             .padding(innerPadding)
             .background(
                 brush = Brush.verticalGradient(
-                    listOf(Color.White, Color(0xFFFFF7F7)),
+                    if (isSystemInDarkTheme()) listOf(Color.Black, Color(0xFF452703)) else listOf(Color.White, Color(0xFFFFF7F7)),
                     startY = 100f,
                     endY = 800f
                 ),
                 shape = RectangleShape
             )
         ) {
-            MogeunNavHost(navController, snackbarHostState)
+            MogeunNavHost(navController, snackbarHostState, setTheme)
         }
     }
 }

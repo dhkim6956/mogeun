@@ -19,9 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PauseCircle
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
@@ -43,11 +41,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.NavOptions
-import androidx.navigation.navOptions
+import co.yml.charts.common.extensions.isNotNull
 import io.ssafy.mogeun.R
-import io.ssafy.mogeun.ui.BluetoothViewModel
+import io.ssafy.mogeun.data.AppContainer
+import io.ssafy.mogeun.ui.AppViewModelProvider
 import io.ssafy.mogeun.ui.components.AlertDialogCustom
 import io.ssafy.mogeun.ui.components.ElevatedGif
 import io.ssafy.mogeun.ui.screens.routine.execution.components.ExerciseProgress
@@ -59,15 +58,16 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navController: NavHostController, snackbarHostState: SnackbarHostState) {
+fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewModelProvider.Factory), routineKey: Int, navController: NavHostController, snackbarHostState: SnackbarHostState) {
     val emgState by viewModel.emgState.collectAsState()
-    val btState by viewModel.btState.collectAsState()
+    val sensorState by viewModel.sensorState.collectAsState()
     val routineState by viewModel.routineState.collectAsState()
     val elapsedTime by viewModel.elaspedTime.collectAsState()
 
     val muscleavg by viewModel.muscleavg.collectAsState()
 
     var openEndDialog by remember { mutableStateOf(false) }
+    var openNoSensorDialog by remember { mutableStateOf(false) }
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -76,16 +76,16 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
     }
 
     LaunchedEffect(Unit) {
-        val ret = async {
-            viewModel.getUserKey()
-        }.await()
-        if (!routineState.routineInProgress) {
+        viewModel.getUserKey()
+    }
+
+    LaunchedEffect(viewModel.userKey) {
+        if (!routineState.routineInProgress && viewModel.userKey.isNotNull()) {
             viewModel.startRoutine(routineKey)
             snackbarHostState.showSnackbar("루틴을 시작합니다.")
         }
-    }
 
-    LaunchedEffect(routineKey) {
+        viewModel.getSensorVal()
     }
 
     DisposableEffect(Unit) {
@@ -185,7 +185,7 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
                 }
                 RoutineProgress(pagerState.currentPage + 1, routineSize, elapsedTime, {openEndDialog = true}, routineState.setInProgress, {coroutineScope.launch { pagerState.scrollToPage(pagerState.currentPage - 1) }}, {coroutineScope.launch { pagerState.scrollToPage(pagerState.currentPage + 1) }}, routineSize, pagerState.currentPage)
 
-                SensorBottomSheet(state = routineState.showBottomSheet, hide = viewModel::hideBottomSheet, navToConnection = {navController.navigate("Connection")}, btState = btState, sensingPart = routineState.planList!!.data[pagerState.currentPage].mainPart.imagePath)
+                SensorBottomSheet(state = routineState.showBottomSheet, hide = viewModel::hideBottomSheet, navToConnection = {navController.navigate("Connection")}, sensorState = sensorState, sensingPart = routineState.planList!!.data[pagerState.currentPage].mainPart.imagePath)
             }
         }
     }
@@ -216,6 +216,37 @@ fun ExecutionScreen(viewModel: BluetoothViewModel, routineKey: Int, navControlle
                                  },
                 dialogTitle = if (routineState.hasValidSet) {"오늘의 루틴 종료"} else {"루틴 진행 취소"},
                 dialogText = if (routineState.hasValidSet) {"현재까지의 진행상황을 기록하고 운동을 종료합니다."} else {"측정된 횟수가 없어 진행상황을 기록하지 않고 돌아갑니다"},
+                icon = Icons.Default.PauseCircle
+            )
+        }
+    }
+    when {
+        openNoSensorDialog -> {
+            AlertDialogCustom(
+                onDismissRequest = {
+                    openNoSensorDialog = false
+                },
+                onConfirmation = {
+                    openNoSensorDialog = false
+                    viewModel.endRoutine()
+                    if (routineState.hasValidSet) {
+                        navController.navigate("RecordDetail/${routineState.reportKey}",) {
+                            popUpTo(navController.graph.startDestinationId)
+                            launchSingleTop = true
+                        }
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar("루틴이 종료되었습니다.")
+                        }
+                    } else {
+                        navController.popBackStack()
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar("루틴이 취소되었습니다.")
+                        }
+                    }
+
+                },
+                dialogTitle = "센서가 연결되지 않았습니다.",
+                dialogText = "센서를 연결하지 않고 진행하시겠습니까?",
                 icon = Icons.Default.PauseCircle
             )
         }

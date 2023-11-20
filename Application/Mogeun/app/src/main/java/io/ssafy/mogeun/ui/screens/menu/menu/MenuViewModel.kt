@@ -1,4 +1,4 @@
-package io.ssafy.mogeun.ui.screens.setting.setting
+package io.ssafy.mogeun.ui.screens.menu.menu
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -15,7 +15,7 @@ import io.ssafy.mogeun.data.UserRepository
 import io.ssafy.mogeun.model.DeleteUserResponse
 import kotlinx.coroutines.launch
 
-class SettingViewModel(
+class MenuViewModel(
     private val keyRepository: KeyRepository,
     private val UserRepository: UserRepository
 ) : ViewModel()  {
@@ -44,23 +44,13 @@ class SettingViewModel(
     fun deleteUser() {
         lateinit var ret: DeleteUserResponse
         viewModelScope.launch {
-            ret = UserRepository.deleteUser(username, pw)
+            ret = UserRepository.deleteUser(username, pw)       // response 데이터에 객체 들어올수 있음
             Log.d("deleteUser", "$ret")
             if (ret.message == "SUCCESS") {
                 updateDeleteUserSuccess(true)
                 deleteUserKey()
             } else {
                 updateErrorDeleteUser(true)
-            }
-        }
-    }
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as MogeunApplication)
-                val keyRepository = application.container.keyRepository
-                val userRepository = application.container.userDataRepository
-                SettingViewModel(keyRepository, UserRepository = userRepository)
             }
         }
     }

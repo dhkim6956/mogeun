@@ -35,14 +35,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import co.yml.charts.common.extensions.isNotNull
 import io.ssafy.mogeun.R
-import io.ssafy.mogeun.ui.BluetoothUiState
-import io.ssafy.mogeun.ui.screens.routine.execution.ElapsedTime
+import io.ssafy.mogeun.ui.screens.routine.execution.SensorState
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SensorBottomSheet(state: Boolean, hide: () -> Unit, navToConnection: () -> Unit, btState: BluetoothUiState, sensingPart: String) {
+fun SensorBottomSheet(state: Boolean, hide: () -> Unit, navToConnection: () -> Unit, sensorState: SensorState, sensingPart: String) {
     val sheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -174,7 +174,7 @@ fun SensorBottomSheet(state: Boolean, hide: () -> Unit, navToConnection: () -> U
                                     painter = painterResource(id = R.drawable.heart_rate),
                                     null,
                                     Modifier.fillMaxSize(0.7f),
-                                    colorFilter = if(btState.isConnected[0]) ColorFilter.tint(Color(0xff00ff54)) else ColorFilter.tint(Color(0xffff0054))
+                                    colorFilter = if(sensorState.connectedDevices[0].isNotNull()) ColorFilter.tint(Color(0xff00ff54)) else ColorFilter.tint(Color(0xffff0054))
                                 )
                             }
                             Divider(
@@ -192,7 +192,7 @@ fun SensorBottomSheet(state: Boolean, hide: () -> Unit, navToConnection: () -> U
                                     painter = painterResource(id = R.drawable.heart_rate),
                                     null,
                                     Modifier.fillMaxSize(0.7f),
-                                    colorFilter = if(btState.isConnected[1]) ColorFilter.tint(Color(0xff00ff54)) else ColorFilter.tint(Color(0xffff0054))
+                                    colorFilter = if(sensorState.connectedDevices[1].isNotNull()) ColorFilter.tint(Color(0xff00ff54)) else ColorFilter.tint(Color(0xffff0054))
                                 )
                             }
                         }

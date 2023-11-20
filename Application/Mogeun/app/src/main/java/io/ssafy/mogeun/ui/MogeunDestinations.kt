@@ -121,6 +121,18 @@ enum class Screen(
         title = MogeunApplication.getContext().getString(R.string.screen_connection),
         topBarState = TopBarState(visibility = true, backBtnVisibility = true),
         bottomBarState = BottomBarState(false)
+    ),
+    Setting(
+        route = "Setting",
+        title = MogeunApplication.getContext().getString(R.string.screen_setting),
+        topBarState = TopBarState(visibility = true, backBtnVisibility = true),
+        bottomBarState = BottomBarState(true, originRoute = "Menu")
+    ),
+    AppInfo(
+        route = "AppInfo",
+        title = MogeunApplication.getContext().getString(R.string.screen_appinfo),
+        topBarState = TopBarState(visibility = true, backBtnVisibility = true),
+        bottomBarState = BottomBarState(true, originRoute = "Menu")
     )
 }
 
