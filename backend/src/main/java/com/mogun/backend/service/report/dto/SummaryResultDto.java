@@ -29,6 +29,9 @@ public class SummaryResultDto {
     @JsonProperty("total_sets")
     private int totalSets;
 
+    @JsonProperty("is_attached")
+    private char isAttached;
+
     @JsonProperty("exercises")
     List<ExerciseResultDto> exerciseResultDtoList;
 }

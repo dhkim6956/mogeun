@@ -45,9 +45,9 @@ public class RoutineResultService {
         if(report.isEmpty())
             return ServiceStatus.errorStatus("요청 오류: 등록된 적 없는 루틴 기록");
 
-//        Optional<RoutineResult> result = resultRepository.findByRoutineReport(report.get());
-//        if(result.isPresent())
-//            return ServiceStatus.errorStatus("요청 오류: 기록된 루틴 결과에 대한 재작성");
+        Optional<RoutineResult> result = resultRepository.findByRoutineReport(report.get());
+        if(result.isPresent())
+            return ServiceStatus.errorStatus("요청 오류: 기록된 루틴 결과에 대한 재작성");
 
         resultRepository.save(dto.toRoutineResultEntity(report.get()));
 
@@ -200,6 +200,7 @@ public class RoutineResultService {
                 .consumeCalorie(result.get().getConsumeCalorie())
                 .totalSets(setReportList.size())
                 .performTime(performTime.toMinutes())
+                .isAttached(report.get().getIsAttached())
                 .exerciseResultDtoList(exerciseResultDtoList)
                 .build();
 
