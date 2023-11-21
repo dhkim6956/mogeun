@@ -81,6 +81,13 @@ fun ExerciseDetailScreen(
         exercises = emptyList()
     }
 
+    var isAttached: Boolean
+    try {
+        isAttached = navController.previousBackStackEntry?.savedStateHandle?.get<Char>("isAttached")!! == 'Y'
+    } catch (e: NullPointerException) {
+        isAttached = false
+    }
+
     val exerciseIndex = index!!
 
     if (!exercises.isNullOrEmpty()) {
@@ -137,7 +144,7 @@ fun ExerciseDetailScreen(
                 }
                 HorizontalPager(state = pagerState) { page ->
                     // Our page content
-                    ExerciseDetail(exercises[page])
+                    ExerciseDetail(exercises[page], isAttached)
                 }
             }
         }
@@ -147,6 +154,7 @@ fun ExerciseDetailScreen(
 @Composable
 fun ExerciseDetail(
     exercise: Exercise,
+    isAttached: Boolean,
     viewModel: RecordViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -185,12 +193,14 @@ fun ExerciseDetail(
             modifier = Modifier.padding(top = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ExerciseDropdown(viewModel)
-            Spacer(
-                modifier = Modifier
-                    .width(5.dp)
-            )
-            SetExplain(viewModel)
+            if (isAttached) {
+                ExerciseDropdown(viewModel)
+                Spacer(
+                    modifier = Modifier
+                        .width(5.dp)
+                )
+                SetExplain(viewModel)
+            }
         }
         Column(
             modifier = Modifier
@@ -206,7 +216,7 @@ fun ExerciseDetail(
             }
             else {
                 repeat(exercise.sets) {
-                    SetDetail(it + 1, exercise.setResults[it], exercise.muscleImagePaths)
+                    SetDetail(it + 1, exercise.setResults[it], exercise.muscleImagePaths, isAttached)
                 }
             }
         }
@@ -336,7 +346,8 @@ fun MuscleFatigueChart(
 fun SetDetail(
     setNum: Int,
     setDetail: SetResult,
-    muscleImagePaths: List<String>
+    muscleImagePaths: List<String>,
+    isAttached: Boolean
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -400,7 +411,9 @@ fun SetDetail(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Text(setDetail.successRep.toString() + '/' + setDetail.targetRep.toString() + "rep")
+                if (isAttached)
+                    Text(setDetail.successRep.toString() + '/' + setDetail.targetRep.toString() + "rep")
+                else Text(setDetail.targetRep.toString() + "rep")
             }
         }
         if (expanded && !setDetail.muscleActivity.isNullOrEmpty() && (setDetail.muscleActivity?.get(0) != 0.0f || setDetail.muscleActivity?.get(1) != 0.0f))
