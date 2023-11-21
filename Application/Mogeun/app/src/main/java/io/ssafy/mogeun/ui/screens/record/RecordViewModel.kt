@@ -38,7 +38,7 @@ class RecordViewModel(
 
     private val _recordRoutineSuccess = MutableStateFlow(false)
     val recordRoutineSuccess: StateFlow<Boolean> = _recordRoutineSuccess.asStateFlow()
-    var routineInfo by mutableStateOf<RoutineInfoData?>(null)
+//    var routineInfo by mutableStateOf<RoutineInfoData?>(null)
 
     var userKey by mutableStateOf<Int?>(null)
 

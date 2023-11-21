@@ -53,6 +53,12 @@ class SummaryViewModel(
     val summaryExerciseSetSuccess: StateFlow<Boolean> = _summaryExerciseSetSuccess.asStateFlow()
     var summaryExerciseSet = mutableStateListOf<MostSetExercise?>()
 
+    private val _summaryLoading = MutableStateFlow(false)
+    val summaryLoading: StateFlow<Boolean> = _summaryLoading.asStateFlow()
+
+    private val _summarySuccess = MutableStateFlow(false)
+    val summarySuccess: StateFlow<Boolean> = _summarySuccess.asStateFlow()
+
     var itemIndex = mutableIntStateOf(0)
 
     private fun updateUserKey(update: Int?) {
@@ -167,7 +173,7 @@ class SummaryViewModel(
                 Log.d("summaryPerformedMuscleMonth", "$ret")
 
                 if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
-                    _summaryBodyInfoSuccess.value = true
+                    _summaryExerciseWeightSuccess.value = true
                     summaryExerciseWeight.add(ret.data)
                 }
             }
@@ -201,5 +207,9 @@ class SummaryViewModel(
                 }
             }
         }
+    }
+
+    fun updateSummarySuccess() {
+        _summarySuccess.value = true
     }
 }

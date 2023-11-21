@@ -25,13 +25,13 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -90,17 +90,25 @@ fun SummaryScreen(viewModel: SummaryViewModel = viewModel(factory = AppViewModel
         }
     }
 
+    IndeterminateCircularIndicator(viewModel)
+
     // 요약 페이지 구성을 위한 api 통신
+    val summaryBodyInfoSuccess by viewModel.summaryBodyInfoSuccess.collectAsState()
+    val summaryPerformedMuscleSuccess by viewModel.summaryPerformedMuscleSuccess.collectAsState()
+    val summaryExerciseMostSuccess by viewModel.summaryExerciseMostSuccess.collectAsState()
+    val summaryExerciseWeightSuccess by viewModel.summaryExerciseWeightSuccess.collectAsState()
     val summaryExerciseSetSuccess by viewModel.summaryExerciseSetSuccess.collectAsState()
-    if (!summaryExerciseSetSuccess) {
-        LaunchedEffect(viewModel.userKey) {
-            viewModel.summaryBody()
-            viewModel.summaryPerformedMuscle()
-            viewModel.summaryExerciseMost()
-            viewModel.summaryExerciseWeight()
-            viewModel.summaryExerciseSet()
-        }
+    val summarySuccess by viewModel.summarySuccess.collectAsState()
+    val summaryLoading by viewModel.summaryLoading.collectAsState()
+    if (!summarySuccess && !summaryLoading) {
+        viewModel.summaryBody()
+        viewModel.summaryPerformedMuscle()
+        viewModel.summaryExerciseMost()
+        viewModel.summaryExerciseWeight()
+        viewModel.summaryExerciseSet()
     }
+    if (summaryBodyInfoSuccess && summaryPerformedMuscleSuccess && summaryExerciseMostSuccess && summaryExerciseWeightSuccess && summaryExerciseSetSuccess)
+        viewModel.updateSummarySuccess()
 
     Column(
         modifier = Modifier
@@ -111,7 +119,7 @@ fun SummaryScreen(viewModel: SummaryViewModel = viewModel(factory = AppViewModel
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.End
     ) {
-        if (summaryExerciseSetSuccess) {
+        if (summarySuccess) {
             Text("체지방&골격근량 그래프", modifier = Modifier.align(Alignment.Start), fontSize=18.sp, fontWeight = FontWeight.Bold)
             Spacer(
                 modifier = Modifier
@@ -164,6 +172,7 @@ fun SummaryScreen(viewModel: SummaryViewModel = viewModel(factory = AppViewModel
             )
             Text("사용 근육 분포", modifier = Modifier.align(Alignment.Start), fontSize=18.sp, fontWeight = FontWeight.Bold)
             MuscleSummaryCard(viewModel.summaryPerformedMuscle[viewModel.itemIndex.value])
+            Log.d("size", viewModel.summaryPerformedMuscle.size.toString())
         }
     }
 }
@@ -632,5 +641,23 @@ fun SummaryDropdown(viewModel: SummaryViewModel) {
                 )
             }
         }
+    }
+}
+
+@Composable
+fun IndeterminateCircularIndicator(viewModel: SummaryViewModel) {
+    val summarySuccess by viewModel.summarySuccess.collectAsState()
+    if (summarySuccess) return
+
+    Column (
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.width(64.dp),
+            color = MaterialTheme.colorScheme.surface,
+            trackColor = MaterialTheme.colorScheme.primary,
+        )
     }
 }
