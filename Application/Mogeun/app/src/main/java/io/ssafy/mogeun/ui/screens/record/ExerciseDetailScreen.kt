@@ -416,7 +416,7 @@ fun SetDetail(
                 else Text(setDetail.targetRep.toString() + "rep")
             }
         }
-        if (expanded && !setDetail.muscleActivity.isNullOrEmpty() && (setDetail.muscleActivity?.get(0) != 0.0f || setDetail.muscleActivity?.get(1) != 0.0f))
+        if (expanded && !setDetail.muscleActivity.isNullOrEmpty() && isAttached)
             MuscleActivity(setDetail.muscleActivity, muscleImagePaths[0])
     }
 }
