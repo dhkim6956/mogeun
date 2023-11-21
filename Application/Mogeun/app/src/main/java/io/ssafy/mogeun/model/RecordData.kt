@@ -74,7 +74,7 @@ data class RoutineInfoData(
     val performTime: Int,
     @SerialName(value = "total_sets")
     val totalSets: Int,
-    @SerialName(value = "is_Attached")
+    @SerialName(value = "is_attached")
     val isAttached: Char,
     val exercises: List<Exercise>
 )
