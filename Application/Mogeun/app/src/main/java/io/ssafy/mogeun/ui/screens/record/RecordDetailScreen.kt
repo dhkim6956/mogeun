@@ -185,7 +185,7 @@ fun RecordDetail(
             if (routineInfo != null) {
                 itemsIndexed(routineInfo.exercises) {index, item ->
                     if (item.sets > 0)
-                        RoutineExerciseCard(navController, routineInfo.exercises, index)
+                        RoutineExerciseCard(navController, routineInfo.exercises, index, routineInfo.isAttached)
                 }
             }
         }
@@ -338,7 +338,8 @@ fun IconCard(
 fun RoutineExerciseCard(
     navController: NavHostController,
     exercises: List<Exercise>,
-    index: Int
+    index: Int,
+    isAttached: Char
 ) {
     Box (
         modifier = Modifier
@@ -358,6 +359,7 @@ fun RoutineExerciseCard(
             )
             .clickable {
                 navController.currentBackStackEntry?.savedStateHandle?.set("exercises", exercises)
+                navController.currentBackStackEntry?.savedStateHandle?.set("isAttached", isAttached)
                 navController.navigate("ExerciseDetail/${index}")
             },
         contentAlignment = Alignment.Center
