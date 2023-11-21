@@ -196,6 +196,7 @@ public class RoutineResultService {
                 .consumeCalorie(result.get().getConsumeCalorie())
                 .totalSets(setReportList.size())
                 .performTime(performTime.toMinutes())
+                .isAttached(report.get().getIsAttached()) // Seongmin add is attached
                 .exerciseResultDtoList(exerciseResultDtoList)
                 .build();
 
