@@ -172,7 +172,6 @@ fun SummaryScreen(viewModel: SummaryViewModel = viewModel(factory = AppViewModel
             )
             Text("사용 근육 분포", modifier = Modifier.align(Alignment.Start), fontSize=18.sp, fontWeight = FontWeight.Bold)
             MuscleSummaryCard(viewModel.summaryPerformedMuscle[viewModel.itemIndex.value])
-            Log.d("size", viewModel.summaryPerformedMuscle.size.toString())
         }
     }
 }

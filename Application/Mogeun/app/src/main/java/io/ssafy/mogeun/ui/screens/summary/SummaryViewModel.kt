@@ -95,28 +95,30 @@ class SummaryViewModel(
 
     fun summaryPerformedMuscle() {
         if (userKey !== null) {
-            lateinit var ret: PerformedMuscleInfoResponse
+            lateinit var ret1: PerformedMuscleInfoResponse
+            lateinit var ret2: PerformedMuscleInfoResponse
+            lateinit var ret3: PerformedMuscleInfoResponse
             viewModelScope.launch {
-                ret = summaryRepository.summaryPerformedMuscle(userKey.toString(), "1")
-                Log.d("summaryPerformedMuscleAll", "$ret")
+                ret1 = summaryRepository.summaryPerformedMuscle(userKey.toString(), "1")
+                Log.d("summaryPerformedMuscleAll", "$ret1")
 
-                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
-                    summaryPerformedMuscle.add(ret.data)
+                if (ret1.status == "OK" || ret1.status == "BAD_REQUEST") {
+                    summaryPerformedMuscle.add(0, ret1.data)
                 }
 
-                ret = summaryRepository.summaryPerformedMuscle(userKey.toString(), "2")
-                Log.d("summaryPerformedMuscleYear", "$ret")
+                ret2 = summaryRepository.summaryPerformedMuscle(userKey.toString(), "2")
+                Log.d("summaryPerformedMuscleYear", "$ret2")
 
-                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
-                    summaryPerformedMuscle.add(ret.data)
+                if (ret2.status == "OK" || ret2.status == "BAD_REQUEST") {
+                    summaryPerformedMuscle.add(1, ret2.data)
                 }
 
-                ret = summaryRepository.summaryPerformedMuscle(userKey.toString(), "3")
-                Log.d("summaryPerformedMuscleMonth", "$ret")
+                ret3 = summaryRepository.summaryPerformedMuscle(userKey.toString(), "3")
+                Log.d("summaryPerformedMuscleMonth", "$ret3")
 
-                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
+                if (ret3.status == "OK" || ret3.status == "BAD_REQUEST") {
                     _summaryPerformedMuscleSuccess.value = true
-                    summaryPerformedMuscle.add(ret.data)
+                    summaryPerformedMuscle.add(2, ret3.data)
                 }
             }
         }
@@ -124,57 +126,61 @@ class SummaryViewModel(
 
     fun summaryExerciseMost() {
         if (userKey !== null) {
-            lateinit var ret: MostPerformedExerciseResponse
+            lateinit var ret1: MostPerformedExerciseResponse
+            lateinit var ret2: MostPerformedExerciseResponse
+            lateinit var ret3: MostPerformedExerciseResponse
             viewModelScope.launch {
-                ret = summaryRepository.summaryExerciseMost(userKey.toString(), "1")
-                Log.d("summaryPerformedMuscleAll", "$ret")
+                ret1 = summaryRepository.summaryExerciseMost(userKey.toString(), "1")
+                Log.d("summaryExerciseMostAll", "$ret1")
 
-                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
-                    summaryExerciseMost.add(ret.data)
+                if (ret1.status == "OK" || ret1.status == "BAD_REQUEST") {
+                    summaryExerciseMost.add(0, ret1.data)
                 }
 
-                ret = summaryRepository.summaryExerciseMost(userKey.toString(), "2")
-                Log.d("summaryPerformedMuscleYear", "$ret")
+                ret2 = summaryRepository.summaryExerciseMost(userKey.toString(), "2")
+                Log.d("summaryExerciseMostYear", "$ret2")
 
-                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
-                    summaryExerciseMost.add(ret.data)
+                if (ret2.status == "OK" || ret2.status == "BAD_REQUEST") {
+                    summaryExerciseMost.add(1, ret2.data)
                 }
 
-                ret = summaryRepository.summaryExerciseMost(userKey.toString(), "3")
-                Log.d("summaryPerformedMuscleMonth", "$ret")
+                ret3 = summaryRepository.summaryExerciseMost(userKey.toString(), "3")
+                Log.d("summaryExerciseMostMonth", "$ret3")
 
-                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
-                    _summaryExerciseMostSuccess.value = true
-                    summaryExerciseMost.add(ret.data)
+                if (ret3.status == "OK" || ret3.status == "BAD_REQUEST") {
+                    summaryExerciseMost.add(2, ret3.data)
                 }
+                _summaryExerciseMostSuccess.value = true
             }
         }
     }
 
     fun summaryExerciseWeight() {
         if (userKey !== null) {
-            lateinit var ret: MostWeightedExerciseResponse
+            lateinit var ret1: MostWeightedExerciseResponse
+            lateinit var ret2: MostWeightedExerciseResponse
+            lateinit var ret3: MostWeightedExerciseResponse
             viewModelScope.launch {
-                ret = summaryRepository.summaryExerciseWeight(userKey.toString(), "1")
-                Log.d("summaryPerformedMuscleAll", "$ret")
+                ret1 = summaryRepository.summaryExerciseWeight(userKey.toString(), "1")
+                Log.d("summaryExerciseWeightAll", "$ret1")
 
-                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
-                    summaryExerciseWeight.add(ret.data)
+                if (ret1.status == "OK" || ret1.status == "BAD_REQUEST") {
+                    summaryExerciseWeight.add(0, ret1.data)
                 }
 
-                ret = summaryRepository.summaryExerciseWeight(userKey.toString(), "2")
-                Log.d("summaryPerformedMuscleYear", "$ret")
+                ret2 = summaryRepository.summaryExerciseWeight(userKey.toString(), "2")
+                Log.d("summaryExerciseWeightYear", "$ret2")
 
-                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
-                    summaryExerciseWeight.add(ret.data)
+                if (ret2.status == "OK" || ret2.status == "BAD_REQUEST") {
+                    summaryExerciseWeight.add(1, ret2.data)
                 }
 
-                ret = summaryRepository.summaryExerciseWeight(userKey.toString(), "3")
-                Log.d("summaryPerformedMuscleMonth", "$ret")
+                ret3 = summaryRepository.summaryExerciseWeight(userKey.toString(), "3")
+                Log.d("summaryExerciseWeightMonth", "$ret3")
 
-                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
+                if (ret3.status == "OK" || ret3.status == "BAD_REQUEST") {
                     _summaryExerciseWeightSuccess.value = true
-                    summaryExerciseWeight.add(ret.data)
+                    summaryExerciseWeight.add(2, ret3.data)
                 }
             }
         }
@@ -182,28 +188,30 @@ class SummaryViewModel(
 
     fun summaryExerciseSet() {
         if (userKey !== null) {
-            lateinit var ret: MostSetExerciseResponse
+            lateinit var ret1: MostSetExerciseResponse
+            lateinit var ret2: MostSetExerciseResponse
+            lateinit var ret3: MostSetExerciseResponse
             viewModelScope.launch {
-                ret = summaryRepository.summaryExerciseSet(userKey.toString(), "1")
-                Log.d("summaryPerformedMuscleAll", "$ret")
+                ret1 = summaryRepository.summaryExerciseSet(userKey.toString(), "1")
+                Log.d("summaryExerciseSetAll", "$ret1")
 
-                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
-                    summaryExerciseSet.add(ret.data)
+                if (ret1.status == "OK" || ret1.status == "BAD_REQUEST") {
+                    summaryExerciseSet.add(0, ret1.data)
                 }
 
-                ret = summaryRepository.summaryExerciseSet(userKey.toString(), "2")
-                Log.d("summaryPerformedMuscleYear", "$ret")
+                ret2 = summaryRepository.summaryExerciseSet(userKey.toString(), "2")
+                Log.d("summaryExerciseSetYear", "$ret2")
 
-                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
-                    summaryExerciseSet.add(ret.data)
+                if (ret2.status == "OK" || ret2.status == "BAD_REQUEST") {
+                    summaryExerciseSet.add(1, ret2.data)
                 }
 
-                ret = summaryRepository.summaryExerciseSet(userKey.toString(), "3")
-                Log.d("summaryPerformedMuscleMonth", "$ret")
+                ret3 = summaryRepository.summaryExerciseSet(userKey.toString(), "3")
+                Log.d("summaryExerciseSetMonth", "$ret3")
 
-                if (ret.status == "OK" || ret.status == "BAD_REQUEST") {
+                if (ret3.status == "OK" || ret3.status == "BAD_REQUEST") {
                     _summaryExerciseSetSuccess.value = true
-                    summaryExerciseSet.add(ret.data)
+                    summaryExerciseSet.add(2, ret3.data)
                 }
             }
         }
