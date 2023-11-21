@@ -64,10 +64,11 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
     val routineState by viewModel.routineState.collectAsState()
     val elapsedTime by viewModel.elaspedTime.collectAsState()
 
-    val muscleavg by viewModel.muscleavg.collectAsState()
-
     var openEndDialog by remember { mutableStateOf(false) }
     var openNoSensorDialog by remember { mutableStateOf(false) }
+
+    var tempPlanKey by remember { mutableStateOf(0)}
+    var tempIdx by remember { mutableStateOf(0)}
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -77,14 +78,6 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
 
     LaunchedEffect(Unit) {
         viewModel.getUserKey()
-    }
-
-    LaunchedEffect(viewModel.userKey) {
-        if (!routineState.routineInProgress && viewModel.userKey.isNotNull()) {
-            viewModel.startRoutine(routineKey)
-            snackbarHostState.showSnackbar("루틴을 시작합니다.")
-        }
-
         viewModel.getSensorVal()
     }
 
@@ -175,7 +168,24 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
                             {idx -> viewModel.removeSet(plan.planKey, idx)},
                             {idx, weight -> viewModel.setWeight(plan.planKey, idx, weight)},
                             {idx, rep -> viewModel.setRep(plan.planKey, idx, rep)},
-                            {idx -> viewModel.startSet(plan.planKey, idx)},
+                            { idx ->
+                                if(!routineState.routineInProgress) {
+                                    if(!sensorState.connectedDevices[0].isNotNull() && !sensorState.connectedDevices[1].isNotNull()) {
+                                        tempPlanKey = plan.planKey
+                                        tempIdx = idx
+                                        openNoSensorDialog = true
+                                    } else {
+                                        coroutineScope.launch {
+                                            viewModel.startRoutine(routineKey)
+                                            snackbarHostState.showSnackbar("루틴을 시작합니다.")
+                                        }
+                                        viewModel.startSet(plan.planKey, idx)
+                                    }
+                                } else {
+                                    viewModel.startSet(plan.planKey, idx)
+                                }
+
+                            },
                             {idx -> viewModel.addCnt(plan.planKey, idx)},
                             {idx -> viewModel.endSet(plan.planKey, idx)},
                             routineState.setInProgress,
@@ -228,25 +238,15 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
                 },
                 onConfirmation = {
                     openNoSensorDialog = false
-                    viewModel.endRoutine()
-                    if (routineState.hasValidSet) {
-                        navController.navigate("RecordDetail/${routineState.reportKey}",) {
-                            popUpTo(navController.graph.startDestinationId)
-                            launchSingleTop = true
-                        }
-                        coroutineScope.launch {
-                            snackbarHostState.showSnackbar("루틴이 종료되었습니다.")
-                        }
-                    } else {
-                        navController.popBackStack()
-                        coroutineScope.launch {
-                            snackbarHostState.showSnackbar("루틴이 취소되었습니다.")
-                        }
-                    }
 
+                    coroutineScope.launch {
+                        viewModel.startRoutine(routineKey, isAttached = "N")
+                        snackbarHostState.showSnackbar("루틴을 시작합니다.")
+                    }
+                    viewModel.startSet(tempPlanKey, tempIdx)
                 },
-                dialogTitle = "센서가 연결되지 않았습니다.",
-                dialogText = "센서를 연결하지 않고 진행하시겠습니까?",
+                dialogTitle = "연결된 센서가 없습니다.",
+                dialogText = "센서 없이 루틴을 진행하시겠습니까?",
                 icon = Icons.Default.PauseCircle
             )
         }

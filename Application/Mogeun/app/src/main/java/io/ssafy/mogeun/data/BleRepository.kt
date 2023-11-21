@@ -153,6 +153,15 @@ class AndroidBleRepository(
                         }
                     }
                 }
+                _sensorVal.update { it ->
+                    it.mapIndexed { connectedIdx, origVal ->
+                        if(connectedIdx == idx) {
+                            0
+                        } else {
+                            origVal
+                        }
+                    }
+                }
             }
         }
 
@@ -308,6 +317,7 @@ class AndroidBleRepository(
                     delay(20)
                 }
             }
+            _sensorVal.update { listOf(0, 0) }
         }
     }
 

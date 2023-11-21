@@ -24,9 +24,9 @@
 #include <BLEUtils.h>
 #include <BLE2902.h>
 
-const int sensorInputPin = A3;
+const int sensorInputPin = A4;
 const int ledPin = LED_BUILTIN;
-const String device_name = "Movice_Left";
+const String device_name = "Movice_Sub";
 
 BLEServer *pServer = NULL;
 BLECharacteristic * pTxCharacteristic;
@@ -162,7 +162,7 @@ void loop() {
               }
             } else {
               int sendValue = ret - ref;
-              Serial.println(sendValue);
+              Serial.println(ret);
               sendData(sendValue);
             }
         }

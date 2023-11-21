@@ -1,5 +1,6 @@
 package io.ssafy.mogeun.ui.screens.menu.connection
 
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -38,6 +39,7 @@ class ConnectionViewModel(
         bleRepository.startScan()
     }
 
+    @SuppressLint("MissingPermission")
     fun connect(device: BluetoothDevice) {
         if(bleRepository.virtualEnabled.value) {
             _connectionMessage.update {
@@ -45,6 +47,13 @@ class ConnectionViewModel(
             }
             return
         }
+        if(!device.name.startsWith("Movice_")) {
+            _connectionMessage.update {
+                it.copy(true, "Movice 디바이스가 아닙니다.")
+            }
+            return
+        }
+
         bleRepository.connect(device)
     }
 

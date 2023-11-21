@@ -112,7 +112,7 @@ fun BluetoothDeviceList(
     startScan: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var scanning by rememberSaveable{ mutableStateOf(false)}
+    var scanning by rememberSaveable{ mutableStateOf(0)}
     val coroutineScope = rememberCoroutineScope()
 
     LazyColumn(
@@ -160,16 +160,24 @@ fun BluetoothDeviceList(
                         .weight(1f)
                 )
                 IconButton(onClick = {
-                    if(!scanning) {
+                    if(scanning == 0) {
                         startScan()
-                        scanning = true
+                        scanning = 3
                         coroutineScope.launch {
-                            delay(3000)
-                            scanning = false
+                            delay(1000)
+                            scanning = 2
+                            delay(1000)
+                            scanning = 1
+                            delay(1000)
+                            scanning = 0
                         }
                     }
                 }) {
-                    Icon(imageVector = if(scanning) Icons.Default.Timer3 else Icons.Default.Refresh, contentDescription = "search devices")
+                    if(scanning == 0) {
+                        Icon(imageVector = Icons.Default.Refresh, contentDescription = "search devices")
+                    }else {
+                        Text("${scanning}s")
+                    }
                 }
             }
         }

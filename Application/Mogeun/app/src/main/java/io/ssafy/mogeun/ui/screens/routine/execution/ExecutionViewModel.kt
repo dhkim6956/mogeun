@@ -327,6 +327,10 @@ class ExecutionViewModel(
     var terminateTimer by mutableStateOf(true)
 
     suspend fun startRoutine(routineKey: Int, isAttached: String = "Y") {
+        if(isAttached == "N") {
+            _routineState.update { routineState -> routineState.copy(hasValidSet = true) }
+        }
+
         terminateTimer = false
         viewModelScope.launch {
             runTimer()
@@ -399,10 +403,23 @@ class ExecutionViewModel(
         viewModelScope.launch {
             bleRepository.sensorVal.collect { sensorVal ->
                 for (i in 0..1) {
+                    if(!bleRepository.connectedDevices.value[i].isNotNull())
+                    {
+                        _emgState.update {emgUiState ->
+                            var bufList = emgUiState.emgList.toMutableList()
+                            bufList[i] = listOf()
+                            emgUiState.copy(
+                                emgList = bufList
+                            )
+                        }
+                    }
                     _emgState.update { emgUiState ->
                         val bufValue = abs(sensorVal[i])
-                        val calcList = if(bufValue > 5000) emgUiState.emgList[i] else {if(emgUiState.emgList[i].size < 80) emgUiState.emgList[i] + bufValue else emgUiState.emgList[i].subList(1, 80) + bufValue}
-                        val avg = calcList.average()
+                        val calcList = if(bufValue > 1500) emgUiState.emgList[i] else {if(emgUiState.emgList[i].size < 80) emgUiState.emgList[i] + bufValue else emgUiState.emgList[i].subList(1, 80) + bufValue}
+                        var avg = calcList.average()
+                        if(avg.isNaN()) {
+                            avg = 0.0
+                        }
 
                         var bufEmg: MutableList<Emg?> = emgUiState.emg.toMutableList()
                         bufEmg[i] = Emg(0, i, "unknown", sensorVal[i], System.currentTimeMillis())

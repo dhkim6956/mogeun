@@ -520,7 +520,7 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
             val curTime = System.currentTimeMillis()
 
             if(curTime - lastTime >= 500) {
-                currentLev = ((emgUiState.emgAvg[0] / 90) + 1 - 0.4).toInt()
+                currentLev = ((emgUiState.emgAvg[0] / 90) + 1).toInt()
                 if (currentLev >= 3 && lastLev < 3) {
                     addCnt()
                 }
@@ -555,7 +555,7 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
                 .background(Color.White),
                 contentAlignment = Alignment.Center
             ){
-                Text("Lv. ${String.format("%.3f", (emgUiState.emgAvg[0] / 90) + 1 - 0.4)}")
+                Text("Lv. ${String.format("%.3f", (emgUiState.emgAvg[0] / 90) + 1)}")
                 Box(modifier = Modifier
                     .clip(CircleShape)
                     .size(if (emgUiState.emgAvg[0] > 360) (emgUiState.emgAvg[0] - 270).dp else (emgUiState.emgAvg[0] % 360 / 4).dp)
