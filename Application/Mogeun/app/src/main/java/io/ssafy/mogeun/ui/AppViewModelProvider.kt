@@ -39,7 +39,8 @@ object AppViewModelProvider {
                 mogeunApplication().container.emgDataRepository,
                 mogeunApplication().container.routineRepository,
                 mogeunApplication().container.bleRepository,
-                mogeunApplication().container.keyRepository
+                mogeunApplication().container.keyRepository,
+                mogeunApplication().container.dataLayerRepository
             )
         }
         initializer {

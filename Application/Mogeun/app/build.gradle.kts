@@ -1,4 +1,12 @@
 import com.google.firebase.appdistribution.gradle.firebaseAppDistribution
+import java.util.Properties
+import java.io.FileInputStream
+
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+
+val keystoreProperties = Properties()
+
+keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
 plugins {
     alias(libs.plugins.android.application)
@@ -11,6 +19,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+            storeFile = file(keystoreProperties["storeFile"] as String)
+            storePassword = keystoreProperties["storePassword"] as String
+        }
+    }
     namespace = "io.ssafy.mogeun"
     compileSdk = 34
 
@@ -34,6 +50,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
         debug {
             firebaseAppDistribution {
@@ -68,6 +85,7 @@ dependencies {
     val composeBom = platform(libs.androidx.compose.bom)
 
     implementation(libs.androidx.ktx)
+    implementation(libs.play.services.wearable)
     implementation(libs.androidx.lifecycle)
     implementation(libs.androidx.activity)
     implementation(composeBom)
