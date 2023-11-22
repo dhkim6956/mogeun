@@ -17,6 +17,7 @@ interface AppContainer {
     val summaryRepository: SummaryRepository
     val executionRepository: ExecutionRepository
     val bleRepository: BleRepository
+    val dataLayerRepository: DataLayerRepository
 }
 
 class DefaultAppContainer(private val context: Context): AppContainer {
@@ -63,5 +64,8 @@ class DefaultAppContainer(private val context: Context): AppContainer {
     }
     override val bleRepository: BleRepository by lazy {
         AndroidBleRepository(context)
+    }
+    override val dataLayerRepository: DataLayerRepository by lazy {
+        AndroidDataLayerRepository(context)
     }
 }

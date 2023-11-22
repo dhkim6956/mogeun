@@ -7,7 +7,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.yml.charts.common.extensions.isNotNull
+import com.google.android.gms.wearable.MessageClient
+import com.google.android.gms.wearable.MessageEvent
 import io.ssafy.mogeun.data.BleRepository
+import io.ssafy.mogeun.data.DataLayerRepository
 import io.ssafy.mogeun.data.Emg
 import io.ssafy.mogeun.data.EmgRepository
 import io.ssafy.mogeun.data.ExecutionRepository
@@ -40,7 +43,9 @@ class ExecutionViewModel(
     private val routineRepository: RoutineRepository,
     private val bleRepository: BleRepository,
     private val keyRepository: KeyRepository,
-): ViewModel() {
+    private val dataLayerRepository: DataLayerRepository
+): ViewModel(),
+    MessageClient.OnMessageReceivedListener {
 
     var userKey by mutableStateOf<Int?>(null)
     fun getUserKey() {
@@ -50,6 +55,7 @@ class ExecutionViewModel(
             launch(Dispatchers.Main) {
                 userKey = key?.userKey
             }
+            dataLayerRepository.launchMogeun()
         }
     }
 
@@ -176,10 +182,6 @@ class ExecutionViewModel(
         Log.d("set", "cnt+ : ${routineState.value}")
     }
 
-
-    private val _muscleavg = MutableStateFlow(0.0)
-    val muscleavg = _muscleavg.asStateFlow()
-
     fun FFT_ready(emgList: List<Int>): Double {//N은 신호의 갯수
         val N = emgList.size
 
@@ -262,7 +264,6 @@ class ExecutionViewModel(
                     if (setEmgList.isEmpty()) break
 
                     fatigues[i] = FFT_ready(setEmgList)
-                    _muscleavg.update { fatigues[i] }
 
                     val setEmgListAbs = setEmgList.map { abs(it) }
                     averages[i] = setEmgListAbs.average()
@@ -383,6 +384,7 @@ class ExecutionViewModel(
             val now = System.currentTimeMillis()
             val offset = (now - elaspedTime.value.startTime).toInt() / 1000
             _elaspedTime.update { elapsedTime -> elapsedTime.copy(minute = offset / 60, second = offset % 60) }
+            noticeTimer("%02d:%02d".format(offset / 60, offset % 60))
         }
     }
 
@@ -472,7 +474,48 @@ class ExecutionViewModel(
         }
     }
 
+    fun launchWearApp() {
+        viewModelScope.launch(Dispatchers.IO) {
+            dataLayerRepository.launchMogeun()
+        }
+    }
+
+    fun noticeExerciseName(execName: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            dataLayerRepository.noticeExerciseName(execName)
+        }
+    }
+
+    fun noticeTimer(elapsedTime: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            dataLayerRepository.noticeTimer(elapsedTime)
+        }
+    }
+
+    private val _setControl = MutableStateFlow(0)
+    val setControl = _setControl.asStateFlow()
+
+    override fun onMessageReceived(messageEvent: MessageEvent) {
+        if (messageEvent.path == MOGEUN_ROUTINE_START_SET_PATH) {
+            _setControl.update {
+                1
+            }
+        } else if (messageEvent.path == MOGEUN_ROUTINE_END_SET_PATH) {
+            _setControl.update {
+                2
+            }
+        }
+    }
+
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L
+        private const val TAG = "datalayer"
+
+        private const val WEAR_CAPABILITY = "mogeun_transcription"
+        private const val MOGEUN_SERVICE_START_PATH = "/mogeun_start"
+        private const val MOGEUN_EXERCISE_NAME_MESSAGE_PATH = "/mogeun_routine_name"
+        private const val MOGEUN_ROUTINE_TIMER_MESSAGE_PATH = "/mogeun_routine_timer"
+        private const val MOGEUN_ROUTINE_START_SET_PATH = "/mogeun_start_set"
+        private const val MOGEUN_ROUTINE_END_SET_PATH = "/mogeun_end_set"
     }
 }

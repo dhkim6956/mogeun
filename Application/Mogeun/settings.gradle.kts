@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Mogeun"
 include(":app")
+include(":watch")

@@ -82,10 +82,11 @@ fun ExerciseProgress(
     removeSet: (Int) -> Unit,
     setWeight: (Int, Int) -> Unit,
     setRep: (Int, Int) -> Unit,
-    startSet: (Int) -> Unit,
+    startSet: (Int, Boolean) -> Unit,
     addCnt: (Int) -> Unit,
     endSet: (Int) -> Unit,
     inProgress: Boolean,
+    setControl: Int,
 ){
     val totalSet = planInfo.size
     val setCntList = (1..totalSet).map { it }
@@ -98,6 +99,13 @@ fun ExerciseProgress(
 
     //시작 종료
     var isStarting by remember { mutableStateOf(false) }
+
+    if(setControl == 1 && !inProgress) {
+        startSet(selectedTab + 1, true)
+    }
+    if(setControl == 2 && inProgress) {
+        endSet(selectedTab + 1)
+    }
 
 
     Column(
@@ -216,7 +224,7 @@ fun ExerciseProgress(
                             .wrapContentHeight()
                             .padding(4.dp)
                             .clickable {
-                                if (!inProgress) startSet(selectedTab + 1)
+                                if (!inProgress) startSet(selectedTab + 1, false)
                             },
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center,

@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PauseCircle
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
@@ -37,6 +38,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -44,6 +46,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import co.yml.charts.common.extensions.isNotNull
+import com.google.android.gms.wearable.Wearable
+import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.data.AppContainer
 import io.ssafy.mogeun.ui.AppViewModelProvider
@@ -59,10 +63,13 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewModelProvider.Factory), routineKey: Int, navController: NavHostController, snackbarHostState: SnackbarHostState) {
+    val messageClient by lazy { Wearable.getMessageClient(MogeunApplication.getContext()) }
+
     val emgState by viewModel.emgState.collectAsState()
     val sensorState by viewModel.sensorState.collectAsState()
     val routineState by viewModel.routineState.collectAsState()
     val elapsedTime by viewModel.elaspedTime.collectAsState()
+    val setControl by viewModel.setControl.collectAsState()
 
     var openEndDialog by remember { mutableStateOf(false) }
     var openNoSensorDialog by remember { mutableStateOf(false) }
@@ -79,9 +86,11 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
     LaunchedEffect(Unit) {
         viewModel.getUserKey()
         viewModel.getSensorVal()
+        viewModel.launchWearApp()
     }
 
     DisposableEffect(Unit) {
+        messageClient.addListener(viewModel)
         coroutineScope.launch {
             val ret = async {
                 viewModel.getPlanList(routineKey)
@@ -90,6 +99,10 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
         }
         this.onDispose {
             viewModel.resetRoutine()
+            messageClient.removeListener(viewModel)
+
+            viewModel.noticeTimer("00:00")
+            viewModel.noticeExerciseName("루틴 종료됨")
         }
     }
 
@@ -119,6 +132,8 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
                 ) { page ->
                     val plan = routineState.planList!!.data[page]
                     val imgPath = plan.imagePath
+
+                    viewModel.noticeExerciseName(routineState.planList!!.data[pagerState.currentPage].name)
 
                     val scrollState = rememberScrollState()
 
@@ -168,12 +183,20 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
                             {idx -> viewModel.removeSet(plan.planKey, idx)},
                             {idx, weight -> viewModel.setWeight(plan.planKey, idx, weight)},
                             {idx, rep -> viewModel.setRep(plan.planKey, idx, rep)},
-                            { idx ->
+                            { idx, isRemote ->
                                 if(!routineState.routineInProgress) {
                                     if(!sensorState.connectedDevices[0].isNotNull() && !sensorState.connectedDevices[1].isNotNull()) {
-                                        tempPlanKey = plan.planKey
-                                        tempIdx = idx
-                                        openNoSensorDialog = true
+                                        if(isRemote) {
+                                            coroutineScope.launch {
+                                                viewModel.startRoutine(routineKey, isAttached = "N")
+                                                snackbarHostState.showSnackbar("루틴을 시작합니다.")
+                                            }
+                                            viewModel.startSet(plan.planKey, idx)
+                                        } else {
+                                            tempPlanKey = plan.planKey
+                                            tempIdx = idx
+                                            openNoSensorDialog = true
+                                        }
                                     } else {
                                         coroutineScope.launch {
                                             viewModel.startRoutine(routineKey)
@@ -184,11 +207,11 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
                                 } else {
                                     viewModel.startSet(plan.planKey, idx)
                                 }
-
                             },
                             {idx -> viewModel.addCnt(plan.planKey, idx)},
                             {idx -> viewModel.endSet(plan.planKey, idx)},
                             routineState.setInProgress,
+                            setControl
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                     }
@@ -221,6 +244,8 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
                         coroutineScope.launch {
                             snackbarHostState.showSnackbar("루틴이 취소되었습니다.")
                         }
+                        viewModel.noticeTimer("00:00")
+                        viewModel.noticeExerciseName("루틴 취소됨")
                     }
 
                                  },
