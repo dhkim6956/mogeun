@@ -109,7 +109,8 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.5.0"))
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation ("com.github.skydoves:landscapist-glide:2.2.12")
-    implementation("androidx.compose.material:material-icons-extended")
+    // icons
+    implementation(libs.androidx.compose.material.icon.extended)
 
     // retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
