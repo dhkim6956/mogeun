@@ -28,9 +28,9 @@ android {
     defaultConfig {
         applicationId = "io.ssafy.mogeun"
         minSdk = 30
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        targetSdk = 33
+        versionCode = 9
+        versionName = "0.9.0"
         vectorDrawables {
             useSupportLibrary = true
         }
