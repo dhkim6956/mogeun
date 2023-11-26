@@ -1,5 +1,6 @@
 package io.ssafy.mogeun.ui.screens.record
 
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -41,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -59,6 +61,7 @@ import io.ssafy.mogeun.ui.AppViewModelProvider
 import io.ssafy.mogeun.ui.components.ElevatedGif
 import io.ssafy.mogeun.ui.components.HorizontalPagerArrow
 import io.ssafy.mogeun.ui.components.FatigueLineGraph
+import io.ssafy.mogeun.ui.components.FatigueLineGraph2
 import io.ssafy.mogeun.ui.components.MuscleTooltipIcon
 import kotlinx.coroutines.launch
 
@@ -291,6 +294,33 @@ fun MuscleFatigueCard(
 fun MuscleFatigueChart(
     muscleFatigueList: MutableList<MuscleFatigue>
 ) {
+    var trendLineVal1: Float = 0f
+    var trendLineVal2: Float = 0f
+    var trendLineVal3: Float = 0f
+    var trendLineVal4: Int = 0
+    var yAxisData2: MutableList<Float> = mutableListOf()
+    val point = muscleFatigueList.map {
+        it.num
+    }
+    for (i in 1 .. point.size) {
+        trendLineVal1 += i * point[i - 1]
+        trendLineVal2 += i
+        trendLineVal3 += point[i - 1]
+        trendLineVal4 += i * i
+    }
+    val a = point.size * trendLineVal1
+    val b = trendLineVal2 * trendLineVal3
+    val c = point.size * trendLineVal4
+    val d  = trendLineVal2 * trendLineVal2
+    val m = (a - b) / (c - d)
+    val e = trendLineVal3
+    val f = m * trendLineVal2
+    val yIntercept = (e - f) / point.size
+    for (i in 1 .. point.size) {
+        yAxisData2.add(m * i + yIntercept)
+    }
+    Log.d("fatigue trend", "f(x) = ${m}x + ${yIntercept}")
+
     if (muscleFatigueList.isNullOrEmpty()) {
         Column(Modifier.fillMaxWidth()){
             Text("운동 기록이 없습니다.", modifier = Modifier.align(Alignment.CenterHorizontally))
@@ -304,10 +334,29 @@ fun MuscleFatigueChart(
                     isHeaderVisible = true,
                     isXAxisLabelVisible = true,
                     isYAxisLabelVisible = true,
+                    isGridVisible = true,
                     isCrossHairVisible = false
                 ),
                 colors = LinearGraphColors(
                     lineColor = MaterialTheme.colorScheme.primary,
+                    pointColor = MaterialTheme.colorScheme.primary,
+                    clickHighlightColor = MaterialTheme.colorScheme.inversePrimary,
+                    fillGradient = null
+                ),
+                height = 200.dp,
+                yAxisLabelPosition = LabelPosition.LEFT
+            )
+            val style2 = LineGraphStyle(
+                paddingValues = PaddingValues(5.dp),
+                visibility = LinearGraphVisibility(
+                    isHeaderVisible = true,
+                    isXAxisLabelVisible = true,
+                    isYAxisLabelVisible = true,
+                    isGridVisible = true,
+                    isCrossHairVisible = false
+                ),
+                colors = LinearGraphColors(
+                    lineColor = Color.Black,
                     pointColor = MaterialTheme.colorScheme.primary,
                     clickHighlightColor = MaterialTheme.colorScheme.inversePrimary,
                     fillGradient = null
@@ -327,7 +376,7 @@ fun MuscleFatigueChart(
                     style = style
                 )
             }
-            else {
+            else if (muscleFatigueList.size == 2) {
                 FatigueLineGraph(
                     xAxisData = muscleFatigueList.map {
                         GraphData.String(it.set)
@@ -336,6 +385,19 @@ fun MuscleFatigueChart(
                         it.num
                     },
                     style = style
+                )
+            }
+            else {
+                FatigueLineGraph2(
+                    xAxisData = muscleFatigueList.map {
+                        GraphData.String(it.set)
+                    },
+                    yAxisData1 = muscleFatigueList.map {
+                        it.num
+                    },
+                    yAxisData2 = yAxisData2,
+                    style = style,
+                    style2 = style2
                 )
             }
         }
@@ -634,7 +696,7 @@ fun Dialog1(onDismissRequest: () -> Unit) {
                     modifier = Modifier
                         .height(15.dp)
                 )
-                Text("예시")
+                Text("(예시)", fontWeight = FontWeight.Bold)
                 Spacer(
                     modifier = Modifier
                         .height(5.dp)

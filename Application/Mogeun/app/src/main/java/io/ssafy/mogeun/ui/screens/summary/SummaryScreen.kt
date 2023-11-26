@@ -229,49 +229,50 @@ fun BodyInfoSummaryCard(bodyInfo: BodyInfo?) {
         })
         val nameList = listOf("체지방 변화량", "골격근 변화량")
 
-        Column {
-            Row(
-                Modifier
-                    .wrapContentHeight()
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                val coroutineScope = rememberCoroutineScope()
-
-                HorizontalPagerArrow(
-                    modifier = Modifier
-                        .clickable {
-                            coroutineScope.launch {
-                                // Call scroll to on pagerState
-                                pagerState.animateScrollToPage(0)
-                            } },
-                    size = 30.dp,
-                    visible = pagerState.currentPage > 0,
-                    direction = true
-                )
-                Text(nameList[pagerState.currentPage])
-                HorizontalPagerArrow(
-                    modifier = Modifier
-                        .clickable {
-                            coroutineScope.launch {
-                                // Call scroll to on pagerState
-                                pagerState.animateScrollToPage(1)
-                            } },
-                    size = 30.dp,
-                    visible = pagerState.currentPage < 1,
-                    direction = false
-                )
-            }
-            HorizontalPager(state = pagerState) { page ->
-                // Our page content
-                BodyInfoSummary(bodyLogList[page])
-            }
-        }
+        BodyInfoSummary(bodyLogList)
+//        Column {
+//            Row(
+//                Modifier
+//                    .wrapContentHeight()
+//                    .fillMaxWidth(),
+//                horizontalArrangement = Arrangement.SpaceBetween
+//            ) {
+//                val coroutineScope = rememberCoroutineScope()
+//
+//                HorizontalPagerArrow(
+//                    modifier = Modifier
+//                        .clickable {
+//                            coroutineScope.launch {
+//                                // Call scroll to on pagerState
+//                                pagerState.animateScrollToPage(0)
+//                            } },
+//                    size = 30.dp,
+//                    visible = pagerState.currentPage > 0,
+//                    direction = true
+//                )
+//                Text(nameList[pagerState.currentPage])
+//                HorizontalPagerArrow(
+//                    modifier = Modifier
+//                        .clickable {
+//                            coroutineScope.launch {
+//                                // Call scroll to on pagerState
+//                                pagerState.animateScrollToPage(1)
+//                            } },
+//                    size = 30.dp,
+//                    visible = pagerState.currentPage < 1,
+//                    direction = false
+//                )
+//            }
+//            HorizontalPager(state = pagerState) { page ->
+//                // Our page content
+//                BodyInfoSummary(bodyLogList[page])
+//            }
+//        }
     }
 }
 
 @Composable
-fun BodyInfoSummary(bodyLog: MutableList<BodyLog>) {
+fun BodyInfoSummary(bodyLog: List<MutableList<BodyLog>>) {
     if (bodyLog.isNullOrEmpty()) {
         Column(Modifier.fillMaxWidth()){
             Text("기록이 없습니다.", modifier = Modifier.align(Alignment.CenterHorizontally))
@@ -285,12 +286,31 @@ fun BodyInfoSummary(bodyLog: MutableList<BodyLog>) {
                     isHeaderVisible = true,
                     isXAxisLabelVisible = false,
                     isYAxisLabelVisible = true,
+                    isGridVisible = true,
                     isCrossHairVisible = false
                 ),
                 colors = LinearGraphColors(
-                    lineColor = MaterialTheme.colorScheme.primary,
-                    pointColor = MaterialTheme.colorScheme.primary,
-                    clickHighlightColor = MaterialTheme.colorScheme.inversePrimary,
+                    lineColor = MaterialTheme.colorScheme.secondary,
+                    pointColor = MaterialTheme.colorScheme.secondary,
+                    clickHighlightColor = MaterialTheme.colorScheme.onTertiary,
+                    fillGradient = null
+                ),
+                height = 200.dp,
+                yAxisLabelPosition = LabelPosition.LEFT
+            )
+            val style2 = LineGraphStyle(
+                paddingValues = PaddingValues(5.dp),
+                visibility = LinearGraphVisibility(
+                    isHeaderVisible = true,
+                    isXAxisLabelVisible = false,
+                    isYAxisLabelVisible = true,
+                    isGridVisible = true,
+                    isCrossHairVisible = false
+                ),
+                colors = LinearGraphColors(
+                    lineColor = MaterialTheme.colorScheme.tertiary,
+                    pointColor = MaterialTheme.colorScheme.tertiary,
+                    clickHighlightColor = MaterialTheme.colorScheme.onTertiary,
                     fillGradient = null
                 ),
                 height = 200.dp,
@@ -312,13 +332,20 @@ fun BodyInfoSummary(bodyLog: MutableList<BodyLog>) {
                 }
             }
             BodyLineGraph(
-                xAxisData = bodyLog.map {
+                xAxisData1 = bodyLog[0].map {
                     GraphData.String(it.log)
                 },
-                yAxisData = bodyLog.map {
+                yAxisData1 = bodyLog[0].map {
+                    it.num
+                },
+                xAxisData2 = bodyLog[1].map {
+                    GraphData.String(it.log)
+                },
+                yAxisData2 = bodyLog[1].map {
                     it.num
                 },
                 style = style,
+                style2 = style2,
                 onPointClicked = {
                     clickedValue.value = it
                 }
@@ -326,6 +353,63 @@ fun BodyInfoSummary(bodyLog: MutableList<BodyLog>) {
         }
     }
 }
+
+//@Composable
+//fun BodyInfoSummary(bodyLog: MutableList<BodyLog>) {
+//    if (bodyLog.isNullOrEmpty()) {
+//        Column(Modifier.fillMaxWidth()){
+//            Text("기록이 없습니다.", modifier = Modifier.align(Alignment.CenterHorizontally))
+//        }
+//    }
+//    else {
+//        Column(modifier = Modifier.fillMaxWidth()) {
+//            val style = LineGraphStyle(
+//                paddingValues = PaddingValues(5.dp),
+//                visibility = LinearGraphVisibility(
+//                    isHeaderVisible = true,
+//                    isXAxisLabelVisible = false,
+//                    isYAxisLabelVisible = true,
+//                    isCrossHairVisible = false
+//                ),
+//                colors = LinearGraphColors(
+//                    lineColor = MaterialTheme.colorScheme.primary,
+//                    pointColor = MaterialTheme.colorScheme.primary,
+//                    clickHighlightColor = MaterialTheme.colorScheme.inversePrimary,
+//                    fillGradient = null
+//                ),
+//                height = 200.dp,
+//                yAxisLabelPosition = LabelPosition.LEFT
+//            )
+//            val clickedValue: MutableState<Pair<Any, Any>?> =
+//                remember { mutableStateOf(null) }
+//
+//            Row(
+//                modifier = Modifier
+//                    .padding(top = 10.dp)
+//                    .height(25.dp)
+//            ) {
+//                clickedValue.value?.let {
+//                    Text(
+//                        text = "${it.first}: ${it.second}kg",
+//                        fontWeight = FontWeight.SemiBold
+//                    )
+//                }
+//            }
+//            BodyLineGraph(
+//                xAxisData = bodyLog.map {
+//                    GraphData.String(it.log)
+//                },
+//                yAxisData = bodyLog.map {
+//                    it.num
+//                },
+//                style = style,
+//                onPointClicked = {
+//                    clickedValue.value = it
+//                }
+//            )
+//        }
+//    }
+//}
 
 data class SummaryCard(
     val execName: String,
