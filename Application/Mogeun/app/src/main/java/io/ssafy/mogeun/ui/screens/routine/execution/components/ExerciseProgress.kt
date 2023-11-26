@@ -3,6 +3,7 @@
 package io.ssafy.mogeun.ui.screens.routine.execution.components
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -68,6 +69,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.ui.screens.routine.execution.EmgUiState
+import io.ssafy.mogeun.ui.screens.routine.execution.InbodyInfo
 import io.ssafy.mogeun.ui.screens.routine.execution.MuscleSensorValue
 import io.ssafy.mogeun.ui.screens.routine.execution.SetProgress
 import kotlinx.coroutines.launch
@@ -87,6 +89,7 @@ fun ExerciseProgress(
     endSet: (Int) -> Unit,
     inProgress: Boolean,
     setControl: Int,
+    inbodyInfo: InbodyInfo
 ){
     val totalSet = planInfo.size
     val setCntList = (1..totalSet).map { it }
@@ -178,7 +181,8 @@ fun ExerciseProgress(
                     setProgress,
                     { addCnt(selectedTab + 1) },
                     inProgress,
-                    sensorData
+                    sensorData,
+                    inbodyInfo
                 )
             }
         }
@@ -515,10 +519,26 @@ fun InfiniteItemsPicker(
 
 // 최신값
 @Composable
-fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgress, addCnt: () -> Unit, inProgress: Boolean, sensorData: List<MuscleSensorValue>) {
+fun EMGCollector(
+    emgUiState: EmgUiState,
+    isStarting:Boolean,
+    planInfo: SetProgress,
+    addCnt: () -> Unit,
+    inProgress: Boolean,
+    sensorData: List<MuscleSensorValue>,
+    inbodyInfo: InbodyInfo
+) {
     var lastLev by remember { mutableStateOf(0)}
     var lastTime by remember { mutableStateOf<Long>(0)}
     var currentLev by remember { mutableStateOf(0) }
+
+    var scale by remember { mutableStateOf(1.0)}
+
+    if (inbodyInfo.hasData) {
+        val diff: Double = (5 - inbodyInfo.offset!!)
+
+        scale = 1.0 + diff / 10
+    }
 
     // CoroutineScope을 만듭니다.
     val coroutineScope = rememberCoroutineScope()
@@ -528,7 +548,7 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
             val curTime = System.currentTimeMillis()
 
             if(curTime - lastTime >= 500) {
-                currentLev = ((emgUiState.emgAvg[0] / 90) + 1).toInt()
+                currentLev = ((emgUiState.emgAvg[0] * scale / 90) + 1).toInt()
                 if (currentLev >= 3 && lastLev < 3) {
                     addCnt()
                 }
@@ -563,12 +583,12 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
                 .background(Color.White),
                 contentAlignment = Alignment.Center
             ){
-                Text("Lv. ${String.format("%.3f", (emgUiState.emgAvg[0] / 90) + 1)}")
+                Text("Lv. ${String.format("%.3f", (emgUiState.emgAvg[0] * scale / 90) + 1)}")
                 Box(modifier = Modifier
                     .clip(CircleShape)
-                    .size(if (emgUiState.emgAvg[0] > 360) (emgUiState.emgAvg[0] - 270).dp else (emgUiState.emgAvg[0] % 360 / 4).dp)
+                    .size(if (emgUiState.emgAvg[0] * scale > 360) (emgUiState.emgAvg[0] * scale - 270).dp else (emgUiState.emgAvg[0] * scale % 360 / 4).dp)
                     .background(
-                        when ((emgUiState.emgAvg[0] / 90).toInt()) {
+                        when ((emgUiState.emgAvg[0] * scale / 90).toInt()) {
                             0 -> Color.White.copy(0.7f)
                             1 -> Color.Red.copy(0.7f)
                             2 -> Color.Green.copy(0.7f)
@@ -585,12 +605,12 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
                 .background(Color.White),
                 contentAlignment = Alignment.Center
             ){
-                Text("Lv. ${String.format("%.3f", (emgUiState.emgAvg[1] / 90) + 1)}")
+                Text("Lv. ${String.format("%.3f", (emgUiState.emgAvg[1] * scale / 90) + 1)}")
                 Box(modifier = Modifier
                     .clip(CircleShape)
-                    .size(if (emgUiState.emgAvg[1] > 360) (emgUiState.emgAvg[1] - 270).dp else (emgUiState.emgAvg[1] % 360 / 4).dp)
+                    .size(if (emgUiState.emgAvg[1] * scale > 360) (emgUiState.emgAvg[1] * scale - 270).dp else (emgUiState.emgAvg[1] * scale % 360 / 4).dp)
                     .background(
-                        when ((emgUiState.emgAvg[1] / 90).toInt()) {
+                        when ((emgUiState.emgAvg[1] * scale / 90).toInt()) {
                             0 -> Color.White.copy(0.7f)
                             1 -> Color.Red.copy(0.7f)
                             2 -> Color.Green.copy(0.7f)

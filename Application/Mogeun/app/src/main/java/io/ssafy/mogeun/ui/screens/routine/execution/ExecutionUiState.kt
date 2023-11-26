@@ -52,3 +52,11 @@ data class ElapsedTime(
     val minute: Int,
     val second: Int,
 )
+
+data class InbodyInfo(
+    val hasData: Boolean = false,
+    val height: Double? = null,
+    val weight: Double? = null,
+    val muscleMass: Double? = null,
+    val offset: Double? = null
+)

@@ -70,6 +70,7 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
     val routineState by viewModel.routineState.collectAsState()
     val elapsedTime by viewModel.elaspedTime.collectAsState()
     val setControl by viewModel.setControl.collectAsState()
+    val inbodyInfo by viewModel.inbodyInfo.collectAsState()
 
     var openEndDialog by remember { mutableStateOf(false) }
     var openNoSensorDialog by remember { mutableStateOf(false) }
@@ -87,6 +88,12 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
         viewModel.getUserKey()
         viewModel.getSensorVal()
         viewModel.launchWearApp()
+    }
+
+    LaunchedEffect(viewModel.userKey) {
+        if(viewModel.userKey.isNotNull()) {
+            viewModel.getInbodyInfo()
+        }
     }
 
     DisposableEffect(Unit) {
@@ -211,7 +218,8 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
                             {idx -> viewModel.addCnt(plan.planKey, idx)},
                             {idx -> viewModel.endSet(plan.planKey, idx)},
                             routineState.setInProgress,
-                            setControl
+                            setControl,
+                            inbodyInfo
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                     }
