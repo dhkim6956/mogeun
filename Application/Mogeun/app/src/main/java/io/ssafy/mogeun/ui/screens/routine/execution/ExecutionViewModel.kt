@@ -333,6 +333,7 @@ class ExecutionViewModel(
                     Log.d("report", "report set : $ret3")
                 }
             }
+            dataLayerRepository.noticeEndOfSet()
         }
     }
 
@@ -569,6 +570,7 @@ class ExecutionViewModel(
         private const val MOGEUN_SERVICE_START_PATH = "/mogeun_start"
         private const val MOGEUN_EXERCISE_NAME_MESSAGE_PATH = "/mogeun_routine_name"
         private const val MOGEUN_ROUTINE_TIMER_MESSAGE_PATH = "/mogeun_routine_timer"
+        private const val MOGEUN_SET_ENDED_PATH = "/mogeun_set_ended"
         private const val MOGEUN_ROUTINE_START_SET_PATH = "/mogeun_start_set"
         private const val MOGEUN_ROUTINE_END_SET_PATH = "/mogeun_end_set"
     }

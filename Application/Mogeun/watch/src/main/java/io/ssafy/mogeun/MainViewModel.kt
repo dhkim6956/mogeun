@@ -29,6 +29,7 @@ class MainViewModel(
 
     var execName = mutableStateOf<String?>(null)
     var timerString = mutableStateOf<String?>(null)
+    var setEnded = mutableStateOf(false)
 
     fun startSet() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -42,12 +43,19 @@ class MainViewModel(
         }
     }
 
+    fun resetSetEnded() {
+        setEnded.value = false
+    }
+
     override fun onMessageReceived(messageEvent: MessageEvent) {
         if (messageEvent.path == MOGEUN_EXERCISE_NAME_MESSAGE_PATH) {
             execName.value = messageEvent.data.decodeToString()
         }
         else if (messageEvent.path == MOGEUN_ROUTINE_TIMER_MESSAGE_PATH) {
             timerString.value = messageEvent.data.decodeToString()
+        }
+        else if (messageEvent.path == MOGEUN_SET_ENDED_PATH) {
+            setEnded.value = true
         }
     }
 
@@ -58,6 +66,7 @@ class MainViewModel(
         private const val MOGEUN_SERVICE_START_PATH = "/mogeun_start"
         private const val MOGEUN_EXERCISE_NAME_MESSAGE_PATH = "/mogeun_routine_name"
         private const val MOGEUN_ROUTINE_TIMER_MESSAGE_PATH = "/mogeun_routine_timer"
+        private const val MOGEUN_SET_ENDED_PATH = "/mogeun_set_ended"
         private const val MOGEUN_ROUTINE_START_SET_PATH = "/mogeun_start_set"
         private const val MOGEUN_ROUTINE_END_SET_PATH = "/mogeun_end_set"
 
