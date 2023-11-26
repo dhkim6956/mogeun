@@ -558,6 +558,7 @@ fun EMGCollector(
 ) {
     var lastLev by remember { mutableStateOf(0)}
     var lastTime by remember { mutableStateOf<Long>(0)}
+    var lastCntTime by remember { mutableStateOf<Long>(0) }
     var currentLev by remember { mutableStateOf(0) }
 
     var scale by remember { mutableStateOf(1.0)}
@@ -575,10 +576,13 @@ fun EMGCollector(
         if(inProgress) {
             val curTime = System.currentTimeMillis()
 
-            if(curTime - lastTime >= 500) {
+            if(curTime - lastTime >= 200) {
                 currentLev = ((emgUiState.emgAvg[0] * scale / 90) + 1).toInt()
                 if (currentLev >= 3 && lastLev < 3) {
-                    addCnt()
+                    if(curTime - lastCntTime > 1000) {
+                        addCnt()
+                        lastCntTime = curTime
+                    }
                 }
                 lastLev = currentLev
 
