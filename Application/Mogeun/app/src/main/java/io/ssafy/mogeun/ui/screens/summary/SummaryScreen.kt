@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,6 +22,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PageSize
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,6 +33,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -42,7 +46,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -72,10 +81,11 @@ import io.ssafy.mogeun.ui.AppViewModelProvider
 import io.ssafy.mogeun.ui.components.HorizontalPagerArrow
 import io.ssafy.mogeun.ui.components.BodyLineGraph
 import kotlinx.coroutines.launch
+import java.lang.Math.sin
+import kotlin.math.absoluteValue
 
 @Composable
 fun SummaryScreen(viewModel: SummaryViewModel = viewModel(factory = AppViewModelProvider.Factory), snackbarHostState: SnackbarHostState) {
-
     var exitCnt = 0
     val activity = (LocalContext.current as? Activity)
     val coroutineScope = rememberCoroutineScope()
@@ -230,44 +240,6 @@ fun BodyInfoSummaryCard(bodyInfo: BodyInfo?) {
         val nameList = listOf("체지방 변화량", "골격근 변화량")
 
         BodyInfoSummary(bodyLogList)
-//        Column {
-//            Row(
-//                Modifier
-//                    .wrapContentHeight()
-//                    .fillMaxWidth(),
-//                horizontalArrangement = Arrangement.SpaceBetween
-//            ) {
-//                val coroutineScope = rememberCoroutineScope()
-//
-//                HorizontalPagerArrow(
-//                    modifier = Modifier
-//                        .clickable {
-//                            coroutineScope.launch {
-//                                // Call scroll to on pagerState
-//                                pagerState.animateScrollToPage(0)
-//                            } },
-//                    size = 30.dp,
-//                    visible = pagerState.currentPage > 0,
-//                    direction = true
-//                )
-//                Text(nameList[pagerState.currentPage])
-//                HorizontalPagerArrow(
-//                    modifier = Modifier
-//                        .clickable {
-//                            coroutineScope.launch {
-//                                // Call scroll to on pagerState
-//                                pagerState.animateScrollToPage(1)
-//                            } },
-//                    size = 30.dp,
-//                    visible = pagerState.currentPage < 1,
-//                    direction = false
-//                )
-//            }
-//            HorizontalPager(state = pagerState) { page ->
-//                // Our page content
-//                BodyInfoSummary(bodyLogList[page])
-//            }
-//        }
     }
 }
 
@@ -353,63 +325,6 @@ fun BodyInfoSummary(bodyLog: List<MutableList<BodyLog>>) {
         }
     }
 }
-
-//@Composable
-//fun BodyInfoSummary(bodyLog: MutableList<BodyLog>) {
-//    if (bodyLog.isNullOrEmpty()) {
-//        Column(Modifier.fillMaxWidth()){
-//            Text("기록이 없습니다.", modifier = Modifier.align(Alignment.CenterHorizontally))
-//        }
-//    }
-//    else {
-//        Column(modifier = Modifier.fillMaxWidth()) {
-//            val style = LineGraphStyle(
-//                paddingValues = PaddingValues(5.dp),
-//                visibility = LinearGraphVisibility(
-//                    isHeaderVisible = true,
-//                    isXAxisLabelVisible = false,
-//                    isYAxisLabelVisible = true,
-//                    isCrossHairVisible = false
-//                ),
-//                colors = LinearGraphColors(
-//                    lineColor = MaterialTheme.colorScheme.primary,
-//                    pointColor = MaterialTheme.colorScheme.primary,
-//                    clickHighlightColor = MaterialTheme.colorScheme.inversePrimary,
-//                    fillGradient = null
-//                ),
-//                height = 200.dp,
-//                yAxisLabelPosition = LabelPosition.LEFT
-//            )
-//            val clickedValue: MutableState<Pair<Any, Any>?> =
-//                remember { mutableStateOf(null) }
-//
-//            Row(
-//                modifier = Modifier
-//                    .padding(top = 10.dp)
-//                    .height(25.dp)
-//            ) {
-//                clickedValue.value?.let {
-//                    Text(
-//                        text = "${it.first}: ${it.second}kg",
-//                        fontWeight = FontWeight.SemiBold
-//                    )
-//                }
-//            }
-//            BodyLineGraph(
-//                xAxisData = bodyLog.map {
-//                    GraphData.String(it.log)
-//                },
-//                yAxisData = bodyLog.map {
-//                    it.num
-//                },
-//                style = style,
-//                onPointClicked = {
-//                    clickedValue.value = it
-//                }
-//            )
-//        }
-//    }
-//}
 
 data class SummaryCard(
     val execName: String,
@@ -743,4 +658,101 @@ fun IndeterminateCircularIndicator(viewModel: SummaryViewModel) {
             trackColor = MaterialTheme.colorScheme.primary,
         )
     }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun TestScreen(
+    bodyInfo: BodyInfo?
+) {
+    val pageCount = 3
+    val rotateDegree = 15F
+    val pagerState = rememberPagerState(pageCount = {
+        pageCount
+    })
+
+    val widthWeight = 0.9F
+    val configuration = LocalConfiguration.current
+    val pageSize = PageSize.Fixed(pageSize = (configuration.screenWidthDp * widthWeight).dp)
+    val horizontalContentPadding = (configuration.screenWidthDp * (1F - widthWeight) / 2).dp
+    val pageSpacing = 10.dp
+
+    HorizontalPager(
+        modifier = Modifier.fillMaxSize(),
+        state = pagerState,
+        pageSize = pageSize,
+        contentPadding = PaddingValues(horizontal = horizontalContentPadding),
+        pageSpacing = pageSpacing,
+    ) { page ->
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Card(
+                page = page,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .height(300.dp)
+                    .graphicsLayer {
+                        val pageOffset = pagerState.offsetForPage(page)
+
+                        rotationZ = -rotateDegree * pageOffset
+
+                        val distance = (configuration.screenWidthDp.dp / 2) - pageSpacing
+                        val height = sin(Math.toRadians(rotateDegree.toDouble())) * distance.toPx()
+
+                        translationY = (height * pageOffset.absoluteValue).toFloat()
+
+                        alpha = lerp(
+                            start = 0.8F,
+                            stop = 1F,
+                            fraction = 1F - pageOffset.absoluteValue.coerceIn(0F, 1F)
+                        )
+                    },
+                bodyInfo = bodyInfo
+            )
+        }
+    }
+}
+
+@Composable
+fun Card(page: Int, modifier: Modifier = Modifier, bodyInfo: BodyInfo?) {
+    Surface(
+        modifier = modifier
+            .shadow(2.dp, RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(16.dp)),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        val bodyFatChangeLog = bodyInfo?.bodyFatChangeLog?.reversed()
+        var bodyFatLog: MutableList<BodyLog> = mutableListOf()
+        var index = 0
+        bodyFatChangeLog?.map {
+            val time = it.changedTime.split("T")[0]
+            val timeSplit = time.split("-")
+            bodyFatLog.add(index, BodyLog(it.bodyFat, timeSplit[0] + "년 " + timeSplit[1] + "월 " + timeSplit[2] + "일"))
+            index++
+        }
+
+        val muscleMassChangeLog = bodyInfo?.muscleMassChangeLog?.reversed()
+        var muscleMassLog: MutableList<BodyLog> = mutableListOf()
+        index = 0
+        muscleMassChangeLog?.map {
+            val time = it.changedTime.split("T")[0]
+            val timeSplit = time.split("-")
+            muscleMassLog.add(index, BodyLog(it.muscleMass, timeSplit[0] + "년 " + timeSplit[1] + "월 " + timeSplit[2] + "일"))
+            index++
+        }
+
+        val bodyLogList = listOf(bodyFatLog, muscleMassLog)
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            BodyInfoSummary(bodyLogList)
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+fun PagerState.offsetForPage(page: Int) = (currentPage - page) + currentPageOffsetFraction
+
+fun lerp(start: Float, stop: Float, fraction: Float): Float {
+    return (1 - fraction) * start + fraction * stop
 }
