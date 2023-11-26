@@ -181,7 +181,7 @@ fun BluetoothDeviceList(
                 }
             }
         }
-        items(scannedDevices.filter { device -> !connectedDevices.contains(BleDevice(device.name?:"null", device.address)) }.filter {device -> device.name.isNotNull()}) { device ->
+        items(scannedDevices.filter { device -> !connectedDevices.contains(BleDevice(device.name?:"null", device.address)) }.filter {device -> device.name.isNotNull()}.filter { device -> device.name.contains("Movice") }) { device ->
             ScannedDeviceItem(device = device, onClick = connect)
         }
     }
