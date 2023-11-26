@@ -35,5 +35,15 @@ fun HorizontalPagerArrow(modifier: Modifier, size: Dp, visible: Boolean, directi
                 contentScale = ContentScale.Crop,
             )
         }
+        else {
+            Image(
+                modifier = modifier
+                    .height(size)
+                    .width(size),
+                painter = if (direction) painterResource(id = R.drawable.arrow_left_gray_icon) else painterResource(id = R.drawable.arrow_right_gray_icon),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+            )
+        }
     }
 }

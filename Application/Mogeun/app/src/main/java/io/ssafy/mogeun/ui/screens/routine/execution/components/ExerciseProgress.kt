@@ -118,7 +118,7 @@ fun ExerciseProgress(
             .background(color = Color(0xFFF7F7F7)),
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End),
+//            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
@@ -130,32 +130,43 @@ fun ExerciseProgress(
                 selectedTab,
                 { index -> selectedTab = index },
                 inProgress,
+                addSet,
+                totalSet,
+                removeSet,
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
             )
-            ElevatedAssistChip(
-                colors = AssistChipDefaults.elevatedAssistChipColors(
-                    containerColor = if (inProgress) MaterialTheme.colorScheme.secondary.copy(
-                        0.3f
-                    ) else MaterialTheme.colorScheme.secondary,
-                    leadingIconContentColor = MaterialTheme.colorScheme.onSecondary,
-                    labelColor = MaterialTheme.colorScheme.onSecondary
-                ),
-                enabled = !inProgress,
-                onClick = {
-                    addSet()
-                },
-                label = { Text(text = "세트 추가") },
-                leadingIcon = { Icon(Icons.Default.Add, null) },
-                modifier = Modifier.padding(horizontal = 4.dp)
-            )
+//            ElevatedAssistChip(
+//                colors = AssistChipDefaults.elevatedAssistChipColors(
+//                    containerColor = if (inProgress) MaterialTheme.colorScheme.secondary.copy(
+//                        0.3f
+//                    ) else MaterialTheme.colorScheme.secondary,
+//                    leadingIconContentColor = MaterialTheme.colorScheme.onSecondary,
+//                    labelColor = MaterialTheme.colorScheme.onSecondary
+//                ),
+//                enabled = !inProgress,
+//                onClick = {
+//                    addSet()
+//                },
+//                label = { Text(text = "세트 추가") },
+//                leadingIcon = { Icon(Icons.Default.Add, null) },
+//                modifier = Modifier.padding(horizontal = 4.dp)
+//            )
         }
         Row(
             modifier = Modifier //---------------body-------------------
                 .weight(1f)
                 .fillMaxWidth()
         ) {
+            if (setProgress.successRep >= planInfo[selectedTab].targetRep) {
+                if (inProgress) {
+                    endSet(selectedTab + 1)
+                    if (selectedTab < totalSet - 1) {
+                        selectedTab += 1
+                    }
+                }
+            }
             DateSelectionSection(
                 onWeightChosen = { setWeight(selectedTab + 1, it.toInt()) },
                 onRepChosen = { setRep(selectedTab + 1, it.toInt()) },
@@ -274,6 +285,9 @@ private fun SetOfRoutineRow(
     selectedTab: Int,
     onTabClick: (Int) -> Unit,
     inProgress: Boolean,
+    addSet: () -> Unit,
+    totalSet: Int,
+    removeSet: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     ScrollableTabRow(
@@ -297,6 +311,20 @@ private fun SetOfRoutineRow(
             ) {
                 Text(text = text, fontSize = 14.sp)
             }
+        }
+        Tab(
+            enabled = true,
+            selected = false,
+            onClick = {
+                addSet()
+            },
+            selectedContentColor = if(inProgress) MaterialTheme.colorScheme.primary.copy(alpha = 0.3f) else MaterialTheme.colorScheme.primary,
+            unselectedContentColor = if(inProgress) Color.Black.copy(alpha = 0.3f) else Color.Black,
+            modifier = Modifier
+                .fillMaxHeight()
+                .size(10.dp, 36.dp)
+        ) {
+            Text(text = "+", fontSize = 14.sp)
         }
     }
 }
