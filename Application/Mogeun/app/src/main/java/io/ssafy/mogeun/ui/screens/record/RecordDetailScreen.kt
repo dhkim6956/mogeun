@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
@@ -37,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -104,7 +106,7 @@ fun RecordDetailScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 30.dp)
+            .padding(horizontal = 12.dp)
             .padding(top = 10.dp)
     ) {
         val pagerState = rememberPagerState(
@@ -112,10 +114,9 @@ fun RecordDetailScreen(
             pageCount = { reportKeyList.size }
         )
 
-        Column {
+        Column (modifier = Modifier.fillMaxWidth()) {
             Row(
                 Modifier
-                    .wrapContentHeight()
                     .fillMaxWidth()
                     .padding(bottom = 5.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -174,12 +175,15 @@ fun RecordDetail(
     navController: NavHostController,
     routineInfo: RoutineInfoData
 ) {
-    Column (horizontalAlignment = Alignment.CenterHorizontally) {
+    Column (
+        modifier = Modifier.fillMaxWidth()
+    ) {
         if (routineInfo != null) {
             RoutineInfoCard(routineInfo.name, routineInfo.calorie, routineInfo.totalSets, routineInfo.performTime)
         }
         LazyColumn (
             modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             item { routineInfo?.let { IconCard(it.exercises) } }
@@ -237,15 +241,9 @@ fun RoutineInfoCard(
     Card (
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .border(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(16.dp)
-            )
+            .shadow(2.dp, RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(16.dp))
+            .padding(horizontal = 1.dp)
     ) {
         Column (
             modifier = Modifier
@@ -343,31 +341,25 @@ fun RoutineExerciseCard(
     index: Int,
     isAttached: Char
 ) {
-    Box (
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.background,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .border(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(
-                vertical = 10.dp,
-                horizontal = 10.dp
-            )
+            .wrapContentHeight()
+            .padding(vertical = 8.dp, horizontal = 1.dp)
+            .shadow(4.dp, shape = RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(16.dp))
             .clickable {
                 navController.currentBackStackEntry?.savedStateHandle?.set("exercises", exercises)
                 navController.currentBackStackEntry?.savedStateHandle?.set("isAttached", isAttached)
                 navController.navigate("ExerciseDetail/${index}")
-            },
-        contentAlignment = Alignment.Center
+            }
     ) {
-        Row (
-            modifier = Modifier.fillMaxWidth()
+        Row(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .padding(8.dp)
+                .fillMaxWidth()
+                .wrapContentHeight()
         ) {
             Column (
                 modifier = Modifier.fillMaxWidth(0.3f)
