@@ -3,6 +3,7 @@ package io.ssafy.mogeun
 import android.app.Application
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -29,7 +30,7 @@ class MainViewModel(
 
     var execName = mutableStateOf<String?>(null)
     var timerString = mutableStateOf<String?>(null)
-    var setEnded = mutableStateOf(false)
+    var setEnded: MutableLiveData<Boolean> = MutableLiveData(false)
 
     fun startSet() {
         viewModelScope.launch(Dispatchers.IO) {

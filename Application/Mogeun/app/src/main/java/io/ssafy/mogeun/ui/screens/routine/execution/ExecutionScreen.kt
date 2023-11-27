@@ -108,6 +108,9 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
             viewModel.resetRoutine()
             messageClient.removeListener(viewModel)
 
+            coroutineScope.launch {
+                viewModel.deleteEmgData()
+            }
             viewModel.noticeTimer("00:00")
             viewModel.noticeExerciseName("루틴 종료됨")
         }

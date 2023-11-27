@@ -25,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.Observer
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import com.google.android.gms.wearable.Wearable
@@ -45,8 +46,17 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MainApp(mainViewModel.execName.value, mainViewModel.timerString.value, mainViewModel.setEnded.value, mainViewModel::startSet, mainViewModel::stopSet) { vibrate() }
+            MainApp(mainViewModel.execName.value, mainViewModel.timerString.value, mainViewModel::startSet, mainViewModel::stopSet)
         }
+
+        val setObserver = Observer<Boolean> { setEnded ->
+            if(setEnded) {
+                vibrate()
+                mainViewModel.resetSetEnded()
+            }
+        }
+
+        mainViewModel.setEnded.observe(this, setObserver)
     }
 
     override fun onResume() {
@@ -60,7 +70,6 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun vibrate() {
-        mainViewModel.resetSetEnded()
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE))

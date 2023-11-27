@@ -33,12 +33,7 @@ import io.ssafy.mogeun.components.RoutineNameChip
 import io.ssafy.mogeun.ui.theme.MogeunTheme
 
 @Composable
-fun MainApp(execName: String?, timerString: String?, setEnded: Boolean, onStart: ()->Unit, onStop: ()->Unit, vibrate: ()->Unit) {
-    LaunchedEffect(key1 = setEnded) {
-        if(setEnded) {
-            vibrate()
-        }
-    }
+fun MainApp(execName: String?, timerString: String?, onStart: ()->Unit, onStop: ()->Unit) {
 
     MogeunTheme {
         val listState = rememberScalingLazyListState()
