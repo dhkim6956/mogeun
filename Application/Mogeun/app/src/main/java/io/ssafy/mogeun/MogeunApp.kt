@@ -77,7 +77,7 @@ fun Navigation(
             .padding(innerPadding)
             .background(
                 brush = Brush.verticalGradient(
-                    if (darkmode) listOf(Color.Black, Color(0xFF452703)) else listOf(Color.White, Color(0xFFFFF7F7)),
+                    if (darkmode) listOf(Color.Black, Color(0xFF210604)) else listOf(Color.White, Color(0xFFFFF7F7)),
                     startY = 100f,
                     endY = 800f
                 ),

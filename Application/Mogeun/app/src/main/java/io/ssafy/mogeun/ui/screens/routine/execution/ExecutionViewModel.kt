@@ -339,8 +339,8 @@ class ExecutionViewModel(
                     if (fatigueList.size > 2)
                         calFatigueSlope()
                 }
+                dataLayerRepository.noticeEndOfSet()
             }
-            dataLayerRepository.noticeEndOfSet()
         }
     }
 

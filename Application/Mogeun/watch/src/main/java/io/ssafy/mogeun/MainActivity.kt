@@ -11,6 +11,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -50,6 +51,7 @@ class MainActivity : ComponentActivity() {
         }
 
         val setObserver = Observer<Boolean> { setEnded ->
+            Log.d("observer", "set ended : $setEnded")
             if(setEnded) {
                 vibrate()
                 mainViewModel.resetSetEnded()

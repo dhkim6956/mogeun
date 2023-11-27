@@ -58,7 +58,7 @@ private fun MuscleIcon(modifier: Modifier, imagePath: String, container: Dp, con
     Box(
         modifier = modifier
             .background(
-                color = MaterialTheme.colorScheme.surface,
+                color = Color(0xFFFFF9F5),
                 RoundedCornerShape(15.dp)
             )
             .width(container)

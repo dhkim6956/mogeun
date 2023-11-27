@@ -1,6 +1,7 @@
 package io.ssafy.mogeun
 
 import android.app.Application
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -57,6 +58,7 @@ class MainViewModel(
         }
         else if (messageEvent.path == MOGEUN_SET_ENDED_PATH) {
             setEnded.value = true
+            Log.d("observer", "set ended : $setEnded")
         }
     }
 
