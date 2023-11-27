@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,7 +25,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.More
-import androidx.compose.material.icons.filled.PauseCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -56,7 +54,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -65,11 +62,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.model.GetRoutineListResponseBody
 import io.ssafy.mogeun.ui.AppViewModelProvider
-import io.ssafy.mogeun.ui.components.AlertDialogCustom
 import io.ssafy.mogeun.ui.components.MuscleTooltipIcon
 import kotlinx.coroutines.launch
 
@@ -127,7 +122,7 @@ fun RoutineScreen(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = stringResource(R.string.hello),
+                    text = stringResource(R.string.routine_hello),
                     textAlign = TextAlign.Start,
                     modifier = Modifier.weight(1f),
                     fontSize = 16.sp
@@ -149,7 +144,7 @@ fun RoutineScreen(
                     Row(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(text = stringResource(R.string.muscle_mass))
+                        Text(text = stringResource(R.string.userInfo_muscle_mass))
                         Spacer(modifier = Modifier.weight(1f))
                         Text(text = "${viewModel.muscleMass.toString()} kg")
 
@@ -165,7 +160,7 @@ fun RoutineScreen(
                     Row(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(text = stringResource(R.string.body_fat))
+                        Text(text = stringResource(R.string.userInfo_body_fat))
                         Spacer(modifier = Modifier.weight(1f))
                         Text(text = "${viewModel.bodyFat.toString()} kg")
 
@@ -302,7 +297,7 @@ fun RoutineList(
                     modifier = Modifier
                         .padding(2.dp)
                 ) {
-                    Text(text = stringResource(R.string.routine_start))
+                    Text(text = stringResource(R.string.routine_routine_start))
                 }
             }
         }

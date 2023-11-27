@@ -34,8 +34,8 @@ android {
         applicationId = "io.ssafy.mogeun"
         minSdk = 26
         targetSdk = 33
-        versionCode = 6
-        versionName = "0.6.0"
+        versionCode = 8
+        versionName = "0.8.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -109,7 +109,8 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.5.0"))
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation ("com.github.skydoves:landscapist-glide:2.2.12")
-    implementation("androidx.compose.material:material-icons-extended")
+    // icons
+    implementation(libs.androidx.compose.material.icon.extended)
 
     // retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -117,7 +118,7 @@ dependencies {
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     // Kotlin serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.1")
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("io.coil-kt:coil-compose:2.5.0")

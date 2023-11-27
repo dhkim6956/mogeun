@@ -1,12 +1,9 @@
 package io.ssafy.mogeun.ui.screens.menu.setting
 
-import android.content.Intent
-import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,23 +20,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.MonitorHeart
 import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.RateReview
 import androidx.compose.material3.Divider
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,11 +43,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.ui.AppViewModelProvider
-import io.ssafy.mogeun.ui.screens.menu.menu.MenuViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -79,8 +65,8 @@ fun SettingScreen(
 
     val appMenus: List<MenuItemInfo> = listOf(
         MenuItemInfo(
-            "다이나믹 색상",
-            "테마를 배경색으로 사용합니다",
+            stringResource(R.string.setting_dynamic_color),
+            stringResource(R.string.setting_color_from_background),
             Icons.Default.Palette,
             useDynamic,
             {
@@ -90,8 +76,8 @@ fun SettingScreen(
             Position.Top
         ),
         MenuItemInfo(
-            "다크모드 설정",
-            "테마를 다크모드로 설정합니다",
+            stringResource(R.string.setting_darkmode),
+            stringResource(R.string.setting_force_to_use_darkmode),
             Icons.Default.DarkMode,
             useDarkMode,
             {
@@ -101,8 +87,8 @@ fun SettingScreen(
             Position.Mid
         ),
         MenuItemInfo(
-            "라이트모드 설정",
-            "테마를 라이트모드로 설정합니다",
+            stringResource(R.string.setting_lightmode),
+            stringResource(R.string.setting_force_to_use_lightmode),
             Icons.Default.LightMode,
             useLightMode,
             {
@@ -115,8 +101,8 @@ fun SettingScreen(
 
     val sensorMenus: List<MenuItemInfo> = listOf(
         MenuItemInfo(
-            "가상 센서 연결",
-            "테스트를 위해 가상 센서와 연결합니다",
+            stringResource(R.string.setting_attach_virtual_sensor),
+            stringResource(R.string.setting_attach_virtual_sensor_for_test),
             Icons.Default.MonitorHeart,
             useVirtual,
             {
@@ -136,13 +122,13 @@ fun SettingScreen(
             .fillMaxSize()
     ) {
         stickyHeader {
-            LazyHeader("테마 설정")
+            LazyHeader(stringResource(R.string.setting_set_theme))
         }
         item() {
             LazyLists(appMenus)
         }
         stickyHeader {
-            LazyHeader("센서 (실험용)")
+            LazyHeader(stringResource(R.string.setting_experimental_feature))
         }
         item() {
             LazyLists(sensorMenus)

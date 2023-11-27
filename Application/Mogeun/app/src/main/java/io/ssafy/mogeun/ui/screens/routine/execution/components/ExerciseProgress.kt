@@ -3,6 +3,7 @@
 package io.ssafy.mogeun.ui.screens.routine.execution.components
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -59,6 +60,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -68,6 +70,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.ui.screens.routine.execution.EmgUiState
+import io.ssafy.mogeun.ui.screens.routine.execution.InbodyInfo
 import io.ssafy.mogeun.ui.screens.routine.execution.MuscleSensorValue
 import io.ssafy.mogeun.ui.screens.routine.execution.SetProgress
 import kotlinx.coroutines.launch
@@ -87,6 +90,7 @@ fun ExerciseProgress(
     endSet: (Int) -> Unit,
     inProgress: Boolean,
     setControl: Int,
+    inbodyInfo: InbodyInfo
 ){
     val totalSet = planInfo.size
     val setCntList = (1..totalSet).map { it }
@@ -126,7 +130,7 @@ fun ExerciseProgress(
                 .background(color = Color(0xFFDFEAFF))
         ) {
             SetOfRoutineRow(
-                setCntList.map { "$it 세트" },
+                setCntList.map { "$it " + stringResource(R.string.execution_set) },
                 selectedTab,
                 { index -> selectedTab = index },
                 inProgress,
@@ -189,7 +193,8 @@ fun ExerciseProgress(
                     setProgress,
                     { addCnt(selectedTab + 1) },
                     inProgress,
-                    sensorData
+                    sensorData,
+                    inbodyInfo
                 )
             }
         }
@@ -218,13 +223,15 @@ fun ExerciseProgress(
                     TextButton(
                         enabled = !inProgress,
                         onClick = {
-                            if (selectedTab == totalSet - 1) selectedTab = totalSet - 2 // 문제발생가능
-                            removeSet(selectedTab + 1)
+                            if(totalSet > 1) {
+                                if (selectedTab == totalSet - 1) selectedTab = totalSet - 2
+                                removeSet(selectedTab + 1)
+                            }
                         },
                         modifier = Modifier
                             .wrapContentSize()
                     ) {
-                        Text(text = "세트 삭제")
+                        Text(text = stringResource(R.string.execution_remove_set))
                     }
                     Spacer(
                         modifier = Modifier
@@ -246,7 +253,7 @@ fun ExerciseProgress(
                             tint = if (!inProgress) Color(0xFF556FF7) else Color(0xFFDDDDDD),
                             modifier = Modifier.size(20.dp),
                         )
-                        Text(text = "시작", fontSize = 15.sp, textAlign = TextAlign.Center)
+                        Text(text = stringResource(R.string.execution_start), fontSize = 15.sp, textAlign = TextAlign.Center)
                     }
                     Row(
                         modifier = Modifier
@@ -271,7 +278,7 @@ fun ExerciseProgress(
                                 .size(21.dp)
                                 .padding(2.dp)
                         )
-                        Text(text = "종료")
+                        Text(text = stringResource(R.string.execution_end))
                     }
                 }
             }
@@ -543,10 +550,27 @@ fun InfiniteItemsPicker(
 
 // 최신값
 @Composable
-fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgress, addCnt: () -> Unit, inProgress: Boolean, sensorData: List<MuscleSensorValue>) {
+fun EMGCollector(
+    emgUiState: EmgUiState,
+    isStarting:Boolean,
+    planInfo: SetProgress,
+    addCnt: () -> Unit,
+    inProgress: Boolean,
+    sensorData: List<MuscleSensorValue>,
+    inbodyInfo: InbodyInfo
+) {
     var lastLev by remember { mutableStateOf(0)}
     var lastTime by remember { mutableStateOf<Long>(0)}
+    var lastCntTime by remember { mutableStateOf<Long>(0) }
     var currentLev by remember { mutableStateOf(0) }
+
+    var scale by remember { mutableStateOf(1.0)}
+
+    if (inbodyInfo.hasData) {
+        val diff: Double = (5 - inbodyInfo.offset!!)
+
+        scale = 1.0 + diff / 10
+    }
 
     // CoroutineScope을 만듭니다.
     val coroutineScope = rememberCoroutineScope()
@@ -555,10 +579,13 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
         if(inProgress) {
             val curTime = System.currentTimeMillis()
 
-            if(curTime - lastTime >= 500) {
-                currentLev = ((emgUiState.emgAvg[0] / 90) + 1).toInt()
+            if(curTime - lastTime >= 200) {
+                currentLev = ((emgUiState.emgAvg[0] * scale / 90) + 1).toInt()
                 if (currentLev >= 3 && lastLev < 3) {
-                    addCnt()
+                    if(curTime - lastCntTime > 1000) {
+                        addCnt()
+                        lastCntTime = curTime
+                    }
                 }
                 lastLev = currentLev
 
@@ -578,7 +605,7 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
                 .fillMaxWidth()
                 .height(24.dp)
         ) {
-            Text(text = "근 활성도")
+            Text(text = stringResource(R.string.execution_muscle_activity))
         }
         Row(
             modifier = Modifier
@@ -591,12 +618,12 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
                 .background(Color.White),
                 contentAlignment = Alignment.Center
             ){
-                Text("Lv. ${String.format("%.3f", (emgUiState.emgAvg[0] / 90) + 1)}")
+                Text("Lv. ${String.format("%.3f", (emgUiState.emgAvg[0] * scale / 90) + 1)}")
                 Box(modifier = Modifier
                     .clip(CircleShape)
-                    .size(if (emgUiState.emgAvg[0] > 360) (emgUiState.emgAvg[0] - 270).dp else (emgUiState.emgAvg[0] % 360 / 4).dp)
+                    .size(if (emgUiState.emgAvg[0] * scale > 360) (emgUiState.emgAvg[0] * scale - 270).dp else (emgUiState.emgAvg[0] * scale % 360 / 4).dp)
                     .background(
-                        when ((emgUiState.emgAvg[0] / 90).toInt()) {
+                        when ((emgUiState.emgAvg[0] * scale / 90).toInt()) {
                             0 -> Color.White.copy(0.7f)
                             1 -> Color.Red.copy(0.7f)
                             2 -> Color.Green.copy(0.7f)
@@ -613,12 +640,12 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
                 .background(Color.White),
                 contentAlignment = Alignment.Center
             ){
-                Text("Lv. ${String.format("%.3f", (emgUiState.emgAvg[1] / 90) + 1)}")
+                Text("Lv. ${String.format("%.3f", (emgUiState.emgAvg[1] * scale / 90) + 1)}")
                 Box(modifier = Modifier
                     .clip(CircleShape)
-                    .size(if (emgUiState.emgAvg[1] > 360) (emgUiState.emgAvg[1] - 270).dp else (emgUiState.emgAvg[1] % 360 / 4).dp)
+                    .size(if (emgUiState.emgAvg[1] * scale > 360) (emgUiState.emgAvg[1] * scale - 270).dp else (emgUiState.emgAvg[1] * scale % 360 / 4).dp)
                     .background(
-                        when ((emgUiState.emgAvg[1] / 90).toInt()) {
+                        when ((emgUiState.emgAvg[1] * scale / 90).toInt()) {
                             0 -> Color.White.copy(0.7f)
                             1 -> Color.Red.copy(0.7f)
                             2 -> Color.Green.copy(0.7f)
@@ -636,7 +663,7 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
                 .fillMaxWidth()
                 .height(24.dp)
         ) {
-            Text(text = "근 피로도")
+            Text(text = stringResource(R.string.execution_muscle_fatigue))
         }
         
         Row(
@@ -651,7 +678,7 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
                         .fillMaxSize()
                         .background(Color.White)
                 ) {
-                    Text(text = "세트를 진행해 주세요")
+                    Text(text = stringResource(R.string.execution_proceed_set))
                 }
             } else {
                 Box(modifier = Modifier
@@ -681,7 +708,7 @@ fun EMGCollector(emgUiState: EmgUiState, isStarting:Boolean, planInfo: SetProgre
                 .height(40.dp)
                 .background(Color(0xFFDDE2FD)),
         ){
-            Text(String.format("개수 : ${planInfo.successRep}", emgUiState.emgAvg[0] % 90))
+            Text(String.format(stringResource(R.string.execution_count) + " : ${planInfo.successRep}", emgUiState.emgAvg[0] % 90))
         }
     }
 }

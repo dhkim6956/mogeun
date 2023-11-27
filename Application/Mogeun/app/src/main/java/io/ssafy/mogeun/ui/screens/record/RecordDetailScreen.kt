@@ -43,6 +43,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -234,7 +235,8 @@ fun RoutineInfoCard(
     )
 
     var routineInfoList: List<RoutineInfoData> =
-        listOf(RoutineInfoData("수행한 세트", totalSets.toString() + "set"), RoutineInfoData("운동한 시간", performTime.toString() + "분"))
+        listOf(RoutineInfoData(stringResource(R.string.record_detail_executed_set), totalSets.toString() + "set"), RoutineInfoData(
+            stringResource(R.string.record_detail_exercise_time), performTime.toString() + "분"))
 
     Card (
         modifier = Modifier
@@ -319,7 +321,7 @@ fun IconCard(
         }
 
         Column {
-            Text("사용근육")
+            Text(stringResource(R.string.record_detail_using_muscle))
             MuscleGrid(
                 columns = 5,
                 itemCount = imagePaths.size,
@@ -438,7 +440,7 @@ fun RoutineExerciseCardPreview() {
             }
             ClickableText(
                 modifier = Modifier.align(Alignment.End),
-                text = AnnotatedString("자세히 보기"),
+                text = AnnotatedString(stringResource(R.string.record_detail_see_details)),
                 onClick = {
 
                 },

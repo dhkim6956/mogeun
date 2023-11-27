@@ -48,6 +48,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -639,7 +640,8 @@ fun BalanceBar(balanceValue: Float) {
 
 @Composable
 fun ExerciseDropdown(viewModel: RecordViewModel) {
-    val listItems = arrayOf("세트 정보", "피로도 그래프")
+    val listItems = arrayOf(stringResource(R.string.exercise_detail_set_info),
+        stringResource(R.string.exercise_detail_fatigue_graph))
 
     // state of the menu
     var expanded by remember { mutableStateOf(false) }
@@ -763,12 +765,12 @@ fun Dialog1(onDismissRequest: () -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(text = "단위시간당 운동량에 따른 근육 균형도를 보여줍니다.")
+                Text(text = stringResource(R.string.exercise_detail_balance_description))
                 Spacer(
                     modifier = Modifier
                         .height(15.dp)
                 )
-                Text("(예시)", fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.exercise_detail_example))
                 Spacer(
                     modifier = Modifier
                         .height(5.dp)
@@ -784,7 +786,7 @@ fun Dialog1(onDismissRequest: () -> Unit) {
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("균형 잡힘")
+                        Text(stringResource(R.string.exercise_detail_balanced))
                         BalanceBar(balanceValue = 0.5f)
                     }
                     Row (
@@ -793,8 +795,8 @@ fun Dialog1(onDismissRequest: () -> Unit) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(horizontalAlignment = Alignment.Start) {
-                            Text("왼쪽으로")
-                            Text("살짝 치우침")
+                            Text(stringResource(R.string.exercise_detail_biasedleft_first))
+                            Text(stringResource(R.string.exercise_detail_biasedleft_second))
                         }
                         BalanceBar(balanceValue = 0.66f)
                     }
@@ -804,8 +806,8 @@ fun Dialog1(onDismissRequest: () -> Unit) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(horizontalAlignment = Alignment.Start) {
-                            Text("오른쪽으로")
-                            Text("많이 치우침")
+                            Text(stringResource(R.string.exercise_detail_biasedright_first))
+                            Text(stringResource(R.string.exercise_detail_biasedright_second))
                         }
                         BalanceBar(balanceValue = 0.3f)
                     }

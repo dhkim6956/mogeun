@@ -6,7 +6,11 @@
 
 package io.ssafy.mogeun
 
+import android.content.Context
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -21,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.Observer
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import com.google.android.gms.wearable.Wearable
@@ -29,12 +34,29 @@ import io.ssafy.mogeun.ui.theme.MogeunTheme
 class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels { MainViewModel.Factory }
     private val messageClient by lazy { Wearable.getMessageClient(this) }
+    private val vibrator: Vibrator by lazy {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            getSystemService(Vibrator::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MainApp(mainViewModel.execName.value, mainViewModel.timerString.value, mainViewModel::startSet, mainViewModel::stopSet)
         }
+
+        val setObserver = Observer<Boolean> { setEnded ->
+            if(setEnded) {
+                vibrate()
+                mainViewModel.resetSetEnded()
+            }
+        }
+
+        mainViewModel.setEnded.observe(this, setObserver)
     }
 
     override fun onResume() {
@@ -45,5 +67,15 @@ class MainActivity : ComponentActivity() {
     override fun onPause() {
         super.onPause()
         messageClient.removeListener(mainViewModel)
+    }
+
+    private fun vibrate() {
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
+            @Suppress("DEPRECATION")
+            vibrator.vibrate(1000)
+        }
     }
 }

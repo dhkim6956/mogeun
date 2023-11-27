@@ -11,6 +11,7 @@ interface DataLayerRepository{
     suspend fun launchMogeun()
     suspend fun noticeExerciseName(message: String)
     suspend fun noticeTimer(message: String)
+    suspend fun noticeEndOfSet()
 }
 
 class AndroidDataLayerRepository(
@@ -79,6 +80,26 @@ class AndroidDataLayerRepository(
         }
     }
 
+    override suspend fun noticeEndOfSet() {
+        try {
+            val nodes = Tasks.await(
+                capabilityClient
+                    .getCapability(WEAR_CAPABILITY, CapabilityClient.FILTER_REACHABLE)
+            ).nodes
+
+            nodes.map { node ->
+                messageClient.sendMessage(
+                    node.id,
+                    MOGEUN_SET_ENDED_PATH,
+                    byteArrayOf()
+                )
+            }
+
+        } catch(exception: Exception) {
+            Log.d(TAG, "Send message failed: $exception")
+        }
+    }
+
     companion object {
         private const val TAG = "datalayer"
 
@@ -86,6 +107,7 @@ class AndroidDataLayerRepository(
         private const val MOGEUN_SERVICE_START_PATH = "/mogeun_start"
         private const val MOGEUN_EXERCISE_NAME_MESSAGE_PATH = "/mogeun_routine_name"
         private const val MOGEUN_ROUTINE_TIMER_MESSAGE_PATH = "/mogeun_routine_timer"
+        private const val MOGEUN_SET_ENDED_PATH = "/mogeun_set_ended"
         private const val MOGEUN_ROUTINE_START_SET_PATH = "/mogeun_start_set"
         private const val MOGEUN_ROUTINE_END_SET_PATH = "/mogeun_end_set"
     }

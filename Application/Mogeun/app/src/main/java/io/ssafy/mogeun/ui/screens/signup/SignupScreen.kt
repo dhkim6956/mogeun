@@ -43,6 +43,7 @@ fun SignupScreen(
     val inputForm = viewModel.inputForm
     val firstText = viewModel.firstText
     val focusManager = LocalFocusManager.current
+
     Column(
         modifier = Modifier.clickable(
             interactionSource = remember {
@@ -71,7 +72,7 @@ fun SignupScreen(
                     fontSize = 24.sp
                 )
                 Text(
-                    text = stringResource(R.string.please_enter_it),
+                    text = stringResource(R.string.signup_please_enter_it),
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
                     color = Color.White,
@@ -99,12 +100,27 @@ fun Essential(
     val nickname = viewModel.nickname
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
-    val validIdText = stringResource(R.string.valid_id)
-    val duplicateIdText = stringResource(R.string.duplicate_id)
-    val duplicateFirstText = stringResource(R.string.duplicate_first)
-    val passwordNotMatchText = stringResource(R.string.password_not_match)
-    val enterAllInforText = stringResource(R.string.enter_all_information)
-    val bodyInforText = stringResource(R.string.body_information)
+    val validIdText = stringResource(R.string.signup_valid_id)
+    val duplicateIdText = stringResource(R.string.signup_duplicate_id)
+    val duplicateFirstText = stringResource(R.string.signup_duplicate_first)
+    val passwordNotMatchText = stringResource(R.string.signup_password_not_match)
+    val enterAllInforText = stringResource(R.string.signup_enter_all_information)
+    val bodyInfoText = stringResource(R.string.signup_body_information)
+    val userInfoText = stringResource(R.string.signup_user_info)
+
+    LaunchedEffect(key1 = viewModel.inputForm) {
+
+        when (viewModel.inputForm)
+        {
+            1 -> {
+                viewModel.updateFirstText(userInfoText)
+            }
+            else -> {
+                viewModel.updateFirstText(bodyInfoText)
+            }
+        }
+
+    }
 
     LaunchedEffect(viewModel.checkEmail) {
         if(viewModel.dupEmailSuccess) {
@@ -142,7 +158,7 @@ fun Essential(
             .verticalScroll(rememberScrollState())
             .fillMaxHeight()
     ) {
-        Text(text = stringResource(R.string.id))
+        Text(text = stringResource(R.string.login_id))
         Row {
             TextField(
                 value = id,
@@ -150,7 +166,7 @@ fun Essential(
                     viewModel.updateId(it)
                     viewModel.updateCheckEmail(0)
                 },
-                modifier = Modifier.width(220.dp),
+                modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(10.dp),
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
@@ -166,14 +182,14 @@ fun Essential(
                     viewModel.dupEmail()
                     keyboardController?.hide()
                 },
-                modifier = Modifier.width(100.dp),
+                modifier = Modifier.width(120.dp),
                 shape = RoundedCornerShape(10.dp)
             ) {
-                Text(text = stringResource(R.string.duplicate_verification))
+                Text(text = stringResource(R.string.signup_duplicate_verification))
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = stringResource(R.string.password))
+        Text(text = stringResource(R.string.login_password))
         TextField(
             value = password,
             onValueChange = viewModel::updatePassword,
@@ -190,7 +206,7 @@ fun Essential(
             maxLines = 1
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = stringResource(R.string.confirm_password))
+        Text(text = stringResource(R.string.signup_confirm_password))
         TextField(
             value = checkingPassword,
             onValueChange = viewModel::updateCheckingPassword,
@@ -207,7 +223,7 @@ fun Essential(
             maxLines = 1
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = stringResource(R.string.nickname))
+        Text(text = stringResource(R.string.signup_nickname))
         TextField(
             value = nickname,
             onValueChange = viewModel::updateNickname,
@@ -249,14 +265,13 @@ fun Essential(
                                       viewModel.updateAlertInput(true)
                                   } else {
                                       viewModel.updateInputForm(2)
-                                      viewModel.updateFirstText(bodyInforText)
                                   }
                             },
                         containerColor = MaterialTheme.colorScheme.secondary,
                         elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
                     ) {
                         Text(
-                            text = stringResource(R.string.sign_up),
+                            text = stringResource(R.string.signup_sign_up),
                             fontSize = 16.sp,
                             modifier = Modifier.padding(start = 20.dp, end = 20.dp)
                         )
@@ -285,7 +300,7 @@ fun Inbody(
     var bodyFatText by remember { mutableStateOf(if(viewModel.bodyFat == null) "" else viewModel.bodyFat.toString()) }
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
-    val successSignUpText = stringResource(R.string.success_signup)
+    val successSignUpText = stringResource(R.string.signup_success_signup)
 
     LaunchedEffect(viewModel.successSignUp) {
         if(viewModel.successSignUp) {
@@ -300,7 +315,7 @@ fun Inbody(
             .padding(28.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        Text(text = stringResource(R.string.height))
+        Text(text = stringResource(R.string.userInfo_height))
         TextField(
             value = heightText,
             onValueChange = {
@@ -324,7 +339,7 @@ fun Inbody(
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = stringResource(R.string.weight))
+        Text(text = stringResource(R.string.userInfo_weight))
         TextField(
             value = weightText,
             onValueChange = {
@@ -347,7 +362,7 @@ fun Inbody(
             maxLines = 1
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = stringResource(R.string.muscle_mass))
+        Text(text = stringResource(R.string.userInfo_muscle_mass))
         TextField(
             value = muscleMassText,
             onValueChange = {
@@ -370,7 +385,7 @@ fun Inbody(
             maxLines = 1
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = stringResource(R.string.body_fat))
+        Text(text = stringResource(R.string.userInfo_body_fat))
         TextField(
             value = bodyFatText,
             onValueChange = {
@@ -408,7 +423,7 @@ fun Inbody(
                             .height(36.dp)
                             .background(color = Color.White, shape = RoundedCornerShape(30.dp)),
                     ) {
-                        Text(text = stringResource(R.string.skipping), fontSize = 16.sp)
+                        Text(text = stringResource(R.string.signup_skipping), fontSize = 16.sp)
                     }
                 },
                 floatingActionButton = {
@@ -421,7 +436,7 @@ fun Inbody(
                         elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
                     ) {
                         Text(
-                            text = stringResource(R.string.sign_up),
+                            text = stringResource(R.string.signup_sign_up),
                             fontSize = 16.sp,
                             modifier = Modifier.padding(start = 20.dp, end = 20.dp)
                         )
@@ -444,7 +459,7 @@ fun Preview_MultipleRadioButtons(viewModel: SignupViewModel = viewModel(factory 
     val onChangeState: (String) -> Unit = { viewModel.updateSelectedGender(it) }
     val items = listOf("m", "f")
     Column(Modifier.padding(8.dp)) {
-        Text(text = stringResource(R.string.choose_gender))
+        Text(text = stringResource(R.string.signup_choose_gender))
         Row {
             items.forEach { item ->
                 Row(
@@ -462,9 +477,9 @@ fun Preview_MultipleRadioButtons(viewModel: SignupViewModel = viewModel(factory 
                         onClick = null
                     )
                     if(item == "m") {
-                        Text(text = stringResource(R.string.male))
+                        Text(text = stringResource(R.string.signup_male))
                     } else {
-                        Text(text = stringResource(R.string.female))
+                        Text(text = stringResource(R.string.signup_female))
                     }
                 }
             }

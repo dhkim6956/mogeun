@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -75,7 +76,7 @@ fun SensorBottomSheet(state: Boolean, hide: () -> Unit, navToConnection: () -> U
                         contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                 ) {
-                    Text(text = "센서 연결")
+                    Text(text = stringResource(R.string.execution_connect_sensor))
                 }
                 ElevatedButton(
                     onClick = {
@@ -90,7 +91,7 @@ fun SensorBottomSheet(state: Boolean, hide: () -> Unit, navToConnection: () -> U
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
-                    Text(text = "닫기")
+                    Text(text = stringResource(R.string.execution_close))
                 }
             }
             Box(

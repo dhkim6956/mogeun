@@ -40,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,6 +71,7 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
     val routineState by viewModel.routineState.collectAsState()
     val elapsedTime by viewModel.elaspedTime.collectAsState()
     val setControl by viewModel.setControl.collectAsState()
+    val inbodyInfo by viewModel.inbodyInfo.collectAsState()
 
     var openEndDialog by remember { mutableStateOf(false) }
     var openNoSensorDialog by remember { mutableStateOf(false) }
@@ -89,6 +91,14 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
         viewModel.launchWearApp()
     }
 
+    LaunchedEffect(viewModel.userKey) {
+        if(viewModel.userKey.isNotNull()) {
+            viewModel.getInbodyInfo()
+        }
+    }
+
+    val routineEnded = stringResource(R.string.execution_routine_ended)
+
     DisposableEffect(Unit) {
         messageClient.addListener(viewModel)
         coroutineScope.launch {
@@ -101,8 +111,11 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
             viewModel.resetRoutine()
             messageClient.removeListener(viewModel)
 
+            coroutineScope.launch {
+                viewModel.deleteEmgData()
+            }
             viewModel.noticeTimer("00:00")
-            viewModel.noticeExerciseName("루틴 종료됨")
+            viewModel.noticeExerciseName(routineEnded)
         }
     }
 
@@ -176,6 +189,9 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
                                 Icon(painter = painterResource(id = R.drawable.heart_rate), null, modifier = Modifier.fillMaxSize(0.8f))
                             }
                         }
+
+                        val startRoutineMsg = stringResource(R.string.execution_start_routine)
+
                         ExerciseProgress(
                             emgState,
                             routineState.planDetails[page].setOfRoutineDetail,
@@ -189,7 +205,7 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
                                         if(isRemote) {
                                             coroutineScope.launch {
                                                 viewModel.startRoutine(routineKey, isAttached = "N")
-                                                snackbarHostState.showSnackbar("루틴을 시작합니다.")
+                                                snackbarHostState.showSnackbar(startRoutineMsg)
                                             }
                                             viewModel.startSet(plan.planKey, idx)
                                         } else {
@@ -200,7 +216,7 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
                                     } else {
                                         coroutineScope.launch {
                                             viewModel.startRoutine(routineKey)
-                                            snackbarHostState.showSnackbar("루틴을 시작합니다.")
+                                            snackbarHostState.showSnackbar(startRoutineMsg)
                                         }
                                         viewModel.startSet(plan.planKey, idx)
                                     }
@@ -211,7 +227,8 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
                             {idx -> viewModel.addCnt(plan.planKey, idx)},
                             {idx -> viewModel.endSet(plan.planKey, idx)},
                             routineState.setInProgress,
-                            setControl
+                            setControl,
+                            inbodyInfo
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                     }
@@ -224,6 +241,9 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
     }
     when {
         openEndDialog -> {
+            val routineEndedMsg = stringResource(R.string.execution_routine_ended_msg)
+            val routineCanceledMsg = stringResource(R.string.execution_routine_canceled_msg)
+            val routineCanceledWatchMsg = stringResource(R.string.execution_routine_canceled_watch_msg)
             AlertDialogCustom(
                 onDismissRequest = {
                     openEndDialog = false
@@ -237,26 +257,35 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
                             launchSingleTop = true
                         }
                         coroutineScope.launch {
-                            snackbarHostState.showSnackbar("루틴이 종료되었습니다.")
+                            snackbarHostState.showSnackbar(routineEndedMsg)
                         }
                     } else {
                         navController.popBackStack()
                         coroutineScope.launch {
-                            snackbarHostState.showSnackbar("루틴이 취소되었습니다.")
+                            snackbarHostState.showSnackbar(routineCanceledMsg)
                         }
                         viewModel.noticeTimer("00:00")
-                        viewModel.noticeExerciseName("루틴 취소됨")
+                        viewModel.noticeExerciseName(routineCanceledWatchMsg)
                     }
 
                                  },
-                dialogTitle = if (routineState.hasValidSet) {"오늘의 루틴 종료"} else {"루틴 진행 취소"},
-                dialogText = if (routineState.hasValidSet) {"현재까지의 진행상황을 기록하고 운동을 종료합니다."} else {"측정된 횟수가 없어 진행상황을 기록하지 않고 돌아갑니다"},
+                dialogTitle = if (routineState.hasValidSet) {
+                    stringResource(R.string.execution_end_today_routine)
+                } else {
+                    stringResource(R.string.execution_cancel_routine_process)
+                },
+                dialogText = if (routineState.hasValidSet) {
+                    stringResource(R.string.execution_save_procedure_and_end_routine)
+                } else {
+                    stringResource(R.string.execution_cancel_procedure_and_end_routine)
+                },
                 icon = Icons.Default.PauseCircle
             )
         }
     }
     when {
         openNoSensorDialog -> {
+            val startRoutineMsg = stringResource(id = R.string.execution_start_routine)
             AlertDialogCustom(
                 onDismissRequest = {
                     openNoSensorDialog = false
@@ -266,12 +295,12 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
 
                     coroutineScope.launch {
                         viewModel.startRoutine(routineKey, isAttached = "N")
-                        snackbarHostState.showSnackbar("루틴을 시작합니다.")
+                        snackbarHostState.showSnackbar(startRoutineMsg)
                     }
                     viewModel.startSet(tempPlanKey, tempIdx)
                 },
-                dialogTitle = "연결된 센서가 없습니다.",
-                dialogText = "센서 없이 루틴을 진행하시겠습니까?",
+                dialogTitle = stringResource(R.string.execution_no_sensor_connected),
+                dialogText = stringResource(R.string.execution_would_you_like_to_start),
                 icon = Icons.Default.PauseCircle
             )
         }

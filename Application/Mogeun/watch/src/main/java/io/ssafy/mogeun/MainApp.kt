@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Stop
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -33,6 +34,7 @@ import io.ssafy.mogeun.ui.theme.MogeunTheme
 
 @Composable
 fun MainApp(execName: String?, timerString: String?, onStart: ()->Unit, onStop: ()->Unit) {
+
     MogeunTheme {
         val listState = rememberScalingLazyListState()
         Scaffold(

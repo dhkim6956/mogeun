@@ -1,6 +1,7 @@
 package io.ssafy.mogeun.ui.screens.routine.execution
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -16,6 +17,7 @@ import io.ssafy.mogeun.data.EmgRepository
 import io.ssafy.mogeun.data.ExecutionRepository
 import io.ssafy.mogeun.data.KeyRepository
 import io.ssafy.mogeun.data.RoutineRepository
+import io.ssafy.mogeun.data.UserRepository
 import io.ssafy.mogeun.model.SensorData
 import io.ssafy.mogeun.model.SetExecutionRequest
 import io.ssafy.mogeun.model.SetInfo
@@ -35,6 +37,7 @@ import kotlinx.coroutines.launch
 import org.jtransforms.fft.DoubleFFT_1D
 import java.text.SimpleDateFormat
 import kotlin.math.abs
+import kotlin.math.pow
 
 
 class ExecutionViewModel(
@@ -43,7 +46,8 @@ class ExecutionViewModel(
     private val routineRepository: RoutineRepository,
     private val bleRepository: BleRepository,
     private val keyRepository: KeyRepository,
-    private val dataLayerRepository: DataLayerRepository
+    private val dataLayerRepository: DataLayerRepository,
+    private val userRepository: UserRepository
 ): ViewModel(),
     MessageClient.OnMessageReceivedListener {
 
@@ -93,7 +97,14 @@ class ExecutionViewModel(
         _routineState.update { routineState ->
             val changedPlanDetails = routineState.planDetails.map { setOfPlan ->
                 if (setOfPlan.planKey == planKey) {
-                    setOfPlan.copy(valueChanged = true, setOfRoutineDetail = setOfPlan.setOfRoutineDetail + setOfPlan.setOfRoutineDetail.last().copy(setNumber = setOfPlan.setOfRoutineDetail.size + 1, successRep = 0))
+                    setOfPlan.copy(
+                        valueChanged = true,
+                        setOfRoutineDetail = setOfPlan.setOfRoutineDetail + setOfPlan.setOfRoutineDetail.last().copy(
+                            setNumber = setOfPlan.setOfRoutineDetail.size + 1,
+                            successRep = 0,
+                            sensorData = listOf(MuscleSensorValue(), MuscleSensorValue())
+                        )
+                    )
                 } else {
                     setOfPlan
                 }
@@ -322,6 +333,7 @@ class ExecutionViewModel(
                     Log.d("report", "report set : $ret3")
                 }
             }
+            dataLayerRepository.noticeEndOfSet()
         }
     }
 
@@ -388,6 +400,47 @@ class ExecutionViewModel(
         }
     }
 
+    private val _inbodyInfo = MutableStateFlow(InbodyInfo())
+    val inbodyInfo = _inbodyInfo.asStateFlow()
+
+    fun getInbodyInfo() {
+        viewModelScope.launch {
+            val ret = userRepository.getInbody(userKey.toString())
+
+            if(ret.data.height != 0.0 && ret.data.weight != 0.0 && ret.data.muscleMass != 0.0) {
+
+                val height = ret.data.height / 100
+                val weight = ret.data.weight
+                val muscleMass = ret.data.muscleMass
+
+                Log.d("smi", "height : ${height}, weight: ${weight}, muscle: ${muscleMass}")
+
+                val powHeight = height.pow(2)
+
+                Log.d("smi", "pow : $powHeight")
+
+                val bmi = weight / powHeight
+                val smi = muscleMass / powHeight
+
+                val normalSmi = 0.175 * bmi + 3.176
+                val offset = smi - normalSmi
+
+                Log.d("smi", "bmi : ${bmi}, smi: $smi")
+                Log.d("smi", "offset : $offset")
+
+                _inbodyInfo.update {
+                    it.copy(
+                        hasData = true,
+                        height = height,
+                        weight = weight,
+                        muscleMass = muscleMass,
+                        offset = offset
+                    )
+                }
+            }
+        }
+    }
+
     private val _emgState = MutableStateFlow(EmgUiState())
     val emgState = _emgState.asStateFlow()
 
@@ -415,8 +468,8 @@ class ExecutionViewModel(
                             )
                         }
                     }
+                    val bufValue = abs(sensorVal[i])
                     _emgState.update { emgUiState ->
-                        val bufValue = abs(sensorVal[i])
                         val calcList = if(bufValue > 1500) emgUiState.emgList[i] else {if(emgUiState.emgList[i].size < 80) emgUiState.emgList[i] + bufValue else emgUiState.emgList[i].subList(1, 80) + bufValue}
                         var avg = calcList.average()
                         if(avg.isNaN()) {
@@ -443,8 +496,10 @@ class ExecutionViewModel(
                             emgMax = bufMax
                         )
                     }
-                    viewModelScope.launch {
-                        saveData(i, sensorVal[i])
+                    if(bufValue <= 1500) {
+                        viewModelScope.launch {
+                            saveData(i, sensorVal[i])
+                        }
                     }
                 }
             }
@@ -515,6 +570,7 @@ class ExecutionViewModel(
         private const val MOGEUN_SERVICE_START_PATH = "/mogeun_start"
         private const val MOGEUN_EXERCISE_NAME_MESSAGE_PATH = "/mogeun_routine_name"
         private const val MOGEUN_ROUTINE_TIMER_MESSAGE_PATH = "/mogeun_routine_timer"
+        private const val MOGEUN_SET_ENDED_PATH = "/mogeun_set_ended"
         private const val MOGEUN_ROUTINE_START_SET_PATH = "/mogeun_start_set"
         private const val MOGEUN_ROUTINE_END_SET_PATH = "/mogeun_end_set"
     }

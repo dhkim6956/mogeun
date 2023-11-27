@@ -28,9 +28,9 @@ android {
     defaultConfig {
         applicationId = "io.ssafy.mogeun"
         minSdk = 30
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        targetSdk = 33
+        versionCode = 9
+        versionName = "0.9.0"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -77,15 +77,15 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.preview)
-    implementation(libs.compose.material)
-    implementation(libs.compose.foundation)
     implementation(libs.androidx.lifecycle)
     implementation(libs.androidx.activity)
 
+    // compose
     implementation(libs.wear.compose.material)
     implementation(libs.wear.compose.foundation)
     implementation(libs.compose.ui.tooling)
-    implementation("androidx.compose.material:material-icons-extended")
+    // icons
+    implementation(libs.androidx.compose.material.icon.extended)
 
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

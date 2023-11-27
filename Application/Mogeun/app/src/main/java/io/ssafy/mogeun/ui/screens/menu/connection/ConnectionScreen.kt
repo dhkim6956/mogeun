@@ -40,11 +40,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import co.yml.charts.common.extensions.isNotNull
+import io.ssafy.mogeun.R
 import io.ssafy.mogeun.model.BleDevice
 import io.ssafy.mogeun.ui.AppViewModelProvider
 import kotlinx.coroutines.delay
@@ -60,6 +62,8 @@ fun ConnectionScreen(
 
     val coroutineScope = rememberCoroutineScope()
 
+    val connectionSuccessText = stringResource(R.string.connection_connection_success)
+
     LaunchedEffect(key1 = msgState) {
         if(msgState.display) {
             coroutineScope.launch {
@@ -72,14 +76,14 @@ fun ConnectionScreen(
     LaunchedEffect(key1 = state.connectedDevices[0]) {
         if(state.connectedDevices[0].isNotNull()) {
             coroutineScope.launch {
-                snackbarHostState.showSnackbar("1번 기기 연결 성공")
+                snackbarHostState.showSnackbar("1$connectionSuccessText")
             }
         }
     }
     LaunchedEffect(key1 = state.connectedDevices[1]) {
         if(state.connectedDevices[1].isNotNull()) {
             coroutineScope.launch {
-                snackbarHostState.showSnackbar("2번 기기 연결 성공")
+                snackbarHostState.showSnackbar("2$connectionSuccessText")
             }
         }
     }
@@ -128,7 +132,7 @@ fun BluetoothDeviceList(
                     .shadow(0.5.dp)
             ) {
                 Text(
-                    text = "연결된 장치",
+                    text = stringResource(R.string.connection_connected_devices),
                     fontWeight = FontWeight.Bold,
                     fontSize = 24.sp,
                     modifier = Modifier.padding(16.dp)
@@ -152,7 +156,7 @@ fun BluetoothDeviceList(
                     .shadow(0.5.dp)
             ) {
                 Text(
-                    text = "검색된 장치",
+                    text = stringResource(R.string.connection_scanned_devices),
                     fontWeight = FontWeight.Bold,
                     fontSize = 24.sp,
                     modifier = Modifier
@@ -228,7 +232,7 @@ fun ScannedDeviceItem(device: BluetoothDevice, onClick: (BluetoothDevice) -> Uni
                 contentDescription = "connect ble",
                 tint = Color(0xFF0000AA)
             )
-            Text(text = "연결")
+            Text(text = stringResource(R.string.connection_connect))
         }
     }
 }
@@ -259,7 +263,7 @@ fun ConnectedDeviceItem(device: BleDevice, onClick: (BleDevice) -> Unit, isLeft:
                     .shadow(1.dp)
                     .background(color = MaterialTheme.colorScheme.primary)
             ) {
-                Text(text = if(isLeft) "좌" else "우")
+                Text(text = if(isLeft) stringResource(R.string.connection_left) else stringResource(R.string.connection_right))
             }
             Column(
                 modifier = Modifier.weight(1f)
@@ -283,7 +287,7 @@ fun ConnectedDeviceItem(device: BleDevice, onClick: (BleDevice) -> Unit, isLeft:
                 contentDescription = "disconnect ble",
                 tint = Color(0xFF0000AA)
             )
-            Text(text = "연결해제")
+            Text(text = stringResource(R.string.connection_disconnect))
         }
     }
 }

@@ -29,7 +29,7 @@ import io.ssafy.mogeun.R
 fun AppInfoScreen(
 ) {
     val appInfoItems = listOf<AppInfoItem>(
-        AppInfoItem("앱 버전", "0.4.0")
+        AppInfoItem(stringResource(R.string.menu_app_version), "0.8.0")
     )
 
     Column(
