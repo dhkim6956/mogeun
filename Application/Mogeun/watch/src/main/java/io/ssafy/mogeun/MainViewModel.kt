@@ -32,7 +32,10 @@ class MainViewModel(
     var execName = mutableStateOf<String?>(null)
     var timerString = mutableStateOf<String?>(null)
     var setEnded: MutableLiveData<Boolean> = MutableLiveData(false)
+    var messageReceived: MutableLiveData<Boolean> = MutableLiveData(false)
     var routineEnded = mutableStateOf(false)
+    var messageString = mutableStateOf<String?>(null)
+    val progress = mutableStateOf(0.1f)
 
     fun startSet() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -48,6 +51,14 @@ class MainViewModel(
 
     fun resetSetEnded() {
         setEnded.value = false
+    }
+
+    fun resetMessageReceived() {
+        messageReceived.value = false
+    }
+
+    fun clearMessage() {
+        messageString.value = null
     }
 
     override fun onMessageReceived(messageEvent: MessageEvent) {
@@ -67,6 +78,15 @@ class MainViewModel(
             routineEnded.value = true
             execName.value = null
             timerString.value = null
+            progress.value = 0.1f
+        }
+        else if (messageEvent.path == MOGEUN_SEND_MESSAGE_PATH) {
+            messageString.value = messageEvent.data.decodeToString()
+            messageReceived.value = true
+        }
+        else if (messageEvent.path == MOGEUN_SEND_Progress_PATH) {
+            val msg = messageEvent.data.decodeToString()
+            progress.value = msg.toFloat()
         }
     }
 
@@ -80,6 +100,8 @@ class MainViewModel(
         private const val MOGEUN_SET_ENDED_PATH = "/mogeun_set_ended"
         private const val MOGEUN_ROUTINE_STARTED_PATH = "/mogeun_routine_started"
         private const val MOGEUN_ROUTINE_ENDED_PATH = "/mogeun_routine_ended"
+        private const val MOGEUN_SEND_MESSAGE_PATH = "/mogeun_send_message"
+        private const val MOGEUN_SEND_Progress_PATH = "/mogeun_send_progress"
         private const val MOGEUN_ROUTINE_START_SET_PATH = "/mogeun_start_set"
         private const val MOGEUN_ROUTINE_END_SET_PATH = "/mogeun_end_set"
 

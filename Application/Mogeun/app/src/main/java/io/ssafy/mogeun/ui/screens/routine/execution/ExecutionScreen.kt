@@ -231,6 +231,7 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
                         Spacer(modifier = Modifier.height(12.dp))
                     }
                 }
+                viewModel.noticeProgress(pagerState.currentPage + 1, routineSize)
                 RoutineProgress(pagerState.currentPage + 1, routineSize, elapsedTime, {openEndDialog = true}, routineState.setInProgress, {coroutineScope.launch { pagerState.scrollToPage(pagerState.currentPage - 1) }}, {coroutineScope.launch { pagerState.scrollToPage(pagerState.currentPage + 1) }}, routineSize, pagerState.currentPage)
 
                 SensorBottomSheet(state = routineState.showBottomSheet, hide = viewModel::hideBottomSheet, navToConnection = {navController.navigate("Connection")}, sensorState = sensorState, sensingPart = routineState.planList!!.data[pagerState.currentPage].mainPart.imagePath)

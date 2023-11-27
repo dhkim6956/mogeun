@@ -340,6 +340,7 @@ class ExecutionViewModel(
                         calFatigueSlope()
                 }
                 dataLayerRepository.noticeEndOfSet()
+                sendMessage("테스트 메시지")
             }
         }
     }
@@ -566,6 +567,19 @@ class ExecutionViewModel(
         }
     }
 
+    fun sendMessage(message: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            dataLayerRepository.sendMessage(message)
+        }
+    }
+
+    fun noticeProgress(current: Int, total: Int) {
+        val progressFloat: Float = current.toFloat() / total.toFloat()
+        viewModelScope.launch(Dispatchers.IO) {
+            dataLayerRepository.noticeProgress("$progressFloat")
+        }
+    }
+
     private val _setControl = MutableStateFlow(0)
     val setControl = _setControl.asStateFlow()
 
@@ -621,6 +635,8 @@ class ExecutionViewModel(
         private const val MOGEUN_SET_ENDED_PATH = "/mogeun_set_ended"
         private const val MOGEUN_ROUTINE_STARTED_PATH = "/mogeun_routine_started"
         private const val MOGEUN_ROUTINE_ENDED_PATH = "/mogeun_routine_ended"
+        private const val MOGEUN_SEND_MESSAGE_PATH = "/mogeun_send_message"
+        private const val MOGEUN_SEND_Progress_PATH = "/mogeun_send_progress"
         private const val MOGEUN_ROUTINE_START_SET_PATH = "/mogeun_start_set"
         private const val MOGEUN_ROUTINE_END_SET_PATH = "/mogeun_end_set"
     }
