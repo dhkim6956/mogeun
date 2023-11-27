@@ -554,6 +554,18 @@ class ExecutionViewModel(
         }
     }
 
+    fun noticeStartOfRoutine() {
+        viewModelScope.launch(Dispatchers.IO) {
+            dataLayerRepository.noticeStartOfRoutine()
+        }
+    }
+
+    fun noticeEndOfRoutine() {
+        viewModelScope.launch(Dispatchers.IO) {
+            dataLayerRepository.noticeEndOfRoutine()
+        }
+    }
+
     private val _setControl = MutableStateFlow(0)
     val setControl = _setControl.asStateFlow()
 
@@ -607,6 +619,8 @@ class ExecutionViewModel(
         private const val MOGEUN_EXERCISE_NAME_MESSAGE_PATH = "/mogeun_routine_name"
         private const val MOGEUN_ROUTINE_TIMER_MESSAGE_PATH = "/mogeun_routine_timer"
         private const val MOGEUN_SET_ENDED_PATH = "/mogeun_set_ended"
+        private const val MOGEUN_ROUTINE_STARTED_PATH = "/mogeun_routine_started"
+        private const val MOGEUN_ROUTINE_ENDED_PATH = "/mogeun_routine_ended"
         private const val MOGEUN_ROUTINE_START_SET_PATH = "/mogeun_start_set"
         private const val MOGEUN_ROUTINE_END_SET_PATH = "/mogeun_end_set"
     }

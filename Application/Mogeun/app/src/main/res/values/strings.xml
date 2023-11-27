@@ -115,7 +115,6 @@
     <string name="execution_procedure_time">진행 시간</string>
     <string name="execution_connect_sensor">센서 연결</string>
     <string name="execution_close">닫기</string>
-    <string name="execution_routine_ended">루틴 종료됨</string>
     <string name="execution_start_routine">루틴을 시작합니다.</string>
     <string name="execution_routine_ended_msg">루틴이 종료되었습니다.</string>
     <string name="execution_routine_canceled_msg">루틴이 취소되었습니다.</string>

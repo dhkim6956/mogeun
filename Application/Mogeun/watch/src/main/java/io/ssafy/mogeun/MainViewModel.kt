@@ -32,6 +32,7 @@ class MainViewModel(
     var execName = mutableStateOf<String?>(null)
     var timerString = mutableStateOf<String?>(null)
     var setEnded: MutableLiveData<Boolean> = MutableLiveData(false)
+    var routineEnded = mutableStateOf(false)
 
     fun startSet() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -58,7 +59,14 @@ class MainViewModel(
         }
         else if (messageEvent.path == MOGEUN_SET_ENDED_PATH) {
             setEnded.value = true
-            Log.d("observer", "set ended : $setEnded")
+        }
+        else if (messageEvent.path == MOGEUN_ROUTINE_STARTED_PATH) {
+            routineEnded.value = false
+        }
+        else if (messageEvent.path == MOGEUN_ROUTINE_ENDED_PATH) {
+            routineEnded.value = true
+            execName.value = null
+            timerString.value = null
         }
     }
 
@@ -70,6 +78,8 @@ class MainViewModel(
         private const val MOGEUN_EXERCISE_NAME_MESSAGE_PATH = "/mogeun_routine_name"
         private const val MOGEUN_ROUTINE_TIMER_MESSAGE_PATH = "/mogeun_routine_timer"
         private const val MOGEUN_SET_ENDED_PATH = "/mogeun_set_ended"
+        private const val MOGEUN_ROUTINE_STARTED_PATH = "/mogeun_routine_started"
+        private const val MOGEUN_ROUTINE_ENDED_PATH = "/mogeun_routine_ended"
         private const val MOGEUN_ROUTINE_START_SET_PATH = "/mogeun_start_set"
         private const val MOGEUN_ROUTINE_END_SET_PATH = "/mogeun_end_set"
 

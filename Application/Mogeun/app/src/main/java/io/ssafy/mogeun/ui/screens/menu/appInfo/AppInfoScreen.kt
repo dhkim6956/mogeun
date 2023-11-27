@@ -66,7 +66,7 @@ fun AppInfoScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .background(Color.White)
+                        .background(MaterialTheme.colorScheme.background)
                 ) {
                     Divider()
                     Row(

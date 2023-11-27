@@ -97,8 +97,6 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
         }
     }
 
-    val routineEnded = stringResource(R.string.execution_routine_ended)
-
     DisposableEffect(Unit) {
         messageClient.addListener(viewModel)
         coroutineScope.launch {
@@ -107,6 +105,7 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
             }.await()
             viewModel.getSetOfRoutine()
         }
+        viewModel.noticeStartOfRoutine()
         this.onDispose {
             viewModel.resetRoutine()
             messageClient.removeListener(viewModel)
@@ -114,8 +113,7 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
             coroutineScope.launch {
                 viewModel.deleteEmgData()
             }
-            viewModel.noticeTimer("00:00")
-            viewModel.noticeExerciseName(routineEnded)
+            viewModel.noticeEndOfRoutine()
         }
     }
 
