@@ -124,7 +124,7 @@ fun SummaryScreen(viewModel: SummaryViewModel = viewModel(factory = AppViewModel
         modifier = Modifier
             .fillMaxSize()
             .padding(
-                horizontal = 30.dp
+                horizontal = 12.dp
             )
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.End

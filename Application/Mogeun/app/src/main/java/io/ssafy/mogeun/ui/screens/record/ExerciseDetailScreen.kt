@@ -22,10 +22,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
@@ -39,10 +41,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,7 +68,9 @@ import io.ssafy.mogeun.ui.components.HorizontalPagerArrow
 import io.ssafy.mogeun.ui.components.FatigueLineGraph
 import io.ssafy.mogeun.ui.components.FatigueLineGraph2
 import io.ssafy.mogeun.ui.components.MuscleTooltipIcon
+import io.ssafy.mogeun.ui.screens.summary.lerp
 import kotlinx.coroutines.launch
+import kotlin.math.absoluteValue
 
 data class MuscleFatigue(
     val set: String,
@@ -97,7 +104,7 @@ fun ExerciseDetailScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 30.dp)
+                .padding(horizontal = 12.dp)
                 .padding(top = 10.dp)
         ) {
             val pagerState = rememberPagerState(
@@ -189,9 +196,13 @@ fun ExerciseDetail(
         if (!leftMuscleFatigueList.isNullOrEmpty() || !rightMuscleFatigueList.isNullOrEmpty())
             muscleFatigueList = listOf(leftMuscleFatigueList, rightMuscleFatigueList)
 
-        ElevatedGif(modifier = Modifier
+        Box (modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp), imgPath = exercise.imagePath)
+            .padding(horizontal = 1.dp)) {
+            ElevatedGif(modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp), imgPath = exercise.imagePath)
+        }
         Row(
             modifier = Modifier.padding(top = 10.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -240,59 +251,59 @@ fun MuscleFatigueCard(
     Column (
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.background,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .border(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(5.dp)
     ) {
-        Row(
-            Modifier
-                .wrapContentHeight()
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+        Column (
+            modifier = Modifier
+                .fillMaxWidth()
         ) {
-            val coroutineScope = rememberCoroutineScope()
+            Row(
+                Modifier
+                    .wrapContentHeight()
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                val coroutineScope = rememberCoroutineScope()
 
-            HorizontalPagerArrow(
-                modifier = Modifier
-                    .clickable {
-                        coroutineScope.launch {
-                            // Call scroll to on pagerState
-                            pagerState.animateScrollToPage(0)
-                        } },
-                size = 30.dp,
-                visible = pagerState.currentPage > 0,
-                direction = true
-            )
-            Text(nameList[pagerState.currentPage])
-            HorizontalPagerArrow(
-                modifier = Modifier
-                    .clickable {
-                        coroutineScope.launch {
-                            // Call scroll to on pagerState
-                            pagerState.animateScrollToPage(1)
-                        } },
-                size = 30.dp,
-                visible = pagerState.currentPage < 1,
-                direction = false
-            )
-        }
-        HorizontalPager(state = pagerState) { page ->
-            // Our page content
-            MuscleFatigueChart(muscleFatigueList[page])
+                HorizontalPagerArrow(
+                    modifier = Modifier
+                        .clickable {
+                            coroutineScope.launch {
+                                // Call scroll to on pagerState
+                                pagerState.animateScrollToPage(0)
+                            } },
+                    size = 30.dp,
+                    visible = pagerState.currentPage > 0,
+                    direction = true
+                )
+                Text(nameList[pagerState.currentPage])
+                HorizontalPagerArrow(
+                    modifier = Modifier
+                        .clickable {
+                            coroutineScope.launch {
+                                // Call scroll to on pagerState
+                                pagerState.animateScrollToPage(1)
+                            } },
+                    size = 30.dp,
+                    visible = pagerState.currentPage < 1,
+                    direction = false
+                )
+            }
+            HorizontalPager(
+                state = pagerState,
+            ) { page ->
+                // Our page content
+                MuscleFatigueChart(muscleFatigueList[page], pagerState, page)
+            }
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MuscleFatigueChart(
-    muscleFatigueList: MutableList<MuscleFatigue>
+    muscleFatigueList: MutableList<MuscleFatigue>,
+    pagerState: PagerState,
+    page: Int
 ) {
     var trendLineVal1: Float = 0f
     var trendLineVal2: Float = 0f
@@ -327,78 +338,126 @@ fun MuscleFatigueChart(
         }
     }
     else {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            val style = LineGraphStyle(
-                paddingValues = PaddingValues(5.dp),
-                visibility = LinearGraphVisibility(
-                    isHeaderVisible = true,
-                    isXAxisLabelVisible = true,
-                    isYAxisLabelVisible = true,
-                    isGridVisible = true,
-                    isCrossHairVisible = false
-                ),
-                colors = LinearGraphColors(
-                    lineColor = MaterialTheme.colorScheme.primary,
-                    pointColor = MaterialTheme.colorScheme.primary,
-                    clickHighlightColor = MaterialTheme.colorScheme.inversePrimary,
-                    fillGradient = null
-                ),
-                height = 200.dp,
-                yAxisLabelPosition = LabelPosition.LEFT
-            )
-            val style2 = LineGraphStyle(
-                paddingValues = PaddingValues(5.dp),
-                visibility = LinearGraphVisibility(
-                    isHeaderVisible = true,
-                    isXAxisLabelVisible = true,
-                    isYAxisLabelVisible = true,
-                    isGridVisible = true,
-                    isCrossHairVisible = false
-                ),
-                colors = LinearGraphColors(
-                    lineColor = Color.Black,
-                    pointColor = MaterialTheme.colorScheme.primary,
-                    clickHighlightColor = MaterialTheme.colorScheme.inversePrimary,
-                    fillGradient = null
-                ),
-                height = 200.dp,
-                yAxisLabelPosition = LabelPosition.LEFT
-            )
+        Column(
+            modifier = Modifier
+                .graphicsLayer {
+                val pageOffset = (
+                        (pagerState.currentPage - page) + pagerState
+                            .currentPageOffsetFraction
+                        )
 
-            if (muscleFatigueList.size == 1) {
-                val xAxisDataList = muscleFatigueList.map {
-                    GraphData.String(it.set)
+                alpha = lerp(
+                    start = 0.4f,
+                    stop = 1f,
+                    fraction = 1f - pageOffset.absoluteValue.coerceIn(0f, 1f),
+                )
+
+                cameraDistance = 8 * density
+                rotationY = lerp(
+                    start = 0f,
+                    stop = 40f,
+                    fraction = pageOffset.coerceIn(-1f, 1f),
+                )
+
+                lerp(
+                    start = 0.5f,
+                    stop = 1f,
+                    fraction = 1f - pageOffset.absoluteValue.coerceIn(0f, 1f),
+                ).also { scale ->
+                    scaleX = scale
+                    scaleY = scale
                 }
-                val yAxisDataList = listOf(0f, muscleFatigueList[0].num)
-                FatigueLineGraph(
-                    xAxisData = xAxisDataList,
-                    yAxisData = yAxisDataList,
-                    style = style
-                )
             }
-            else if (muscleFatigueList.size == 2) {
-                FatigueLineGraph(
-                    xAxisData = muscleFatigueList.map {
-                        GraphData.String(it.set)
-                    },
-                    yAxisData = muscleFatigueList.map {
-                        it.num
-                    },
-                    style = style
-                )
-            }
-            else {
-                FatigueLineGraph2(
-                    xAxisData = muscleFatigueList.map {
-                        GraphData.String(it.set)
-                    },
-                    yAxisData1 = muscleFatigueList.map {
-                        it.num
-                    },
-                    yAxisData2 = yAxisData2,
-                    style = style,
-                    style2 = style2
-                )
+        ) {
+            Column (
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(vertical = 8.dp, horizontal = 1.dp)
+                    .shadow(4.dp, shape = RoundedCornerShape(16.dp))
+                    .clip(RoundedCornerShape(16.dp))
+            ) {
+                Column(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    val style = LineGraphStyle(
+                        paddingValues = PaddingValues(5.dp),
+                        visibility = LinearGraphVisibility(
+                            isHeaderVisible = true,
+                            isXAxisLabelVisible = true,
+                            isYAxisLabelVisible = true,
+                            isGridVisible = true,
+                            isCrossHairVisible = false
+                        ),
+                        colors = LinearGraphColors(
+                            lineColor = MaterialTheme.colorScheme.primary,
+                            pointColor = MaterialTheme.colorScheme.primary,
+                            clickHighlightColor = MaterialTheme.colorScheme.inversePrimary,
+                            fillGradient = null
+                        ),
+                        height = 200.dp,
+                        yAxisLabelPosition = LabelPosition.LEFT
+                    )
+                    val style2 = LineGraphStyle(
+                        paddingValues = PaddingValues(5.dp),
+                        visibility = LinearGraphVisibility(
+                            isHeaderVisible = true,
+                            isXAxisLabelVisible = true,
+                            isYAxisLabelVisible = true,
+                            isGridVisible = true,
+                            isCrossHairVisible = false
+                        ),
+                        colors = LinearGraphColors(
+                            lineColor = Color.LightGray,
+                            pointColor = MaterialTheme.colorScheme.primary,
+                            clickHighlightColor = MaterialTheme.colorScheme.inversePrimary,
+                            fillGradient = null
+                        ),
+                        height = 200.dp,
+                        yAxisLabelPosition = LabelPosition.LEFT
+                    )
+
+                    if (muscleFatigueList.size == 1) {
+                        val xAxisDataList = muscleFatigueList.map {
+                            GraphData.String(it.set)
+                        }
+                        val yAxisDataList = listOf(0f, muscleFatigueList[0].num)
+                        FatigueLineGraph(
+                            xAxisData = xAxisDataList,
+                            yAxisData = yAxisDataList,
+                            style = style
+                        )
+                    }
+                    else if (muscleFatigueList.size == 2) {
+                        FatigueLineGraph(
+                            xAxisData = muscleFatigueList.map {
+                                GraphData.String(it.set)
+                            },
+                            yAxisData = muscleFatigueList.map {
+                                it.num
+                            },
+                            style = style
+                        )
+                    }
+                    else {
+                        FatigueLineGraph2(
+                            xAxisData = muscleFatigueList.map {
+                                GraphData.String(it.set)
+                            },
+                            yAxisData1 = muscleFatigueList.map {
+                                it.num
+                            },
+                            yAxisData2 = yAxisData2,
+                            style = style,
+                            style2 = style2
+                        )
+                    }
+                }
             }
         }
     }
@@ -415,6 +474,9 @@ fun SetDetail(
 
     Column (
         modifier = Modifier
+            .shadow(2.dp, RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(16.dp))
+            .padding(1.dp)
             .animateContentSize(
                 animationSpec = spring(
                     dampingRatio = Spring.DampingRatioNoBouncy,
@@ -426,50 +488,59 @@ fun SetDetail(
             modifier = Modifier
                 .clickable { expanded = !expanded },
         ) {
+            val configuration = LocalConfiguration.current
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
                     .background(
                         color = MaterialTheme.colorScheme.primaryContainer,
-                        shape = RoundedCornerShape(90.dp, 0.dp, 0.dp, 90.dp)
-                    )
-                    .border(
-                        width = 1.dp,
-                        color = Color.Black,
-                        shape = RoundedCornerShape(90.dp, 0.dp, 0.dp, 90.dp)
+                        shape = if (!expanded) RoundedCornerShape(
+                            90.dp,
+                            0.dp,
+                            0.dp,
+                            90.dp
+                        ) else RoundedCornerShape(16.dp, 0.dp, 0.dp, 0.dp)
                     ),
                 contentAlignment = Alignment.Center
             ) {
                 Text(setNum.toString() + "set")
             }
+            Spacer(
+                modifier = Modifier
+                    .width(1.dp)
+                    .height(24.dp)
+                    .background(color = Color.LightGray)
+            )
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
                     .background(
                         color = MaterialTheme.colorScheme.background
-                    )
-                    .border(
-                        width = 1.dp,
-                        color = Color.Black
                     ),
                 contentAlignment = Alignment.Center
             ) {
                 Text(setDetail.weight.toInt().toString() + "kg")
             }
+            Spacer(
+                modifier = Modifier
+                    .width(1.dp)
+                    .height(24.dp)
+                    .background(color = Color.LightGray)
+            )
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
                     .background(
                         color = MaterialTheme.colorScheme.background,
-                        shape = RoundedCornerShape(0.dp, 90.dp, 90.dp, 0.dp)
-                    )
-                    .border(
-                        width = 1.dp,
-                        color = Color.Black,
-                        shape = RoundedCornerShape(0.dp, 90.dp, 90.dp, 0.dp)
+                        shape = if (!expanded) RoundedCornerShape(
+                            0.dp,
+                            90.dp,
+                            90.dp,
+                            0.dp
+                        ) else RoundedCornerShape(0.dp, 16.dp, 0.dp, 0.dp)
                     ),
                 contentAlignment = Alignment.Center
             ) {
@@ -478,8 +549,10 @@ fun SetDetail(
                 else Text(setDetail.targetRep.toString() + "rep")
             }
         }
-        if (expanded && !setDetail.muscleActivity.isNullOrEmpty() && isAttached)
+        if (expanded && !setDetail.muscleActivity.isNullOrEmpty() && isAttached) {
+            Divider(thickness = 1.dp, color = Color.LightGray)
             MuscleActivity(setDetail.muscleActivity, muscleImagePaths[0])
+        }
     }
 }
 
@@ -499,9 +572,8 @@ fun MuscleActivity(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                vertical = 10.dp
-            ),
+            .background(color = MaterialTheme.colorScheme.background)
+            .wrapContentHeight(),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {

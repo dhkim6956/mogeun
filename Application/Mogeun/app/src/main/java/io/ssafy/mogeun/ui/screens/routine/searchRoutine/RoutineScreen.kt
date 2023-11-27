@@ -197,7 +197,7 @@ fun RoutineScreen(
                                 shape = RoundedCornerShape(10.dp)
                             )
                             .alpha(0.5f)
-                            .height(100.dp)
+                            .height(50.dp)
                             .clickable {
                                 navController.navigate("addexercise/${beforeScreen}/3")
                             }
@@ -243,7 +243,7 @@ fun RoutineList(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(8.dp)
+            .padding(vertical = 8.dp)
             .shadow(4.dp, shape = RoundedCornerShape(16.dp))
             .clip(RoundedCornerShape(16.dp))
     ) {

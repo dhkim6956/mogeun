@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -36,6 +37,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
@@ -85,9 +87,7 @@ fun RecordScreen(navController: NavHostController, snackbarHostState: SnackbarHo
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(
-                horizontal = 30.dp
-            ),
+            .padding(horizontal = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         CalenderUI(500, navController)
@@ -111,9 +111,9 @@ fun CalenderUI(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                vertical = 10.dp
-            )
+            .padding(10.dp)
+            .shadow(2.dp, RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(16.dp))
             .background(
                 color = MaterialTheme.colorScheme.primaryContainer,
                 shape = RoundedCornerShape(16.dp)
@@ -176,7 +176,7 @@ fun CalenderUI(
     Text("운동기록", fontSize=24.sp, fontWeight = FontWeight.Bold)
     LazyColumn (
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(top = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.dp)
@@ -347,38 +347,27 @@ fun RoutineRecord(
     reportKeyList: List<Int>,
     routineTimeList: List<String>
 ) {
-    Box (
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.background,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .border(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(
-                vertical = 10.dp,
-                horizontal = 10.dp
-            )
+            .wrapContentHeight()
+            .shadow(4.dp, shape = RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(16.dp))
             .clickable {
                 navController.currentBackStackEntry?.savedStateHandle?.set("reportKeyList", reportKeyList)
                 navController.currentBackStackEntry?.savedStateHandle?.set("routineTimeList", routineTimeList)
                 navController.navigate("RecordDetail/${routineKey}")
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        Row (
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column () {
-                Text(routineTime, fontWeight = FontWeight.Bold)
-                Text(routineName)
             }
+    ) {
+        Column(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .padding(8.dp)
+                .fillMaxWidth()
+                .wrapContentHeight()
+        ) {
+            Text(routineTime, fontWeight = FontWeight.Bold)
+            Text(routineName)
         }
     }
 }
