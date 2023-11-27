@@ -16,14 +16,10 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowLeft
 import androidx.compose.material.icons.filled.ArrowRight
-import androidx.compose.material3.AssistChipDefaults
-import androidx.compose.material3.ElevatedAssistChip
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,10 +29,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import io.ssafy.mogeun.R
 import io.ssafy.mogeun.ui.screens.routine.execution.ElapsedTime
 
 @Composable
@@ -102,7 +100,7 @@ fun RoutineProgress(page: Int, execCnt: Int, elapsedTime: ElapsedTime, endRoutin
                             .background(if (inProgress) Color.LightGray else MaterialTheme.colorScheme.primaryContainer)
                             .padding(8.dp)
                     ) {
-                        Text(text = "루틴종료", fontSize = 24.sp, textAlign = TextAlign.Center, lineHeight = 28.sp)
+                        Text(text = stringResource(R.string.execution_end_routine), fontSize = 24.sp, textAlign = TextAlign.Center, lineHeight = 28.sp)
                     }
                 }
             }
@@ -116,7 +114,7 @@ fun RoutineProgress(page: Int, execCnt: Int, elapsedTime: ElapsedTime, endRoutin
                 .zIndex(0f)
                 .padding(horizontal = 20.dp)
         ) {
-            Text("진행 시간 : ${elapsedTime.minute}분 ${elapsedTime.second}초", color = MaterialTheme.colorScheme.onPrimary, fontSize = 24.sp)
+            Text(stringResource(R.string.execution_procedure_time) +" : ${elapsedTime.minute}분 ${elapsedTime.second}초", color = MaterialTheme.colorScheme.onPrimary, fontSize = 24.sp)
         }
     }
 }

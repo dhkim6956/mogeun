@@ -27,11 +27,13 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import io.ssafy.mogeun.R
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -64,7 +66,7 @@ fun UserScreen(
                 .padding(start = 48.dp, top = 24.dp, end = 48.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            Text(text = "닉네임")
+            Text(text = stringResource(R.string.userInfo_nickname))
             TextField(
                 value = viewModel.nickname,
                 onValueChange = {
@@ -79,7 +81,7 @@ fun UserScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "신장 (cm)")
+            Text(text = stringResource(R.string.userInfo_height))
             TextField(
                 value = viewModel.height.toString(),
                 onValueChange = {
@@ -95,7 +97,7 @@ fun UserScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "체중 (kg)")
+            Text(text = stringResource(R.string.userInfo_weight))
             TextField(
                 value = viewModel.weight.toString(),
                 onValueChange = {
@@ -111,7 +113,7 @@ fun UserScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "골격근량 (kg)")
+            Text(text = stringResource(R.string.userInfo_muscle_mass))
             TextField(
                 value = viewModel.muscleMass.toString(),
                 onValueChange = {
@@ -127,7 +129,7 @@ fun UserScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "체지방량 (kg)")
+            Text(text = stringResource(R.string.userInfo_body_fat))
             TextField(
                 value = viewModel.bodyFat.toString(),
                 onValueChange = {
@@ -154,12 +156,12 @@ fun UserScreen(
                     },
                     modifier = Modifier
                         .background(
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.primary,
+                            shape = RoundedCornerShape(12.dp),
                         )
                         .width(200.dp)
                 ) {
-                    Text(text = "변경사항 수정")
+                    Text(text = stringResource(R.string.userInfo_save_changes))
                 }
             }
         }

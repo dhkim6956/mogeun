@@ -60,6 +60,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -129,7 +130,7 @@ fun ExerciseProgress(
                 .background(color = Color(0xFFDFEAFF))
         ) {
             SetOfRoutineRow(
-                setCntList.map { "$it 세트" },
+                setCntList.map { "$it " + stringResource(R.string.execution_set) },
                 selectedTab,
                 { index -> selectedTab = index },
                 inProgress,
@@ -222,13 +223,15 @@ fun ExerciseProgress(
                     TextButton(
                         enabled = !inProgress,
                         onClick = {
-                            if (selectedTab == totalSet - 1) selectedTab = totalSet - 2 // 문제발생가능
-                            removeSet(selectedTab + 1)
+                            if(totalSet > 1) {
+                                if (selectedTab == totalSet - 1) selectedTab = totalSet - 2
+                                removeSet(selectedTab + 1)
+                            }
                         },
                         modifier = Modifier
                             .wrapContentSize()
                     ) {
-                        Text(text = "세트 삭제")
+                        Text(text = stringResource(R.string.execution_remove_set))
                     }
                     Spacer(
                         modifier = Modifier
@@ -250,7 +253,7 @@ fun ExerciseProgress(
                             tint = if (!inProgress) Color(0xFF556FF7) else Color(0xFFDDDDDD),
                             modifier = Modifier.size(20.dp),
                         )
-                        Text(text = "시작", fontSize = 15.sp, textAlign = TextAlign.Center)
+                        Text(text = stringResource(R.string.execution_start), fontSize = 15.sp, textAlign = TextAlign.Center)
                     }
                     Row(
                         modifier = Modifier
@@ -275,7 +278,7 @@ fun ExerciseProgress(
                                 .size(21.dp)
                                 .padding(2.dp)
                         )
-                        Text(text = "종료")
+                        Text(text = stringResource(R.string.execution_end))
                     }
                 }
             }
@@ -602,7 +605,7 @@ fun EMGCollector(
                 .fillMaxWidth()
                 .height(24.dp)
         ) {
-            Text(text = "근 활성도")
+            Text(text = stringResource(R.string.execution_muscle_activity))
         }
         Row(
             modifier = Modifier
@@ -660,7 +663,7 @@ fun EMGCollector(
                 .fillMaxWidth()
                 .height(24.dp)
         ) {
-            Text(text = "근 피로도")
+            Text(text = stringResource(R.string.execution_muscle_fatigue))
         }
         
         Row(
@@ -675,7 +678,7 @@ fun EMGCollector(
                         .fillMaxSize()
                         .background(Color.White)
                 ) {
-                    Text(text = "세트를 진행해 주세요")
+                    Text(text = stringResource(R.string.execution_proceed_set))
                 }
             } else {
                 Box(modifier = Modifier
@@ -705,7 +708,7 @@ fun EMGCollector(
                 .height(40.dp)
                 .background(Color(0xFFDDE2FD)),
         ){
-            Text(String.format("개수 : ${planInfo.successRep}", emgUiState.emgAvg[0] % 90))
+            Text(String.format(stringResource(R.string.execution_count) + " : ${planInfo.successRep}", emgUiState.emgAvg[0] % 90))
         }
     }
 }

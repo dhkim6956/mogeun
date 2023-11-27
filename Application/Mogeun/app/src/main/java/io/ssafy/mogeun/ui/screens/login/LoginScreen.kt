@@ -62,7 +62,7 @@ fun LoginScreen(
     }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
-    var wrongInforText = stringResource(R.string.wrong_information)
+    var wrongInforText = stringResource(R.string.login_wrong_information)
     LaunchedEffect(viewModel.errorSignIn) {
         if (viewModel.errorSignIn == true) {
             snackbarHostState.showSnackbar(wrongInforText)
@@ -112,7 +112,7 @@ fun LoginScreen(
             Text(text = stringResource(R.string.service_name), fontSize = 60.sp, color = MaterialTheme.colorScheme.primary)
         }
         Column(modifier = Modifier.padding(28.dp)) {
-            Text(text = stringResource(R.string.id))
+            Text(text = stringResource(R.string.login_id))
             TextField(
                 value = viewModel.id,
                 onValueChange = { viewModel.updateText1(it) },
@@ -128,7 +128,7 @@ fun LoginScreen(
                 maxLines = 1
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = stringResource(R.string.password))
+            Text(text = stringResource(R.string.login_password))
             TextField(
                 value = viewModel.pwd,
                 onValueChange = { viewModel.updateText2(it) },
@@ -151,11 +151,11 @@ fun LoginScreen(
                     .height(52.dp),
                 shape = RoundedCornerShape(10.dp)
             ) {
-                Text(text = stringResource(R.string.login), color = MaterialTheme.colorScheme.scrim)
+                Text(text = stringResource(R.string.login_login), color = MaterialTheme.colorScheme.scrim)
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = stringResource(R.string.not_user),
+                text = stringResource(R.string.signup_not_user),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -167,7 +167,7 @@ fun LoginScreen(
                     .height(52.dp),
                 shape = RoundedCornerShape(10.dp)
             ) {
-                Text(text = stringResource(R.string.sign_up), color = MaterialTheme.colorScheme.scrim)
+                Text(text = stringResource(R.string.signup_sign_up), color = MaterialTheme.colorScheme.scrim)
             }
         }
     }

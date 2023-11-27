@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -71,11 +72,13 @@ fun RecordScreen(navController: NavHostController, snackbarHostState: SnackbarHo
     var exitCnt = 0
     val activity = (LocalContext.current as? Activity)
     val coroutineScope = rememberCoroutineScope()
+
+    val terminateMessage = stringResource(R.string.terminate_message)
     BackHandler {
         if(exitCnt == 0) {
             exitCnt++
             coroutineScope.launch {
-                snackbarHostState.showSnackbar("한번 더 누르면 앱이 종료됩니다.")
+                snackbarHostState.showSnackbar(terminateMessage)
             }
         } else {
             activity?.finish()
@@ -173,7 +176,7 @@ fun CalenderUI(
             },
         )
     }
-    Text("운동기록", fontSize=24.sp, fontWeight = FontWeight.Bold)
+    Text(stringResource(R.string.record_exercise_record), fontSize=24.sp, fontWeight = FontWeight.Bold)
     LazyColumn (
         modifier = Modifier
             .fillMaxWidth()
@@ -364,8 +367,14 @@ fun RoutineRecord(
                 horizontal = 10.dp
             )
             .clickable {
-                navController.currentBackStackEntry?.savedStateHandle?.set("reportKeyList", reportKeyList)
-                navController.currentBackStackEntry?.savedStateHandle?.set("routineTimeList", routineTimeList)
+                navController.currentBackStackEntry?.savedStateHandle?.set(
+                    "reportKeyList",
+                    reportKeyList
+                )
+                navController.currentBackStackEntry?.savedStateHandle?.set(
+                    "routineTimeList",
+                    routineTimeList
+                )
                 navController.navigate("RecordDetail/${routineKey}")
             },
         contentAlignment = Alignment.Center

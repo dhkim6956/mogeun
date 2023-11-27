@@ -76,8 +76,8 @@ fun MenuScreen(
     snackbarHostState: SnackbarHostState
 ) {
     val openAlertDialog = remember { mutableStateOf(false) }
-    val withdrawalText = stringResource(R.string.withdrawal_complete)
-    val invalidInfoText = stringResource(R.string.invalid_information)
+    val withdrawalText = stringResource(R.string.menu_withdrawal_complete)
+    val invalidInfoText = stringResource(R.string.userInfo_invalid_information)
     LaunchedEffect(viewModel.deleteUserSuccess) {
         if (viewModel.deleteUserSuccess == true) {
             navController.navigate("Splash")
@@ -106,16 +106,16 @@ fun MenuScreen(
 
     val userMenus: List<MenuItemInfo> = listOf(
         MenuItemInfo(
-            stringResource(R.string.modify_information),
-            stringResource(R.string.modify_personal_information),
+            stringResource(R.string.userInfo_modify_information),
+            stringResource(R.string.menu_modify_personal_information),
             Icons.Default.ManageAccounts,
             {navController.navigate("User")},
             Color(0xFFFFF0C9),
             Position.Top
         ),
         MenuItemInfo(
-            stringResource(R.string.logout),
-            stringResource(R.string.logout_service),
+            stringResource(R.string.menu_logout),
+            stringResource(R.string.menu_logout_service),
             Icons.Default.Logout,
             {
                 viewModel.deleteUserKey()
@@ -125,8 +125,8 @@ fun MenuScreen(
             Position.Mid
         ),
         MenuItemInfo(
-            stringResource(R.string.membership_withdrawal),
-            stringResource(R.string.want_stop_service),
+            stringResource(R.string.menu_membership_withdrawal),
+            stringResource(R.string.menu_want_stop_service),
             Icons.Default.GroupOff,
             {openAlertDialog.value = true},
             Color(0xFFFFC9C9),
@@ -136,8 +136,8 @@ fun MenuScreen(
 
     val serviceMenus: List<MenuItemInfo> = listOf(
         MenuItemInfo(
-            stringResource(R.string.interworking_equipment),
-            stringResource(R.string.connect_device),
+            stringResource(R.string.menu_interworking_equipment),
+            stringResource(R.string.menu_connect_device),
             Icons.Default.BluetoothSearching,
             {navController.navigate("Connection")},
             Color(0xFFC9E2FF),
@@ -147,8 +147,8 @@ fun MenuScreen(
 
     val appMenus: List<MenuItemInfo> = listOf(
         MenuItemInfo(
-            stringResource(R.string.google_assessment),
-            stringResource(R.string.leave_eview),
+            stringResource(R.string.menu_google_assessment),
+            stringResource(R.string.menu_leave_review),
             Icons.Default.RateReview,
             {
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=io.ssafy.mogeun"))
@@ -160,7 +160,7 @@ fun MenuScreen(
         ),
         MenuItemInfo(
             stringResource(R.string.app_setting),
-            stringResource(R.string.theme_sensor),
+            stringResource(R.string.menu_theme_sensor),
             Icons.Default.Settings,
             {
                 navController.navigate(Screen.Setting.route)
@@ -170,7 +170,7 @@ fun MenuScreen(
         ),
         MenuItemInfo(
             stringResource(R.string.app_information),
-            stringResource(R.string.version_contact),
+            stringResource(R.string.menu_version_contact),
             Icons.Default.Info,
             {
                 navController.navigate(Screen.AppInfo.route)
@@ -185,13 +185,13 @@ fun MenuScreen(
             .fillMaxSize()
     ) {
         stickyHeader {
-            LazyHeader(stringResource(R.string.member_information))
+            LazyHeader(stringResource(R.string.userInfo_member_information))
         }
         item() {
             LazyLists(userMenus)
         }
         stickyHeader {
-            LazyHeader(stringResource(R.string.service_interworking))
+            LazyHeader(stringResource(R.string.menu_service_interworking))
         }
         item() {
             LazyLists(serviceMenus)
@@ -214,7 +214,7 @@ fun MenuScreen(
                     viewModel.deleteUser()
                     openAlertDialog.value = false
                 },
-                dialogTitle = stringResource(R.string.enter_membership_information),
+                dialogTitle = stringResource(R.string.menu_enter_membership_information),
                 icon = Icons.Default.Info
             )
         }
@@ -370,7 +370,7 @@ fun AlertDialogExample(
         },
         text = {
             Column {
-                Text(text = stringResource(R.string.id))
+                Text(text = stringResource(R.string.login_id))
                 TextField(
                     value = viewModel.username,
                     onValueChange = { viewModel.updateId(it) },
@@ -383,7 +383,7 @@ fun AlertDialogExample(
                     )
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = stringResource(R.string.password))
+                Text(text = stringResource(R.string.login_password))
                 TextField(
                     value = viewModel.pw,
                     onValueChange = { viewModel.updatePw(it) },
@@ -404,7 +404,7 @@ fun AlertDialogExample(
             TextButton(
                 onClick = { onConfirmation() }
             ) {
-                Text(stringResource(R.string.withdrawal))
+                Text(stringResource(R.string.menu_withdrawal))
             }
         },
         dismissButton = {
