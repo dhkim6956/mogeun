@@ -52,6 +52,8 @@ class ExecutionViewModel(
     MessageClient.OnMessageReceivedListener {
 
     var userKey by mutableStateOf<Int?>(null)
+    var fatigueList: MutableList<List<Double>> = mutableListOf()
+
     fun getUserKey() {
         viewModelScope.launch(Dispatchers.IO) {
             val key = keyRepository.getKey()
@@ -331,6 +333,11 @@ class ExecutionViewModel(
                     )
 
                     Log.d("report", "report set : $ret3")
+
+                    fatigueList.add(fatigues)
+                    Log.d("fatigueList", fatigueList.toString())
+                    if (fatigueList.size > 2)
+                        calFatigueSlope()
                 }
             }
             dataLayerRepository.noticeEndOfSet()
@@ -560,6 +567,35 @@ class ExecutionViewModel(
                 2
             }
         }
+    }
+
+    private fun calFatigueSlope() {
+        var trendLineVal1: MutableList<Float> = mutableListOf()
+        var trendLineVal2 = 0f
+        var trendLineVal3: MutableList<Float> = mutableListOf()
+        var trendLineVal4 = 0f
+        trendLineVal1.add(0f)
+        trendLineVal1.add(0f)
+        trendLineVal3.add(0f)
+        trendLineVal3.add(0f)
+        for (i in 1 .. fatigueList.size) {
+            trendLineVal1[0] += i * fatigueList[i - 1][0].toFloat()
+            trendLineVal1[1] += i * fatigueList[i - 1][1].toFloat()
+            trendLineVal2 += i
+            trendLineVal3[0] += fatigueList[i - 1][0].toFloat()
+            trendLineVal3[1] += fatigueList[i - 1][1].toFloat()
+            trendLineVal4 += i * i
+        }
+        val a1 = fatigueList.size * trendLineVal1[0]
+        val a2 = fatigueList.size * trendLineVal1[1]
+        val b1 = trendLineVal2 * trendLineVal3[0]
+        val b2 = trendLineVal2 * trendLineVal3[1]
+        val c = fatigueList.size * trendLineVal4
+        val d  = trendLineVal2 * trendLineVal2
+        val m1 = (a1 - b1) / (c - d)
+        val m2 = (a2 - b2) / (c - d)
+        Log.d("Left Slope", m1.toString())
+        Log.d("Right Slope", m2.toString())
     }
 
     companion object {
