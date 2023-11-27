@@ -41,12 +41,15 @@ import io.ssafy.mogeun.ui.rootScreen
 
 @Composable
 fun Navigation(
-    setTheme: (useDynamic: Boolean, useSystemSetting: Boolean, useDarkMode: Boolean) -> Unit
+    setTheme: (useDynamic: Boolean, useSystemSetting: Boolean, useDarkMode: Boolean) -> Unit,
+    enableDarkMode: Int
 ) {
     val snackbarHostState = remember{ SnackbarHostState() }
 
     val navController: NavHostController = rememberNavController()
     val navBackStackEntry = navController.currentBackStackEntryAsState()
+
+    val darkmode = isSystemInDarkTheme() || enableDarkMode == 1
 
     val screens = arrayOf(Screen.ExplainExercise, Screen.AddRoutine, Screen.RecordDetail, Screen.ExerciseDetail, Screen.AddExercise, Screen.Execution)
     val currentRoute = navBackStackEntry.value?.destination?.route
@@ -60,7 +63,7 @@ fun Navigation(
     }
     Scaffold (
         topBar = {
-            TopBar(navController, currentScreen)
+            TopBar(navController, currentScreen, darkmode)
         },
         bottomBar = {
             BottomBar(navController, currentScreen)
@@ -74,7 +77,7 @@ fun Navigation(
             .padding(innerPadding)
             .background(
                 brush = Brush.verticalGradient(
-                    if (isSystemInDarkTheme()) listOf(Color.Black, Color(0xFF452703)) else listOf(Color.White, Color(0xFFFFF7F7)),
+                    if (darkmode) listOf(Color.Black, Color(0xFF452703)) else listOf(Color.White, Color(0xFFFFF7F7)),
                     startY = 100f,
                     endY = 800f
                 ),
@@ -89,7 +92,7 @@ fun Navigation(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(navController: NavHostController, currentScreen: Screen) {
+fun TopBar(navController: NavHostController, currentScreen: Screen, darkmode: Boolean) {
     AnimatedVisibility(
         visible = currentScreen.topBarState.visibility,
         enter = slideInVertically(initialOffsetY = { -it }),
@@ -107,7 +110,7 @@ fun TopBar(navController: NavHostController, currentScreen: Screen) {
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.White
+                containerColor = if(darkmode) Color.Black else Color.White
             )
         )
     }

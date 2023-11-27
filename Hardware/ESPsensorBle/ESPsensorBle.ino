@@ -162,7 +162,7 @@ void loop() {
               }
             } else {
               int sendValue = ret - ref;
-              Serial.println(ret);
+              Serial.println(sendValue);
               sendData(sendValue);
             }
         }

@@ -35,6 +35,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -245,7 +246,7 @@ fun LazyHeader(title: String) {
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .background(Color(0xFFF7F7F7))
+                .background(MaterialTheme.colorScheme.background)
         ) {
             Box(
                 modifier = Modifier
@@ -289,7 +290,7 @@ fun LazyList(menu: MenuItemInfo) {
             modifier = Modifier
                 .wrapContentHeight()
                 .fillMaxWidth()
-                .background(color = Color(0xFFFFF4ED))
+                .background(color = MaterialTheme.colorScheme.surface)
         ) {
             if(menu.position != Position.Top && menu.position != Position.Single)
                 Divider(
