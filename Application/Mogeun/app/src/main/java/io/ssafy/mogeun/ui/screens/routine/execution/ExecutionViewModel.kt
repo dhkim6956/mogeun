@@ -339,7 +339,7 @@ class ExecutionViewModel(
 
                     fatigueList.add(fatigues)
                     Log.d("fatigueList", fatigueList.toString())
-                    if (fatigueList.size > 1)
+                    if (fatigueList.size > 2)
                         calFatigueSlope()
                 }
                 dataLayerRepository.noticeEndOfSet()
@@ -626,7 +626,7 @@ class ExecutionViewModel(
         Log.d("Left Slope", m1.toString())
         Log.d("Right Slope", m2.toString())
         fatigueVal = if (m1 > m2) m1 else m2
-//        if (fatigueVal > 7)
+        if (fatigueVal > 7)
             fatigueWarning = true
     }
 
