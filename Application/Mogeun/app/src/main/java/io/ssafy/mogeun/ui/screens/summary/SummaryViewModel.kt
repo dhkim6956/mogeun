@@ -59,7 +59,8 @@ class SummaryViewModel(
     private val _summarySuccess = MutableStateFlow(false)
     val summarySuccess: StateFlow<Boolean> = _summarySuccess.asStateFlow()
 
-    var itemIndex = mutableIntStateOf(0)
+    var summaryIndex = mutableIntStateOf(0)
+    var muscleIndex = mutableIntStateOf(0)
 
     private fun updateUserKey(update: Int?) {
         userKey= update

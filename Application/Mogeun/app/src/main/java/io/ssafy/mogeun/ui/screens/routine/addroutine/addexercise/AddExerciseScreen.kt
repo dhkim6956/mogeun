@@ -46,8 +46,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.SelectableChipColors
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -115,7 +118,7 @@ fun AddExerciseScreen(
                 FilterChip(
                     selected = selectedMusclePart == musclePart,
                     onClick = { selectedMusclePart = musclePart },
-                    label = { Text(musclePart) }
+                    label = { Text(musclePart) },
                 )
             }
         }
@@ -134,12 +137,8 @@ fun AddExerciseScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(88.dp)
-                        .border(
-                            width = 2.dp,
-                            color = MaterialTheme.colorScheme.primary,
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .padding(16.dp)
+                        .shadow(4.dp, shape = RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(16.dp))
                         .clickable {
                             if (isSelected) {
                                 selectedExercises = selectedExercises - exercise.key
@@ -149,7 +148,10 @@ fun AddExerciseScreen(
                         }
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(color = MaterialTheme.colorScheme.background)
+                            .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Log.d("exercise.imagePath", "${exercise.imagePath}")

@@ -127,7 +127,6 @@
     <string name="execution_no_sensor_connected">연결된 센서가 없습니다.</string>
     <string name="execution_would_you_like_to_start">센서 없이 루틴을 진행하시겠습니까?</string>
     <string name="terminate_message">한번 더 누르면 앱이 종료됩니다.</string>
-    <string name="record_exercise_record">운동기록</string>
     <string name="record_detail_executed_set">수행한 세트</string>
     <string name="record_detail_exercise_time">운동한 시간</string>
     <string name="record_detail_using_muscle">사용 근육</string>
