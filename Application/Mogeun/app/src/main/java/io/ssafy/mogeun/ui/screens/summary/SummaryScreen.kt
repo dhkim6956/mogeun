@@ -202,7 +202,7 @@ fun BodyInfoSummaryCard(bodyInfo: BodyInfo?) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(2.dp, RoundedCornerShape(16.dp))
+            .shadow(4.dp, RoundedCornerShape(16.dp))
             .clip(RoundedCornerShape(16.dp)),
         contentAlignment = Alignment.Center
     ) {
@@ -356,7 +356,7 @@ fun ExerciseSummaryCard(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .shadow(2.dp, RoundedCornerShape(16.dp))
+                .shadow(4.dp, RoundedCornerShape(16.dp))
                 .clip(RoundedCornerShape(16.dp)),
             contentAlignment = Alignment.Center
         ) {
@@ -474,7 +474,7 @@ fun MuscleSummaryCard(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(2.dp, RoundedCornerShape(16.dp))
+            .shadow(4.dp, RoundedCornerShape(16.dp))
             .clip(RoundedCornerShape(16.dp)),
         contentAlignment = Alignment.Center
     ) {
