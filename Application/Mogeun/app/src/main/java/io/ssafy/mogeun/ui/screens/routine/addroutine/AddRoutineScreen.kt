@@ -29,6 +29,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
@@ -91,17 +93,16 @@ fun ExerciseList(item: ListMyExerciseResponseData, navController:NavHostControll
     val imageResId = context.resources.getIdentifier("x_${item.imagePath}", "drawable", context.packageName)
     Box(
         modifier = Modifier
-            .background(color = Color.White)
             .fillMaxWidth()
-            .height(88.dp)
-            .border(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(16.dp)
+            .shadow(4.dp, shape = RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(16.dp))
     ) {
-        Row(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = MaterialTheme.colorScheme.background)
+                .padding(16.dp)
+        ) {
             GlideImage(
                 imageModel = { imageResId },
                 imageOptions = ImageOptions(
