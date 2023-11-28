@@ -86,6 +86,19 @@ dependencies {
     implementation(libs.compose.ui.tooling)
     // icons
     implementation(libs.androidx.compose.material.icon.extended)
+    // DataStore
+    implementation(libs.androidx.datastore)
+    // Ongoing Activity.
+    implementation("androidx.wear:wear-ongoing:1.0.0-beta01")
+    // Lifecycle components
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-common-java8:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
+    implementation("androidx.lifecycle:lifecycle-service:2.6.2")
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
 
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

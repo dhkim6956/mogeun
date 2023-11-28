@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
@@ -15,6 +16,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.MessageEvent
 import io.ssafy.mogeun.data.DataLayerRepository
+import io.ssafy.mogeun.data.WorkoutRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,9 +26,13 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(
     private val dataLayerRepository: DataLayerRepository,
+    private val workoutRepository: WorkoutRepository
 ):
     ViewModel(),
     MessageClient.OnMessageReceivedListener {
+
+    val activeWalkingWorkoutFlow = workoutRepository.activeWorkoutFlow.asLiveData()
+    val walkingPointsFlow = workoutRepository.walkingPointsFlow.asLiveData()
 
 
     var execName = mutableStateOf<String?>(null)
@@ -109,7 +115,8 @@ class MainViewModel(
             initializer {
                 val savedStateHandle = createSavedStateHandle()
                 val dataLayerRepository = (this[APPLICATION_KEY] as MogeunApplication).container.dataLayerRepository
-                MainViewModel(dataLayerRepository = dataLayerRepository)
+                val workoutRepository = (this[APPLICATION_KEY] as MogeunApplication).container.workoutRepository
+                MainViewModel(dataLayerRepository = dataLayerRepository, workoutRepository = workoutRepository)
             }
         }
     }

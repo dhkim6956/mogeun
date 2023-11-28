@@ -4,6 +4,8 @@ import android.content.Context
 
 interface AppContainer {
     val dataLayerRepository: DataLayerRepository
+    val workoutDataStore: WorkoutDataStore
+    val workoutRepository: WorkoutRepository
 }
 
 class DefaultAppContainer(private val context: Context): AppContainer {
@@ -11,4 +13,11 @@ class DefaultAppContainer(private val context: Context): AppContainer {
         AndroidDataLayerRepository(context)
     }
 
+    override val workoutDataStore: WorkoutDataStore by lazy {
+        WorkoutDataStore(context)
+    }
+
+    override val workoutRepository: WorkoutRepository by lazy {
+        WorkoutRepository(workoutDataStore)
+    }
 }
