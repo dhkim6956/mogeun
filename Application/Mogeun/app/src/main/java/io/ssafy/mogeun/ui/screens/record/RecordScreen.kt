@@ -3,9 +3,11 @@ package io.ssafy.mogeun.ui.screens.record
 import android.app.Activity
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,8 +21,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -51,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import co.yml.charts.common.extensions.isNotNull
 import com.kizitonwose.calendar.compose.CalendarLayoutInfo
 import com.kizitonwose.calendar.compose.CalendarState
 import com.kizitonwose.calendar.compose.HorizontalCalendar
@@ -63,9 +68,12 @@ import com.kizitonwose.calendar.core.nextMonth
 import com.kizitonwose.calendar.core.previousMonth
 import io.ssafy.mogeun.R
 import io.ssafy.mogeun.ui.AppViewModelProvider
+import io.ssafy.mogeun.ui.screens.menu.menu.LazyHeader
+import io.ssafy.mogeun.ui.screens.summary.BodyInfoSummaryCard
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.YearMonth
 
 @Composable
@@ -89,14 +97,14 @@ fun RecordScreen(navController: NavHostController, snackbarHostState: SnackbarHo
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 12.dp),
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         CalenderUI(500, navController)
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CalenderUI(
     adjacentMonths: Long = 500,
@@ -114,7 +122,7 @@ fun CalenderUI(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(10.dp)
+            .padding(12.dp)
             .shadow(2.dp, RoundedCornerShape(16.dp))
             .clip(RoundedCornerShape(16.dp))
             .background(
@@ -176,34 +184,37 @@ fun CalenderUI(
             },
         )
     }
-    Text(stringResource(R.string.record_exercise_record), fontSize=24.sp, fontWeight = FontWeight.Bold)
-    LazyColumn (
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 10.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(20.dp)
-    ) {
-        val date = selection?.date
-        val routineLists = routines[date.toString()].orEmpty()
-        var reportKeyList: MutableList<Int> = mutableListOf()
-        var routineTimeList: MutableList<String> = mutableListOf()
+    if (selection.isNotNull())
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            stickyHeader {
+                LazyHeader(selection?.date.toString())
+            }
+            val date = selection?.date
+            val routineLists = routines[date.toString()].orEmpty()
+            var reportKeyList: MutableList<Int> = mutableListOf()
+            var routineTimeList: MutableList<String> = mutableListOf()
 
-        for (record in viewModel.recordList) {
-            val routineReports = record.routineReports.sortedBy { it.startTime }
-            for (routine in routineReports) {
-                reportKeyList.add(routine.key)
-                routineTimeList.add(routine.startTime.split("T")[1].split(".")[0] + " ~ " + routine.endTime.split("T")[1].split(".")[0])
+            for (record in viewModel.recordList) {
+                val routineReports = record.routineReports.sortedBy { it.startTime }
+                for (routine in routineReports) {
+                    reportKeyList.add(routine.key)
+                    routineTimeList.add(routine.startTime.split("T")[1].split(".")[0] + " ~ " + routine.endTime.split("T")[1].split(".")[0])
+                }
+            }
+
+            if (!routineLists.isEmpty()) {
+                val routineReports = routineLists[0].routineReports.sortedBy { it.startTime }
+                items(items = routineReports) { routineReport ->
+                    RoutineRecord(navController, routineReport.key, routineReport.startTime.split("T")[1].split(".")[0] + " ~ " + routineReport.endTime.split("T")[1].split(".")[0], routineReport.routineName, reportKeyList, routineTimeList)
+                }
             }
         }
-
-        if (!routineLists.isEmpty()) {
-            val routineReports = routineLists[0].routineReports.sortedBy { it.startTime }
-            items(items = routineReports) { routineReport ->
-                RoutineRecord(navController, routineReport.key, routineReport.startTime.split("T")[1].split(".")[0] + " ~ " + routineReport.endTime.split("T")[1].split(".")[0], routineReport.routineName, reportKeyList, routineTimeList)
-            }
-        }
-    }
+    else
+        Text("")
 }
 
 @Composable
@@ -353,6 +364,7 @@ fun RoutineRecord(
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(12.dp)
             .wrapContentHeight()
             .shadow(4.dp, shape = RoundedCornerShape(16.dp))
             .clip(RoundedCornerShape(16.dp))

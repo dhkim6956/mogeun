@@ -127,7 +127,6 @@
     <string name="execution_no_sensor_connected">there is no sensor available</string>
     <string name="execution_would_you_like_to_start">would you like to start routine without sensor</string>
     <string name="terminate_message">press one more time to exit app</string>
-    <string name="record_exercise_record">exercise record</string>
     <string name="record_detail_executed_set">executed set</string>
     <string name="record_detail_exercise_time">exercise time</string>
     <string name="record_detail_using_muscle">using muscle</string>

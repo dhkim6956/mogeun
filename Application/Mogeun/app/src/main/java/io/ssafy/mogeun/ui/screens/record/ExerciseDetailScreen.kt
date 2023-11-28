@@ -69,7 +69,6 @@ import io.ssafy.mogeun.ui.components.HorizontalPagerArrow
 import io.ssafy.mogeun.ui.components.FatigueLineGraph
 import io.ssafy.mogeun.ui.components.FatigueLineGraph2
 import io.ssafy.mogeun.ui.components.MuscleTooltipIcon
-import io.ssafy.mogeun.ui.screens.summary.lerp
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
@@ -853,4 +852,8 @@ fun Dialog2(onDismissRequest: () -> Unit) {
             }
         }
     }
+}
+
+fun lerp(start: Float, stop: Float, fraction: Float): Float {
+    return (1 - fraction) * start + fraction * stop
 }

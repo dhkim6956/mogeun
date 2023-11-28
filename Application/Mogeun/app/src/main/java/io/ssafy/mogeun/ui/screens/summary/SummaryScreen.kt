@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.PagerState
@@ -54,6 +55,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -80,10 +82,13 @@ import io.ssafy.mogeun.model.PerformedMuscleInfo
 import io.ssafy.mogeun.ui.AppViewModelProvider
 import io.ssafy.mogeun.ui.components.HorizontalPagerArrow
 import io.ssafy.mogeun.ui.components.BodyLineGraph
+import io.ssafy.mogeun.ui.screens.menu.menu.LazyHeader
+import io.ssafy.mogeun.ui.screens.menu.menu.LazyLists
 import kotlinx.coroutines.launch
 import java.lang.Math.sin
 import kotlin.math.absoluteValue
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SummaryScreen(viewModel: SummaryViewModel = viewModel(factory = AppViewModelProvider.Factory), snackbarHostState: SnackbarHostState) {
     var exitCnt = 0
@@ -120,68 +125,46 @@ fun SummaryScreen(viewModel: SummaryViewModel = viewModel(factory = AppViewModel
     if (summaryBodyInfoSuccess && summaryPerformedMuscleSuccess && summaryExerciseMostSuccess && summaryExerciseWeightSuccess && summaryExerciseSetSuccess)
         viewModel.updateSummarySuccess()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                horizontal = 12.dp
-            )
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.End
-    ) {
-        if (summarySuccess) {
-            Text("체지방&골격근량 그래프", modifier = Modifier.align(Alignment.Start), fontSize=18.sp, fontWeight = FontWeight.Bold)
-            Spacer(
-                modifier = Modifier
-                    .height(5.dp)
-                    .background(color = MaterialTheme.colorScheme.primaryContainer)
-            )
-            BodyInfoSummaryCard(viewModel.summaryBodyInfo)
-            Spacer(
-                modifier = Modifier
-                    .height(30.dp)
-                    .background(color = MaterialTheme.colorScheme.primaryContainer)
-            )
-            Box (
-                modifier = Modifier
+    if (summarySuccess) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            stickyHeader {
+                LazyHeader("체지방&골격근량 그래프")
+            }
+            item() {
+                Box (modifier = Modifier
                     .fillMaxWidth()
-                    .background(
-                        color = MaterialTheme.colorScheme.primary
+                    .padding(12.dp)) {
+                    BodyInfoSummaryCard(viewModel.summaryBodyInfo)
+                }
+            }
+            stickyHeader {
+                LazyHeader("운동 요약")
+            }
+            item() {
+                Box (modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp)) {
+                    ExerciseSummaryCard(
+                        viewModel.summaryExerciseMost[viewModel.summaryIndex.value],
+                        viewModel.summaryExerciseWeight[viewModel.summaryIndex.value],
+                        viewModel.summaryExerciseSet[viewModel.summaryIndex.value],
+                        viewModel
                     )
-                    .height(2.dp)
-            ) {
-                Text("")
+                }
             }
-            Spacer(
-                modifier = Modifier
-                    .height(30.dp)
-                    .background(color = MaterialTheme.colorScheme.primaryContainer)
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Bottom
-            ) {
-                Text("운동 요약", fontSize=18.sp, fontWeight = FontWeight.Bold)
-                SummaryDropdown(viewModel)
+            stickyHeader {
+                LazyHeader("사용 근육 분포")
             }
-            Spacer(
-                modifier = Modifier
-                    .height(5.dp)
-                    .background(color = MaterialTheme.colorScheme.primaryContainer)
-            )
-            ExerciseSummaryCard(
-                viewModel.summaryExerciseMost[viewModel.itemIndex.value],
-                viewModel.summaryExerciseWeight[viewModel.itemIndex.value],
-                viewModel.summaryExerciseSet[viewModel.itemIndex.value]
-            )
-            Spacer(
-                modifier = Modifier
-                    .height(10.dp)
-                    .background(color = MaterialTheme.colorScheme.primaryContainer)
-            )
-            Text("사용 근육 분포", modifier = Modifier.align(Alignment.Start), fontSize=18.sp, fontWeight = FontWeight.Bold)
-            MuscleSummaryCard(viewModel.summaryPerformedMuscle[viewModel.itemIndex.value])
+            item() {
+                Box (modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp)) {
+                    MuscleSummaryCard(viewModel.summaryPerformedMuscle[viewModel.muscleIndex.value], viewModel)
+                }
+            }
         }
     }
 }
@@ -219,26 +202,10 @@ fun BodyInfoSummaryCard(bodyInfo: BodyInfo?) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.background,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .border(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(
-                vertical = 10.dp,
-                horizontal = 10.dp
-            ),
+            .shadow(4.dp, RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(16.dp)),
         contentAlignment = Alignment.Center
     ) {
-        val pagerState = rememberPagerState(pageCount = {
-            2
-        })
-        val nameList = listOf("체지방 변화량", "골격근 변화량")
-
         BodyInfoSummary(bodyLogList)
     }
 }
@@ -251,7 +218,12 @@ fun BodyInfoSummary(bodyLog: List<MutableList<BodyLog>>) {
         }
     }
     else {
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(10.dp)
+        ) {
             val style = LineGraphStyle(
                 paddingValues = PaddingValues(5.dp),
                 visibility = LinearGraphVisibility(
@@ -293,14 +265,39 @@ fun BodyInfoSummary(bodyLog: List<MutableList<BodyLog>>) {
 
             Row(
                 modifier = Modifier
+                    .fillMaxWidth()
                     .padding(top = 10.dp)
-                    .height(25.dp)
+                    .height(30.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                clickedValue.value?.let {
-                    Text(
-                        text = "${it.first}: ${it.second}kg",
-                        fontWeight = FontWeight.SemiBold
-                    )
+                Box (modifier = Modifier.fillMaxWidth(0.7f)) {
+                    clickedValue.value?.let{
+                        Text(
+                            text = "${it.first}: ${it.second}kg",
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+                Column {
+                    Row (verticalAlignment = Alignment.CenterVertically) {
+                        Spacer(
+                            modifier = Modifier
+                                .width(15.dp)
+                                .height(4.dp)
+                                .background(color = MaterialTheme.colorScheme.secondary)
+                        )
+                        Text("체지방", fontSize = 10.sp)
+                    }
+                    Row (verticalAlignment = Alignment.CenterVertically) {
+                        Spacer(
+                            modifier = Modifier
+                                .width(15.dp)
+                                .height(4.dp)
+                                .background(color = MaterialTheme.colorScheme.tertiary)
+                        )
+                        Text("골격근", fontSize = 10.sp)
+                    }
                 }
             }
             BodyLineGraph(
@@ -337,7 +334,8 @@ data class SummaryCard(
 fun ExerciseSummaryCard(
     mostPerformedExercise: MostPerformedExercise?,
     mostWeightedExercise: MostWeightedExercise?,
-    mostSetExercise: MostSetExercise?
+    mostSetExercise: MostSetExercise?,
+    viewModel: SummaryViewModel
 ) {
     if (mostPerformedExercise.isNotNull() && mostWeightedExercise.isNotNull() && mostSetExercise.isNotNull()) {
         val SummaryCardList = listOf(
@@ -358,19 +356,8 @@ fun ExerciseSummaryCard(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    color = MaterialTheme.colorScheme.background,
-                    shape = RoundedCornerShape(16.dp)
-                )
-                .border(
-                    width = 2.dp,
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(16.dp)
-                )
-                .padding(
-                    vertical = 10.dp,
-                    horizontal = 10.dp
-                ),
+                .shadow(4.dp, RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(16.dp)),
             contentAlignment = Alignment.Center
         ) {
             val pagerState = rememberPagerState(pageCount = {
@@ -378,7 +365,14 @@ fun ExerciseSummaryCard(
             })
             val nameList = listOf("가장 많이 한 운동", "가장 높은 무게를 기록한 운동", "가장 많은 세트를 수행한 운동")
 
-            Column {
+            Column (
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(10.dp),
+                horizontalAlignment = Alignment.End
+            ) {
+                Dropdown(viewModel, 0)
                 Row(
                     Modifier
                         .wrapContentHeight()
@@ -473,34 +467,30 @@ fun ExerciseSummary(
 }
 
 @Composable
-fun MuscleSummaryCard(muscleInfoList: List<PerformedMuscleInfo>?) {
+fun MuscleSummaryCard(
+    muscleInfoList: List<PerformedMuscleInfo>?,
+    viewModel: SummaryViewModel
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.background,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .border(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(
-                vertical = 10.dp,
-                horizontal = 10.dp
-            ),
+            .shadow(4.dp, RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(16.dp)),
         contentAlignment = Alignment.Center
     ) {
         if (muscleInfoList.isNullOrEmpty())
             Text("운동 기록이 없습니다.")
-        else
-            MuscleSummary(muscleInfoList!!)
+        else {
+            MuscleSummary(muscleInfoList!!, viewModel)
+        }
     }
 }
 
 @Composable
-fun MuscleSummary(exercises: List<PerformedMuscleInfo>) {
+fun MuscleSummary(
+    exercises: List<PerformedMuscleInfo>,
+    viewModel: SummaryViewModel
+) {
     val yStepSize = 9
     var map: MutableMap<String, Float> = mutableMapOf(
         "가슴" to 0f, "등" to 0f, "허벅지" to 0f, "어깨" to 0f, "이두" to 0f, "삼두" to 0f, "승모근" to 0f, "종아리" to 0f, "복근" to 0f
@@ -552,25 +542,36 @@ fun MuscleSummary(exercises: List<PerformedMuscleInfo>) {
         chartData = barChartdata,
         xAxisData = xAxisData,
         yAxisData = yAxisData,
+        backgroundColor = MaterialTheme.colorScheme.background,
         showYAxis = false,
-        barStyle = BarStyle(selectionHighlightData = null),
+        barStyle = BarStyle(
+            barWidth = 15.dp,
+            paddingBetweenBars = 30.dp,
+            selectionHighlightData = null
+        ),
         barChartType = BarChartType.VERTICAL,
         paddingEnd = 0.dp
     )
 
-    Box (modifier = Modifier
-        .fillMaxWidth()
+    Box (
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(10.dp)
     ) {
-        BarChart(
-            modifier = Modifier
-                .height(200.dp),
-            barChartData = barChartData
-        )
+        Column (horizontalAlignment = Alignment.End) {
+            Dropdown(viewModel, 1)
+            BarChart(
+                modifier = Modifier
+                    .height(200.dp),
+                barChartData = barChartData
+            )
+        }
     }
 }
 
 @Composable
-fun SummaryDropdown(viewModel: SummaryViewModel) {
+fun Dropdown(viewModel: SummaryViewModel, type: Int) {
     val listItems = arrayOf("전체", "올해", "이번 달")
 
     // state of the menu
@@ -583,28 +584,22 @@ fun SummaryDropdown(viewModel: SummaryViewModel) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
-            .border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .background(
-                color = MaterialTheme.colorScheme.background,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(5.dp)
+            .background(color = MaterialTheme.colorScheme.background)
             .clickable {
                 expanded = true
                 itemIconIndex = if (itemIconIndex == 0) 1
                 else 0
             }
     ) {
-        Row {
+        Row (
+            modifier = Modifier
+                .padding(5.dp)
+        ) {
             Text(item)
             Spacer(
                 modifier = Modifier
                     .width(5.dp)
-                    .background(color = MaterialTheme.colorScheme.primaryContainer)
+                    .background(color = MaterialTheme.colorScheme.background)
             )
             Image(
                 painter = painterResource(id = itemIconList[itemIconIndex]),
@@ -621,7 +616,8 @@ fun SummaryDropdown(viewModel: SummaryViewModel) {
                 expanded = false
                 itemIconIndex = if (itemIconIndex == 0) 1
                 else 0
-            }
+            },
+            modifier = Modifier.background(color = MaterialTheme.colorScheme.background)
         ) {
             // adding items
             listItems.forEachIndexed { itemIndex, itemValue ->
@@ -630,7 +626,10 @@ fun SummaryDropdown(viewModel: SummaryViewModel) {
                         expanded = false
                         disabledItem = itemIndex
                         item = itemValue
-                        viewModel.itemIndex.value = itemIndex
+                        when (type) {
+                            0 -> viewModel.summaryIndex.value = itemIndex
+                            1 -> viewModel.muscleIndex.value = itemIndex
+                        }
                         itemIconIndex = if (itemIconIndex == 0) 1
                         else 0
                     },
@@ -658,101 +657,4 @@ fun IndeterminateCircularIndicator(viewModel: SummaryViewModel) {
             trackColor = MaterialTheme.colorScheme.primary,
         )
     }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun TestScreen(
-    bodyInfo: BodyInfo?
-) {
-    val pageCount = 3
-    val rotateDegree = 15F
-    val pagerState = rememberPagerState(pageCount = {
-        pageCount
-    })
-
-    val widthWeight = 0.9F
-    val configuration = LocalConfiguration.current
-    val pageSize = PageSize.Fixed(pageSize = (configuration.screenWidthDp * widthWeight).dp)
-    val horizontalContentPadding = (configuration.screenWidthDp * (1F - widthWeight) / 2).dp
-    val pageSpacing = 10.dp
-
-    HorizontalPager(
-        modifier = Modifier.fillMaxSize(),
-        state = pagerState,
-        pageSize = pageSize,
-        contentPadding = PaddingValues(horizontal = horizontalContentPadding),
-        pageSpacing = pageSpacing,
-    ) { page ->
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Card(
-                page = page,
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .height(300.dp)
-                    .graphicsLayer {
-                        val pageOffset = pagerState.offsetForPage(page)
-
-                        rotationZ = -rotateDegree * pageOffset
-
-                        val distance = (configuration.screenWidthDp.dp / 2) - pageSpacing
-                        val height = sin(Math.toRadians(rotateDegree.toDouble())) * distance.toPx()
-
-                        translationY = (height * pageOffset.absoluteValue).toFloat()
-
-                        alpha = lerp(
-                            start = 0.8F,
-                            stop = 1F,
-                            fraction = 1F - pageOffset.absoluteValue.coerceIn(0F, 1F)
-                        )
-                    },
-                bodyInfo = bodyInfo
-            )
-        }
-    }
-}
-
-@Composable
-fun Card(page: Int, modifier: Modifier = Modifier, bodyInfo: BodyInfo?) {
-    Surface(
-        modifier = modifier
-            .shadow(2.dp, RoundedCornerShape(16.dp))
-            .clip(RoundedCornerShape(16.dp)),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        val bodyFatChangeLog = bodyInfo?.bodyFatChangeLog?.reversed()
-        var bodyFatLog: MutableList<BodyLog> = mutableListOf()
-        var index = 0
-        bodyFatChangeLog?.map {
-            val time = it.changedTime.split("T")[0]
-            val timeSplit = time.split("-")
-            bodyFatLog.add(index, BodyLog(it.bodyFat, timeSplit[0] + "년 " + timeSplit[1] + "월 " + timeSplit[2] + "일"))
-            index++
-        }
-
-        val muscleMassChangeLog = bodyInfo?.muscleMassChangeLog?.reversed()
-        var muscleMassLog: MutableList<BodyLog> = mutableListOf()
-        index = 0
-        muscleMassChangeLog?.map {
-            val time = it.changedTime.split("T")[0]
-            val timeSplit = time.split("-")
-            muscleMassLog.add(index, BodyLog(it.muscleMass, timeSplit[0] + "년 " + timeSplit[1] + "월 " + timeSplit[2] + "일"))
-            index++
-        }
-
-        val bodyLogList = listOf(bodyFatLog, muscleMassLog)
-
-        Box(modifier = Modifier.fillMaxSize()) {
-            BodyInfoSummary(bodyLogList)
-        }
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-fun PagerState.offsetForPage(page: Int) = (currentPage - page) + currentPageOffsetFraction
-
-fun lerp(start: Float, stop: Float, fraction: Float): Float {
-    return (1 - fraction) * start + fraction * stop
 }
