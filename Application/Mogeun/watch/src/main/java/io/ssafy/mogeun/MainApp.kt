@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
@@ -20,6 +21,8 @@ import androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.ButtonDefaults
+import androidx.wear.compose.material.Card
+import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.PositionIndicator
@@ -33,10 +36,19 @@ import io.ssafy.mogeun.components.RoutineNameChip
 import io.ssafy.mogeun.ui.theme.MogeunTheme
 
 @Composable
-fun MainApp(execName: String?, timerString: String?, onStart: ()->Unit, onStop: ()->Unit) {
+fun MainApp(execName: String?, timerString: String?, messageString: String?, onStart: ()->Unit, onStop: ()->Unit, clearMsg: () -> Unit, progress: Float) {
 
     MogeunTheme {
         val listState = rememberScalingLazyListState()
+
+        CircularProgressIndicator(
+            progress = progress,
+            modifier = Modifier.fillMaxSize(),
+            startAngle = 290f,
+            endAngle = 250f,
+            strokeWidth = 2.dp
+        )
+
         Scaffold(
             timeText = {
                 TimeText(modifier = Modifier.scrollAway(listState))
@@ -63,7 +75,7 @@ fun MainApp(execName: String?, timerString: String?, onStart: ()->Unit, onStop: 
                     .fillMaxSize()
             ) {
                 item {
-                    RoutineNameChip(text = execName?:"세트를 시작해 주세요")
+                    RoutineNameChip(text = execName?:"루틴을 시작해 주세요")
                 }
                 item {
                     Row(
@@ -95,6 +107,13 @@ fun MainApp(execName: String?, timerString: String?, onStart: ()->Unit, onStop: 
                                 contentDescription = null,
                             )
 
+                        }
+                    }
+                }
+                if(!messageString.isNullOrEmpty()) {
+                    item {
+                        Card(onClick = clearMsg) {
+                            Text(text = "$messageString", overflow = TextOverflow.Ellipsis, maxLines = 2)
                         }
                     }
                 }

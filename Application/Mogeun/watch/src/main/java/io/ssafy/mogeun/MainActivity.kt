@@ -11,6 +11,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -46,7 +47,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MainApp(mainViewModel.execName.value, mainViewModel.timerString.value, mainViewModel::startSet, mainViewModel::stopSet)
+            MainApp(mainViewModel.execName.value, mainViewModel.timerString.value, mainViewModel.messageString.value, mainViewModel::startSet, mainViewModel::stopSet, mainViewModel::clearMessage, mainViewModel.progress.value)
         }
 
         val setObserver = Observer<Boolean> { setEnded ->
@@ -55,8 +56,15 @@ class MainActivity : ComponentActivity() {
                 mainViewModel.resetSetEnded()
             }
         }
+        val messageObserver = Observer<Boolean> { setEnded ->
+            if(setEnded) {
+                vibrate(500)
+                mainViewModel.resetMessageReceived()
+            }
+        }
 
         mainViewModel.setEnded.observe(this, setObserver)
+        mainViewModel.messageReceived.observe(this, messageObserver)
     }
 
     override fun onResume() {
@@ -69,13 +77,13 @@ class MainActivity : ComponentActivity() {
         messageClient.removeListener(mainViewModel)
     }
 
-    private fun vibrate() {
+    private fun vibrate(time: Long = 1000) {
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE))
+            vibrator.vibrate(VibrationEffect.createOneShot(time, VibrationEffect.DEFAULT_AMPLITUDE))
         } else {
             @Suppress("DEPRECATION")
-            vibrator.vibrate(1000)
+            vibrator.vibrate(time)
         }
     }
 }

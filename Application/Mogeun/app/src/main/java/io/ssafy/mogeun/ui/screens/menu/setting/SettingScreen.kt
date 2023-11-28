@@ -204,7 +204,7 @@ fun LazyList(menu: MenuItemInfo) {
             modifier = Modifier
                 .wrapContentHeight()
                 .fillMaxWidth()
-                .background(color = MaterialTheme.colorScheme.secondaryContainer)
+                .background(color = MaterialTheme.colorScheme.surface)
         ) {
             if(menu.position != Position.Top && menu.position != Position.Single)
                 Divider(

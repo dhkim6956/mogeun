@@ -52,6 +52,8 @@ class ExecutionViewModel(
     MessageClient.OnMessageReceivedListener {
 
     var userKey by mutableStateOf<Int?>(null)
+    var fatigueList: MutableList<List<Double>> = mutableListOf()
+
     fun getUserKey() {
         viewModelScope.launch(Dispatchers.IO) {
             val key = keyRepository.getKey()
@@ -331,9 +333,15 @@ class ExecutionViewModel(
                     )
 
                     Log.d("report", "report set : $ret3")
+
+                    fatigueList.add(fatigues)
+                    Log.d("fatigueList", fatigueList.toString())
+                    if (fatigueList.size > 2)
+                        calFatigueSlope()
                 }
+                dataLayerRepository.noticeEndOfSet()
+                sendMessage("테스트 메시지")
             }
-            dataLayerRepository.noticeEndOfSet()
         }
     }
 
@@ -547,6 +555,31 @@ class ExecutionViewModel(
         }
     }
 
+    fun noticeStartOfRoutine() {
+        viewModelScope.launch(Dispatchers.IO) {
+            dataLayerRepository.noticeStartOfRoutine()
+        }
+    }
+
+    fun noticeEndOfRoutine() {
+        viewModelScope.launch(Dispatchers.IO) {
+            dataLayerRepository.noticeEndOfRoutine()
+        }
+    }
+
+    fun sendMessage(message: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            dataLayerRepository.sendMessage(message)
+        }
+    }
+
+    fun noticeProgress(current: Int, total: Int) {
+        val progressFloat: Float = current.toFloat() / total.toFloat()
+        viewModelScope.launch(Dispatchers.IO) {
+            dataLayerRepository.noticeProgress("$progressFloat")
+        }
+    }
+
     private val _setControl = MutableStateFlow(0)
     val setControl = _setControl.asStateFlow()
 
@@ -562,6 +595,35 @@ class ExecutionViewModel(
         }
     }
 
+    private fun calFatigueSlope() {
+        var trendLineVal1: MutableList<Float> = mutableListOf()
+        var trendLineVal2 = 0f
+        var trendLineVal3: MutableList<Float> = mutableListOf()
+        var trendLineVal4 = 0f
+        trendLineVal1.add(0f)
+        trendLineVal1.add(0f)
+        trendLineVal3.add(0f)
+        trendLineVal3.add(0f)
+        for (i in 1 .. fatigueList.size) {
+            trendLineVal1[0] += i * fatigueList[i - 1][0].toFloat()
+            trendLineVal1[1] += i * fatigueList[i - 1][1].toFloat()
+            trendLineVal2 += i
+            trendLineVal3[0] += fatigueList[i - 1][0].toFloat()
+            trendLineVal3[1] += fatigueList[i - 1][1].toFloat()
+            trendLineVal4 += i * i
+        }
+        val a1 = fatigueList.size * trendLineVal1[0]
+        val a2 = fatigueList.size * trendLineVal1[1]
+        val b1 = trendLineVal2 * trendLineVal3[0]
+        val b2 = trendLineVal2 * trendLineVal3[1]
+        val c = fatigueList.size * trendLineVal4
+        val d  = trendLineVal2 * trendLineVal2
+        val m1 = (a1 - b1) / (c - d)
+        val m2 = (a2 - b2) / (c - d)
+        Log.d("Left Slope", m1.toString())
+        Log.d("Right Slope", m2.toString())
+    }
+
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L
         private const val TAG = "datalayer"
@@ -571,6 +633,10 @@ class ExecutionViewModel(
         private const val MOGEUN_EXERCISE_NAME_MESSAGE_PATH = "/mogeun_routine_name"
         private const val MOGEUN_ROUTINE_TIMER_MESSAGE_PATH = "/mogeun_routine_timer"
         private const val MOGEUN_SET_ENDED_PATH = "/mogeun_set_ended"
+        private const val MOGEUN_ROUTINE_STARTED_PATH = "/mogeun_routine_started"
+        private const val MOGEUN_ROUTINE_ENDED_PATH = "/mogeun_routine_ended"
+        private const val MOGEUN_SEND_MESSAGE_PATH = "/mogeun_send_message"
+        private const val MOGEUN_SEND_Progress_PATH = "/mogeun_send_progress"
         private const val MOGEUN_ROUTINE_START_SET_PATH = "/mogeun_start_set"
         private const val MOGEUN_ROUTINE_END_SET_PATH = "/mogeun_end_set"
     }

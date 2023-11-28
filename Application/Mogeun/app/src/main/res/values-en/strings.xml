@@ -116,7 +116,6 @@
     <string name="execution_procedure_time">timer</string>
     <string name="execution_connect_sensor">connect sensor</string>
     <string name="execution_close">close</string>
-    <string name="execution_routine_ended">routine ended</string>
     <string name="execution_start_routine">start routine</string>
     <string name="execution_routine_ended_msg">routine has ended</string>
     <string name="execution_routine_canceled_watch_msg">routine canceled</string>

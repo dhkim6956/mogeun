@@ -63,8 +63,8 @@ class UserViewModel(
             ret = UserRepository.updateUser(
                 userKey,
                 nickname,
-                height?.toDouble(),
                 weight?.toDouble(),
+                height?.toDouble(),
                 muscleMass?.toDouble(),
                 bodyFat?.toDouble()             //문제발생가능
             )

@@ -97,8 +97,6 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
         }
     }
 
-    val routineEnded = stringResource(R.string.execution_routine_ended)
-
     DisposableEffect(Unit) {
         messageClient.addListener(viewModel)
         coroutineScope.launch {
@@ -107,6 +105,7 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
             }.await()
             viewModel.getSetOfRoutine()
         }
+        viewModel.noticeStartOfRoutine()
         this.onDispose {
             viewModel.resetRoutine()
             messageClient.removeListener(viewModel)
@@ -114,8 +113,7 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
             coroutineScope.launch {
                 viewModel.deleteEmgData()
             }
-            viewModel.noticeTimer("00:00")
-            viewModel.noticeExerciseName(routineEnded)
+            viewModel.noticeEndOfRoutine()
         }
     }
 
@@ -233,6 +231,7 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
                         Spacer(modifier = Modifier.height(12.dp))
                     }
                 }
+                viewModel.noticeProgress(pagerState.currentPage + 1, routineSize)
                 RoutineProgress(pagerState.currentPage + 1, routineSize, elapsedTime, {openEndDialog = true}, routineState.setInProgress, {coroutineScope.launch { pagerState.scrollToPage(pagerState.currentPage - 1) }}, {coroutineScope.launch { pagerState.scrollToPage(pagerState.currentPage + 1) }}, routineSize, pagerState.currentPage)
 
                 SensorBottomSheet(state = routineState.showBottomSheet, hide = viewModel::hideBottomSheet, navToConnection = {navController.navigate("Connection")}, sensorState = sensorState, sensingPart = routineState.planList!!.data[pagerState.currentPage].mainPart.imagePath)

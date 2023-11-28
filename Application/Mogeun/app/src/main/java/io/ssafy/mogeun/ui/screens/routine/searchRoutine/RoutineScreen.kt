@@ -119,16 +119,18 @@ fun RoutineScreen(
                     text = "${viewModel.username}",
                     fontSize = 24.sp,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    color = Color.Black
                 )
                 Text(
                     text = stringResource(R.string.routine_hello),
                     textAlign = TextAlign.Start,
                     modifier = Modifier.weight(1f),
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
+                    color = Color.Black
                 )
                 IconButton(onClick = { navController.navigate("User") }) {
-                    Icon(imageVector = Icons.Default.DriveFileRenameOutline, "edit user info")
+                    Icon(imageVector = Icons.Default.DriveFileRenameOutline, "edit user info", tint = Color.Black)
                 }
             }
             Column(
@@ -144,9 +146,9 @@ fun RoutineScreen(
                     Row(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(text = stringResource(R.string.userInfo_muscle_mass))
+                        Text(text = stringResource(R.string.userInfo_muscle_mass), color = Color.Black)
                         Spacer(modifier = Modifier.weight(1f))
-                        Text(text = "${viewModel.muscleMass.toString()} kg")
+                        Text(text = "${viewModel.muscleMass.toString()} kg", color = Color.Black)
 
                     }
                     Divider(
@@ -160,9 +162,9 @@ fun RoutineScreen(
                     Row(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(text = stringResource(R.string.userInfo_body_fat))
+                        Text(text = stringResource(R.string.userInfo_body_fat), color = Color.Black)
                         Spacer(modifier = Modifier.weight(1f))
-                        Text(text = "${viewModel.bodyFat.toString()} kg")
+                        Text(text = "${viewModel.bodyFat.toString()} kg", color = Color.Black)
 
                     }
                     Divider(
