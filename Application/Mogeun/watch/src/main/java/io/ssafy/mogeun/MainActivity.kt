@@ -41,6 +41,9 @@ import io.ssafy.mogeun.ui.theme.MogeunTheme
 class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels { MainViewModel.Factory }
     private val messageClient by lazy { Wearable.getMessageClient(this) }
+
+    private var pointText = "temp"
+
     private val vibrator: Vibrator by lazy {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             getSystemService(Vibrator::class.java)
@@ -92,7 +95,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MainApp(mainViewModel.execName.value, mainViewModel.timerString.value, mainViewModel.messageString.value, mainViewModel::startSet, mainViewModel::stopSet, mainViewModel::clearMessage, mainViewModel.progress.value)
+            MainApp(mainViewModel.execName.value, mainViewModel.timerString.value, mainViewModel.messageString.value, mainViewModel::startSet, mainViewModel::stopSet, mainViewModel::clearMessage, mainViewModel.progress.value, {onClickWorkout()}, pointText)
         }
 
         val setObserver = Observer<Boolean> { setEnded ->
@@ -110,6 +113,16 @@ class MainActivity : ComponentActivity() {
 
         mainViewModel.setEnded.observe(this, setObserver)
         mainViewModel.messageReceived.observe(this, messageObserver)
+
+        mainViewModel.walkingPointsFlow.observe(this) { points ->
+            walkingPoints = points
+            updateOutput(walkingPoints)
+        }
+
+        mainViewModel.activeWalkingWorkoutFlow.observe(this) { active ->
+            Log.d("workout", "Workout Status changed: $activeWalkingWorkout")
+            activeWalkingWorkout = active
+        }
     }
 
     override fun onStart() {
@@ -137,7 +150,7 @@ class MainActivity : ComponentActivity() {
         messageClient.removeListener(mainViewModel)
     }
 
-    fun onClickWorkout(view: View) {
+    fun onClickWorkout() {
         Log.d("workout", "onClickWalkingWorkout()")
         if (activeWalkingWorkout) {
             foregroundOnlyWalkingWorkoutService?.stopWalkingWorkout()
@@ -149,6 +162,8 @@ class MainActivity : ComponentActivity() {
     private fun updateOutput(points: Int) {
         Log.d("workout", "updateOutput()")
         val output = "포인트 : $points"
+        Log.d("workout", "points: $points")
+        pointText = output
     }
 
     private fun vibrate(time: Long = 1000) {

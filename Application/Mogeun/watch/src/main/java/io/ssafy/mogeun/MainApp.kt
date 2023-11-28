@@ -36,7 +36,7 @@ import io.ssafy.mogeun.components.RoutineNameChip
 import io.ssafy.mogeun.ui.theme.MogeunTheme
 
 @Composable
-fun MainApp(execName: String?, timerString: String?, messageString: String?, onStart: ()->Unit, onStop: ()->Unit, clearMsg: () -> Unit, progress: Float) {
+fun MainApp(execName: String?, timerString: String?, messageString: String?, onStart: ()->Unit, onStop: ()->Unit, clearMsg: () -> Unit, progress: Float, onclick: () -> Unit, point: String) {
 
     MogeunTheme {
         val listState = rememberScalingLazyListState()
@@ -115,6 +115,15 @@ fun MainApp(execName: String?, timerString: String?, messageString: String?, onS
                         Card(onClick = clearMsg) {
                             Text(text = "$messageString", overflow = TextOverflow.Ellipsis, maxLines = 2)
                         }
+                    }
+                }
+                item{
+                    Text(text = point)
+
+                }
+                item {
+                    Button(onClick = onclick) {
+                        Text("시작")
                     }
                 }
             }

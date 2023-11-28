@@ -120,7 +120,7 @@ class ForegroundOnlyWorkoutService: LifecycleService() {
     }
 
     private fun notForegroundService() {
-        stopForeground(true)
+        stopForeground(STOP_FOREGROUND_REMOVE)
         serviceRunningInForeground = false
         configurationChange = false
     }
@@ -168,7 +168,7 @@ class ForegroundOnlyWorkoutService: LifecycleService() {
         for (walkingPoints in 0 until 100) {
             if (serviceRunningInForeground) {
                 val notification = generateNotification(
-                    "포인트"
+                    "$walkingPoints 포인트 획득"
                 )
                 notificationManager.notify(NOTIFICATION_ID, notification)
             }
@@ -189,7 +189,7 @@ class ForegroundOnlyWorkoutService: LifecycleService() {
         //      4. Build and issue the notification
 
         // 0. Get data (note, the main notification text comes from the parameter above).
-        val titleText = "알림 제목"
+        val titleText = "운동"
 
         // 1. Create Notification Channel.
         val notificationChannel = NotificationChannel(
@@ -212,7 +212,7 @@ class ForegroundOnlyWorkoutService: LifecycleService() {
         cancelIntent.putExtra(EXTRA_CANCEL_WORKOUT_FROM_NOTIFICATION, true)
 
         val servicePendingIntent = PendingIntent.getService(
-            this, 0, cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT
+            this, 0, cancelIntent, PendingIntent.FLAG_IMMUTABLE
         )
 
         val activityPendingIntent = PendingIntent.getActivity(
@@ -256,7 +256,7 @@ class ForegroundOnlyWorkoutService: LifecycleService() {
             OngoingActivity.Builder(applicationContext, NOTIFICATION_ID, notificationBuilder)
                 // Sets icon that will appear on the watch face in active mode. If it isn't set,
                 // the watch face will use the static icon in active mode.
-                .setAnimatedIcon(R.drawable.dumbbell_animated)
+                .setAnimatedIcon(R.drawable.dumbbell_ongoing)
                 // Sets the icon that will appear on the watch face in ambient mode.
                 // Falls back to Notification's smallIcon if not set. If neither is set,
                 // an Exception is thrown.
