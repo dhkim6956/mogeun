@@ -19,8 +19,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.PauseCircle
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
@@ -38,7 +38,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -50,7 +50,6 @@ import co.yml.charts.common.extensions.isNotNull
 import com.google.android.gms.wearable.Wearable
 import io.ssafy.mogeun.MogeunApplication
 import io.ssafy.mogeun.R
-import io.ssafy.mogeun.data.AppContainer
 import io.ssafy.mogeun.ui.AppViewModelProvider
 import io.ssafy.mogeun.ui.components.AlertDialogCustom
 import io.ssafy.mogeun.ui.components.ElevatedGif
@@ -251,7 +250,7 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
                     openEndDialog = false
                     viewModel.endRoutine()
                     if (routineState.hasValidSet) {
-                        navController.navigate("RecordDetail/${routineState.reportKey}",) {
+                        navController.navigate("RecordDetail/${routineState.reportKey}") {
                             popUpTo(navController.graph.startDestinationId)
                             launchSingleTop = true
                         }
@@ -278,7 +277,8 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
                 } else {
                     stringResource(R.string.execution_cancel_procedure_and_end_routine)
                 },
-                icon = Icons.Default.PauseCircle
+                icon = Icons.Default.PauseCircle,
+                iconColor = Color.Blue
             )
         }
     }
@@ -300,7 +300,24 @@ fun ExecutionScreen(viewModel: ExecutionViewModel = viewModel(factory = AppViewM
                 },
                 dialogTitle = stringResource(R.string.execution_no_sensor_connected),
                 dialogText = stringResource(R.string.execution_would_you_like_to_start),
-                icon = Icons.Default.PauseCircle
+                icon = Icons.Default.PauseCircle,
+                iconColor = Color.Blue
+            )
+        }
+    }
+    when {
+        viewModel.fatigueWarning -> {
+            AlertDialogCustom(
+                onDismissRequest = {
+                    viewModel.fatigueWarning = false
+                },
+                onConfirmation = {
+                    viewModel.fatigueWarning = false
+                },
+                dialogTitle = "피로도가 높습니다!",
+                dialogText = "휴식을 취하거나 다른 운동을 진행하세요",
+                icon = Icons.Default.Error,
+                iconColor = Color.Red
             )
         }
     }
