@@ -202,7 +202,6 @@ class AndroidBleRepository(
         override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray) {
             super.onCharacteristicChanged(gatt, characteristic, value)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
-                Log.d(TAG,"블루투스 수신성공")
 
                 val idx = deviceMac.indexOf(gatt.device.address)
                 Log.d("ble", "${value}")
@@ -220,7 +219,6 @@ class AndroidBleRepository(
         override fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?) {
             super.onCharacteristicChanged(gatt, characteristic)
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S) {
-                Log.d(TAG,"블루투스 수신성공")
 
                 val idx = deviceMac.indexOf(gatt?.device?.address)
                 _sensorVal.update { orig -> orig.mapIndexed { origIdx, origVal ->

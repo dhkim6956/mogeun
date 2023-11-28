@@ -567,7 +567,7 @@ fun EMGCollector(
     var scale by remember { mutableStateOf(1.0)}
 
     if (inbodyInfo.hasData) {
-        val diff: Double = (5 - inbodyInfo.offset!!)
+        val diff: Double = (4 - inbodyInfo.offset!!)
 
         scale = 1.0 + diff / 10
     }
