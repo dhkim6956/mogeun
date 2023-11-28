@@ -343,7 +343,6 @@ class ExecutionViewModel(
                         calFatigueSlope()
                 }
                 dataLayerRepository.noticeEndOfSet()
-                sendMessage("테스트 메시지")
             }
         }
     }
