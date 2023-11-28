@@ -10,8 +10,4 @@ class WorkoutRepository(
 
     suspend fun setActiveWorkout(activeWorkout: Boolean) =
         workoutDataStore.setActiveWorkout(activeWorkout)
-
-    val walkingPointsFlow: Flow<Int> = workoutDataStore.walkingPointsFlow
-
-    suspend fun setWalkingPoints(points: Int) = workoutDataStore.setWalkingPoints(points)
 }

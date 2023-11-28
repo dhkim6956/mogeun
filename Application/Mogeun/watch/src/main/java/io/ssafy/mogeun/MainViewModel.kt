@@ -32,14 +32,13 @@ class MainViewModel(
     MessageClient.OnMessageReceivedListener {
 
     val activeWalkingWorkoutFlow = workoutRepository.activeWorkoutFlow.asLiveData()
-    val walkingPointsFlow = workoutRepository.walkingPointsFlow.asLiveData()
 
 
     var execName = mutableStateOf<String?>(null)
     var timerString = mutableStateOf<String?>(null)
     var setEnded: MutableLiveData<Boolean> = MutableLiveData(false)
     var messageReceived: MutableLiveData<Boolean> = MutableLiveData(false)
-    var routineEnded = mutableStateOf(false)
+    var routineEnded: MutableLiveData<Boolean> = MutableLiveData(false)
     var messageString = mutableStateOf<String?>(null)
     val progress = mutableStateOf(0.1f)
 

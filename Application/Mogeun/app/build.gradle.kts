@@ -34,8 +34,8 @@ android {
         applicationId = "io.ssafy.mogeun"
         minSdk = 26
         targetSdk = 33
-        versionCode = 8
-        versionName = "0.8.0"
+        versionCode = 10
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

@@ -165,15 +165,13 @@ class ForegroundOnlyWorkoutService: LifecycleService() {
     // an algorithm, but we are mocking the data to simply this so we can focus on learning about
     // the Ongoing Activity API.
     private suspend fun mockSensorAndLocationForWorkout() {
-        for (walkingPoints in 0 until 100) {
+        while(true) {
             if (serviceRunningInForeground) {
                 val notification = generateNotification(
-                    "$walkingPoints 포인트 획득"
+                    "루틴 진행 중"
                 )
                 notificationManager.notify(NOTIFICATION_ID, notification)
             }
-            Log.d(TAG, "mockSensorAndLocationForWalkingWorkout(): $walkingPoints")
-            workoutsRepository.setWalkingPoints(walkingPoints) //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             delay(THREE_SECONDS_MILLISECONDS)
         }
     }

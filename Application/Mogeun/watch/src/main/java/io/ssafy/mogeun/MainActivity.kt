@@ -42,8 +42,6 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels { MainViewModel.Factory }
     private val messageClient by lazy { Wearable.getMessageClient(this) }
 
-    private var pointText = "temp"
-
     private val vibrator: Vibrator by lazy {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             getSystemService(Vibrator::class.java)
@@ -57,16 +55,8 @@ class MainActivity : ComponentActivity() {
         set(newActiveStatus) {
             if (field != newActiveStatus) {
                 field = newActiveStatus
-                if (newActiveStatus) {
-
-                } else {
-
-                }
-                updateOutput(walkingPoints)
             }
         }
-
-    private var walkingPoints = 0
 
     // The remaining variables are related to the binding/monitoring/interacting with the
     // service that gathers all the data to calculate walking points.
@@ -95,7 +85,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MainApp(mainViewModel.execName.value, mainViewModel.timerString.value, mainViewModel.messageString.value, mainViewModel::startSet, mainViewModel::stopSet, mainViewModel::clearMessage, mainViewModel.progress.value, {onClickWorkout()}, pointText)
+            MainApp(mainViewModel.execName.value, mainViewModel.timerString.value, mainViewModel.messageString.value, mainViewModel::startSet, mainViewModel::stopSet, mainViewModel::clearMessage, mainViewModel.progress.value)
         }
 
         val setObserver = Observer<Boolean> { setEnded ->
@@ -110,14 +100,21 @@ class MainActivity : ComponentActivity() {
                 mainViewModel.resetMessageReceived()
             }
         }
+        val routineObserver = Observer<Boolean> { routineEnded ->
+            if(routineEnded) {
+                if (activeWalkingWorkout) {
+                    foregroundOnlyWalkingWorkoutService?.stopWalkingWorkout()
+                }
+            } else {
+                if (!activeWalkingWorkout) {
+                    foregroundOnlyWalkingWorkoutService?.startWalkingWorkout()
+                }
+            }
+        }
 
         mainViewModel.setEnded.observe(this, setObserver)
         mainViewModel.messageReceived.observe(this, messageObserver)
-
-        mainViewModel.walkingPointsFlow.observe(this) { points ->
-            walkingPoints = points
-            updateOutput(walkingPoints)
-        }
+        mainViewModel.routineEnded.observe(this, routineObserver)
 
         mainViewModel.activeWalkingWorkoutFlow.observe(this) { active ->
             Log.d("workout", "Workout Status changed: $activeWalkingWorkout")
@@ -159,15 +156,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun updateOutput(points: Int) {
-        Log.d("workout", "updateOutput()")
-        val output = "포인트 : $points"
-        Log.d("workout", "points: $points")
-        pointText = output
-    }
-
     private fun vibrate(time: Long = 1000) {
-
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(time, VibrationEffect.DEFAULT_AMPLITUDE))
         } else {

@@ -25,21 +25,9 @@ class WorkoutDataStore(private val context: Context) {
         }
     }
 
-    val walkingPointsFlow: Flow<Int> = context.datastore.data.map {
-        it[WALKING_POINTS_KEY] ?: 0
-    }
-
-    suspend fun setWalkingPoints(walkingPoints: Int) {
-        context.datastore.edit {
-            it[WALKING_POINTS_KEY] = walkingPoints
-        }
-    }
-
     companion object {
         private const val WORKOUTS_DATASTORE_NAME = "workouts_datastore"
 
         private val ACTIVE_WORKOUT_KEY = booleanPreferencesKey("active_workout")
-        private val WALKING_POINTS_KEY = intPreferencesKey("walking_points")
     }
-
 }
