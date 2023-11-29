@@ -126,7 +126,7 @@ fun CalenderUI(
             .shadow(2.dp, RoundedCornerShape(16.dp))
             .clip(RoundedCornerShape(16.dp))
             .background(
-                color = MaterialTheme.colorScheme.primaryContainer,
+                color = MaterialTheme.colorScheme.background,
                 shape = RoundedCornerShape(16.dp)
             ),
     ) {
@@ -187,7 +187,8 @@ fun CalenderUI(
     if (selection.isNotNull())
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .padding(top = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             stickyHeader {
@@ -286,6 +287,7 @@ private fun MonthHeader(daysOfWeek: List<DayOfWeek>) {
                 fontSize = 15.sp,
                 text = dayOfWeek.toString().substring(0,3),
                 fontWeight = FontWeight.Medium,
+                color = if (dayOfWeek.toString().substring(0,3) == "SAT") Color.Blue else if (dayOfWeek.toString().substring(0,3) == "SUN") Color.Red else Color.Black
             )
         }
     }
@@ -306,7 +308,7 @@ private fun Day(
             .clickable(
                 onClick = { onClick(day) },
             )
-            .background(color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else if (day.position != DayPosition.MonthDate) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.primary),
+            .background(color = if (isSelected) MaterialTheme.colorScheme.background else if (day.position != DayPosition.MonthDate) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.primary),
         contentAlignment = Alignment.Center,
     ) {
         val textColor = when (day.position) {
