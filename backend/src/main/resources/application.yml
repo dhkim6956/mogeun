@@ -4,8 +4,8 @@ spring:
       matching-strategy: ant_path_matcher
   datasource:
     url: jdbc:mysql://k9c104.p.ssafy.io:3306/muscle
-    username: muscleMan
-    password: 175863
+    username: [mogeun-server-username]
+    password: [mogeun-server-password]
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database: mysql
